@@ -850,13 +850,47 @@
       <img src="https://i.postimg.cc/prZdL0M2/title.png" alt="Mission Brevet"
            style="width:min(600px,96vw);filter:drop-shadow(0 10px 32px rgba(0,0,0,.65));margin-bottom:10px;"/>
       <div class="welcome-sub" style="color:var(--gold-soft);font-size:15px;margin-bottom:4px;">Réussir le brevet de français</div>
-      <div class="welcome-card">
-        <div class="welcome-label">Comment tu t'appelles ?</div>
-        <input id="welcomeNameInput" class="welcome-input" placeholder="Entre ton prénom ou pseudo…" maxlength="24"/>
-        <div id="saveHint" style="display:none;font-size:12px;color:#86efac;text-align:center;margin-top:4px;">✅ Sauvegarde trouvée — ta progression sera restaurée !</div>
-        <div class="av-pick-label">Choisis ton avatar :</div>
-        <div class="av-pick-grid" id="welcomeAvGrid"></div>
-        <button id="startBtn" class="start-btn" disabled>Commencer l'aventure →</button>
+      <div class="welcome-card" id="loginCard">
+        <!-- TAB SWITCHER -->
+        <div style="display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid rgba(217,164,65,.3);">
+          <button id="tabLogin" onclick="switchLoginTab('login')"
+            style="flex:1;padding:10px;background:linear-gradient(180deg,var(--gold),#c87a10);border:none;color:#1a0a00;font-weight:900;font-size:14px;cursor:pointer;">
+            🔑 Se connecter
+          </button>
+          <button id="tabRegister" onclick="switchLoginTab('register')"
+            style="flex:1;padding:10px;background:rgba(0,0,0,.25);border:none;color:var(--gold-soft);font-weight:700;font-size:14px;cursor:pointer;">
+            ✨ Créer un compte
+          </button>
+        </div>
+
+        <!-- LOGIN PANEL -->
+        <div id="panelLogin">
+          <div class="welcome-label">Ton pseudo</div>
+          <input id="loginNameInput" class="welcome-input" placeholder="Entre ton pseudo…" maxlength="24"
+            oninput="checkLoginSave(this.value)"/>
+          <div id="saveHint" style="display:none;font-size:12px;color:#86efac;text-align:center;margin-top:4px;margin-bottom:4px;">
+            ✅ Sauvegarde trouvée — ta progression sera restaurée !
+          </div>
+          <div id="noSaveHint" style="display:none;font-size:12px;color:#fca5a5;text-align:center;margin-top:4px;margin-bottom:4px;">
+            ❌ Aucun compte trouvé pour ce pseudo.
+          </div>
+          <button id="loginBtn" class="start-btn" disabled onclick="doLogin()" style="margin-top:12px;">
+            ▶ Rejoindre la mission
+          </button>
+        </div>
+
+        <!-- REGISTER PANEL -->
+        <div id="panelRegister" style="display:none;">
+          <div class="welcome-label">Choisis un pseudo</div>
+          <input id="registerNameInput" class="welcome-input" placeholder="Ton prénom ou pseudo…" maxlength="24"
+            oninput="checkRegisterAvail(this.value)"/>
+          <div id="registerHint" style="font-size:12px;text-align:center;margin-top:4px;margin-bottom:8px;min-height:16px;color:#ead7ae;"></div>
+          <div class="av-pick-label">Choisis ton avatar :</div>
+          <div class="av-pick-grid" id="welcomeAvGrid"></div>
+          <button id="startBtn" class="start-btn" disabled onclick="doRegister()">
+            ✨ Créer mon compte →
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -3623,33 +3657,33 @@ document.getElementById("daudeBadgesOv")?.addEventListener("click",e=>{
   if(e.target===document.getElementById("daudeBadgesOv")) document.getElementById("daudeBadgesOv").style.display="none";
 });
 
+function _lbRow(name,score,avatar,rankLabel,isGold,isMe){
+  const div=document.createElement("div");
+  div.className="lb-row";
+  if(isMe) div.style.cssText="background:rgba(217,164,65,.08);border:1px solid rgba(217,164,65,.4);border-radius:10px;padding:4px 8px;";
+  else if(isGold) div.style.cssText="background:rgba(217,164,65,.06);border:1px solid rgba(217,164,65,.25);border-radius:10px;padding:4px 8px;cursor:pointer;";
+  else div.style.cssText="border-radius:10px;padding:4px 8px;";
+  div.innerHTML=`<div class="lb-rank">${rankLabel}</div><img class="lb-av" src="${avatar||AVATARS[0]}" alt="" onerror="this.src='${AVATARS[0]}';" style="${isGold?"border:2px solid rgba(217,164,65,.7);":""}"/><div class="lb-name" style="${isGold?"color:var(--gold);":""}${isMe?"color:var(--gold);":""}">${name}${isMe?" (toi)":""}</div><div class="lb-score">${score} pts</div>`;
+  return div;
+}
+function buildDaudeLbRow(rank,container,clickable){
+  const row=_lbRow(DAUDE.name,DAUDE.score,DAUDE.avatar,"🥇",true,false);
+  if(clickable) row.onclick=()=>openDaudePopup();
+  container.appendChild(row);
+}
 function buildLbRow(e,rank,medals,container){
   const isMe=S.name&&e.name===S.name;
-  const div=document.createElement("div");
-  div.style.cssText="display:flex;align-items:center;gap:14px;padding:10px 16px;border-radius:14px;margin-bottom:2px;"+
-    (isMe?"background:rgba(217,164,65,.12);border:2px solid rgba(217,164,65,.45);":"background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);");
-  const rk=document.createElement("div");
-  rk.style.cssText="min-width:32px;font-size:22px;text-align:center;flex-shrink:0;";
-  rk.textContent=medals[rank]||"#"+(rank+2);
-  const av=document.createElement("img");
-  av.src=e.avatar||AVATARS[0]; av.alt="";
-  av.style.cssText="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid "+(isMe?"rgba(217,164,65,.6)":"rgba(255,255,255,.15)")+";flex-shrink:0;";
-  av.onerror=()=>{av.src=AVATARS[0];};
-  const nm=document.createElement("div");
-  nm.style.cssText="flex:1;font-size:16px;font-weight:700;color:"+(isMe?"var(--gold)":"var(--ivory)")+";white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
-  nm.textContent=e.name+(isMe?" (toi)":"");
-  const sc=document.createElement("div");
-  sc.style.cssText="font-size:16px;font-weight:800;color:"+(isMe?"var(--gold)":"#ead7ae")+";white-space:nowrap;flex-shrink:0;";
-  sc.textContent=(e.score||0)+" pts";
-  div.appendChild(rk);div.appendChild(av);div.appendChild(nm);div.appendChild(sc);
-  container.appendChild(div);
+  const rankLabel=medals[rank]||(rank===0?"🥇":rank===1?"🥈":rank===2?"🥉":"#"+(rank+2));
+  const row=_lbRow(e.name,e.score||0,e.avatar,rankLabel,false,isMe);
+  container.appendChild(row);
 }
 function buildLbRows(entries,container){
   const medals=["🥇","🥈","🥉"];
-  let real=entries.filter(e=>e.name!==DAUDE.name);
+  // Daudé is ALWAYS #1, immovable
+  buildDaudeLbRow(0,container,true);
+  let real=entries.filter(e=>e.name&&e.name!==DAUDE.name);
   if(S.name&&!real.find(e=>e.name===S.name)) real.push({name:S.name,score:S.score||0,avatar:S.avatar});
   real.sort((a,b)=>b.score-a.score);
-  buildDaudeLbRow(0,container,true);
   real.slice(0,9).forEach((e,i)=>buildLbRow(e,i,medals,container));
 }
 async function fetchLBEntries(){
@@ -4335,36 +4369,107 @@ function buildWelcomeAvGrid(){
   });
   S.welcomeAv=AVATARS[0];S.avatar=AVATARS[0];
 }
-D.welcomeNameInput.addEventListener("input",()=>D.startBtn.disabled=D.welcomeNameInput.value.trim().length<2);
+
+// ── Login / Register system ──
+function saveKey(name){return "mb_save_"+name.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);}
+function hasSave(name){try{return !!localStorage.getItem(saveKey(name));}catch(e){return false;}}
+
+function switchLoginTab(tab){
+  const isLogin=(tab==="login");
+  const pl=document.getElementById("panelLogin"),pr=document.getElementById("panelRegister");
+  if(pl)pl.style.display=isLogin?"block":"none";
+  if(pr)pr.style.display=isLogin?"none":"block";
+  const tl=document.getElementById("tabLogin"),tr=document.getElementById("tabRegister");
+  if(tl){tl.style.background=isLogin?"linear-gradient(180deg,var(--gold),#c87a10)":"rgba(0,0,0,.25)";tl.style.color=isLogin?"#1a0a00":"var(--gold-soft)";tl.style.fontWeight=isLogin?"900":"700";}
+  if(tr){tr.style.background=isLogin?"rgba(0,0,0,.25)":"linear-gradient(180deg,var(--gold),#c87a10)";tr.style.color=isLogin?"var(--gold-soft)":"#1a0a00";tr.style.fontWeight=isLogin?"700":"900";}
+}
+
+function checkLoginSave(v){
+  v=(v||"").trim();
+  const btn=document.getElementById("loginBtn");
+  const sh=document.getElementById("saveHint"),nh=document.getElementById("noSaveHint");
+  if(v.length<2){if(btn)btn.disabled=true;if(sh)sh.style.display="none";if(nh)nh.style.display="none";return;}
+  const found=hasSave(v);
+  if(btn){btn.disabled=false;btn.textContent=found?"▶ Reprendre ma progression":"▶ Commencer une nouvelle partie";}
+  if(sh)sh.style.display=found?"block":"none";
+  if(nh)nh.style.display=found?"none":"block";
+}
+
+function checkRegisterAvail(v){
+  v=(v||"").trim();
+  const btn=document.getElementById("startBtn");
+  const hint=document.getElementById("registerHint");
+  if(v.length<2){if(btn)btn.disabled=true;if(hint)hint.textContent="";return;}
+  if(hasSave(v)){
+    if(btn)btn.disabled=true;
+    if(hint)hint.innerHTML='⚠️ Pseudo déjà utilisé. <a href="#" onclick="switchLoginTab(\'login\');var el=document.getElementById(\'loginNameInput\');if(el){el.value=\''+v.replace(/'/g,"")+'\';checkLoginSave(\''+v.replace(/'/g,"")+'\');}" style="color:#facc15;">Se connecter ?</a>';
+  }else{
+    if(btn)btn.disabled=false;
+    if(hint)hint.innerHTML='<span style="color:#86efac;">✅ Pseudo disponible !</span>';
+  }
+}
+
+function doLogin(){
+  const el=document.getElementById("loginNameInput");
+  const v=(el?el.value:"").trim();if(v.length<2)return;
+  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  goScreen("home");updateHUD();
+  loadProgress(v);
+  saveToLB();
+}
+
+function doRegister(){
+  const el=document.getElementById("registerNameInput");
+  const v=(el?el.value:"").trim();if(v.length<2)return;
+  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  goScreen("home");updateHUD();
+  saveProgress();saveToLB();
+  toast("Compte créé ! Bienvenue "+v+" 🎉");
+}
+
 // Try to autoplay music on page load
 try{const _mu=document.getElementById("bgMusic");if(_mu){_mu.volume=0.8;_mu.play().catch(()=>{});}}catch(e){}
 
-// Auto-detect saves as user types name
-D.welcomeNameInput.addEventListener("input",async()=>{
-  const v=D.welcomeNameInput.value.trim();
-  if(v.length<2)return;
+// Auto-fill login if exactly one save exists
+(function(){
   try{
-    const saved=localStorage.getItem("mb_save_"+v.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30));
-    const hint=document.getElementById("saveHint");
-    if(hint)hint.style.display=saved?"block":"none";
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith("mb_save_"));
+    if(keys.length===1){
+      const d=JSON.parse(localStorage.getItem(keys[0])||"{}");
+      if(d.name){
+        const li=document.getElementById("loginNameInput");
+        if(li){li.value=d.name;checkLoginSave(d.name);}
+      }
+    }
   }catch(e){}
-});
-D.startBtn.addEventListener("click",()=>{
-  const v=D.welcomeNameInput.value.trim();if(v.length<2)return;
-  S.name=v;S.avatar=S.welcomeAv;goScreen("home");updateHUD();saveToLB();
-  loadProgress(v);
-  if(v==="Daudé96"||v==="Daude96"){
-    setTimeout(()=>{
-      const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
-      allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
-      S.score=9990;S.bossDefeated=true;
-      BADGES_DEF.forEach(b=>S.badges.add(b.id));
-      S.unlockedSecrets=new Set(["botticelli"]);
-      updateHUD();updateSeanceBadges();renderBadgesGrid();
-      toast("🔓 MODE DÉBLOCAGE TOTAL — Bienvenue, Professeur !");
-    },800);
-  } else { toast("Bienvenue "+S.name+" ! Bonne révision 🎓"); }
-});
+})();
+
+// Keep D.startBtn working for register
+if(document.getElementById("startBtn")){
+  D.startBtn=document.getElementById("startBtn");
+}
+
+// Cheat code via login
+D.startBtn && D.startBtn.addEventListener("click",()=>{});
+
+// Legacy: if welcome input exists (fallback)
+if(document.getElementById("welcomeNameInput")){
+  document.getElementById("welcomeNameInput").addEventListener("input",function(){
+    const v=this.value.trim();
+    if(D.startBtn)D.startBtn.disabled=v.length<2;
+    checkLoginSave(v);
+  });
+}
+
+function _applyCheatCode(){
+  const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
+  allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
+  S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
+  BADGES_DEF.forEach(b=>S.badges.add(b.id));
+  S.unlockedSecrets=new Set(["botticelli"]);
+  updateHUD();updateSeanceBadges();renderBadgesGrid();
+  toast("🔓 MODE DÉBLOCAGE TOTAL — Bienvenue, Professeur !");
+}
 
 /* ── Failure screen ── */
 function checkFailureCondition(p,total){
