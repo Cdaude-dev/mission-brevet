@@ -653,7 +653,12 @@
         </div>
         <div class="mini-note">Avatar</div>
         <div id="avGrid" class="av-grid"></div>
-
+        <button onclick="doLogout()"
+          style="width:100%;margin-top:14px;padding:10px;border-radius:12px;
+                 border:1px solid rgba(255,100,100,.35);background:rgba(60,0,0,.4);
+                 color:rgba(255,160,160,.85);font-size:13px;font-weight:700;cursor:pointer;">
+          🚪 Se déconnecter
+        </button>
       </div>
       <div id="tab-badges" class="tab-content">
         <div id="badgesGrid" class="badges-grid"></div>
@@ -801,6 +806,12 @@
           </div>
           <div class="mini-note" style="margin-top:20px;margin-bottom:8px;">Choisis ton avatar</div>
           <div id="bigAvGrid" class="big-av-grid"></div>
+          <button onclick="doLogout()"
+            style="width:100%;margin-top:18px;padding:12px;border-radius:14px;
+                   border:1px solid rgba(255,100,100,.35);background:rgba(60,0,0,.4);
+                   color:rgba(255,160,160,.85);font-size:14px;font-weight:700;cursor:pointer;">
+            🚪 Se déconnecter
+          </button>
         </div>
         <div id="big-tab-badges" class="big-tab-content">
           <div id="bigBadgesGrid" class="big-badges-grid"></div>
@@ -4666,6 +4677,72 @@ function showBanScreen(){
     <div style="font-size:12px;color:rgba(252,165,165,.5);font-style:italic;">Si vous pensez qu'il s'agit d'une erreur, contactez l'administrateur.</div>
   </div>`;
   document.body.appendChild(ov);
+}
+
+function doLogout(){
+  // Confirm before logging out
+  const cd=document.createElement("div");
+  cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center;";
+  cd.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a02,#0a0500);border:2px solid rgba(255,100,100,.3);
+    border-radius:20px;padding:28px;max-width:360px;width:92%;text-align:center;animation:popIn .3s;">
+    <div style="font-size:32px;margin-bottom:8px;">🚪</div>
+    <div style="font-size:18px;font-weight:900;color:rgba(255,160,160,.9);margin-bottom:8px;">Se déconnecter ?</div>
+    <div style="font-size:13px;color:#ead7ae;line-height:1.5;margin-bottom:18px;">
+      Ta progression est sauvegardée.<br>Tu pourras te reconnecter avec ton compte.
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="logout_yes" style="padding:11px 22px;border-radius:12px;border:none;
+        background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:14px;font-weight:900;cursor:pointer;">
+        🚪 Déconnexion
+      </button>
+      <button onclick="this.closest('[style]').remove()" style="padding:11px 22px;border-radius:12px;
+        border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">
+        Annuler
+      </button>
+    </div>
+  </div>`;
+  document.body.appendChild(cd);
+  cd.querySelector("#logout_yes").onclick=()=>{
+    cd.remove();
+    // Save current progress before leaving
+    saveProgress();
+    // Reset session state (keep saves in localStorage)
+    S.name="";S.score=0;S.done={};S.perfect={};S.seancePct={};
+    S.badges=new Set();S.unlockedSecrets=new Set();
+    S.bossDefeated=false;S.gramBossDefeated=false;
+    S.bossUnlockShown=false;S.gramBossUnlockShown=false;
+    S.conjKeyShown=false;S.gramKeyShown=false;
+    S.desc="";S.pwd="";S.avatar=AVATARS[0];S.welcomeAv=AVATARS[0];
+    S.panelOpen=false;
+    // Close any open panels/modals
+    closeBigModal();
+    if(D.acctPanel)D.acctPanel.classList.remove("open");
+    // Stop polling
+    stopLbPolling();stopChatPolling();
+    // Hide chat button
+    const chatBtn=document.getElementById("chatToggleBtn");
+    if(chatBtn)chatBtn.style.display="none";
+    const chatPanel=document.getElementById("chatPanel");
+    if(chatPanel)chatPanel.style.display="none";
+    chatLoaded=false;
+    // Re-build avatar grid for fresh login
+    buildWelcomeAvGrid();
+    // Clear login fields
+    const li=document.getElementById("loginNameInput");if(li)li.value="";
+    const lp=document.getElementById("loginPwdInput");if(lp)lp.value="";
+    const lh=document.getElementById("loginPwdHint");if(lh)lh.style.display="none";
+    const sh=document.getElementById("saveHint");if(sh)sh.style.display="none";
+    const nh=document.getElementById("noSaveHint");if(nh)nh.style.display="none";
+    const lb=document.getElementById("loginBtn");if(lb){lb.disabled=true;lb.textContent="▶ Rejoindre la mission";}
+    // Switch to login tab
+    switchLoginTab("login");
+    // Go to welcome screen
+    goScreen("welcome");
+    // Stop background music
+    const bg=document.getElementById("bgMusic");if(bg)bg.pause();
+    // Switch to login tab by default
+    updateHUD();
+  };
 }
 
 function doLogin(){
