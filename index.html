@@ -3464,6 +3464,9 @@ function switchTab(tab){
 
 function goScreen(name){
   S.currentScreen=name;
+  // Show/hide chat button
+  const chatBtn=document.getElementById("chatToggleBtn");
+  if(chatBtn)chatBtn.style.display=(name!=="welcome")?"flex":"none";
   // Music: play on all menu/nav screens, stop only when quiz is active
   const mus=document.getElementById("bgMusic");
   if(mus){
@@ -5914,15 +5917,7 @@ async function sendChatMsg(){
     });
   }catch(e){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();}
 }
-// Show chat button when not on welcome screen
-const _origGS=goScreen;
-function goScreen(name){
-  _origGS(name);
-  const btn=document.getElementById("chatToggleBtn");
-  if(btn)btn.style.display=(name!=="welcome")?"flex":"none";
-}
-// Admin shortcut: Daudé96 menu
-const _origGoSc=goScreen;
+// Chat button visibility updated from goScreen (integrated below)
 </script>
 
   <!-- ADMIN PANEL OVERLAY -->
