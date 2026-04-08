@@ -3466,7 +3466,7 @@ function goScreen(name){
   S.currentScreen=name;
   // Show/hide chat button
   const chatBtn=document.getElementById("chatToggleBtn");
-  if(chatBtn)chatBtn.style.display=(name!=="welcome")?"flex":"none";
+  if(chatBtn)chatBtn.style.display=(name!=="welcome")?"inline-flex":"none";
   // Music: play on all menu/nav screens, stop only when quiz is active
   const mus=document.getElementById("bgMusic");
   if(mus){
@@ -3578,7 +3578,8 @@ async function saveToLB(){
     localStorage.setItem("mb_lb",JSON.stringify(localLB));
   }catch(e){}
   // Save to Supabase if configured
-  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+  const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&!_adminNames.includes(S.name)){
     try{
       await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
         method:"POST",
@@ -3743,9 +3744,12 @@ function buildDaudeLbRow(rank,container,clickable){
 
 function renderLbEntries(entries, container){
   const medals = ["🥇","🥈","🥉"];
-  // Merge Daudé as a regular entry (score 9999 keeps him first naturally)
-  let all = entries.filter(e=>e.name&&e.name!==DAUDE.name);
-  if(S.name && !all.find(e=>e.name===S.name)) all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||""});
+  const ADMIN_NAMES=["Professeur Daudé","Daude96","Daudé96"];
+  // Exclude real Daudé saves from player list (he only appears as easter egg at top)
+  let all = entries.filter(e=>e.name&&e.name!==DAUDE.name&&!ADMIN_NAMES.includes(e.name));
+  const isAdmin=S.name&&(S.name===ADMIN_CODE||ADMIN_NAMES.includes(S.name));
+  if(S.name && !isAdmin && !all.find(e=>e.name===S.name))
+    all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||""});
   all.push({name:DAUDE.name,score:DAUDE.score,avatar:DAUDE.avatar});
   all.sort((a,b)=>b.score-a.score);
   all.slice(0,10).forEach((e,i)=>{
@@ -5849,6 +5853,9 @@ async function initChat(){
     if(res.ok){(await res.json()).forEach(m=>appendChatMsg(m.player_name,m.message,m.created_at,m.player_name==="__system__"));}
     scrollChatBottom();
   }catch(e){}
+  // Welcome/reminder message
+  appendChatMsg("","💡 Bienvenue dans le chat Mission Brevet ! Merci de respecter les autres joueurs. Toute insulte ou spam pourra être sanctionné par un bannissement.",new Date().toISOString(),true);
+  scrollChatBottom();
   // Realtime via Supabase WebSocket
   try{
     const wsUrl=SUPABASE_URL.replace("https://","wss://")+"/realtime/v1/websocket?apikey="+SUPABASE_ANON_KEY+"&vsn=1.0.0";
@@ -5868,8 +5875,8 @@ function appendChatMsg(name,message,ts,isSystem){
 
   // System message (badge announcements etc)
   if(isSystem){
-    div.style.cssText="text-align:center;padding:4px 0;";
-    div.innerHTML=`<span style="font-size:11px;color:#fff;font-style:italic;opacity:.7;">${message}</span>`;
+    div.style.cssText="text-align:center;padding:6px 4px;";
+    div.innerHTML=`<span style="font-size:11px;color:#86efac;font-style:italic;opacity:.9;line-height:1.5;">${message}</span>`;
     wrap.appendChild(div);return;
   }
 
@@ -5937,11 +5944,18 @@ async function sendChatMsg(){
 
   <!-- CHAT BUTTON & PANEL -->
   <button id="chatToggleBtn" onclick="toggleChat()"
-    style="display:none;position:fixed;bottom:20px;right:20px;z-index:300;
-           width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
-           background:linear-gradient(180deg,var(--gold),#c87a10);font-size:22px;
-           box-shadow:0 4px 16px rgba(0,0,0,.5);">💬</button>
-  <div id="chatPanel" style="display:none;position:fixed;bottom:80px;right:16px;z-index:299;
+    style="display:none;position:fixed;bottom:18px;right:18px;z-index:300;
+           padding:11px 18px 11px 14px;border-radius:999px;border:none;cursor:pointer;
+           background:linear-gradient(135deg,#c87a10,var(--gold));
+           color:#1a0a00;font-size:14px;font-weight:900;
+           box-shadow:0 4px 20px rgba(0,0,0,.55),0 0 0 2px rgba(217,164,65,.3);
+           display:none;align-items:center;gap:8px;letter-spacing:.3px;">
+    <span style="font-size:18px;">💬</span>
+    <span>Discussion en ligne</span>
+    <span id="chatUnread" style="display:none;background:#ef4444;color:#fff;font-size:10px;
+      font-weight:900;border-radius:999px;padding:1px 6px;min-width:18px;text-align:center;"></span>
+  </button>
+  <div id="chatPanel" style="display:none;position:fixed;bottom:68px;right:16px;z-index:299;
        width:min(340px,94vw);height:420px;background:linear-gradient(160deg,#2a1203,#1a0800);
        border:2px solid rgba(217,164,65,.35);border-radius:20px;flex-direction:column;
        box-shadow:0 8px 32px rgba(0,0,0,.6);">
