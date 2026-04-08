@@ -4593,6 +4593,81 @@ function checkRegisterAvail(v){
 
 function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=(Math.imul(31,h)+s.charCodeAt(i))|0;}return h.toString(36);}
 const ADMIN_PWD=simpleHash("Lolmdrxd1478");
+
+/* ══════════ BAN SYSTEM ══════════ */
+const BAN_MSG = "⛔ Vous avez été banni car vous avez enfreint les règles de bonne conduite du jeu.";
+
+function isBanned(name){
+  try{
+    const bans=JSON.parse(localStorage.getItem("mb_bans")||"[]");
+    return bans.includes(name.toLowerCase());
+  }catch(e){return false;}
+}
+
+function banPlayer(name){
+  if(!name||name==="Professeur Daudé")return;
+  try{
+    const bans=JSON.parse(localStorage.getItem("mb_bans")||"[]");
+    if(!bans.includes(name.toLowerCase())){
+      bans.push(name.toLowerCase());
+      localStorage.setItem("mb_bans",JSON.stringify(bans));
+    }
+  }catch(e){}
+  // Also store on Supabase if configured
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      fetch(SUPABASE_URL+"/rest/v1/banned_players",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Prefer":"resolution=ignore-duplicates"},
+        body:JSON.stringify({player_name:name})
+      });
+    }catch(e){}
+  }
+}
+
+function unbanPlayer(name){
+  try{
+    let bans=JSON.parse(localStorage.getItem("mb_bans")||"[]");
+    bans=bans.filter(b=>b!==name.toLowerCase());
+    localStorage.setItem("mb_bans",JSON.stringify(bans));
+  }catch(e){}
+}
+
+async function checkBanOnLogin(name){
+  // Local check
+  if(isBanned(name))return true;
+  // Supabase check
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      const res=await fetch(
+        SUPABASE_URL+"/rest/v1/banned_players?player_name=eq."+encodeURIComponent(name)+"&select=player_name&limit=1",
+        {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
+      );
+      if(res.ok){
+        const data=await res.json();
+        if(data.length>0){
+          // Cache locally
+          banPlayer(name);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+  return false;
+}
+
+function showBanScreen(){
+  const ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:#0a0000;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;";
+  ov.innerHTML=`<div style="max-width:420px;width:100%;text-align:center;">
+    <div style="font-size:64px;margin-bottom:16px;">⛔</div>
+    <div style="font-size:22px;font-weight:900;color:#ef4444;margin-bottom:14px;">Accès refusé</div>
+    <div style="font-size:15px;color:#fca5a5;line-height:1.6;margin-bottom:24px;">${BAN_MSG}</div>
+    <div style="font-size:12px;color:rgba(252,165,165,.5);font-style:italic;">Si vous pensez qu'il s'agit d'une erreur, contactez l'administrateur.</div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
 function doLogin(){
   const el=document.getElementById("loginNameInput");
   const pwdEl=document.getElementById("loginPwdInput");
@@ -4646,10 +4721,14 @@ function doLogin(){
   }
   if(pwdHint)pwdHint.style.display="none";
 
-  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
-  goScreen("home");updateHUD();
-  loadProgress(v);
-  saveToLB();
+  // Check ban before allowing in
+  checkBanOnLogin(v).then(banned=>{
+    if(banned){showBanScreen();return;}
+    S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+    goScreen("home");updateHUD();
+    loadProgress(v);
+    saveToLB();
+  });
 }
 
 
@@ -5992,7 +6071,7 @@ function startChatPolling(){
 function stopChatPolling(){
   if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null;}
 }
-function appendChatMsg(name,message,ts,isSystem){
+function appendChatMsg(name,message,ts,isSystem,msgId){
   const wrap=document.getElementById("chatMessages");if(!wrap)return;
   const isMe=name===S.name;
   const isAdmin=(name===ADMIN_CODE||name==="Professeur Daudé");
@@ -6018,9 +6097,22 @@ function appendChatMsg(name,message,ts,isSystem){
     ? `<span>Toi</span>`
     : `<span style="cursor:pointer;text-decoration:underline dotted;color:var(--gold-soft);"
          onclick="openPlayerPopup({name:'${name}',score:0,avatar:''})">${name}</span>`;
+  const isViewerAdmin=(S.name===ADMIN_CODE||S.name==="Professeur Daudé");
+  const canModerate=isViewerAdmin&&!isMe&&!isAdmin;
+  // Admin moderation tools (only shown to Daudé, only for other players)
+  const adminTools=canModerate?`
+    <div style="display:flex;gap:4px;margin-top:4px;">
+      <button onclick="adminDeleteMsg(this,${msgId||0},'${name.replace(/'/g,"\\'")}')"
+        style="font-size:10px;padding:2px 7px;border-radius:6px;border:none;
+               background:rgba(239,68,68,.2);color:#fca5a5;cursor:pointer;">🗑 Supprimer</button>
+      <button onclick="adminBanFromChat('${name.replace(/'/g,"\\'")}')"
+        style="font-size:10px;padding:2px 7px;border-radius:6px;border:none;
+               background:rgba(239,68,68,.35);color:#fca5a5;cursor:pointer;">⛔ Bannir</button>
+    </div>`:''
   div.innerHTML=`<div style="font-size:10px;color:rgba(234,215,174,.5);margin-bottom:2px;">${nameHtml} · ${time}</div>
     <div style="max-width:85%;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.4;word-break:break-word;
-      ${isMe?"background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:600;":"background:rgba(255,255,255,.1);color:var(--ivory);"}">${message}</div>`;
+      ${isMe?"background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:600;":"background:rgba(255,255,255,.1);color:var(--ivory);"}">${message}</div>
+    ${adminTools}`;
   wrap.appendChild(div);
 }
 
@@ -6035,6 +6127,59 @@ function chatBadgeAnnounce(playerName, badgeName){
     });}catch(e){}
   }
 }
+
+async function adminDeleteMsg(btn, msgId, playerName){
+  // Remove from DOM
+  const msgDiv=btn.closest("[style]");
+  if(msgDiv)msgDiv.remove();
+  // Delete from Supabase
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&msgId){
+    try{
+      await fetch(SUPABASE_URL+"/rest/v1/chat_messages?id=eq."+msgId,{
+        method:"DELETE",
+        headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
+      });
+    }catch(e){}
+  }
+  toast("Message supprimé.");
+}
+
+function adminBanFromChat(name){
+  if(!name||name==="Professeur Daudé")return;
+  const cd=document.createElement("div");
+  cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center;";
+  cd.innerHTML=`<div style="background:#1a0002;border:2px solid rgba(239,68,68,.5);border-radius:18px;padding:24px;max-width:360px;width:92%;text-align:center;">
+    <div style="font-size:32px;margin-bottom:8px;">⛔</div>
+    <div style="font-size:17px;font-weight:900;color:#ef4444;margin-bottom:8px;">Bannir ce joueur ?</div>
+    <div style="font-size:14px;color:#fca5a5;margin-bottom:16px;line-height:1.4;">
+      <strong style="color:#fff;">${name}</strong> sera banni et ne pourra plus se connecter.
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="ban_yes" style="padding:10px 20px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:900;cursor:pointer;">⛔ Bannir</button>
+      <button onclick="this.closest('[style]').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Annuler</button>
+    </div>
+  </div>`;
+  document.body.appendChild(cd);
+  cd.querySelector("#ban_yes").onclick=async()=>{
+    cd.remove();
+    banPlayer(name);
+    // Send system message to chat
+    const banNotice="⛔ "+name+" a été banni par l\'administrateur.";
+    appendChatMsg("",""+banNotice,new Date().toISOString(),true);
+    scrollChatBottom();
+    if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+      try{
+        await fetch(SUPABASE_URL+"/rest/v1/chat_messages",{
+          method:"POST",
+          headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},
+          body:JSON.stringify({player_name:"__system__",message:banNotice})
+        });
+      }catch(e){}
+    }
+    toast("⛔ "+name+" a été banni.");
+  };
+}
+
 function scrollChatBottom(){const w=document.getElementById("chatMessages");if(w)w.scrollTop=w.scrollHeight;}
 async function sendChatMsg(){
   if(!S.name){toast("Connecte-toi d\'abord !");return;}
