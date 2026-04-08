@@ -3458,7 +3458,7 @@ function switchTab(tab){
   document.querySelectorAll(".ptab").forEach((t,i)=>t.classList.toggle("active",["profil","badges","classement","audio","inventaire"][i]===tab));
   document.querySelectorAll(".tab-content").forEach(tc=>tc.classList.remove("active"));
   const el=document.getElementById("tab-"+tab);if(el)el.classList.add("active");
-  if(tab==="classement")loadLB();
+  if(tab==="classement"){startLbPolling();}else{stopLbPolling();}if(tab==="classement")loadLB();
   if(tab==="inventaire")renderInventaireFor("invKeys");
 }
 
@@ -3791,6 +3791,53 @@ function renderLbEntries(entries, container){
     _lbRow(e, i, rankLabel, container);
   });
 }
+
+/* ── Leaderboard auto-refresh ── */
+let lbPollTimer=null;
+
+function startLbPolling(){
+  stopLbPolling();
+  lbPollTimer=setInterval(()=>{
+    // Refresh whichever LB panel is currently visible
+    const homeLb=document.getElementById("homeLbOv");
+    const bigModal=document.getElementById("bigModalOv");
+    const smallPanel=document.getElementById("acctPanel");
+    if(homeLb&&homeLb.style.display==="flex"){
+      _refreshLb("homeLbWrap");return;
+    }
+    if(bigModal&&bigModal.classList.contains("open")){
+      const bigLbTab=document.getElementById("big-tab-classement");
+      if(bigLbTab&&bigLbTab.classList.contains("active")){
+        _refreshLb("bigLbWrap");return;
+      }
+    }
+    if(smallPanel&&smallPanel.classList.contains("open")){
+      const smallLbTab=document.getElementById("tab-classement");
+      if(smallLbTab&&smallLbTab.classList.contains("active")){
+        _refreshLb("lbWrap");return;
+      }
+    }
+  },30000); // refresh every 30s
+}
+
+function stopLbPolling(){
+  if(lbPollTimer){clearInterval(lbPollTimer);lbPollTimer=null;}
+}
+
+async function _refreshLb(wrapperId){
+  const wrap=document.getElementById(wrapperId);if(!wrap)return;
+  try{
+    const entries=await fetchLBEntries();
+    wrap.innerHTML="";
+    renderLbEntries(entries,wrap);
+    // Show last refresh time
+    const ts=document.createElement("div");
+    ts.style.cssText="font-size:10px;color:rgba(234,215,174,.4);text-align:right;margin-top:6px;padding-right:4px;";
+    ts.textContent="Actualisé à "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    wrap.appendChild(ts);
+  }catch(e){}
+}
+
 async function fetchLBEntries(){
   let entries=[];
   // 1. Load from Supabase if configured
@@ -3840,8 +3887,9 @@ async function showHomeLb(){
     lbl.remove();
     renderLbEntries(entries, wrap);
   }catch(e){lbl.textContent="Classement indisponible.";}
+  startLbPolling();
 }
-function closeHomeLb(){document.getElementById("homeLbOv").style.display="none";}
+function closeHomeLb(){document.getElementById("homeLbOv").style.display="none";stopLbPolling();}
 async function loadBigLB(){
   const wrap=document.getElementById("bigLbWrap");
   wrap.innerHTML="";// handled by renderLbEntries
@@ -4753,6 +4801,7 @@ function openBigModal(){
 }
 function closeBigModal(){
   document.getElementById("bigModalOv").classList.remove("open");
+  stopLbPolling();
 }
 function bigTab(tab){
   document.querySelectorAll(".big-tab").forEach((t,i)=>
@@ -4760,7 +4809,7 @@ function bigTab(tab){
   document.querySelectorAll(".big-tab-content").forEach(tc=>tc.classList.remove("active"));
   const el2=document.getElementById("big-tab-"+tab);
   if(el2) el2.classList.add("active");
-  if(tab==="classement") loadBigLB();
+  if(tab==="classement"){loadBigLB();startLbPolling();}else{stopLbPolling();}
   if(tab==="inventaire") renderInventaireFor("bigInvKeys");
   if(tab==="audio"){
     const sMs=document.getElementById("musicVolumeSlider");
