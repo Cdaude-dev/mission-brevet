@@ -897,13 +897,13 @@
         <div id="panelRegister" style="display:none;">
           <div class="welcome-label">Choisis un pseudo</div>
           <input id="registerNameInput" class="welcome-input" placeholder="Ton prénom ou pseudo…" maxlength="24"
-            oninput="checkRegisterAvail(this.value)"/>
+            oninput="checkRegisterAvail(this.value);checkRegisterForm();"/>
           <div id="registerHint" style="font-size:12px;text-align:center;margin-top:4px;margin-bottom:8px;min-height:16px;color:#ead7ae;"></div>
           <div class="welcome-label" style="margin-top:10px;">Crée un mot de passe</div>
           <input id="registerPwdInput" type="password" class="welcome-input" placeholder="Min. 6 caractères…"
-            style="margin-bottom:4px;" oninput="checkRegisterPwd()"/>
+            style="margin-bottom:4px;" oninput="checkRegisterForm()"/>
           <input id="registerPwdConfirm" type="password" class="welcome-input" placeholder="Confirme ton mot de passe…"
-            style="margin-bottom:4px;" oninput="checkRegisterPwd()"/>
+            style="margin-bottom:4px;" oninput="checkRegisterForm()"/>
           <div id="pwdHint" style="font-size:12px;text-align:center;margin-bottom:8px;min-height:16px;color:#ead7ae;"></div>
           <div class="av-pick-label">Choisis ton avatar :</div>
           <div class="av-pick-grid" id="welcomeAvGrid"></div>
@@ -4447,28 +4447,47 @@ function checkLoginSave(v){
   const btn=document.getElementById("loginBtn");
   const sh=document.getElementById("saveHint"),nh=document.getElementById("noSaveHint");
   if(v.length<2){if(btn)btn.disabled=true;if(sh)sh.style.display="none";if(nh)nh.style.display="none";return;}
+  // Professeur Daudé is always available
+  const isDaude=(v==="Professeur Daudé"||v==="Daude96"||v==="Daudé96");
+  if(isDaude){
+    if(btn){btn.disabled=false;btn.textContent="▶ Connexion Admin";}
+    if(sh){sh.style.display="block";sh.textContent="👑 Compte administrateur";}
+    if(nh)nh.style.display="none";
+    return;
+  }
   const found=hasSave(v);
   if(btn){btn.disabled=false;btn.textContent=found?"▶ Reprendre ma progression":"▶ Commencer une nouvelle partie";}
   if(sh)sh.style.display=found?"block":"none";
   if(nh)nh.style.display=found?"none":"block";
 }
 
-function checkRegisterPwd(){
-  const pwd=document.getElementById("registerPwdInput");
-  const conf=document.getElementById("registerPwdConfirm");
-  const hint=document.getElementById("pwdHint");
+function checkRegisterForm(){
+  const nameEl=document.getElementById("registerNameInput");
+  const pwdEl=document.getElementById("registerPwdInput");
+  const confEl=document.getElementById("registerPwdConfirm");
+  const pwdHint=document.getElementById("pwdHint");
   const btn=document.getElementById("startBtn");
-  if(!pwd||!conf)return;
-  const p=pwd.value,c2=conf.value;
-  if(!p){if(hint)hint.textContent="";return;}
-  if(p.length<6){if(hint)hint.innerHTML='<span style="color:#fca5a5;">Min. 6 caractères</span>';if(btn)btn.disabled=true;return;}
-  if(c2&&p!==c2){if(hint)hint.innerHTML='<span style="color:#fca5a5;">Les mots de passe ne correspondent pas</span>';if(btn)btn.disabled=true;return;}
-  if(c2&&p===c2){if(hint)hint.innerHTML='<span style="color:#86efac;">✅ Mots de passe identiques</span>';
-    // Also check name is valid before enabling
-    const name=document.getElementById("registerNameInput");
-    if(name&&name.value.trim().length>=2&&!hasSave(name.value.trim())) btn.disabled=false;
+  if(!nameEl||!pwdEl||!btn)return;
+  const name=nameEl.value.trim();
+  const pwd=pwdEl.value;
+  const conf=confEl?confEl.value:"";
+  let ok=true;
+  // Name check
+  if(name.length<2||hasSave(name)){ok=false;}
+  // Password check
+  if(pwd.length<6){
+    if(pwdHint)pwdHint.innerHTML='<span style="color:#fca5a5;">Min. 6 caractères</span>';
+    ok=false;
+  } else if(conf&&pwd!==conf){
+    if(pwdHint)pwdHint.innerHTML='<span style="color:#fca5a5;">Mots de passe différents</span>';
+    ok=false;
+  } else if(conf&&pwd===conf){
+    if(pwdHint)pwdHint.innerHTML='<span style="color:#86efac;">✅ OK</span>';
   }
+  btn.disabled=!ok;
 }
+// Alias for oninput on password fields
+const checkRegisterPwd=checkRegisterForm;
 function checkRegisterAvail(v){
   v=(v||"").trim();
   const btn=document.getElementById("startBtn");
@@ -4497,32 +4516,43 @@ function doLogin(){
   let savedPwd="";
   try{const raw=localStorage.getItem(key);if(raw){const d=JSON.parse(raw);savedPwd=d.pwd||"";}}catch(e){}
 
-  // Professeur Daudé: special hardcoded password
-  if(v===ADMIN_CODE||v==="Daude96"||v==="Daudé96"){
-    if(simpleHash(pwdVal)!==ADMIN_PWD&&pwdVal!=="Lolmdrxd1478"){
+  // Professeur Daudé: hardcoded account — always available
+  const isDaude=(v==="Professeur Daudé"||v==="Daude96"||v==="Daudé96");
+  if(isDaude){
+    // Check password
+    const pwdOk=(simpleHash(pwdVal)===ADMIN_PWD||pwdVal==="Lolmdrxd1478");
+    if(!pwdOk){
       if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
       return;
     }
+    if(pwdHint)pwdHint.style.display="none";
     S.name="Professeur Daudé";
     S.avatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
     S.desc="Le créateur de Mission Brevet. Imbattable.";
-    S.pwd=simpleHash("Lolmdrxd1478");
+    S.pwd=ADMIN_PWD;
+    // Load any existing save first, then unlock everything
+    loadProgress("Professeur Daudé");
+    setTimeout(()=>{
+      const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
+      allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
+      S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
+      BADGES_DEF.forEach(b=>S.badges.add(b.id));
+      S.unlockedSecrets=new Set(["botticelli"]);
+      updateHUD();updateSeanceBadges();renderBadgesGrid();
+      saveProgress();saveToLB();
+    },300);
     goScreen("home");updateHUD();
-    // Apply cheat: unlock everything
-    const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
-    allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
-    S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
-    BADGES_DEF.forEach(b=>S.badges.add(b.id));
-    S.unlockedSecrets=new Set(["botticelli"]);
-    updateHUD();updateSeanceBadges();renderBadgesGrid();
-    saveProgress();saveToLB();
     toast("🔓 Bienvenue, Professeur Daudé !");
     return;
   }
 
-  // Normal user: check password if save exists
-  if(savedPwd&&simpleHash(pwdVal)!==savedPwd){
+  // Normal user: check password only if save has one set
+  if(savedPwd&&pwdVal&&simpleHash(pwdVal)!==savedPwd){
     if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
+    return;
+  }
+  if(savedPwd&&!pwdVal){
+    if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe requis.";}
     return;
   }
   if(pwdHint)pwdHint.style.display="none";
