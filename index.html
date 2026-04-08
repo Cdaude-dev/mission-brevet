@@ -137,7 +137,7 @@
     .lb-row{display:flex;align-items:center;gap:10px;
       background:rgba(255,255,255,.06);border-radius:12px;padding:8px 12px;}
     .lb-rank{font-size:17px;width:28px;text-align:center;font-weight:900;}
-    .lb-av{width:32px;height:32px;border-radius:50%;object-fit:cover;}
+    .lb-av{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(217,164,65,.6);box-shadow:0 0 6px rgba(217,164,65,.3);}
     .lb-name{flex:1;font-weight:700;font-size:13px;}
     .lb-score{font-size:12px;color:var(--gold-soft);font-weight:700;}
     .lb-me{border:1px solid rgba(245,215,161,.35);}
@@ -4458,19 +4458,84 @@ function checkRegisterAvail(v){
 function doLogin(){
   const el=document.getElementById("loginNameInput");
   const v=(el?el.value:"").trim();if(v.length<2)return;
-  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  S.name=v;
+  // Special avatar for Professeur Daudé
+  if(v===ADMIN_CODE||v==="Daude96"){
+    S.avatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
+    S.desc=S.desc||"Le créateur de Mission Brevet. Imbattable.";
+  } else {
+    S.avatar=S.welcomeAv||AVATARS[0];
+  }
   goScreen("home");updateHUD();
   loadProgress(v);
   saveToLB();
 }
 
+
+const PROFANITY_LIST=["merde","putain","connard","connasse","salope","enculé","encule","fdp","ta gueule",
+  "bordel","con","conne","bite","couille","nichon","chier","pute","bâtard","batard","nique","niquer",
+  "cul","branler","branleur","baiser","abruti","idiot","crétin","cretin","imbécile","imbecile",
+  "débile","debile","stupide","fuck","shit","bitch","asshole","bastard"];
+function containsProfanity(txt){
+  const t=txt.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  return PROFANITY_LIST.some(w=>t.includes(w.normalize("NFD").replace(/[̀-ͯ]/g,"")));
+}
 function doRegister(){
   const el=document.getElementById("registerNameInput");
   const v=(el?el.value:"").trim();if(v.length<2)return;
-  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  if(containsProfanity(v)){
+    const hint=document.getElementById("registerHint");
+    if(hint)hint.innerHTML='<span style="color:#fca5a5;">❌ Ce pseudo non autorisé.</span>';
+    return;
+  }
+  // Show description popup before entering the game
+  showDescriptionPopup(v, S.welcomeAv||AVATARS[0]);
+}
+
+function showDescriptionPopup(name, avatar){
+  const ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.92);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#3a1a05,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .35s;">
+    <img src="${avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(217,164,65,.6);margin-bottom:12px;" onerror="this.src='${AVATARS[0]}'"/>
+    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;">Bienvenue, ${name} !</div>
+    <div style="font-size:14px;color:#ead7ae;margin-bottom:14px;line-height:1.5;">Décris-toi en quelques mots ✏️<br><span style="font-size:12px;opacity:.7;">(optionnel · max 100 signes)</span></div>
+    <textarea id="regDescInput" maxlength="100" placeholder="Passionné(e) de littérature, lycéen(ne) à Paris…"
+      style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(217,164,65,.35);
+             background:rgba(0,0,0,.35);color:var(--ivory);font-size:14px;resize:none;height:72px;
+             font-family:inherit;margin-bottom:4px;"></textarea>
+    <div id="descErrMsg" style="font-size:12px;color:#fca5a5;min-height:16px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="descOkBtn" style="flex:1;padding:12px;border-radius:12px;border:none;
+        background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
+        C'est parti ! 🚀
+      </button>
+      <button onclick="this.closest('[style]').remove();finalizeRegister('${name}','${avatar}','')"
+        style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
+               background:rgba(0,0,0,.3);color:var(--gold-soft);font-weight:700;font-size:13px;cursor:pointer;">
+        Passer
+      </button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#descOkBtn").onclick=()=>{
+    const desc=(document.getElementById("regDescInput").value||"").trim();
+    const errMsg=document.getElementById("descErrMsg");
+    if(desc&&containsProfanity(desc)){
+      errMsg.textContent="❌ Ce texte contient des mots non autorisés.";return;
+    }
+    ov.remove();
+    finalizeRegister(name, avatar, desc);
+  };
+}
+
+function finalizeRegister(name, avatar, desc){
+  S.name=name;S.avatar=avatar;S.desc=desc||"";
   goScreen("home");updateHUD();
   saveProgress();saveToLB();
-  toast("Compte créé ! Bienvenue "+v+" 🎉");
+  toast("Compte créé ! Bienvenue "+name+" 🎉");
+  // Sync desc inputs
+  const di=document.getElementById("descInput");if(di)di.value=desc||"";
+  const bd=document.getElementById("bigDescInput");if(bd)bd.value=desc||"";
 }
 
 // Try to autoplay music on page load
@@ -4591,6 +4656,7 @@ document.getElementById("bigNameInput")?.addEventListener("input",()=>{
 });
 
 /* ══════════ BADGE DETAIL POPUP ══════════ */
+function _closePlayerPopup(){const ov=document.getElementById('playerPopupOv');if(ov)ov.remove();}
 function showBadgeDetail(b){
   const bdImg=document.getElementById("bdImg");
   if(b.img){bdImg.src=b.img;bdImg.style.display="block";}
@@ -4640,7 +4706,35 @@ document.getElementById("daudePopupOv").addEventListener("click",e=>{
 });
 
 /* ══════════ EVENTS ══════════ */
-window.addEventListener("load",()=>{buildWelcomeAvGrid();setTimeout(()=>D.loading.classList.remove("show"),1400);});
+window.addEventListener("load",()=>{
+  // Always hide loading screen — no matter what happens
+  const hideLoading=()=>{
+    const ls=document.getElementById("loadingScreen");
+    if(ls){ls.classList.remove("show");ls.style.display="none";}
+  };
+  // Safety net: force hide after 3s even if something crashes
+  setTimeout(hideLoading, 3000);
+
+  try{ buildWelcomeAvGrid(); }catch(e){ console.warn("avGrid:",e); }
+  try{ goScreen("welcome"); }catch(e){ console.warn("goScreen:",e); }
+  try{ updateBossChapter(); }catch(e){}
+  try{ updateGramBossChapter(); }catch(e){}
+
+  // Auto-fill login if exactly one save exists
+  try{
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith("mb_save_"));
+    if(keys.length===1){
+      const d=JSON.parse(localStorage.getItem(keys[0])||"{}");
+      if(d.name){
+        const li=document.getElementById("loginNameInput");
+        if(li){li.value=d.name;checkLoginSave(d.name);}
+      }
+    }
+  }catch(e){}
+
+  // Normal hide after 1.2s
+  setTimeout(hideLoading, 1200);
+});
 D.chip.addEventListener("click",e=>{e.stopPropagation();S.panelOpen=!S.panelOpen;D.acctPanel.classList.toggle("open",S.panelOpen);});
 document.addEventListener("click",()=>{if(S.panelOpen){S.panelOpen=false;D.acctPanel.classList.remove("open");}});
 D.acctPanel.addEventListener("click",e=>e.stopPropagation());
@@ -4689,7 +4783,7 @@ let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shu
 function tryOpenBoss(){
   const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
   const allDone=allConj.every(k=>S.perfect&&S.perfect[k]);
-  if(!allDone&&!(S.name==="Daudé96"||S.name==="Daude96")){
+  if(!allDone&&!(S.name===ADMIN_CODE||S.name==="Daude96")){
     // Show locked message
     toast("🔒 Trouve la Clé du Temps ! Termine toutes les séances de conjugaison à 100%.");
     return;
@@ -4997,7 +5091,7 @@ if(!BADGES_DEF.find(b=>b.id==="dieu_conj")){
 // Update boss chapter visibility on screen
 function updateBossChapter(){
   const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-  const unlocked=allConj.every(k=>S.perfect&&S.perfect[k])||(S.name==="Daudé96"||S.name==="Daude96");
+  const unlocked=allConj.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96");
   const lockIcon=document.getElementById("bossLockIcon");
   if(lockIcon){lockIcon.style.filter=unlocked?"drop-shadow(0 0 8px rgba(250,204,21,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";}
 }
@@ -5146,14 +5240,14 @@ injectGramBossChapter();
 
 function updateGramBossChapter(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const unlocked=allGram.every(k=>S.perfect&&S.perfect[k])||(S.name==="Daudé96"||S.name==="Daude96");
+  const unlocked=allGram.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96");
   const lk=document.getElementById("gramBossLockIcon");
   if(lk){lk.style.filter=unlocked?"drop-shadow(0 0 8px rgba(96,165,250,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";}
 }
 
 function tryOpenGramBoss(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const unlocked=allGram.every(k=>S.perfect&&S.perfect[k])||(S.name==="Daudé96"||S.name==="Daude96");
+  const unlocked=allGram.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96");
   if(!unlocked){toast("🔒 Trouve la Clé de la Langue ! Termine toutes les séances de grammaire à 100%.");return;}
   confirmGramBoss();
 }
@@ -5566,30 +5660,180 @@ skyStyle.textContent=`
 `;
 document.head.appendChild(skyStyle);
 
-/* ══════════ INIT ══════════ */
-// Launch the app — show welcome screen and build avatar grid
-(function init(){
-  try{
-    buildWelcomeAvGrid();
-    goScreen("welcome");
-    updateGramBossChapter();
-    updateBossChapter();
-    // If only one save exists, pre-fill login
-    const keys=Object.keys(localStorage).filter(k=>k.startsWith("mb_save_"));
-    if(keys.length===1){
-      try{
-        const d=JSON.parse(localStorage.getItem(keys[0])||"{}");
-        if(d.name){
-          const li=document.getElementById("loginNameInput");
-          if(li){li.value=d.name;checkLoginSave(d.name);}
-        }
-      }catch(e){}
-    }
-  }catch(e){
-    console.error("Init error:", e);
-  }
-})();
+// Initialization handled by window.load above
 
+
+/* ══════════ ADMIN PANEL ══════════ */
+const ADMIN_CODE="Professeur Daudé";
+function openAdmin(){
+  if(S.name!==ADMIN_CODE&&S.name!=="Daude96"){toast("🔒 Accès refusé.");return;}
+  document.getElementById("adminOv").style.display="flex";
+  loadAdminPlayers();
+}
+function closeAdmin(){document.getElementById("adminOv").style.display="none";}
+async function loadAdminPlayers(){
+  const list=document.getElementById("adminPlayerList");
+  list.innerHTML='<div style="color:#ead7ae;text-align:center;">Chargement…</div>';
+  let players=[];
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      const res=await fetch(SUPABASE_URL+"/rest/v1/leaderboard?select=player_name,score,updated_at&order=score.desc&limit=100",{
+        headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
+      });
+      if(res.ok)players=await res.json();
+    }catch(e){}
+  } else {
+    try{const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");players=Object.values(lb).map(p=>({player_name:p.name,score:p.score}));}catch(e){}
+  }
+  list.innerHTML="";
+  if(!players.length){list.innerHTML='<div style="color:#ead7ae;text-align:center;">Aucun joueur.</div>';return;}
+  players.forEach(p=>{
+    const row=document.createElement("div");
+    row.style.cssText="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);";
+    row.innerHTML=`<div style="flex:1;font-size:14px;font-weight:700;color:var(--ivory);">${p.player_name}</div>
+      <div style="font-size:13px;color:#ead7ae;">${p.score||0} pts</div>
+      <button onclick="adminDeletePlayer('${p.player_name.replace(/'/g,"\\'")}' )"
+        style="padding:6px 12px;border-radius:8px;border:none;background:rgba(220,38,38,.7);color:#fff;font-size:12px;font-weight:700;cursor:pointer;">🗑 Supprimer</button>`;
+    list.appendChild(row);
+  });
+}
+async function adminDeletePlayer(name){
+  const cd=document.createElement("div");
+  cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;display:flex;align-items:center;justify-content:center;";
+  cd.innerHTML=`<div style="background:#1a0a02;border:2px solid rgba(220,38,38,.5);border-radius:16px;padding:24px;max-width:340px;width:92%;text-align:center;">
+    <div style="font-size:18px;font-weight:900;color:#ef4444;margin-bottom:8px;">⚠️ Supprimer ?</div>
+    <div style="font-size:14px;color:#ead7ae;margin-bottom:16px;">Compte : <strong style="color:var(--gold);">${name}</strong></div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="adm_yes" style="padding:10px 20px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:900;cursor:pointer;">Supprimer</button>
+      <button onclick="this.closest('div[style]').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">Annuler</button>
+    </div>
+  </div>`;
+  document.body.appendChild(cd);
+  cd.querySelector("#adm_yes").onclick=async()=>{
+    cd.remove();
+    if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+      try{await fetch(SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(name),{method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});}catch(e){}
+    }
+    try{const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");delete lb[name];localStorage.setItem("mb_lb",JSON.stringify(lb));}catch(e){}
+    const msg=document.getElementById("adminMsg");if(msg)msg.textContent="✅ Compte '"+name+"' supprimé.";
+    loadAdminPlayers();
+  };
+}
+
+/* ══════════ LIVE CHAT ══════════ */
+let chatLoaded=false,chatWs=null;
+function toggleChat(){
+  const panel=document.getElementById("chatPanel");
+  const open=panel.style.display==="flex";
+  panel.style.display=open?"none":"flex";
+  if(!open&&!chatLoaded){initChat();chatLoaded=true;}
+}
+async function initChat(){
+  if(!S.name){toast("Connecte-toi pour utiliser le chat !");return;}
+  if(SUPABASE_URL==="VOTRE_URL_SUPABASE"){
+    const cm=document.getElementById("chatMessages");
+    if(cm)cm.innerHTML='<div style="color:#ead7ae;font-size:12px;text-align:center;padding:16px;">Configure Supabase pour activer le chat en ligne.<br><span style="opacity:.6;">Fonctionne localement pour tester.</span></div>';
+    return;
+  }
+  try{
+    const res=await fetch(SUPABASE_URL+"/rest/v1/chat_messages?select=player_name,message,created_at&order=created_at.asc&limit=50",{
+      headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
+    });
+    if(res.ok){(await res.json()).forEach(m=>appendChatMsg(m.player_name,m.message,m.created_at));}
+    scrollChatBottom();
+  }catch(e){}
+  // Realtime via Supabase WebSocket
+  try{
+    const wsUrl=SUPABASE_URL.replace("https://","wss://")+"/realtime/v1/websocket?apikey="+SUPABASE_ANON_KEY+"&vsn=1.0.0";
+    chatWs=new WebSocket(wsUrl);
+    chatWs.onopen=()=>chatWs.send(JSON.stringify({topic:"realtime:public:chat_messages",event:"phx_join",payload:{},ref:"1"}));
+    chatWs.onmessage=e=>{
+      try{const d=JSON.parse(e.data);if(d.event==="INSERT"&&d.payload&&d.payload.record){const r=d.payload.record;appendChatMsg(r.player_name,r.message,r.created_at);scrollChatBottom();}}catch(err){}
+    };
+  }catch(e){}
+}
+function appendChatMsg(name,message,ts){
+  const wrap=document.getElementById("chatMessages");if(!wrap)return;
+  const isMe=name===S.name;
+  const time=ts?new Date(ts).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
+  const div=document.createElement("div");
+  div.style.cssText="display:flex;flex-direction:column;"+(isMe?"align-items:flex-end;":"align-items:flex-start;");
+  div.innerHTML=`<div style="font-size:10px;color:rgba(234,215,174,.5);margin-bottom:2px;">${isMe?"Toi":name} · ${time}</div>
+    <div style="max-width:85%;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.4;word-break:break-word;
+      ${isMe?"background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:600;":"background:rgba(255,255,255,.1);color:var(--ivory);"}">${message}</div>`;
+  wrap.appendChild(div);
+}
+function scrollChatBottom(){const w=document.getElementById("chatMessages");if(w)w.scrollTop=w.scrollHeight;}
+async function sendChatMsg(){
+  if(!S.name){toast("Connecte-toi d\'abord !");return;}
+  const input=document.getElementById("chatInput");
+  const msg=(input?input.value:"").trim();if(!msg)return;
+  input.value="";
+  if(SUPABASE_URL==="VOTRE_URL_SUPABASE"){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();return;}
+  try{
+    await fetch(SUPABASE_URL+"/rest/v1/chat_messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},
+      body:JSON.stringify({player_name:S.name,message:msg})
+    });
+  }catch(e){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();}
+}
+// Show chat button when not on welcome screen
+const _origGS=goScreen;
+function goScreen(name){
+  _origGS(name);
+  const btn=document.getElementById("chatToggleBtn");
+  if(btn)btn.style.display=(name!=="welcome")?"flex":"none";
+}
+// Admin shortcut: Daudé96 menu
+const _origGoSc=goScreen;
 </script>
+
+  <!-- ADMIN PANEL OVERLAY -->
+  <div id="adminOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;
+       flex-direction:column;align-items:center;padding:20px;overflow-y:auto;">
+    <div style="max-width:600px;width:100%;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:20px;font-weight:900;color:#ef4444;">⚙️ Administration</div>
+        <button onclick="closeAdmin()" style="background:none;border:none;color:#ead7ae;font-size:22px;cursor:pointer;">✕</button>
+      </div>
+      <div class="mini-note" style="margin-bottom:12px;color:#fca5a5;">Accessible uniquement avec le code admin</div>
+      <div id="adminPlayerList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div id="adminMsg" style="font-size:13px;color:#86efac;text-align:center;margin-top:12px;min-height:20px;"></div>
+    </div>
+  </div>
+
+
+  <!-- CHAT BUTTON & PANEL -->
+  <button id="chatToggleBtn" onclick="toggleChat()"
+    style="display:none;position:fixed;bottom:20px;right:20px;z-index:300;
+           width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
+           background:linear-gradient(180deg,var(--gold),#c87a10);font-size:22px;
+           box-shadow:0 4px 16px rgba(0,0,0,.5);">💬</button>
+  <div id="chatPanel" style="display:none;position:fixed;bottom:80px;right:16px;z-index:299;
+       width:min(340px,94vw);height:420px;background:linear-gradient(160deg,#2a1203,#1a0800);
+       border:2px solid rgba(217,164,65,.35);border-radius:20px;flex-direction:column;
+       box-shadow:0 8px 32px rgba(0,0,0,.6);">
+    <div style="padding:12px 16px;border-bottom:1px solid rgba(217,164,65,.2);
+         display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:15px;font-weight:900;color:var(--gold);">💬 Chat Mission Brevet</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="chatOnline" style="font-size:11px;color:#86efac;"></span>
+        <button onclick="toggleChat()" style="background:none;border:none;color:var(--gold-soft);font-size:18px;cursor:pointer;">✕</button>
+      </div>
+    </div>
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="padding:10px 12px;border-top:1px solid rgba(217,164,65,.15);display:flex;gap:8px;">
+      <input id="chatInput" type="text" maxlength="200" placeholder="Ton message…"
+        style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid rgba(217,164,65,.3);
+               background:rgba(0,0,0,.4);color:var(--ivory);font-size:13px;font-family:inherit;"
+        onkeydown="if(event.key==='Enter')sendChatMsg()"/>
+      <button onclick="sendChatMsg()"
+        style="padding:8px 14px;border-radius:10px;border:none;
+               background:linear-gradient(180deg,var(--gold),#c87a10);
+               color:#1a0a00;font-weight:900;font-size:13px;cursor:pointer;">Envoyer</button>
+    </div>
+  </div>
+
 </body>
 </html>
