@@ -3503,13 +3503,38 @@ function checkBadges(){
 }
 
 /* ══════════ LEADERBOARD ══════════ */
+// ── Supabase config ── Remplis SUPABASE_URL et SUPABASE_ANON_KEY après création du projet
+const SUPABASE_URL = "VOTRE_URL_SUPABASE"; // ex: https://abcdef.supabase.co
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON"; // clé anon publique Supabase
+
 async function saveToLB(){
   if(!S.name)return;
-  try{await window.storage.set("lb:"+S.name.replace(/[\s\/\\'"]/g,"_").substring(0,30),JSON.stringify({name:S.name,score:S.score,avatar:S.avatar}),true);}catch(e){}
+  const entry={name:S.name,score:S.score||0,avatar:S.avatar||""};
+  // Save locally always
+  try{
+    const localLB=JSON.parse(localStorage.getItem("mb_lb")||"{}");
+    localLB[S.name]=entry;
+    localStorage.setItem("mb_lb",JSON.stringify(localLB));
+  }catch(e){}
+  // Save to Supabase if configured
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":SUPABASE_ANON_KEY,
+          "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+          "Prefer":"resolution=merge-duplicates"
+        },
+        body:JSON.stringify({player_name:S.name,score:S.score||0,avatar:S.avatar||""})
+      });
+    }catch(e){}
+  }
 }
-async function saveProgress(){
+function saveProgress(){
   if(!S.name)return;
-  const key="progress:"+S.name.replace(/[\s\/\\'"]/g,"_").substring(0,30);
+  const key="mb_save_"+S.name.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);
   const data={
     name:S.name,avatar:S.avatar,score:S.score,
     done:S.done,perfect:S.perfect,seancePct:S.seancePct,
@@ -3521,14 +3546,14 @@ async function saveProgress(){
     gramBossUnlockShown:S.gramBossUnlockShown||false,
     conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false
   };
-  try{await window.storage.set(key,JSON.stringify(data));}catch(e){}
+  try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
-async function loadProgress(name){
-  const key="progress:"+name.replace(/[\s\/\\'"]/g,"_").substring(0,30);
+function loadProgress(name){
+  const key="mb_save_"+name.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);
   try{
-    const r=await window.storage.get(key);
-    if(r){
-      const d=JSON.parse(r.value);
+    const raw=localStorage.getItem(key);
+    if(raw){
+      const d=JSON.parse(raw);
       S.score=d.score||0;
       S.done=d.done||{};S.perfect=d.perfect||{};
       S.seancePct=d.seancePct||{};
@@ -3627,45 +3652,72 @@ function buildLbRows(entries,container){
   buildDaudeLbRow(0,container,true);
   real.slice(0,9).forEach((e,i)=>buildLbRow(e,i,medals,container));
 }
+async function fetchLBEntries(){
+  let entries=[];
+  // 1. Load from Supabase if configured
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      const res=await fetch(SUPABASE_URL+"/rest/v1/leaderboard?select=player_name,score,avatar&order=score.desc&limit=20",{
+        headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
+      });
+      if(res.ok){
+        const data=await res.json();
+        entries=data.map(r=>({name:r.player_name,score:r.score,avatar:r.avatar}));
+      }
+    }catch(e){}
+  }
+  // 2. Fallback: merge with local scores
+  try{
+    const localLB=JSON.parse(localStorage.getItem("mb_lb")||"{}");
+    Object.values(localLB).forEach(e=>{
+      if(!entries.find(x=>x.name===e.name)) entries.push(e);
+    });
+  }catch(e){}
+  return entries;
+}
 async function loadLB(){
   D.lbWrap.innerHTML="";buildDaudeLbRow(0,D.lbWrap,true);
+  const lbl=document.createElement("div");lbl.style.cssText="color:#ead7ae;font-size:12px;text-align:center;";
+  lbl.textContent="Chargement…";D.lbWrap.appendChild(lbl);
   try{
-    const keys=await window.storage.list("lb:",true);const entries=[];
-    for(const key of(keys.keys||[])){try{const r=await window.storage.get(key,true);if(r)entries.push(JSON.parse(r.value));}catch(e){}}
+    const entries=await fetchLBEntries();
+    lbl.remove();
     let real=entries.filter(e=>e.name!==DAUDE.name);
     if(S.name&&!real.find(e=>e.name===S.name)) real.push({name:S.name,score:S.score||0,avatar:S.avatar});
     real.sort((a,b)=>b.score-a.score);
     const medals=["🥇","🥈","🥉"];
     real.slice(0,9).forEach((e,i)=>buildLbRow(e,i,medals,D.lbWrap));
-  }catch(e){}
+  }catch(e){lbl.textContent="Classement indisponible.";}
 }
 async function showHomeLb(){
   const ov=document.getElementById("homeLbOv"),wrap=document.getElementById("homeLbWrap");
   ov.style.display="flex";wrap.innerHTML="";buildDaudeLbRow(0,wrap,true);
+  const lbl=document.createElement("div");lbl.style.cssText="color:#ead7ae;font-size:12px;text-align:center;";lbl.textContent="Chargement…";wrap.appendChild(lbl);
   try{
-    const keys=await window.storage.list("lb:",true);const entries=[];
-    for(const key of(keys.keys||[])){try{const r=await window.storage.get(key,true);if(r)entries.push(JSON.parse(r.value));}catch(e){}}
+    const entries=await fetchLBEntries();
+    lbl.remove();
     let real=entries.filter(e=>e.name!==DAUDE.name);
     if(S.name&&!real.find(e=>e.name===S.name)) real.push({name:S.name,score:S.score||0,avatar:S.avatar});
     real.sort((a,b)=>b.score-a.score);
     const medals=["🥇","🥈","🥉"];
     real.slice(0,9).forEach((e,i)=>buildLbRow(e,i,medals,wrap));
     if(wrap.children.length<=1){const h=document.createElement("div");h.style.cssText="color:#ead7ae;text-align:center;margin-top:8px;font-size:13px;";h.textContent="Sois le premier à rejoindre le classement !";wrap.appendChild(h);}
-  }catch(e){}
+  }catch(e){lbl.textContent="Classement indisponible.";}
 }
 function closeHomeLb(){document.getElementById("homeLbOv").style.display="none";}
 async function loadBigLB(){
   const wrap=document.getElementById("bigLbWrap");
   wrap.innerHTML="";buildDaudeLbRow(0,wrap,true);
+  const lbl=document.createElement("div");lbl.style.cssText="color:#ead7ae;font-size:12px;text-align:center;";lbl.textContent="Chargement…";wrap.appendChild(lbl);
   try{
-    const keys=await window.storage.list("lb:",true);const entries=[];
-    for(const key of(keys.keys||[])){try{const r=await window.storage.get(key,true);if(r)entries.push(JSON.parse(r.value));}catch(e){}}
+    const entries=await fetchLBEntries();
+    lbl.remove();
     let real=entries.filter(e=>e.name!==DAUDE.name);
     if(S.name&&!real.find(e=>e.name===S.name)) real.push({name:S.name,score:S.score||0,avatar:S.avatar});
     real.sort((a,b)=>b.score-a.score);
     const medals=["🥇","🥈","🥉"];
     real.slice(0,9).forEach((e,i)=>buildLbRow(e,i,medals,wrap));
-  }catch(e){}
+  }catch(e){lbl.textContent="Classement indisponible.";}
 }
 
 /* ══════════ QUIZ FLOW ══════════ */
@@ -4292,7 +4344,7 @@ D.welcomeNameInput.addEventListener("input",async()=>{
   const v=D.welcomeNameInput.value.trim();
   if(v.length<2)return;
   try{
-    const saved=await window.storage.get("save_"+v);
+    const saved=localStorage.getItem("mb_save_"+v.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30));
     const hint=document.getElementById("saveHint");
     if(hint)hint.style.display=saved?"block":"none";
   }catch(e){}
