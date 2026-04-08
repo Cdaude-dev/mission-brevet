@@ -1707,7 +1707,7 @@ const BADGES_DEF=[
   {id:"champ",    img:"https://i.postimg.cc/1XrK7hVQ/champion.png",              emoji:null, name:"Champion",             desc:"Terminer le quiz final autobiographie"},
   {id:"legend",   img:"https://i.postimg.cc/QCJqYGKN/legende.png",              emoji:null, name:"Légende",              desc:"Atteindre le niveau 10"},
   {id:"flawless", img:"https://i.postimg.cc/MHmY32fn/sans-faute.png",           emoji:null, name:"Impeccable",           desc:"100% sur le quiz final autobiographie"},
-  {id:"grammairien",img:null,                                                    emoji:"📐", name:"Grammairien",          desc:"Terminer 2 séances de grammaire"},
+  {id:"grammairien",img:"https://i.postimg.cc/yYtt6RDk/grammairien.png",emoji:null, name:"Grammairien",          desc:"Terminer 2 séances de grammaire"},
   {id:"gram100",  img:"https://i.postimg.cc/nL2KdDdg/precision-absolue.png",    emoji:null, name:"Précision absolue",    desc:"100% sur une séance de grammaire"},
   {id:"poete",    img:"https://i.postimg.cc/zf7wdgdF/ame-poetique.png",         emoji:null, name:"Âme poétique",         desc:"Terminer toutes les séances de poésie"},
   {id:"niveau15", img:"https://i.postimg.cc/bvg06t6m/infatigable.png",          emoji:null, name:"Infatigable",          desc:"Atteindre le niveau 15"},
@@ -3246,7 +3246,7 @@ const D={
 };
 
 /* ══════════ HELPERS ══════════ */
-function lv(s){return Math.floor(s/50)+1;}
+function lv(s,name){if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;return Math.floor(s/50)+1;}
 function pct(s){return Math.min((s%50)*2,100);}
 function toast(m){D.popup.textContent=m;D.popup.classList.add("show");setTimeout(()=>D.popup.classList.remove("show"),2400);}
 function flashScore(){D.flash.style.display="block";D.flash.style.animation="none";void D.flash.offsetWidth;D.flash.style.animation="scoreAnim .75s ease-out forwards";setTimeout(()=>D.flash.style.display="none",800);}
@@ -3359,7 +3359,7 @@ function showKeyDetail(type){
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
 function updateHUD(){
-  const level=lv(S.score),p=pct(S.score);
+  const level=lv(S.score,S.name),p=pct(S.score);
   D.chipAv.src=S.avatar;D.chipName.textContent=S.name;D.chipLv.textContent="Nv "+level;
   D.progFill.style.width=p+"%";D.progMeta.textContent="Score "+S.score+" • Niveau "+level;
   D.panLv.textContent="Niveau "+level;D.panSc.textContent="Score "+S.score;
@@ -3396,7 +3396,7 @@ function _addAvItem(grid,src,isSel,isUnlocked,lockLabel,onClickFn,big){
   }
 }
 function buildAvGrid(){
-  const level=lv(S.score);D.avGrid.innerHTML="";
+  const level=lv(S.score,S.name);D.avGrid.innerHTML="";
   // Unlocked free avatars
   _addAvLabel(D.avGrid,"Avatars standards");
   AVATARS.forEach(src=>{
@@ -3419,7 +3419,7 @@ function buildAvGrid(){
   });
 }
 function buildBigAvGrid(){
-  const level=lv(S.score);
+  const level=lv(S.score,S.name);
   const grid=document.getElementById("bigAvGrid"); grid.innerHTML="";
   _addAvLabel(grid,"Avatars standards");
   AVATARS.forEach(src=>{
@@ -3538,12 +3538,12 @@ function checkBadges(){
   if(pc>=3)unlockBadge("fire");
   if(pc>=5)unlockBadge("allstar");
   if(pc>=10)unlockBadge("perfectionniste");
-  if(lv(S.score)>=5)unlockBadge("scholar");
-  if(lv(S.score)>=10)unlockBadge("legend");
-  if(lv(S.score)>=15)unlockBadge("niveau15");
+  if(lv(S.score,S.name)>=5)unlockBadge("scholar");
+  if(lv(S.score,S.name)>=10)unlockBadge("legend");
+  if(lv(S.score,S.name)>=15)unlockBadge("niveau15");
   const allMasterSeances=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
   if(allMasterSeances.every(k=>S.perfect[k]))unlockBadge("level20");
-  if(lv(S.score)>=25)unlockBadge("invaincu");
+  if(lv(S.score,S.name)>=25)unlockBadge("invaincu");
   if(litAutoDone)unlockBadge("allmod");
   if(S.done["sf"])unlockBadge("champ");
   if(S.perfect["sf"])unlockBadge("flawless");
@@ -3679,20 +3679,54 @@ function openPlayerPopup(entry){
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
 function openDaudePopup(){
-  const ov=document.getElementById("daudePopupOv");
-  // Render all badges as "unlocked" for Daudé
-  const grid=document.getElementById("daudeBadges");
-  if(grid&&!grid.hasChildNodes()){
-    BADGES_DEF.forEach(b=>{
-      const el=document.createElement("div");
-      el.title=b.name;
-      el.style.cssText="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:rgba(217,164,65,.15);";
-      if(b.img){const im=document.createElement("img");im.src=b.img;im.style.cssText="width:30px;height:30px;object-fit:contain;";el.appendChild(im);}
-      else{el.textContent=b.emoji||"🏅";el.style.fontSize="20px";}
-      grid.appendChild(el);
-    });
-  }
-  ov.style.display="flex";
+  // Build rich Daudé profile popup matching the player popup style
+  const existing=document.getElementById("daudeRichPopup");
+  if(existing)existing.remove();
+  const ov=document.createElement("div");
+  ov.id="daudeRichPopup";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.9);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;padding:12px;";
+  const badgeCardsHtml=BADGES_DEF.map(b=>`
+    <div onclick="showBadgeDetail(BADGES_DEF.find(x=>x.id==='${b.id}'))" title="${b.name}"
+      style="background:rgba(217,164,65,.12);border:1px solid rgba(217,164,65,.3);border-radius:14px;
+             padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;
+             transition:background .15s;" onmouseover="this.style.background='rgba(217,164,65,.25)'"
+             onmouseout="this.style.background='rgba(217,164,65,.12)'">
+      <div style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;">
+        ${b.img?`<img src="${b.img}" style="width:46px;height:46px;object-fit:contain;" onerror="this.style.display='none'"/>`:
+                `<span style="font-size:36px;line-height:1;">${b.emoji||"🏅"}</span>`}
+      </div>
+      <div style="font-size:10px;font-weight:700;color:var(--gold-soft);text-align:center;line-height:1.2;">${b.name}</div>
+    </div>`).join("");
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#3a1a05,#1a0a02);border:2px solid rgba(217,164,65,.45);
+    border-radius:24px;padding:24px;max-width:560px;width:100%;animation:popIn .35s;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+      <img src="${DAUDE.avatar}" style="width:78px;height:78px;border-radius:50%;object-fit:cover;
+           border:3px solid rgba(217,164,65,.7);flex-shrink:0;"/>
+      <div style="flex:1;text-align:left;">
+        <div style="font-size:20px;font-weight:900;color:#ef4444;">Professeur Daudé</div>
+        <div style="font-size:12px;color:#fca5a5;font-style:italic;margin-top:2px;">Le créateur de Mission Brevet. Imbattable.</div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <div class="pill" style="font-size:11px;background:rgba(239,68,68,.15);color:#fca5a5;">Niveau 99</div>
+          <div class="pill" style="font-size:11px;">${DAUDE.score} pts</div>
+          <div class="pill" style="font-size:11px;">${BADGES_DEF.length} / ${BADGES_DEF.length} badges</div>
+          <div class="pill" style="font-size:11px;background:rgba(239,68,68,.15);color:#fca5a5;">⚙️ Admin</div>
+        </div>
+      </div>
+      <button onclick="document.getElementById('daudeRichPopup').remove()"
+        style="background:none;border:none;color:var(--gold-soft);font-size:22px;cursor:pointer;flex-shrink:0;">✕</button>
+    </div>
+    <div class="mini-note" style="margin-bottom:10px;">🏅 Tous les badges (${BADGES_DEF.length})</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:14px;">
+      ${badgeCardsHtml}
+    </div>
+    <button onclick="document.getElementById('daudeRichPopup').remove()"
+      style="width:100%;padding:11px;border-radius:12px;border:none;
+             background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">
+      Fermer
+    </button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
 function closeDaudePopup(){document.getElementById("daudePopupOv").style.display="none";}
 function showDaudeBigBadges(){
@@ -4738,7 +4772,7 @@ function bigTab(tab){
   }
 }
 function updateBigModal(){
-  const level=lv(S.score), p=pct(S.score);
+  const level=lv(S.score,S.name), p=pct(S.score);
   document.getElementById("bigAvPreview").src=S.avatar;
   document.getElementById("bigNameInput").value=S.name;
   const bd=document.getElementById("bigDescInput");if(bd)bd.value=S.desc||'';
@@ -5883,10 +5917,15 @@ function appendChatMsg(name,message,ts,isSystem){
   div.style.cssText="display:flex;flex-direction:column;"+(isMe?"align-items:flex-end;":"align-items:flex-start;");
   const displayName=isMe?"Toi":name;
   const nameHtml=isAdmin
-    ? `<span style="color:#ef4444;font-weight:900;cursor:pointer;" onclick="openPlayerPopup({name:'${name}',score:9990,avatar:'https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png'})">${name}</span> <span style="color:#ef4444;font-style:italic;font-size:9px;">Admin</span>`
+    ? `<span style="color:#ef4444;font-weight:900;cursor:pointer;"
+         onclick="openDaudePopup()">${name}</span>
+       <span style="background:#ef4444;color:#fff;font-size:9px;font-weight:900;
+         border-radius:4px;padding:1px 5px;margin-left:3px;">Admin</span>
+       <span style="color:rgba(255,100,100,.7);font-style:italic;font-size:9px;margin-left:2px;">Niv. 99</span>`
     : isMe
     ? `<span>Toi</span>`
-    : `<span style="cursor:pointer;text-decoration:underline dotted;color:var(--gold-soft);" onclick="openPlayerPopup({name:'${name}',score:0,avatar:''})">${name}</span>`;
+    : `<span style="cursor:pointer;text-decoration:underline dotted;color:var(--gold-soft);"
+         onclick="openPlayerPopup({name:'${name}',score:0,avatar:''})">${name}</span>`;
   div.innerHTML=`<div style="font-size:10px;color:rgba(234,215,174,.5);margin-bottom:2px;">${nameHtml} · ${time}</div>
     <div style="max-width:85%;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.4;word-break:break-word;
       ${isMe?"background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:600;":"background:rgba(255,255,255,.1);color:var(--ivory);"}">${message}</div>`;
