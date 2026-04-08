@@ -3673,7 +3673,7 @@ function openPlayerPopup(entry){
     </div>
     <div class="mini-note" style="margin-bottom:8px;">Badges</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px;">${badgesHtml}</div>
-    <button onclick="this.closest('[style]').remove()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
+    <button onclick="_closePlayerPopup()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -4929,7 +4929,18 @@ document.getElementById("bigNameInput")?.addEventListener("input",()=>{
 });
 
 /* ══════════ BADGE DETAIL POPUP ══════════ */
-function _closePlayerPopup(){const ov=document.getElementById('playerPopupOv');if(ov)ov.remove();}
+function _closePlayerPopup(){
+  // Remove player popup backdrop
+  document.querySelectorAll('#playerPopupOv').forEach(el=>el.remove());
+  // Also remove Daudé rich popup if open
+  const dr=document.getElementById('daudeRichPopup');if(dr)dr.remove();
+  // Also hide static badge detail overlay if open
+  const bd=document.getElementById('badgeDetailOv');
+  if(bd)bd.style.display='none';
+  // Hide Daudé badges overlay if open
+  const dbo=document.getElementById('daudePopupOv');
+  if(dbo)dbo.style.display='none';
+}
 function showBadgeDetail(b){
   const bdImg=document.getElementById("bdImg");
   if(b.img){bdImg.src=b.img;bdImg.style.display="block";}
@@ -6200,6 +6211,15 @@ async function sendChatMsg(){
     });
   }catch(e){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();}
 }
+// Global ESC closes any open popup
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    _closePlayerPopup();
+    const dr=document.getElementById('daudeRichPopup');if(dr)dr.remove();
+    const bd=document.getElementById('badgeDetailOv');if(bd)bd.style.display='none';
+  }
+});
+
 // Chat button visibility updated from goScreen (integrated below)
 </script>
 
