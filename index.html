@@ -884,7 +884,11 @@
           <div id="noSaveHint" style="display:none;font-size:12px;color:#fca5a5;text-align:center;margin-top:4px;margin-bottom:4px;">
             ❌ Aucun compte trouvé pour ce pseudo.
           </div>
-          <button id="loginBtn" class="start-btn" disabled onclick="doLogin()" style="margin-top:12px;">
+          <div class="welcome-label" style="margin-top:10px;">Mot de passe</div>
+          <input id="loginPwdInput" type="password" class="welcome-input" placeholder="Ton mot de passe…"
+            style="margin-bottom:4px;" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <div id="loginPwdHint" style="display:none;font-size:12px;color:#fca5a5;text-align:center;margin-bottom:4px;">❌ Mot de passe incorrect.</div>
+          <button id="loginBtn" class="start-btn" disabled onclick="doLogin()" style="margin-top:10px;">
             ▶ Rejoindre la mission
           </button>
         </div>
@@ -895,6 +899,12 @@
           <input id="registerNameInput" class="welcome-input" placeholder="Ton prénom ou pseudo…" maxlength="24"
             oninput="checkRegisterAvail(this.value)"/>
           <div id="registerHint" style="font-size:12px;text-align:center;margin-top:4px;margin-bottom:8px;min-height:16px;color:#ead7ae;"></div>
+          <div class="welcome-label" style="margin-top:10px;">Crée un mot de passe</div>
+          <input id="registerPwdInput" type="password" class="welcome-input" placeholder="Min. 6 caractères…"
+            style="margin-bottom:4px;" oninput="checkRegisterPwd()"/>
+          <input id="registerPwdConfirm" type="password" class="welcome-input" placeholder="Confirme ton mot de passe…"
+            style="margin-bottom:4px;" oninput="checkRegisterPwd()"/>
+          <div id="pwdHint" style="font-size:12px;text-align:center;margin-bottom:8px;min-height:16px;color:#ead7ae;"></div>
           <div class="av-pick-label">Choisis ton avatar :</div>
           <div class="av-pick-grid" id="welcomeAvGrid"></div>
           <button id="startBtn" class="start-btn" disabled onclick="doRegister()">
@@ -3175,7 +3185,7 @@ const S={
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
-  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",
+  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",pwd:"",
   welcomeAv:AVATARS[0],
   // fill state
   fillQ:null,fillBank:[],fillBlanks:[],fillPendingWord:null,
@@ -3506,6 +3516,8 @@ function unlockBadge(id){
   D.btName.textContent=b.name;
   D.badgeToast.classList.add("show");setTimeout(()=>D.badgeToast.classList.remove("show"),3200);
   renderBadgesGrid();
+  // Announce in chat if open
+  try{if(S.name&&typeof chatBadgeAnnounce==="function"&&document.getElementById("chatPanel")&&document.getElementById("chatPanel").style.display==="flex"){setTimeout(()=>chatBadgeAnnounce(S.name,b.name),600);}  }catch(e){}
 }
 function checkBadges(){
   const allDone=Object.keys(S.done);
@@ -3596,7 +3608,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||""
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||"",pwd:S.pwd||""
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -3615,7 +3627,7 @@ function loadProgress(name){
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
-      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";
+      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";
       if(d.avatar)S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -4441,6 +4453,22 @@ function checkLoginSave(v){
   if(nh)nh.style.display=found?"none":"block";
 }
 
+function checkRegisterPwd(){
+  const pwd=document.getElementById("registerPwdInput");
+  const conf=document.getElementById("registerPwdConfirm");
+  const hint=document.getElementById("pwdHint");
+  const btn=document.getElementById("startBtn");
+  if(!pwd||!conf)return;
+  const p=pwd.value,c2=conf.value;
+  if(!p){if(hint)hint.textContent="";return;}
+  if(p.length<6){if(hint)hint.innerHTML='<span style="color:#fca5a5;">Min. 6 caractères</span>';if(btn)btn.disabled=true;return;}
+  if(c2&&p!==c2){if(hint)hint.innerHTML='<span style="color:#fca5a5;">Les mots de passe ne correspondent pas</span>';if(btn)btn.disabled=true;return;}
+  if(c2&&p===c2){if(hint)hint.innerHTML='<span style="color:#86efac;">✅ Mots de passe identiques</span>';
+    // Also check name is valid before enabling
+    const name=document.getElementById("registerNameInput");
+    if(name&&name.value.trim().length>=2&&!hasSave(name.value.trim())) btn.disabled=false;
+  }
+}
 function checkRegisterAvail(v){
   v=(v||"").trim();
   const btn=document.getElementById("startBtn");
@@ -4455,17 +4483,51 @@ function checkRegisterAvail(v){
   }
 }
 
+function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=(Math.imul(31,h)+s.charCodeAt(i))|0;}return h.toString(36);}
+const ADMIN_PWD=simpleHash("Lolmdrxd1478");
 function doLogin(){
   const el=document.getElementById("loginNameInput");
+  const pwdEl=document.getElementById("loginPwdInput");
   const v=(el?el.value:"").trim();if(v.length<2)return;
-  S.name=v;
-  // Special avatar for Professeur Daudé
-  if(v===ADMIN_CODE||v==="Daude96"){
+  const pwdVal=pwdEl?pwdEl.value:"";
+  const pwdHint=document.getElementById("loginPwdHint");
+
+  // Load save to verify password
+  const key="mb_save_"+v.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);
+  let savedPwd="";
+  try{const raw=localStorage.getItem(key);if(raw){const d=JSON.parse(raw);savedPwd=d.pwd||"";}}catch(e){}
+
+  // Professeur Daudé: special hardcoded password
+  if(v===ADMIN_CODE||v==="Daude96"||v==="Daudé96"){
+    if(simpleHash(pwdVal)!==ADMIN_PWD&&pwdVal!=="Lolmdrxd1478"){
+      if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
+      return;
+    }
+    S.name="Professeur Daudé";
     S.avatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
-    S.desc=S.desc||"Le créateur de Mission Brevet. Imbattable.";
-  } else {
-    S.avatar=S.welcomeAv||AVATARS[0];
+    S.desc="Le créateur de Mission Brevet. Imbattable.";
+    S.pwd=simpleHash("Lolmdrxd1478");
+    goScreen("home");updateHUD();
+    // Apply cheat: unlock everything
+    const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
+    allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
+    S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
+    BADGES_DEF.forEach(b=>S.badges.add(b.id));
+    S.unlockedSecrets=new Set(["botticelli"]);
+    updateHUD();updateSeanceBadges();renderBadgesGrid();
+    saveProgress();saveToLB();
+    toast("🔓 Bienvenue, Professeur Daudé !");
+    return;
   }
+
+  // Normal user: check password if save exists
+  if(savedPwd&&simpleHash(pwdVal)!==savedPwd){
+    if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
+    return;
+  }
+  if(pwdHint)pwdHint.style.display="none";
+
+  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
   goScreen("home");updateHUD();
   loadProgress(v);
   saveToLB();
@@ -4488,11 +4550,21 @@ function doRegister(){
     if(hint)hint.innerHTML='<span style="color:#fca5a5;">❌ Ce pseudo non autorisé.</span>';
     return;
   }
-  // Show description popup before entering the game
-  showDescriptionPopup(v, S.welcomeAv||AVATARS[0]);
+  const pwdEl=document.getElementById("registerPwdInput");
+  const confEl=document.getElementById("registerPwdConfirm");
+  const pwd=pwdEl?pwdEl.value:"";const conf=confEl?confEl.value:"";
+  if(pwd.length<6){
+    const hint=document.getElementById("pwdHint");
+    if(hint)hint.innerHTML='<span style="color:#fca5a5;">Mot de passe trop court (min 6 caractères)</span>';return;
+  }
+  if(pwd!==conf){
+    const hint=document.getElementById("pwdHint");
+    if(hint)hint.innerHTML='<span style="color:#fca5a5;">Les mots de passe ne correspondent pas</span>';return;
+  }
+  showDescriptionPopup(v, S.welcomeAv||AVATARS[0], simpleHash(pwd));
 }
 
-function showDescriptionPopup(name, avatar){
+function showDescriptionPopup(name, avatar, hashedPwd){
   const ov=document.createElement("div");
   ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.92);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#3a1a05,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .35s;">
@@ -4509,7 +4581,7 @@ function showDescriptionPopup(name, avatar){
         background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
         C'est parti ! 🚀
       </button>
-      <button onclick="this.closest('[style]').remove();finalizeRegister('${name}','${avatar}','')"
+      <button id="descSkipBtn"
         style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
                background:rgba(0,0,0,.3);color:var(--gold-soft);font-weight:700;font-size:13px;cursor:pointer;">
         Passer
@@ -4524,12 +4596,14 @@ function showDescriptionPopup(name, avatar){
       errMsg.textContent="❌ Ce texte contient des mots non autorisés.";return;
     }
     ov.remove();
-    finalizeRegister(name, avatar, desc);
+    finalizeRegister(name, avatar, desc, hashedPwd||"");
   };
+  const skipBtn=ov.querySelector("#descSkipBtn");
+  if(skipBtn)skipBtn.onclick=()=>{ov.remove();finalizeRegister(name,avatar,"",hashedPwd||"");};
 }
 
-function finalizeRegister(name, avatar, desc){
-  S.name=name;S.avatar=avatar;S.desc=desc||"";
+function finalizeRegister(name, avatar, desc, hashedPwd){
+  S.name=name;S.avatar=avatar;S.desc=desc||"";S.pwd=hashedPwd||"";
   goScreen("home");updateHUD();
   saveProgress();saveToLB();
   toast("Compte créé ! Bienvenue "+name+" 🎉");
@@ -5739,7 +5813,7 @@ async function initChat(){
     const res=await fetch(SUPABASE_URL+"/rest/v1/chat_messages?select=player_name,message,created_at&order=created_at.asc&limit=50",{
       headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
     });
-    if(res.ok){(await res.json()).forEach(m=>appendChatMsg(m.player_name,m.message,m.created_at));}
+    if(res.ok){(await res.json()).forEach(m=>appendChatMsg(m.player_name,m.message,m.created_at,m.player_name==="__system__"));}
     scrollChatBottom();
   }catch(e){}
   // Realtime via Supabase WebSocket
@@ -5752,22 +5826,54 @@ async function initChat(){
     };
   }catch(e){}
 }
-function appendChatMsg(name,message,ts){
+function appendChatMsg(name,message,ts,isSystem){
   const wrap=document.getElementById("chatMessages");if(!wrap)return;
   const isMe=name===S.name;
+  const isAdmin=(name===ADMIN_CODE||name==="Professeur Daudé");
   const time=ts?new Date(ts).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
   const div=document.createElement("div");
+
+  // System message (badge announcements etc)
+  if(isSystem){
+    div.style.cssText="text-align:center;padding:4px 0;";
+    div.innerHTML=`<span style="font-size:11px;color:#fff;font-style:italic;opacity:.7;">${message}</span>`;
+    wrap.appendChild(div);return;
+  }
+
   div.style.cssText="display:flex;flex-direction:column;"+(isMe?"align-items:flex-end;":"align-items:flex-start;");
-  div.innerHTML=`<div style="font-size:10px;color:rgba(234,215,174,.5);margin-bottom:2px;">${isMe?"Toi":name} · ${time}</div>
+  const displayName=isMe?"Toi":name;
+  const nameHtml=isAdmin
+    ? `<span style="color:#ef4444;font-weight:900;cursor:pointer;" onclick="openPlayerPopup({name:'${name}',score:9990,avatar:'https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png'})">${name}</span> <span style="color:#ef4444;font-style:italic;font-size:9px;">Admin</span>`
+    : isMe
+    ? `<span>Toi</span>`
+    : `<span style="cursor:pointer;text-decoration:underline dotted;color:var(--gold-soft);" onclick="openPlayerPopup({name:'${name}',score:0,avatar:''})">${name}</span>`;
+  div.innerHTML=`<div style="font-size:10px;color:rgba(234,215,174,.5);margin-bottom:2px;">${nameHtml} · ${time}</div>
     <div style="max-width:85%;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.4;word-break:break-word;
       ${isMe?"background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:600;":"background:rgba(255,255,255,.1);color:var(--ivory);"}">${message}</div>`;
   wrap.appendChild(div);
+}
+
+function chatBadgeAnnounce(playerName, badgeName){
+  appendChatMsg("","✨ "+playerName+" vient d\'obtenir le badge \""+badgeName+"\" !",new Date().toISOString(),true);
+  scrollChatBottom();
+  // Also send to Supabase if configured
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{fetch(SUPABASE_URL+"/rest/v1/chat_messages",{method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},
+      body:JSON.stringify({player_name:"__system__",message:"✨ "+playerName+' vient d\'obtenir le badge "'+badgeName+'"'})
+    });}catch(e){}
+  }
 }
 function scrollChatBottom(){const w=document.getElementById("chatMessages");if(w)w.scrollTop=w.scrollHeight;}
 async function sendChatMsg(){
   if(!S.name){toast("Connecte-toi d\'abord !");return;}
   const input=document.getElementById("chatInput");
   const msg=(input?input.value:"").trim();if(!msg)return;
+  if(containsProfanity(msg)){
+    input.style.borderColor="#dc2626";
+    setTimeout(()=>input.style.borderColor="",1500);
+    toast("❌ Message non autorisé.");return;
+  }
   input.value="";
   if(SUPABASE_URL==="VOTRE_URL_SUPABASE"){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();return;}
   try{
