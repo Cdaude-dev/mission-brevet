@@ -5866,39 +5866,82 @@ async function adminDeletePlayer(name){
 }
 
 /* ══════════ LIVE CHAT ══════════ */
-let chatLoaded=false,chatWs=null;
+let chatLoaded=false;
 function toggleChat(){
   const panel=document.getElementById("chatPanel");
   const open=panel.style.display==="flex";
   panel.style.display=open?"none":"flex";
-  if(!open&&!chatLoaded){initChat();chatLoaded=true;}
+  if(open){
+    stopChatPolling();
+  } else {
+    if(!chatLoaded){initChat();chatLoaded=true;}
+    else{startChatPolling();}
+  }
 }
+// ── Chat polling ──
+let chatPollTimer=null;
+let chatLastId=0;
+
 async function initChat(){
   if(!S.name){toast("Connecte-toi pour utiliser le chat !");return;}
+
   if(SUPABASE_URL==="VOTRE_URL_SUPABASE"){
     const cm=document.getElementById("chatMessages");
-    if(cm)cm.innerHTML='<div style="color:#ead7ae;font-size:12px;text-align:center;padding:16px;">Configure Supabase pour activer le chat en ligne.<br><span style="opacity:.6;">Fonctionne localement pour tester.</span></div>';
+    if(cm)cm.innerHTML='<div style="color:#ead7ae;font-size:12px;text-align:center;padding:16px;">Configure Supabase pour activer le chat en ligne.</div>';
     return;
   }
+
+  // Load last 50 messages
   try{
-    const res=await fetch(SUPABASE_URL+"/rest/v1/chat_messages?select=player_name,message,created_at&order=created_at.asc&limit=50",{
-      headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
-    });
-    if(res.ok){(await res.json()).forEach(m=>appendChatMsg(m.player_name,m.message,m.created_at,m.player_name==="__system__"));}
-    scrollChatBottom();
+    const res=await fetch(
+      SUPABASE_URL+"/rest/v1/chat_messages?select=id,player_name,message,created_at&order=created_at.asc&limit=50",
+      {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
+    );
+    if(res.ok){
+      const msgs=await res.json();
+      msgs.forEach(m=>{
+        appendChatMsg(m.player_name,m.message,m.created_at,m.player_name==="__system__");
+        if(m.id>chatLastId)chatLastId=m.id;
+      });
+      scrollChatBottom();
+    }
   }catch(e){}
-  // Welcome/reminder message
+
+  // Welcome message
   appendChatMsg("","💡 Bienvenue dans le chat Mission Brevet ! Merci de respecter les autres joueurs. Toute insulte ou spam pourra être sanctionné par un bannissement.",new Date().toISOString(),true);
   scrollChatBottom();
-  // Realtime via Supabase WebSocket
-  try{
-    const wsUrl=SUPABASE_URL.replace("https://","wss://")+"/realtime/v1/websocket?apikey="+SUPABASE_ANON_KEY+"&vsn=1.0.0";
-    chatWs=new WebSocket(wsUrl);
-    chatWs.onopen=()=>chatWs.send(JSON.stringify({topic:"realtime:public:chat_messages",event:"phx_join",payload:{},ref:"1"}));
-    chatWs.onmessage=e=>{
-      try{const d=JSON.parse(e.data);if(d.event==="INSERT"&&d.payload&&d.payload.record){const r=d.payload.record;appendChatMsg(r.player_name,r.message,r.created_at);scrollChatBottom();}}catch(err){}
-    };
-  }catch(e){}
+
+  // Start polling every 3s
+  startChatPolling();
+}
+
+function startChatPolling(){
+  stopChatPolling();
+  chatPollTimer=setInterval(async()=>{
+    const panel=document.getElementById("chatPanel");
+    if(!panel||panel.style.display==="none"){stopChatPolling();return;}
+    try{
+      const url=SUPABASE_URL+"/rest/v1/chat_messages?select=id,player_name,message,created_at"
+        +"&order=created_at.asc&id=gt."+chatLastId+"&limit=20";
+      const res=await fetch(url,{
+        headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
+      });
+      if(res.ok){
+        const msgs=await res.json();
+        if(msgs.length>0){
+          msgs.forEach(m=>{
+            appendChatMsg(m.player_name,m.message,m.created_at,m.player_name==="__system__");
+            if(m.id>chatLastId)chatLastId=m.id;
+          });
+          scrollChatBottom();
+        }
+      }
+    }catch(e){}
+  },3000);
+}
+
+function stopChatPolling(){
+  if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null;}
 }
 function appendChatMsg(name,message,ts,isSystem){
   const wrap=document.getElementById("chatMessages");if(!wrap)return;
