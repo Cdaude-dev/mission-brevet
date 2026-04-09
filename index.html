@@ -3597,22 +3597,31 @@ async function saveToLB(){
   const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
   if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&!_adminNames.includes(S.name)){
     try{
-      await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "apikey":SUPABASE_ANON_KEY,
-          "Authorization":"Bearer "+SUPABASE_ANON_KEY,
-          "Prefer":"resolution=merge-duplicates"
-        },
-        body:JSON.stringify({
-          player_name:S.name,
-          score:S.score||0,
-          avatar:S.avatar||"",
-          desc:S.desc||"",
-          badges:JSON.stringify([...(S.badges||new Set())])
-        })
-      });
+      const lbPayload={
+        player_name:S.name,
+        score:S.score||0,
+        avatar:S.avatar||"",
+        desc:S.desc||"",
+        badges:JSON.stringify([...(S.badges||new Set())])
+      };
+      const headers={
+        "Content-Type":"application/json",
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY
+      };
+      // Try PATCH first (update existing row)
+      const patchRes=await fetch(
+        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
+        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal"},body:JSON.stringify(lbPayload)}
+      );
+      // If no row was updated (404 or 0 rows), INSERT a new row
+      if(patchRes.status===404||patchRes.headers.get("content-range")==="*/0"||patchRes.status===200&&(await patchRes.text()).trim()===""){
+        await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
+          method:"POST",
+          headers:{...headers,"Prefer":"return=minimal"},
+          body:JSON.stringify(lbPayload)
+        });
+      }
     }catch(e){}
   }
 }
@@ -3667,7 +3676,7 @@ function openPlayerPopup(entry){
   // Load fresh data from localStorage if available
   try{
     const raw=localStorage.getItem(saveKey(entry.name));
-    if(raw){const d=JSON.parse(raw);entry={...entry,...d,badges:d.badges||[],desc:d.desc||entry.desc||""};}
+    if(raw){const d=JSON.parse(raw);const _av=entry.avatar;const _sc=entry.score;entry={...d,...entry,badges:d.badges&&d.badges.length?d.badges:(entry.badges||[]),desc:entry.desc||d.desc||""};if(_av&&_av!==AVATARS[0])entry.avatar=_av;else if(typeof chatAvatarCache!=="undefined"&&chatAvatarCache[entry.name])entry.avatar=chatAvatarCache[entry.name];entry.score=Math.max(_sc||0,d.score||0);}
   }catch(e){}
   const ov=document.createElement("div");
   ov.id="playerPopupOv";
@@ -3868,10 +3877,12 @@ async function fetchLBEntries(){
       });
       if(res.ok){
         const data=await res.json();
+        // Update chatAvatarCache with fresh avatars from Supabase
+        data.forEach(r=>{if(r.player_name&&r.avatar)chatAvatarCache[r.player_name]=r.avatar;});
         entries=data.map(r=>({
           name:r.player_name,
           score:r.score,
-          avatar:r.avatar||"",
+          avatar:r.avatar||"",  // real avatar from Supabase
           desc:r.desc||"",
           badges:r.badges?JSON.parse(r.badges):[]
         }));
