@@ -1433,7 +1433,7 @@
       </div>
     </div>
     <!-- Boss chapter -->
-    <div class="chapter-card" id="bossChapterCard">
+    <div class="chapter-card" id="bossChapterCard" style="border:2px solid rgba(168,85,247,.5);background:rgba(88,28,135,.08);">
       <div class="chapter-header" onclick="tryOpenBoss()" style="flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
         <div class="chapter-title" style="color:#facc15;">Conjugus</div>
         <img id="bossLockIcon" src="https://i.postimg.cc/j5NdKHYq/dieu-conjugaison.png"
@@ -4983,7 +4983,7 @@ function doLogin(){
     loadProgress(v);
     saveToLB();
     try{sessionStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar}));}catch(e){}
-    if(!localStorage.getItem('mb_update_seen_v2'))setTimeout(()=>{const o=document.getElementById('updateMsgOv');if(o)o.style.display='flex';},1500);
+    maybeShowUpdateMsg();
   });
 }
 
@@ -5061,6 +5061,7 @@ function finalizeRegister(name, avatar, desc, hashedPwd){
   goScreen("home");updateHUD();
   saveProgress();saveToLB();
   toast("Compte créé ! Bienvenue "+name+" 🎉");
+  maybeShowUpdateMsg();
   try{sessionStorage.setItem("mb_session",JSON.stringify({name:name,avatar:avatar}));}catch(e){}
   // Sync desc inputs
   const di=document.getElementById("descInput");if(di)di.value=desc||"";
@@ -5278,6 +5279,7 @@ window.addEventListener("load",()=>{
       // Skip welcome screen
       setTimeout(()=>{
         goScreen("home");updateHUD();
+        maybeShowUpdateMsg();
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
         try{renderInventaire();}catch(e){}
@@ -5803,6 +5805,7 @@ function injectGramBossChapter(){
   if(!gramMenu||document.getElementById("gramBossChapterCard"))return;
   const card=document.createElement("div");
   card.className="chapter-card";card.id="gramBossChapterCard";
+  card.style="border:2px solid rgba(96,165,250,.5);background:rgba(29,78,216,.08);";
   card.innerHTML=`<div class="chapter-header" onclick="tryOpenGramBoss()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
     <div class="chapter-title" style="color:#60a5fa;">Grammairia</div>
     <img id="gramBossLockIcon" src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png"
@@ -6956,6 +6959,7 @@ function injectOrgografeChapter(){
   if(!gramMenu||document.getElementById("orgChapterCard"))return;
   const card=document.createElement("div");
   card.className="chapter-card";card.id="orgChapterCard";
+  card.style="border:2px solid rgba(34,197,94,.5);background:rgba(20,83,45,.08);";
   card.innerHTML=`<div class="chapter-header" onclick="tryOpenOrgografe()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
     <div class="chapter-title" style="color:#f97316;">La grande Orgografe</div>
     <div style="font-size:10px;color:#fed7aa;opacity:.7;margin-top:-4px;">Mini-boss d'orthographe · 10 ⭐ requises</div>
@@ -6963,7 +6967,13 @@ function injectOrgografeChapter(){
       style="width:110px;height:110px;object-fit:contain;filter:grayscale(1) brightness(.35);
       animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:6px;" alt="Orgografe"/>
   </div>`;
-  gramMenu.appendChild(card);
+  // Insert after first chapter card (L'adjectif qualificatif)
+  const firstCard=gramMenu.querySelector(".chapter-card");
+  if(firstCard&&firstCard.nextSibling){
+    gramMenu.insertBefore(card,firstCard.nextSibling);
+  } else {
+    gramMenu.appendChild(card);
+  }
   updateOrgChapter();
 }
 
@@ -6973,6 +6983,16 @@ function updateOrgChapter(){
   const unlocked=totalStars()>=10||(S.name===ADMIN_CODE||S.name==="Professeur Daudé");
   lk.style.filter=unlocked?"drop-shadow(0 0 8px rgba(249,115,22,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";
   lk.style.opacity=unlocked?"1":"0.6";
+}
+
+
+function maybeShowUpdateMsg(){
+  if(!localStorage.getItem('mb_update_seen_v2')){
+    setTimeout(()=>{
+      const o=document.getElementById('updateMsgOv');
+      if(o)o.style.display='flex';
+    },1500);
+  }
 }
 
 // Chat button visibility updated from goScreen (integrated below)
@@ -7064,10 +7084,11 @@ function updateOrgChapter(){
        display:flex;align-items:center;justify-content:center;padding:16px;">
     <div style="background:linear-gradient(160deg,#1a0d00,#0a0500);border:2px solid rgba(217,164,65,.4);
          border-radius:22px;padding:28px;max-width:440px;width:100%;animation:popIn .4s;max-height:88vh;overflow-y:auto;text-align:center;">
-      <div style="font-size:26px;margin-bottom:8px;">🆕</div>
-      <div style="font-size:19px;font-weight:900;color:var(--gold);margin-bottom:12px;">Nouvelle mise à jour !</div>
+      <div style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:12px;letter-spacing:.5px;">🆕 Nouvelle mise à jour !</div>
+      <img src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
+           style="width:100px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(249,115,22,.6));animation:bossIdle 4s ease-in-out infinite;"/>
       <div style="font-size:14px;color:#ead7ae;line-height:1.7;text-align:left;margin-bottom:16px;">
-        <p>🐉 <strong style="color:#facc15;">Venez affronter la grande Orgografe</strong> : cette cheffe de rebelles de la langue française doit être terrassée pour rétablir la paix dans le monde de l'orthographe. Corrigez ses erreurs d'orthographe pour l'anéantir.</p>
+        <p>🐉 <strong style="color:#f97316;">Venez affronter la grande Orgografe</strong> : cette cheffe de rebelles de la langue française doit être terrassée pour rétablir la paix dans le monde de l'orthographe. Corrigez ses erreurs d'orthographe pour l'anéantir.</p>
         <p>⭐ <strong style="color:#facc15;">Nouveau système de scoring</strong> : collectionnez assez d'étoiles pour débloquer de nouveaux niveaux.</p>
       </div>
       <button onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v2','1');"
