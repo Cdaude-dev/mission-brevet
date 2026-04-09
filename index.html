@@ -3813,6 +3813,8 @@ function renderLbEntries(entries, container){
 let lbPollTimer=null;
 
 function startLbPolling(){
+  // Also refresh chat avatars when LB updates
+  refreshChatAvatarCache();
   stopLbPolling();
   lbPollTimer=setInterval(()=>{
     // Refresh whichever LB panel is currently visible
@@ -6118,6 +6120,33 @@ async function adminDeletePlayer(name){
 
 /* ══════════ LIVE CHAT ══════════ */
 let chatLoaded=false;
+let chatAvatarCache={}; // name → current avatar (from leaderboard)
+
+async function refreshChatAvatarCache(){
+  // Build from local lb first (instant)
+  try{
+    const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");
+    Object.values(lb).forEach(e=>{if(e.name&&e.avatar)chatAvatarCache[e.name]=e.avatar;});
+  }catch(e){}
+  // Then fetch fresh from Supabase
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      const res=await fetch(
+        SUPABASE_URL+"/rest/v1/leaderboard?select=player_name,avatar&limit=200",
+        {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
+      );
+      if(res.ok){
+        const data=await res.json();
+        data.forEach(r=>{if(r.player_name&&r.avatar)chatAvatarCache[r.player_name]=r.avatar;});
+      }
+    }catch(e){}
+  }
+  // Re-render visible chat messages with updated avatars
+  document.querySelectorAll(".chat-msg-av").forEach(img=>{
+    const name=img.dataset.name;
+    if(name&&chatAvatarCache[name])img.src=chatAvatarCache[name];
+  });
+}
 let chatIsFullscreen=false;
 
 function toggleChat(){
@@ -6180,7 +6209,7 @@ async function initChat(){
   // Load last 50 messages
   try{
     const res=await fetch(
-      SUPABASE_URL+"/rest/v1/chat_messages?select=id,player_name,message,created_at&order=created_at.asc&limit=50",
+      SUPABASE_URL+"/rest/v1/chat_messages?select=id,player_name,message,avatar,created_at&order=created_at.asc&limit=50",
       {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
     );
     if(res.ok){
@@ -6192,6 +6221,9 @@ async function initChat(){
       scrollChatBottom();
     }
   }catch(e){}
+
+  // Load fresh avatars
+  refreshChatAvatarCache();
 
   // Welcome message
   appendChatMsg("","💡 Bienvenue dans le chat Mission Brevet ! Merci de respecter les autres joueurs. Toute insulte ou spam pourra être sanctionné par un bannissement.",new Date().toISOString(),true);
@@ -6214,7 +6246,7 @@ function startChatPolling(){
     const panel=document.getElementById("chatPanel");
     if(!panel||panel.style.display==="none"){stopChatPolling();return;}
     try{
-      const url=SUPABASE_URL+"/rest/v1/chat_messages?select=id,player_name,message,created_at"
+      const url=SUPABASE_URL+"/rest/v1/chat_messages?select=id,player_name,message,avatar,created_at"
         +"&order=created_at.asc&id=gt."+chatLastId+"&limit=20";
       const res=await fetch(url,{
         headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
@@ -6236,7 +6268,7 @@ function startChatPolling(){
 function stopChatPolling(){
   if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null;}
 }
-function appendChatMsg(name,message,ts,isSystem,msgId){
+function appendChatMsg(name,message,ts,isSystem,msgId,msgAvatar){
   const wrap=document.getElementById("chatMessages");if(!wrap)return;
   const isMe=name===S.name;
   const isAdmin=(name===ADMIN_CODE||name==="Professeur Daudé");
@@ -6253,16 +6285,20 @@ function appendChatMsg(name,message,ts,isSystem,msgId){
   // Resolve avatar: try localStorage save, fallback to AVATARS[0]
   let senderAvatar = isMe ? (S.avatar||AVATARS[0]) : AVATARS[0];
   if(!isMe){
-    try{
-      const raw=localStorage.getItem(saveKey(name));
-      if(raw){const d=JSON.parse(raw);if(d.avatar)senderAvatar=d.avatar;}
-    }catch(e){}
-    // Also check LB cache (for players on other devices)
-    if(senderAvatar===AVATARS[0]){
+    // Priority: live cache (leaderboard) > local save > message stored avatar
+    if(chatAvatarCache[name]) senderAvatar=chatAvatarCache[name];
+    else if(msgAvatar) senderAvatar=msgAvatar;
+    else {
       try{
-        const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");
-        if(lb[name]&&lb[name].avatar)senderAvatar=lb[name].avatar;
+        const raw=localStorage.getItem(saveKey(name));
+        if(raw){const d=JSON.parse(raw);if(d.avatar)senderAvatar=d.avatar;}
       }catch(e){}
+      if(senderAvatar===AVATARS[0]){
+        try{
+          const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");
+          if(lb[name]&&lb[name].avatar)senderAvatar=lb[name].avatar;
+        }catch(e){}
+      }
     }
     if(isAdmin) senderAvatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
   }
@@ -6307,7 +6343,7 @@ function appendChatMsg(name,message,ts,isSystem,msgId){
 
   div.innerHTML=`
     <!-- Avatar -->
-    <img src="${senderAvatar}" alt="" onerror="this.src='${AVATARS[0]}'"
+    <img src="${senderAvatar}" alt="" class="chat-msg-av" data-name="${isMe?'__me__':name}" onerror="this.src='${AVATARS[0]}'"
       style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;${avBorder}
              cursor:pointer;" onclick="${isAdmin?'openDaudePopup()':isMe?'':("openPlayerPopup({name:'"+name+"',score:0,avatar:'"+senderAvatar+"'})")}"/>
     <!-- Bubble area -->
@@ -6404,7 +6440,7 @@ async function sendChatMsg(){
     await fetch(SUPABASE_URL+"/rest/v1/chat_messages",{
       method:"POST",
       headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY},
-      body:JSON.stringify({player_name:S.name,message:msg})
+      body:JSON.stringify({player_name:S.name,message:msg,avatar:S.avatar||""})
     });
   }catch(e){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();}
 }
