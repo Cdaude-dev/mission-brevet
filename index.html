@@ -2568,12 +2568,12 @@ const MODULES={
     {type:"dragdrop",prompt:"Relie chaque mot à son procédé de formation.",
      leftTitle:"Mot",rightTitle:"Procédé",
      pairs:[
-       {left:"impossible",right:"Dérivation (préfixe im- + possible)"},
-       {left:"porte-clés",right:"Composition (porte + clés)"},
-       {left:"rapidement",right:"Dérivation (rapide + suffixe -ment)"},
-       {left:"chou-fleur",right:"Composition (chou + fleur)"},
-       {left:"illisible",right:"Dérivation (préfixe il- + lisible)"},
-       {left:"timbre-poste",right:"Composition (timbre + poste)"}
+       {left:"impossible",right:"Dérivation"},
+       {left:"porte-clés",right:"Composition"},
+       {left:"rapidement",right:"Dérivation"},
+       {left:"chou-fleur",right:"Composition"},
+       {left:"illisible",right:"Dérivation"},
+       {left:"timbre-poste",right:"Composition"}
      ],
      explanation:"Dérivation = radical + affixes (préfixe et/ou suffixe). Composition = union de deux mots autonomes. Les deux procédés permettent d'enrichir le vocabulaire français."},
     {type:"fill",prompt:"Complète avec le mot dérivé qui correspond.",
@@ -2582,8 +2582,8 @@ const MODULES={
      wordBank:["lecture","prévoir","malheureusement","fleuri","liseur","prévision","malheur","fleuriste"],
      explanation:"Familles de mots : lire → lecture (lat. lectura, racine étymologique), lecteur, lisible. Voir → prévoir, prévisible, prévision. Heureux → malheureux, malheureusement, bonheur. Fleur → fleurir, fleuri, fleuriste."},
     {type:"qcm",prompt:"Dans le mot 'bienveillant', quel est le préfixe et quel est son sens ?",
-     options:["mal- = mauvais","bien- = bon / de bonne manière","re- = de nouveau","co- = avec"],
-     correctIndex:1,explanation:"BIEN- est un préfixe signifiant 'bon' ou 'de bonne manière'. Exemples : bienfaisant (qui fait du bien), bienveillant (qui veut le bien d'autrui), bienfait, bienséant. Antonyme avec le préfixe MAL- : malveillant, malfaisant."},
+     options:["avec","de nouveau","mauvais","de bonne manière"],
+     correctIndex:3,explanation:"BIEN- est un préfixe signifiant 'bon' ou 'de bonne manière'. Exemples : bienfaisant (qui fait du bien), bienveillant (qui veut le bien d'autrui), bienfait, bienséant. Antonyme avec le préfixe MAL- : malveillant, malfaisant."},
     {type:"qcm",prompt:"Laquelle de ces paires appartient à la MÊME FAMILLE de mots ?",
      options:["Port et portail (même famille)","Mer et mère (même famille)","Chant et chanson (même famille)","Sol et sole (même famille)"],
      correctIndex:2,explanation:"CHANT et CHANSON partagent le même radical 'chant-' → même famille. Port et portail viennent de 'porta' (porte) → même famille aussi, mais portail vient de 'porta' latin. Mer et mère ont des étymologies différentes. Sol (terre) et sole (poisson) sont des homophones sans lien étymologique."}
@@ -3298,10 +3298,10 @@ function renderInventaireFor(containerId){
   const keys=[
     {id:"conj",name:"Clé du Temps",img:"https://i.postimg.cc/rmCC7Djh/cle-conjugaison.png",
      desc:"Cette clé prouve votre maîtrise de la Conjugaison. Elle vous permet de vous confronter au Dieu de la Conjugaison.",
-     check:()=>["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"].every(k=>S.perfect&&S.perfect[k])},
+     check:()=>S.conjKeyShown||(["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")},
     {id:"gram",name:"Clé de la Langue",img:"https://i.postimg.cc/CxXNv67v/Cle-grammaire.png",
      desc:"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Déesse de la Grammaire.",
-     check:()=>["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k])}
+     check:()=>S.gramKeyShown||(["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")}
   ];
   const wrap=document.getElementById(containerId);if(!wrap)return;
   wrap.innerHTML="";
@@ -3417,7 +3417,7 @@ function buildAvGrid(){
   _addAvLabel(D.avGrid,"Avatars standards");
   AVATARS.forEach(src=>{
     _addAvItem(D.avGrid,src,S.avatar===src,true,"",
-      e=>{e.stopPropagation();S.avatar=src;updateHUD();saveToLB();buildAvGrid();},false);
+      e=>{e.stopPropagation();S.avatar=src;updateHUD();saveToLB();buildAvGrid();try{sessionStorage.setItem("mb_session",JSON.stringify({name:S.name,avatar:src}));}catch(e){}},false);
   });
   // Level-locked avatars
   _addAvLabel(D.avGrid,"Avatars à débloquer (niveau)");
@@ -3503,6 +3503,16 @@ function goScreen(name){
 }
 function goTransition(t){D.transition.classList.add("show");setTimeout(()=>{D.transition.classList.remove("show");goScreen(t);},900);}
 function toggleChapter(id){const b=document.getElementById("body-"+id),a=document.getElementById("arrow-"+id);const o=b.classList.toggle("open");a.classList.toggle("open",o);}
+function showGramMenu(){
+  S.mod=null;D.quizCard.style.display="none";
+  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  if(D.gramMenu)D.gramMenu.style.display="flex";
+}
+function showConjMenu(){
+  S.mod=null;D.quizCard.style.display="none";
+  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  if(D.conjMenu)D.conjMenu.style.display="flex";
+}
 function showLitMenu(){
   S.mod=null;
   D.quizCard.style.display="none";
@@ -3657,10 +3667,12 @@ function loadProgress(name){
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
       S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;
-      if(d.avatar)S.avatar=d.avatar;
+      if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
       toast("Progression chargée 📖 — "+S.score+" pts");
+      updateBossChapter();updateGramBossChapter();
+      renderInventaire();
     }
   }catch(e){}
 }
@@ -3934,6 +3946,27 @@ async function loadBigLB(){
 
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
+function abandonMod(){
+  // Save progress (no rollback — keep points earned so far)
+  if(S.mod){
+    S.savedMod=S.mod;
+    S.savedQIdx=S.qIdx;
+    S.savedCorrect=S.correct;
+    saveProgress();
+  }
+  const wasModId=S.mod;
+  S.mod=null;
+  updateHUD();
+  D.quizCard.style.display="none";
+  // Return to the correct category menu
+  if(wasModId){
+    if(wasModId.startsWith("g")) showGramMenu();
+    else if(wasModId.startsWith("c")) showConjMenu();
+    else showLitMenu();
+  } else { showLitMenu(); }
+  toast("Séance mise en pause. Tu peux reprendre ! ⏸");
+}
+
 function startMod(id, resumeFrom){
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
   if(!resumeFrom && S.savedMod===id && S.savedQIdx>0){
@@ -4251,8 +4284,8 @@ function renderOrderStep(q){
   D.qBox.innerHTML='<span style="font-size:12px;opacity:.7;">'+q.prompt+'</span><br><br><span style="font-size:12px;color:#ead7ae;">Élément '+(S.subIdx+1)+'/'+items.length+' :</span>';
   const d=document.createElement("div");d.className="order-disp";d.textContent='"'+item.text+'"';D.aWrap.appendChild(d);
   const s=document.createElement("div");s.className="order-sub";s.textContent="👉 Dans quelle colonne classer cet élément ?";D.aWrap.appendChild(s);
-  // Shuffle bucket buttons so the correct answer position varies
-  const shuffledBuckets=[...q.buckets].sort(()=>Math.random()-.5);
+  // Keep bucket buttons in consistent order (no shuffle — avoids confusion)
+  const shuffledBuckets=[...q.buckets];
   shuffledBuckets.forEach(bucket=>{
     const b=document.createElement("button");b.className="ans-btn";b.textContent=bucket;
     b.onclick=()=>{
@@ -4381,7 +4414,10 @@ function validateFill(){
     slot.textContent=isOk?word:word+" → "+q.blanks[i];
     slot.disabled=true;
   });
-  D.aWrap.querySelectorAll(".word-chip,.fill-validate-btn").forEach(el=>el.disabled=true);
+  D.aWrap.querySelectorAll(".word-chip").forEach(el=>el.disabled=true);
+  // Hide validate button, show next button immediately
+  const vBtn=D.aWrap.querySelector(".fill-validate-btn");
+  if(vBtn)vBtn.style.display="none";
 
   const exp=(correctCount<q.blanks.length
     ?`${correctCount} / ${q.blanks.length} trous corrects. `:"")+q.explanation;
@@ -4746,6 +4782,7 @@ function doLogout(){
     // Reset session state (keep saves in localStorage)
     S.name="";S.score=0;S.done={};S.perfect={};S.seancePct={};
     S.badges=new Set();S.unlockedSecrets=new Set();
+    try{sessionStorage.removeItem("mb_session");}catch(e){}
     S.bossDefeated=false;S.gramBossDefeated=false;
     S.bossUnlockShown=false;S.gramBossUnlockShown=false;
     S.conjKeyShown=false;S.gramKeyShown=false;
@@ -4844,6 +4881,7 @@ function doLogin(){
     goScreen("home");updateHUD();
     loadProgress(v);
     saveToLB();
+    try{sessionStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar}));}catch(e){}
   });
 }
 
@@ -4921,6 +4959,7 @@ function finalizeRegister(name, avatar, desc, hashedPwd){
   goScreen("home");updateHUD();
   saveProgress();saveToLB();
   toast("Compte créé ! Bienvenue "+name+" 🎉");
+  try{sessionStorage.setItem("mb_session",JSON.stringify({name:name,avatar:avatar}));}catch(e){}
   // Sync desc inputs
   const di=document.getElementById("descInput");if(di)di.value=desc||"";
   const bd=document.getElementById("bigDescInput");if(bd)bd.value=desc||"";
@@ -5121,6 +5160,29 @@ window.addEventListener("load",()=>{
   try{ updateBossChapter(); }catch(e){}
   try{ updateGramBossChapter(); }catch(e){}
 
+  // Auto-restore session on page refresh
+  try{
+    const sess=JSON.parse(sessionStorage.getItem("mb_session")||"null");
+    if(sess&&sess.name){
+      // Restore the session directly
+      S.name=sess.name;S.avatar=sess.avatar||AVATARS[0];
+      loadProgress(sess.name);
+      // Restore Daudé specially
+      if(sess.name==="Professeur Daudé"||sess.name===ADMIN_CODE){
+        S.avatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
+        S.desc="Le créateur de Mission Brevet. Imbattable.";
+        S.conjKeyShown=true;S.gramKeyShown=true;
+      }
+      // Skip welcome screen
+      setTimeout(()=>{
+        goScreen("home");updateHUD();
+        try{updateBossChapter();}catch(e){}
+        try{updateGramBossChapter();}catch(e){}
+        try{renderInventaire();}catch(e){}
+      },200);
+      return; // don't show welcome screen
+    }
+  }catch(e){}
   // Auto-fill login if exactly one save exists
   try{
     const keys=Object.keys(localStorage).filter(k=>k.startsWith("mb_save_"));
@@ -5501,7 +5563,10 @@ function updateBossChapter(){
   const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
   const unlocked=S.conjKeyShown||allConj.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé");
   const lockIcon=document.getElementById("bossLockIcon");
-  if(lockIcon){lockIcon.style.filter=unlocked?"drop-shadow(0 0 8px rgba(250,204,21,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";}
+  if(lockIcon){
+    lockIcon.style.filter=unlocked?"drop-shadow(0 0 8px rgba(250,204,21,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";
+    lockIcon.style.opacity=unlocked?"1":"0.6";
+  }
 }
 
 /* ══════════ DÉESSE DE LA GRAMMAIRE ══════════ */
@@ -5650,7 +5715,10 @@ function updateGramBossChapter(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
   const unlocked=S.gramKeyShown||allGram.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé");
   const lk=document.getElementById("gramBossLockIcon");
-  if(lk){lk.style.filter=unlocked?"drop-shadow(0 0 8px rgba(96,165,250,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";}
+  if(lk){
+    lk.style.filter=unlocked?"drop-shadow(0 0 8px rgba(96,165,250,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";
+    lk.style.opacity=unlocked?"1":"0.6";
+  }
 }
 
 function tryOpenGramBoss(){
