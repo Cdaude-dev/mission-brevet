@@ -1157,6 +1157,16 @@
           </div>
         </div>
       </div>
+
+  <!-- MÉMELITÉ BOSS CHAPTER (littérature) -->
+  <div class="chapter-card" id="memeliteChapterCard" style="border:2px solid rgba(220,38,38,.5);background:rgba(127,29,29,.08);">
+    <div class="chapter-header" onclick="tryOpenMemelite()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
+      <div class="chapter-title" style="color:#f87171;">Mémélité</div>
+      <img id="memeliteLockIcon" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
+        style="width:140px;height:140px;object-fit:contain;filter:grayscale(1) brightness(.35);
+        animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:8px;" alt="Mémélité"/>
+    </div>
+  </div>
   </div><!-- end litMenu -->
 
   <!-- FAILURE OVERLAY -->
@@ -5151,10 +5161,12 @@ function showFailure(p,total){
   if(ov) ov.style.display="flex";
 }
 function retryFromFailure(){
+  stopGameOverMusic();
   const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
   startMod(S.mod);
 }
 function closeFailure(){
+  stopGameOverMusic();
   const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
   S.score=S.sessionScoreStart;updateHUD();
   showLitMenu();
@@ -5330,6 +5342,7 @@ window.addEventListener("load",()=>{
         try{updateOrgChapter();}catch(e){}
         try{renderInventaire();}catch(e){}
         saveToLB();
+        setTimeout(maybeShowUpdateMsg, 600);
       },200);
       return; // don't show welcome screen
     }
@@ -6064,12 +6077,12 @@ function triggerDarkPhase(){
 
   setTimeout(()=>{
     // Message 2 — 3s
-    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#c084fc;text-shadow:0 0 20px rgba(180,50,255,.8);">Son regard se voile…<br><br><span style="font-size:14px;color:#e9d5ff;line-height:1.8;">Elle n\'en peut plus.<br>Une rage froide s\'empare d\'elle.</span></span>';
+    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#e9d5ff;text-shadow:0 0 24px rgba(216,180,254,1),0 0 6px #fff;">Son regard se voile…<br><br><span style="font-size:14px;color:#f3e8ff;line-height:1.8;text-shadow:0 0 12px rgba(216,180,254,.8);">Elle n\'en peut plus.<br>Une rage froide s\'empare d\'elle.</span></span>';
   },3000);
 
   setTimeout(()=>{
     // Message 3 — 5.5s
-    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#e9d5ff;text-shadow:0 0 20px rgba(180,50,255,.8);">Ses pouvoirs se décuplent…<br><br><span style="font-size:14px;color:#c084fc;">⏱ Le chrono passe à 15 secondes.</span></span>';
+    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#f3e8ff;text-shadow:0 0 24px rgba(216,180,254,1),0 0 8px #fff;">Ses pouvoirs se décuplent…<br><br><span style="font-size:14px;color:#e9d5ff;text-shadow:0 0 12px rgba(216,180,254,.9);">⏱ Le chrono passe à 15 secondes.</span></span>';
   },5500);
 
   setTimeout(()=>{
@@ -6098,6 +6111,8 @@ function triggerDarkPhase(){
     if(bg){
       bg.style.background="linear-gradient(180deg,#0d0520 0%,#08102a 50%,#020508 100%)";
     }
+    const forest=document.getElementById("gramForestBg");
+    if(forest){forest.style.transition="filter 2s";forest.style.filter="brightness(.2) saturate(.2)";}
     const cloudIds=["gc1","gc2","gc3","gc4","gc5"];
     const darkSrcs=["https://i.postimg.cc/FRMV9P1W/nuagesombre01.png","https://i.postimg.cc/0QT08trt/nuagesombre02.png","https://i.postimg.cc/ydMyVfWL/nuagesombre03.png","https://i.postimg.cc/FRMV9P1C/nuagesombre04.png","https://i.postimg.cc/ydMyVfW5/nuagesombre05.png"];
     cloudIds.forEach((id,i)=>{const el=document.getElementById(id);if(el&&darkSrcs[i])el.src=darkSrcs[i];});
@@ -6181,7 +6196,7 @@ function gramBossDefeat(){
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
   document.getElementById("gramBossOv").style.display="none";
-  playVictoryMusic();
+  playGameOverMusic();
   gramBossState.darkPhase=false;
   const ov=document.getElementById("gramResultOv");
   document.getElementById("gramResultImg").src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";
@@ -6249,6 +6264,7 @@ function abandonGramBoss(){
 
 function closeGramResult(){
   stopVictoryMusic();
+  stopGameOverMusic();
   document.getElementById("gramResultOv").style.display="none";
   gramBossState.darkPhase=false;
   // Reset boss image
@@ -6761,7 +6777,7 @@ function startOrgografe(){
   orgState={qIdx:0,lives:3,hp:15,selectedWord:null,noPerfect:false,darkPhase:false};
   // Reset char to normal skin and HP bar
   const ch=document.getElementById("orgChar");
-  if(ch){ch.src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";ch.style.filter="drop-shadow(0 0 24px rgba(249,115,22,.5))";}
+  if(ch){ch.src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";ch.style.filter="drop-shadow(0 0 24px rgba(249,115,22,.5))";ch.style.animation="none";ch.style.transform="";}
   const hpf=document.getElementById("orgHpFill");
   if(hpf){hpf.style.width="100%";hpf.style.background="linear-gradient(90deg,#f97316,#fb923c)";}
   const orgBg=document.getElementById("orgBg");
@@ -6885,22 +6901,27 @@ function orgHit(){
   orgState.hp--;
   const hpFill=document.getElementById("orgHpFill");
   if(hpFill)hpFill.style.width=Math.max(0,(orgState.hp/15)*100)+"%";
-  // Hit animation: bossHitBlink (same as other bosses)
+  // Hit animation: red blink + shake
   const ch=document.getElementById("orgChar");
   if(ch){
-    ch.style.animation="none";
-    ch.classList.add("hit");
+    ch.classList.add("hit"); // bossHitBlink CSS
+    // Shake: quick horizontal movement
+    ch.style.transition="transform .05s";
+    const shakes=[-12,10,-8,6,-4,0];
+    shakes.forEach((x,i)=>{
+      setTimeout(()=>{ch.style.transform=`translateX(${x}px)`;},i*50);
+    });
     setTimeout(()=>{
       ch.classList.remove("hit");
+      ch.style.transform="";
       ch.style.filter=orgState.darkPhase
-        ?"drop-shadow(0 0 24px rgba(239,68,68,.8)) brightness(1.1)":"drop-shadow(0 0 24px rgba(249,115,22,.5))";
-      ch.style.animation="bossIdle 4s ease-in-out infinite";
+        ?"drop-shadow(0 0 24px rgba(239,68,68,.8))":"drop-shadow(0 0 24px rgba(249,115,22,.5))";
     },520);
   }
-  // Play org hurt sound
+  // Play hurt sound automatically
   try{
     const hs=document.getElementById("orgHurtSound");
-    if(hs){hs.currentTime=0;hs.volume=0.7;hs.play().catch(()=>{});}
+    if(hs){hs.currentTime=0;hs.volume=0.8;hs.play().catch(()=>{});}
   }catch(e){}
   // Phase 2 at 50% (hp≤7)
   if(orgState.hp<=7&&!orgState.darkPhase){
@@ -6966,6 +6987,7 @@ function orgDefeat(){
 
 function closeOrgResult(){
   stopVictoryMusic();
+  stopGameOverMusic();
   document.getElementById("orgResultOv").style.display="none";
   // Return to grammar menu
   showGramMenu();
@@ -7070,33 +7092,72 @@ function updateOrgChapter(){
 
 
 
+function _pauseAllMusic(){
+  ["bgMusic","bossMusicAudio","gramMusicAudio","gramMusicAngry","menuMusic","orgMusicAudio"].forEach(id=>{
+    const el=document.getElementById(id);if(el&&!el.paused){el._waspPlaying=true;el.pause();}else if(el)el._waspPlaying=false;
+  });
+}
+function _restoreBgMusic(){
+  const bg=document.getElementById("bgMusic");
+  if(bg){bg.play().catch(()=>{});}
+}
 function playVictoryMusic(){
+  _pauseAllMusic();
   setTimeout(()=>{
     const vm=document.getElementById("victoryMusic");
-    if(vm){vm.currentTime=0;vm.volume=0.7;vm.play().catch(()=>{});}
+    if(vm){vm.currentTime=0;vm.volume=0.75;vm.play().catch(()=>{});}
   },2500);
 }
 function stopVictoryMusic(){
   const vm=document.getElementById("victoryMusic");
   if(vm){vm.pause();vm.currentTime=0;}
+  _restoreBgMusic();
 }
 function playGameOverMusic(){
+  _pauseAllMusic();
   setTimeout(()=>{
     const gom=document.getElementById("gameOverMusic");
-    if(gom){gom.currentTime=0;gom.volume=0.7;gom.play().catch(()=>{});}
+    if(gom){gom.currentTime=0;gom.volume=0.75;gom.play().catch(()=>{});}
   },800);
+}
+function stopGameOverMusic(){
+  const gom=document.getElementById("gameOverMusic");
+  if(gom){gom.pause();gom.currentTime=0;}
+  _restoreBgMusic();
+}
+
+
+/* ══════════ MÉMÉLITÉ (boss littérature — coming soon) ══════════ */
+function tryOpenMemelite(){
+  const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0202,#0a0000);border:2px solid rgba(220,38,38,.4);border-radius:22px;padding:28px;max-width:420px;width:100%;text-align:center;animation:popIn .35s;">
+    <img src="https://i.postimg.cc/bwfcRt83/Memelite.png" style="width:120px;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(239,68,68,.5));"/>
+    <div style="font-size:22px;font-weight:900;color:#f87171;margin-bottom:10px;">Mémélité</div>
+    <div style="font-size:14px;color:#fecaca;line-height:1.7;margin-bottom:18px;">
+      🔐 <strong style="color:#fca5a5;">Module verrouillé</strong><br><br>
+      Maîtrisez la littérature pour obtenir la <strong style="color:#facc15;">Clé du Savoir</strong> et affronter Mémélité.
+    </div>
+    <button onclick="this.closest('.mb-popup-ov').remove()"
+      style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#fecaca;font-weight:700;cursor:pointer;">
+      Compris
+    </button>
+  </div>`;
+  document.body.appendChild(ov);
 }
 
 function maybeShowUpdateMsg(){
   if(localStorage.getItem('mb_update_seen_v2'))return;
-  // Show 2s after being on any game screen (never on welcome)
+  if(!S.name)return; // not logged in yet
+  // Show 1.5s after being on any game screen
   clearTimeout(window._updateMsgTimer);
   window._updateMsgTimer=setTimeout(()=>{
-    if(S.name&&S.currentScreen!=='welcome'){
+    if(S.currentScreen!=='welcome'){
       const o=document.getElementById('updateMsgOv');
-      if(o){o.style.display='flex';}
+      if(o)o.style.display='flex';
     }
-  },2000);
+  },1500);
 }
 
 // Chat button visibility updated from goScreen (integrated below)
@@ -7208,15 +7269,11 @@ function maybeShowUpdateMsg(){
   <div id="orgOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;">
 
     <!-- ── Classroom background ── -->
-    <div id="orgBg" style="position:absolute;inset:0;background:linear-gradient(180deg,#c8b89a 0%,#b5a080 35%,#8a7055 100%);transition:filter 1s;">
-      <!-- Wall texture / brickwork suggestion -->
-      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0,rgba(0,0,0,.04) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(0,0,0,.03) 0,rgba(0,0,0,.03) 1px,transparent 1px,transparent 72px);"></div>
-      <!-- Ceiling lamp glow -->
-      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:500px;height:160px;background:radial-gradient(ellipse at 50% 0%,rgba(255,240,180,.18),transparent);pointer-events:none;"></div>
-      <!-- Floor -->
-      <div style="position:absolute;bottom:0;left:0;right:0;height:18%;background:linear-gradient(0deg,#5a4030,#7a5a3a);"></div>
-      <!-- Baseboard -->
-      <div style="position:absolute;bottom:18%;left:0;right:0;height:3px;background:rgba(0,0,0,.3);"></div>
+    <div id="orgBg" style="position:absolute;inset:0;background:#1a1008;transition:filter 1s;overflow:hidden;">
+      <!-- Forest/classroom background -->
+      <img src="https://i.postimg.cc/XNDyXV3b/fond-orgrografe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;"/>
+      <!-- Subtle dark overlay for legibility -->
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.15);pointer-events:none;"></div>
     </div>
 
     <!-- ── CHALKBOARD — left 62%, raw image ── -->
@@ -7241,7 +7298,7 @@ function maybeShowUpdateMsg(){
         </div>
       </div>
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
-           style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));animation:bossIdle 4s ease-in-out infinite;display:block;"/>
+           style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));display:block;"/>
     </div>
 
     <!-- ── HUD top bar ── -->
