@@ -20,7 +20,7 @@
     /* ── Floating books ── */
     .fbook{position:absolute;pointer-events:none;z-index:1;
       filter:drop-shadow(0 0 22px rgba(255,215,120,.55));
-      animation:bob 3.2s ease-in-out infinite 0s ease-in-out infinite;}
+      animation:bob 3.2s ease-in-out infinite 0s;}
     .bl{top:110px;left:44px;width:115px;}
     .br{top:280px;right:32px;width:132px;animation-duration:3.8s;}
     .bb{bottom:32px;right:200px;width:200px;animation-duration:5.2s;}
@@ -162,10 +162,8 @@
     /* Student character decorations */
     .deco-eleve{position:absolute;pointer-events:none;
       filter:drop-shadow(0 8px 20px rgba(0,0,0,.4));}
-    .deco-eleve-welcome{bottom:0;right:3%;widthanimation:bob2 4.1s ease-in-out infinite 0.8s      animation:bob 4.2s ease-in-out infinite;opacity:.9;}
-    .deco-eleve-results{position:relative;width:110px;flex-shrink:0;
-      fianimation:bob3 3.7s ease-in-out infinite 1.5s 6px 14px rgba(0,0,0,.3));
-      animation:bob 3.5s ease-in-out infinite;}
+    .deco-eleve-welcome{bottom:0;right:3%;width:220px;animation:bob 4.2s ease-in-out infinite;opacity:.9;}
+    .deco-eleve-results{position:relative;width:110px;flex-shrink:0;filter:drop-shadow(6px 6px 14px rgba(0,0,0,.3));animation:bob2 4.1s ease-in-out infinite 0.8s;}
     .mission-card{width:420px;padding:24px 28px;border-radius:24px;
       background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);
       backdrop-filter:blur(10px);margin-bottom:18px;}
@@ -1717,9 +1715,13 @@ const EXCLUSIVE_AV=[
    desc:"100% sur la séance 'Les auteurs et leurs œuvres'",
    check:()=>!!S.perfect["s3"]},
   {src:"https://i.postimg.cc/rwMSPCR4/avatar-spe-dieuconjugaison.png",
-   label:"Dieu de la conjugaison",
-   desc:"Vaincre le Boss Conjugus",
-   check:()=>!!S.bossDefeated}
+   label:"Conjugus",
+   desc:"Vaincre Conjugus",
+   check:()=>!!S.bossDefeated},
+  {src:"https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png",
+   label:"Grammairia",
+   desc:"Vaincre Grammairia",
+   check:()=>!!S.gramBossDefeated}
 ];
 const PROF={point:"https://i.postimg.cc/V6gqrbp4/personnage-CD5.png",smile:"https://i.postimg.cc/9MCPQB8L/personnage-CD4.png",dub:"https://i.postimg.cc/4xqS8j8K/personnage-CD2.png"};
 const HINTS=["Lis bien chaque proposition avant de répondre !","Rappelle-toi du cours… Tu l'as !","Prends le temps de réfléchir.","Fais confiance à ta mémoire !","La bonne réponse est là, concentre-toi.","Souviens-toi des définitions vues en classe."];
@@ -3580,7 +3582,7 @@ function goScreen(name){
   S.currentScreen=name;
   // Show/hide chat button
   const chatBtn=document.getElementById("chatToggleBtn");
-  if(chatBtn)chatBtn.style.display=(name!=="welcome")?"inline-flex":"none";
+  if(chatBtn)chatBtn.style.display=(name!=="welcome"&&S.name)?"inline-flex":"none";
   // Music: play on all menu/nav screens, stop only when quiz is active
   const mus=document.getElementById("bgMusic");
   if(mus){
@@ -5308,6 +5310,7 @@ window.addEventListener("load",()=>{
         try{buildBigAvGrid();}catch(e){}
         // Ensure name shows in panel inputs
         const ni=document.getElementById("nameInput");if(ni)ni.value=S.name;
+        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="inline-flex";
         const bni=document.getElementById("bigNameInput");if(bni)bni.value=S.name;
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
@@ -6946,6 +6949,8 @@ function abandonOrgografe(){
 }
 
 function tryOpenOrgografe(){
+  // Recompute stars from seancePct in case migrateToStars wasn't called
+  migrateToStars();
   const stars=totalStars();
   const req=6;
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
@@ -7116,7 +7121,7 @@ function maybeShowUpdateMsg(){
 
   <!-- UPDATE MESSAGE OVERLAY -->
   <div id="updateMsgOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:8000;
-       display:flex;align-items:center;justify-content:center;padding:16px;">
+       align-items:center;justify-content:center;padding:16px;">
     <div style="background:linear-gradient(160deg,#1a0d00,#0a0500);border:2px solid rgba(217,164,65,.4);
          border-radius:22px;padding:28px;max-width:440px;width:100%;animation:popIn .4s;max-height:88vh;overflow-y:auto;text-align:center;">
       <div style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:12px;letter-spacing:.5px;">🆕 Nouvelle mise à jour !</div>
