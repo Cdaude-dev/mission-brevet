@@ -943,7 +943,9 @@
 
   <!-- HOME -->
   <div id="homeScreen" class="screen">
-    <!-- Background music for main menu -->
+    <audio id="victoryMusic" src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Victoire.mp3" preload="auto"></audio>
+  <audio id="gameOverMusic" src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/game-over.mp3" preload="auto"></audio>
+  <!-- Background music for main menu -->
     <audio id="menuMusic" src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/main-menu-1.mp3" loop preload="auto" style="display:none;"></audio>
     <!-- Foreground books (large, blurred, partially cropped for depth) -->
     <img class="fbook-fg fg-bl" src="https://i.postimg.cc/6pwBzjQD/livre3.png" alt=""/>
@@ -1160,7 +1162,7 @@
   <!-- FAILURE OVERLAY -->
   <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:95;
        flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;">
-    <img src="httpsanimation:bob 5.2s ease-in-out infinite 1.1sCLdBfhzY/echec.png" alt="échec"
+    <img src="https://i.postimg.cc/Y9rMpwZr/echec.png" alt="échec"
          style="width:min(220px,60vw);filter:drop-shadow(0 8px 24px rgba(255,50,50,.4));animation:bob 3s ease-in-out infinite;"/>
     <div style="font-size:26px;font-weight:900;color:#ff6060;text-shadow:0 0 20px rgba(255,50,50,.6);">Résultat insuffisant…</div>
     <div id="failureMsg" style="font-size:16px;color:#f0dbb5;max-width:380px;line-height:1.5;"></div>
@@ -4234,13 +4236,14 @@ function renderIllustrations(mod,qIdx){
     const frameStyle=img.noFrame
       ?"border:none;background:none;box-shadow:none;"
       :"borderanimation:bob3 4.4s ease-in-out infinite 1.8s-shadow:0 4px 24px rgba(0,0,0,.5);border:2px solid rgba(217,164,65,.25);";
-    imgEl.style.cssText=`width:${size}px;max-height:60vh;object-fit:contain;${frameStyle}${img.float?"animation:bob 3s ease-in-out infinite;":""}`;
+    imgEl.style.cssText=`width:min(${size}px,38vw);min-width:80px;max-height:50vh;object-fit:contain;${frameStyle}${img.float?"animation:bob 3s ease-in-out infinite;":""}`;
     imgEl.onerror=()=>wrap.remove();
 
     if(img.secretClick){
       imgEl.style.cursor="pointer";
       imgEl.title="Clique sur Botticelli pour un secret… 🎨";
       imgEl.onclick=()=>unlockBotticelliSecret(imgEl);
+      imgEl.ontouchend=(e)=>{e.preventDefault();unlockBotticelliSecret(imgEl);};
     }
     wrap.appendChild(imgEl);
     card.appendChild(wrap);
@@ -5141,6 +5144,7 @@ function checkFailureCondition(p,total){
 }
 function showFailure(p,total){
   S.locked=true;
+  playGameOverMusic();
   const ov=document.getElementById("failureOv");
   const msg=document.getElementById("failureMsg");
   if(msg) msg.innerHTML=`Score actuel : <strong>${S.correct}/${total}</strong> (${p}%)<br>Il n\'est plus possible d\'atteindre 50% de bonnes réponses. Courage — recommence pour progresser !`;
@@ -5650,6 +5654,7 @@ function bossVictory(){
   const dead=document.getElementById("bossDead");
   if(dead){dead.currentTime=0;dead.play().catch(()=>{});}
   document.getElementById("bossOv").style.display="none";
+  playVictoryMusic();
   S.bossDefeated=true;
   // Unlock avatar and badge
   if(!S.badges.has("dieu_conj")){
@@ -6176,6 +6181,7 @@ function gramBossDefeat(){
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
   document.getElementById("gramBossOv").style.display="none";
+  playVictoryMusic();
   gramBossState.darkPhase=false;
   const ov=document.getElementById("gramResultOv");
   document.getElementById("gramResultImg").src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";
@@ -6190,6 +6196,7 @@ function gramBossVictory(){
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
   document.getElementById("gramBossOv").style.display="none";
+  playVictoryMusic();
   gramBossState.darkPhase=false;
   // Mark boss as defeated and persist
   S.gramBossDefeated=true;
@@ -6241,6 +6248,7 @@ function abandonGramBoss(){
 }
 
 function closeGramResult(){
+  stopVictoryMusic();
   document.getElementById("gramResultOv").style.display="none";
   gramBossState.darkPhase=false;
   // Reset boss image
@@ -6751,6 +6759,13 @@ function startOrgografe(){
   const om=document.getElementById("orgMusicAudio");
   if(om){om.currentTime=0;om.volume=0.5;om.play().catch(()=>{});}
   orgState={qIdx:0,lives:3,hp:15,selectedWord:null,noPerfect:false,darkPhase:false};
+  // Reset char to normal skin and HP bar
+  const ch=document.getElementById("orgChar");
+  if(ch){ch.src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";ch.style.filter="drop-shadow(0 0 24px rgba(249,115,22,.5))";}
+  const hpf=document.getElementById("orgHpFill");
+  if(hpf){hpf.style.width="100%";hpf.style.background="linear-gradient(90deg,#f97316,#fb923c)";}
+  const orgBg=document.getElementById("orgBg");
+  if(orgBg)orgBg.style.filter="";
   document.getElementById("orgOv").style.display="block";
   renderOrgLives();
   renderOrgQuestion();
@@ -6870,22 +6885,22 @@ function orgHit(){
   orgState.hp--;
   const hpFill=document.getElementById("orgHpFill");
   if(hpFill)hpFill.style.width=Math.max(0,(orgState.hp/15)*100)+"%";
-  // Hit animation — red flash on char
+  // Hit animation: bossHitBlink (same as other bosses)
   const ch=document.getElementById("orgChar");
   if(ch){
-    ch.style.filter="brightness(.4) saturate(5) hue-rotate(-30deg) drop-shadow(0 0 24px #ef4444)";
-    setTimeout(()=>{ch.style.filter=orgState.darkPhase
-      ?"drop-shadow(0 0 24px rgba(239,68,68,.8))":"drop-shadow(0 0 24px rgba(249,115,22,.5))";},400);
+    ch.style.animation="none";
+    ch.classList.add("hit");
+    setTimeout(()=>{
+      ch.classList.remove("hit");
+      ch.style.filter=orgState.darkPhase
+        ?"drop-shadow(0 0 24px rgba(239,68,68,.8)) brightness(1.1)":"drop-shadow(0 0 24px rgba(249,115,22,.5))";
+      ch.style.animation="bossIdle 4s ease-in-out infinite";
+    },520);
   }
-  // Full screen red flash
-  const fl=document.createElement("div");
-  fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.22);z-index:999;pointer-events:none;animation:bossHitBlink .4s ease-out forwards;";
-  document.body.appendChild(fl);
-  setTimeout(()=>fl.remove(),420);
-  // Play Grammairia hit sound (reuse)
+  // Play org hurt sound
   try{
-    const av=document.getElementById("gramAngryVoice");
-    if(av){av.currentTime=0;av.volume=0.6;av.play().catch(()=>{});}
+    const hs=document.getElementById("orgHurtSound");
+    if(hs){hs.currentTime=0;hs.volume=0.7;hs.play().catch(()=>{});}
   }catch(e){}
   // Phase 2 at 50% (hp≤7)
   if(orgState.hp<=7&&!orgState.darkPhase){
@@ -6919,6 +6934,8 @@ function triggerOrgDarkPhase(){
 function orgVictory(){
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
+  try{const ds=document.getElementById("orgDefeatedSound");if(ds){ds.currentTime=0;ds.play().catch(()=>{});}}catch(e){}
+  playVictoryMusic();
   document.getElementById("orgOv").style.display="none";
   // Badges
   if(!S.badges.has("trancheur_ogre"))unlockBadge("trancheur_ogre");
@@ -6936,6 +6953,8 @@ function orgVictory(){
 
 function orgDefeat(){
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
+  try{const ls=document.getElementById("orgLaughSound");if(ls){ls.currentTime=0;ls.play().catch(()=>{});}}catch(e){}
+  playGameOverMusic();
   document.getElementById("orgOv").style.display="none";
   document.getElementById("orgResultImg").src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";
   document.getElementById("orgResultTitle").textContent="💀 DÉFAITE...";
@@ -6946,6 +6965,7 @@ function orgDefeat(){
 }
 
 function closeOrgResult(){
+  stopVictoryMusic();
   document.getElementById("orgResultOv").style.display="none";
   // Return to grammar menu
   showGramMenu();
@@ -7049,16 +7069,34 @@ function updateOrgChapter(){
 }
 
 
+
+function playVictoryMusic(){
+  setTimeout(()=>{
+    const vm=document.getElementById("victoryMusic");
+    if(vm){vm.currentTime=0;vm.volume=0.7;vm.play().catch(()=>{});}
+  },2500);
+}
+function stopVictoryMusic(){
+  const vm=document.getElementById("victoryMusic");
+  if(vm){vm.pause();vm.currentTime=0;}
+}
+function playGameOverMusic(){
+  setTimeout(()=>{
+    const gom=document.getElementById("gameOverMusic");
+    if(gom){gom.currentTime=0;gom.volume=0.7;gom.play().catch(()=>{});}
+  },800);
+}
+
 function maybeShowUpdateMsg(){
-  // Only show when we are already on home screen, never on welcome
-  if(!localStorage.getItem('mb_update_seen_v2')){
-    setTimeout(()=>{
-      if(S.currentScreen==='home'||S.currentScreen==='grammaire'||S.currentScreen==='conjugaison'||S.currentScreen==='literature'){
-        const o=document.getElementById('updateMsgOv');
-        if(o)o.style.display='flex';
-      }
-    },1800);
-  }
+  if(localStorage.getItem('mb_update_seen_v2'))return;
+  // Show 2s after being on any game screen (never on welcome)
+  clearTimeout(window._updateMsgTimer);
+  window._updateMsgTimer=setTimeout(()=>{
+    if(S.name&&S.currentScreen!=='welcome'){
+      const o=document.getElementById('updateMsgOv');
+      if(o){o.style.display='flex';}
+    }
+  },2000);
 }
 
 // Chat button visibility updated from goScreen (integrated below)
@@ -7181,25 +7219,20 @@ function maybeShowUpdateMsg(){
       <div style="position:absolute;bottom:18%;left:0;right:0;height:3px;background:rgba(0,0,0,.3);"></div>
     </div>
 
-    <!-- ── CHALKBOARD — left 60% ── -->
-    <div style="position:absolute;top:5%;left:2%;width:62%;height:72%;z-index:3;">
-      <!-- Board frame (dark wood) -->
-      <div style="position:absolute;inset:0;background:#2a1a0a;border-radius:6px;box-shadow:4px 4px 20px rgba(0,0,0,.5);"></div>
-      <!-- Board surface (white) -->
-      <div style="position:absolute;inset:10px;background:#f5f0e8;border-radius:3px;overflow:hidden;">
-        <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.08;"/>
-      </div>
-      <!-- Board content -->
-      <div id="orgBoardText" style="position:absolute;inset:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:4;">
-        <div style="font-size:clamp(11px,1.4vw,16px);color:#1a5c8a;font-weight:700;margin-bottom:12px;opacity:.7;letter-spacing:.3px;">Trouvez et corrigez l'erreur dans cette phrase :</div>
-        <!-- Words rendered inline as clickable spans by JS -->
-        <div id="orgPhrase" style="font-size:clamp(18px,3vw,32px);color:#1a3a6a;font-weight:800;text-align:center;line-height:1.8;letter-spacing:.5px;word-spacing:6px;cursor:default;"></div>
-        <div id="orgClickHint" style="font-size:clamp(11px,1.2vw,14px);color:#2a6a9a;font-style:italic;margin-top:8px;opacity:.8;">👆 Cliquez sur le mot erroné</div>
+    <!-- ── CHALKBOARD — left 62%, raw image ── -->
+    <div style="position:absolute;top:4%;left:1%;width:63%;height:68%;z-index:3;">
+      <!-- Tableau image as-is -->
+      <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;"/>
+      <!-- Board content over image -->
+      <div id="orgBoardText" style="position:absolute;inset:8% 6%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;z-index:4;">
+        <div style="font-size:clamp(10px,1.2vw,15px);color:#1a5c8a;font-weight:700;margin-bottom:8px;opacity:.8;letter-spacing:.3px;">Trouvez et corrigez l'erreur :</div>
+        <div id="orgPhrase" style="font-size:clamp(16px,2.8vw,30px);color:#1a3a6a;font-weight:800;text-align:center;line-height:2;letter-spacing:.5px;word-spacing:8px;cursor:default;"></div>
+        <div id="orgClickHint" style="font-size:clamp(11px,1.1vw,14px);color:#2a6a9a;font-style:italic;margin-top:6px;opacity:.8;">👆 Cliquez sur le mot erroné</div>
       </div>
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:0;right:0;width:min(42vw,380px);z-index:5;">
+    <div id="orgCharWrap" style="position:absolute;bottom:0;right:0;width:min(52vw,460px);z-index:5;">
       <!-- HP bar above character -->
       <div style="padding:0 12px 8px;text-align:center;">
         <div style="font-size:11px;color:#f97316;font-weight:900;margin-bottom:4px;" id="orgBossLabel">⚔️ La grande Orgografe</div>
@@ -7243,7 +7276,10 @@ function maybeShowUpdateMsg(){
     </div>
 
     <!-- Audio -->
-    <audio id="orgMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Dieu-de-la-conjugaison.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Orgografe.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgHurtSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_hurt.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgLaughSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_laugh.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgDefeatedSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_defeated.mp3" type="audio/mpeg"/></audio>
   </div>
 
   <!-- ORGOGRAFE RESULT OVERLAY -->
