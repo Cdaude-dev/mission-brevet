@@ -3321,6 +3321,8 @@ function computeModStars(modId){
 }
 
 function totalStars(){
+  if(S.name===ADMIN_CODE||S.name==="Daude96")return 999;
+  if(!S.stars)migrateToStars();
   let t=0;
   Object.keys(MOD_UNLOCK).forEach(id=>{t+=computeModStars(id);});
   return t;
@@ -3574,7 +3576,7 @@ function switchTab(tab){
   document.querySelectorAll(".ptab").forEach((t,i)=>t.classList.toggle("active",["profil","badges","classement","audio","inventaire"][i]===tab));
   document.querySelectorAll(".tab-content").forEach(tc=>tc.classList.remove("active"));
   const el=document.getElementById("tab-"+tab);if(el)el.classList.add("active");
-  if(tab==="classement"){startLbPolling();}else{stopLbPolling();}if(tab==="classement")loadLB();
+  if(tab==="classement"){_refreshLb("lbWrap");startLbPolling();}else{stopLbPolling();}if(tab==="classement")loadLB();
   if(tab==="inventaire")renderInventaireFor("invKeys");
 }
 
@@ -3948,6 +3950,8 @@ function startLbPolling(){
   // Also refresh chat avatars when LB updates
   refreshChatAvatarCache();
   stopLbPolling();
+  // Immediate first refresh
+  _refreshLb("bigLbWrap");
   lbPollTimer=setInterval(()=>{
     // Refresh whichever LB panel is currently visible
     const homeLb=document.getElementById("homeLbOv");
@@ -5164,7 +5168,7 @@ function bigTab(tab){
   document.querySelectorAll(".big-tab-content").forEach(tc=>tc.classList.remove("active"));
   const el2=document.getElementById("big-tab-"+tab);
   if(el2) el2.classList.add("active");
-  if(tab==="classement"){loadBigLB();startLbPolling();}else{stopLbPolling();}
+  if(tab==="classement"){loadBigLB();_refreshLb("lbWrap");startLbPolling();}else{stopLbPolling();}
   if(tab==="inventaire") renderInventaireFor("bigInvKeys");
   if(tab==="audio"){
     const sMs=document.getElementById("musicVolumeSlider");
@@ -5280,6 +5284,8 @@ window.addEventListener("load",()=>{
   try{ goScreen("welcome"); }catch(e){ console.warn("goScreen:",e); }
   try{ updateBossChapter(); }catch(e){}
   try{ updateGramBossChapter(); }catch(e){}
+  try{ injectOrgografeChapter(); }catch(e){}
+  try{ updateOrgChapter(); }catch(e){}
 
   // Auto-restore session on page refresh
   try{
@@ -5849,7 +5855,7 @@ function injectGramBossChapter(){
   gramMenu.appendChild(card);
 }
 injectGramBossChapter();
-injectOrgografeChapter();
+// Boot injection also happens in showGramMenu() for safety
 
 function updateGramBossChapter(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
