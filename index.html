@@ -1176,7 +1176,7 @@
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()">🚪 Abandonner la séance</button>
+    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()">↩ Revenir au menu</button>
   </div>
   <!-- end quizCard -->
 
@@ -2368,37 +2368,39 @@ const MODULES={
   ]},
 
   g2:{title:"Séance 2 — L'adjectif et ses degrés",questions:[
-    {type:"typed",prompt:"Mets l'adjectif 'long' au comparatif de supériorité avec 'juin' et 'mai' comme termes comparés.",answer:"plus longs",placeholder:"… longs / courts ?",
-     explanation:"COMPARATIF DE SUPÉRIORITÉ : PLUS + adjectif (accordé) + QUE. 'Les jours sont PLUS LONGS en juin qu'en mai.' Accord de 'longs' avec 'jours' (masc. plur.)."},
-    {type:"qcm",prompt:"Quelle est la forme du superlatif de supériorité de 'bon' ?",
-     options:["le plus bon","le plus bien","le meilleur","le mieux"],
-     correctIndex:2,explanation:"BON → superlatif : LE MEILLEUR (irrégulier). On ne dit pas 'le plus bon'. Autres irréguliers : mauvais → le pire (ou le plus mauvais) ; bien (adverbe) → le mieux. 'La meilleure solution', 'les meilleurs élèves'."},
-    {type:"typed",prompt:"Donne le superlatif relatif de supériorité de 'jeune' dans : 'Camille est ____ de tous leurs enfants.'",answer:"la plus jeune",placeholder:"…",
-     explanation:"SUPERLATIF RELATIF : déterminant (le/la/les) + PLUS/MOINS + adjectif + complément introduit par DE. 'La plus jeune DE tous leurs enfants'. L'accord se fait avec le sujet : Camille (féminin) → la plus jeune."},
-    {type:"typed",prompt:"Mets au comparatif d'égalité : 'La mer est ____ tranquille ____ un lac.'",answer:["aussi tranquille que","aussi tranquille qu'"],placeholder:"…",
-     explanation:"COMPARATIF D'ÉGALITÉ : AUSSI + adjectif + QUE. 'La mer est AUSSI TRANQUILLE QU'un lac.' Accord de 'tranquille' avec 'mer' (féminin singulier → tranquille, même forme masc./fém.)."},
-    {type:"typed",prompt:"Donne le superlatif absolu de 'rapide' (degré extrême, sans comparaison).",answer:["très rapide","extrêmement rapide"],placeholder:"…",
-     explanation:"SUPERLATIF ABSOLU : adverbe d'intensité + adjectif SANS comparaison avec un ensemble. 'Très rapide', 'extrêmement rapide', 'remarquablement rapide'. À distinguer du superlatif RELATIF qui compare à un groupe ('le plus rapide de la classe')."},
-    {type:"dragdrop",prompt:"Relie chaque phrase à son type de degré adjectival.",
+    {type:"qcm",prompt:"Que signifie 'comparatif de supériorité' ?",
+     options:["On compare deux éléments : le premier est plus que le second","On compare deux éléments : le premier est moins que le second","On exprime le degré maximum sans comparaison","On place l'adjectif avant le nom"],
+     correctIndex:0,explanation:"COMPARATIF DE SUPÉRIORITÉ : PLUS + adjectif + QUE. Ex : 'Ce roman est plus long que le premier.' On compare deux éléments, le premier surpassant le second. À distinguer du comparatif d'infériorité (moins…que) et d'égalité (aussi…que)."},
+    {type:"typed",prompt:"Complète : 'Ce film est _____ intéressant _____ celui que j'ai vu hier.' (comparatif de supériorité)",answer:["plus intéressant que","plus intéressant qu'"],placeholder:"… intéressant …",
+     explanation:"COMPARATIF DE SUPÉRIORITÉ : PLUS + adjectif (accordé) + QUE/QU'. 'Ce film est PLUS INTÉRESSANT QUE celui que j'ai vu hier.' L'adjectif s'accorde avec le sujet : 'film' → masculin singulier → intéressant."},
+    {type:"qcm",prompt:"Quelle est la forme correcte du superlatif de supériorité de 'bon' ?",
+     options:["le plus bon","le plus bien","le meilleur","le plus bon possible"],
+     correctIndex:2,explanation:"BON → superlatif irrégulier : LE MEILLEUR. On ne dit jamais 'le plus bon'. Autres irréguliers à connaître : mauvais → le pire ; petit → le moindre (sens figuré). Ex : 'C'est la meilleure élève de la classe.'"},
+    {type:"typed",prompt:"Transforme en superlatif relatif de supériorité : 'Lucie est très jeune parmi ses cousins.'",answer:"la plus jeune de ses cousins",placeholder:"… la …",
+     explanation:"SUPERLATIF RELATIF DE SUPÉRIORITÉ : déterminant (le/la/les) + PLUS + adjectif + DE + groupe nominal. 'Lucie est LA PLUS JEUNE DE ses cousins.' L'accord : Lucie = féminin → la plus jeune."},
+    {type:"qcm",prompt:"Laquelle de ces phrases contient un comparatif d'égalité ?",
+     options:["Ce lac est le plus calme de la région.","Cette route est aussi dangereuse que l'autre.","Le train est moins rapide que l'avion.","C'est une ville extrêmement belle."],
+     correctIndex:1,explanation:"COMPARATIF D'ÉGALITÉ : AUSSI + adjectif + QUE. 'Cette route est AUSSI DANGEREUSE QUE l'autre.' — les deux routes sont au même degré de danger. À ne pas confondre avec le superlatif relatif (le plus…) ou le comparatif de supériorité (plus…que)."},
+    {type:"dragdrop",prompt:"Relie chaque phrase à son type de degré.",
      leftTitle:"Phrase",rightTitle:"Degré",
      pairs:[
-       {left:"Cette ville est plus grande que Lyon.",right:"Comparatif de supériorité"},
-       {left:"Paris est la ville la plus visitée d'Europe.",right:"Superlatif relatif de supériorité"},
-       {left:"Ce film est aussi intéressant que l'autre.",right:"Comparatif d'égalité"},
-       {left:"Il est extrêmement doué.",right:"Superlatif absolu"},
-       {left:"Le théâtre est moins fréquenté que le cinéma.",right:"Comparatif d'infériorité"}
+       {left:"Ce livre est plus captivant que le précédent.",right:"Comparatif de supériorité"},
+       {left:"C'est le plus beau tableau du musée.",right:"Superlatif relatif"},
+       {left:"Elle est aussi sérieuse que son frère.",right:"Comparatif d'égalité"},
+       {left:"Il est vraiment très talentueux.",right:"Superlatif absolu"},
+       {left:"Ce chemin est moins long que l'autoroute.",right:"Comparatif d'infériorité"}
      ],
-     explanation:"Comparatif supériorité = plus…que. Infériorité = moins…que. Égalité = aussi…que. Superlatif relatif = le/la/les + plus/moins + adj + de. Superlatif absolu = très/extrêmement + adj (sans comparaison)."},
-    {type:"qcm",prompt:"Dans 'un pauvre homme' vs 'un homme pauvre', quelle différence de sens ?",
-     options:["Aucune différence, les deux sont synonymes.","'Un pauvre homme' (avant) = malheureux, à plaindre ; 'un homme pauvre' (après) = sans argent. La place de l'adjectif change le sens.","'Un pauvre homme' est plus soutenu.","L'adjectif avant le nom est toujours un superlatif."],
-     correctIndex:1,explanation:"PLACE DE L'ADJECTIF ET SENS : certains adjectifs changent de sens selon leur position. AVANT le nom : sens subjectif, affectif, figuré ('un grand homme' = un homme illustre). APRÈS le nom : sens objectif, littéral ('un homme grand' = de haute taille). Autres exemples : ancien professeur (ex-) / professeur ancien (vieux) ; curieux personnage (bizarre) / personnage curieux (qui a de la curiosité)."},
-    {type:"typed",prompt:"Classe du plus faible au plus fort : 'très vif' (rang 4), 'assez vif' (rang ?). Donne le rang.",answer:"3",placeholder:"rang 1 à 5",
-     explanation:"Ordre croissant : trop peu vif (1) < peu vif (2) < assez vif (3) < très vif (4) < vraiment très vif (5). Les adverbes de degré marquent l'intensité croissante : peu / assez / très / extrêmement / vraiment très."},
-    {type:"qcm",prompt:"Dans 'Les voiles blanches se dessinent sur une mer aussi tranquille qu'un lac', quelle est la fonction de 'aussi tranquille qu'un lac' ?",
-     options:["Épithète du nom 'mer'","Groupe adjectival à valeur de comparatif d'égalité, attribut du sujet 'mer' via 'se dessiner'","Complément circonstanciel de manière","COD du verbe 'se dessiner'"],
-     correctIndex:1,explanation:"'Aussi tranquille qu'un lac' = GROUPE ADJECTIVAL en emploi d'attribut (la mer EST tranquille). Le groupe adjectival a ici une valeur de COMPARATIF D'ÉGALITÉ avec son complément 'qu'un lac'. L'adjectif 'tranquille' s'accorde avec 'mer' (féminin singulier)."},
-    {type:"typed",prompt:"Quel est le féminin irrégulier de l'adjectif 'vieux' ?",answer:"vieille",placeholder:"…",
-     explanation:"VIEUX → féminin : VIEILLE (forme très irrégulière). Même type : beau/belle, nouveau/nouvelle, fou/folle, mou/molle. Ces adjectifs ont aussi une forme spéciale devant voyelle au masculin : beau → bel, nouveau → nouvel, vieux → vieil, fou → fol."}
+     explanation:"5 degrés : comparatif supériorité (plus…que), infériorité (moins…que), égalité (aussi…que) ; superlatif relatif (le/la/les + plus/moins + adj + de) ; superlatif absolu (très/extrêmement + adj, sans comparaison avec un groupe)."},
+    {type:"typed",prompt:"Donne le superlatif absolu de l'adjectif 'courageux'. (degré extrême, sans comparaison avec un groupe)",answer:["très courageux","extrêmement courageux","fort courageux"],placeholder:"… courageux",
+     explanation:"SUPERLATIF ABSOLU : adverbe d'intensité (très, extrêmement, fort, remarquablement…) + adjectif, SANS complément introduit par 'de'. 'Très courageux', 'extrêmement courageux'. Il n'y a pas de groupe de référence : on exprime un degré élevé, c'est tout."},
+    {type:"qcm",prompt:"Dans 'un grand homme' vs 'un homme grand', quelle est la différence ?",
+     options:["Aucune, les deux expressions sont équivalentes.","'Un grand homme' = un homme illustre, remarquable ; 'un homme grand' = un homme de haute taille.","'Un grand homme' s'utilise uniquement au superlatif.","'Un homme grand' est une faute de style."],
+     correctIndex:1,explanation:"PLACE DE L'ADJECTIF ET SENS : certains adjectifs changent de sens selon leur position. AVANT le nom = sens figuré/subjectif ('un grand homme' = illustre). APRÈS le nom = sens propre/objectif ('un homme grand' = de haute taille). Autres exemples : 'un ancien ami' (ex-ami) / 'un ami ancien' (depuis longtemps) ; 'un simple soldat' (ordinaire) / 'un soldat simple' (naïf)."},
+    {type:"qcm",prompt:"Laquelle de ces phrases contient un superlatif relatif de supériorité ?",
+     options:["Cette ville est très animée.","C'est la ville la plus animée du pays.","Cette ville est plus animée que la voisine.","Cette ville est aussi animée que Paris."],
+     correctIndex:1,explanation:"SUPERLATIF RELATIF DE SUPÉRIORITÉ : le/la/les + PLUS + adjectif + DE + groupe. 'C'est la ville LA PLUS ANIMÉE DU pays.' — on situe au sommet d'un groupe ('du pays'). À distinguer du comparatif de supériorité ('plus animée que') qui compare seulement deux éléments."},
+    {type:"typed",prompt:"Quel est le féminin irrégulier de l'adjectif 'vieux' ?",answer:"vieille",placeholder:"vieill…",
+     explanation:"VIEUX → féminin irrégulier : VIEILLE. Série à connaître : beau/belle, nouveau/nouvelle, vieux/vieille, fou/folle, mou/molle. Ces adjectifs ont aussi une forme spéciale devant voyelle au masculin singulier : beau → bel, nouveau → nouvel, vieux → vieil, fou → fol. Ex : 'un vieil arbre', 'un bel enfant'."}
   ]},
 
   /* ═══════════ GRAMMAIRE — CLASSES ET FONCTIONS ═══════════ */
@@ -2754,10 +2756,10 @@ const MODULES={
      explanation:"VOIR → vu. PQP : tu avais vu."},
     {type:"order",prompt:"Ces situations appellent-elles l\'IMPARFAIT ou le PLUS-QUE-PARFAIT ?",
      buckets:["Imparfait","Plus-que-parfait"],
-     items:[{text:"Explication d\'une situation antérieure (il avait oublié)",bucket:"Plus-que-parfait"},{text:"Action accomplie avant une autre action passée",bucket:"Plus-que-parfait"},{text:"Arrière-plan d\'un récit (il dormait pendant que...)",bucket:"Imparfait"},{text:"Action habituelle dans le passé",bucket:"Imparfait"},{text:"Antériorité par rapport à un passé simple",bucket:"Plus-que-parfait"},{text:"Description d\'un état dans le passé",bucket:"Imparfait"}],
+     items:[{text:"Explication d\'une situation antérieure (il avait oublié)",bucket:"Plus-que-parfait"},{text:"Action accomplie avant une autre action passée",bucket:"Plus-que-parfait"},{text:"Arrière-plan d\'un récit (il dormait pendant que...)",bucket:"Imparfait"},{text:"Action habituelle dans le passé",bucket:"Imparfait"},{text:"Action accomplie avant une autre (il avait déjà fini quand...)",bucket:"Plus-que-parfait"},{text:"Description d\'un état dans le passé",bucket:"Imparfait"}],
      explanation:"IMPARFAIT : durée, habitude, description, arrière-plan. PLUS-QUE-PARFAIT : antériorité — ce qui s\'était passé AVANT les événements principaux."},
-    {type:"typed",prompt:"Complète : \'Quand il ____ (manger) son repas, il sortit.\' (passé antérieur)",answer:"eut mangé",placeholder:"eut …",
-     explanation:"PASSÉ ANTÉRIEUR dans un récit au passé simple : auxiliaire au passé simple + participe passé. \'Quand il EUT MANGÉ, il sortit.\' Signale une action immédiatement antérieure."},
+    {type:"typed",prompt:"Complète avec le plus-que-parfait : 'Ils ____ (partir) avant que la pluie commence.'",answer:["étaient partis","étaient partis avant"],placeholder:"étaient …",
+     explanation:"PLUS-QUE-PARFAIT avec être : ÊTRE à l'imparfait + participe passé ACCORDÉ. 'Ils ÉTAIENT PARTIS.' Accord du participe avec le sujet : 'ils' (masculin pluriel) → partis. Verbes conjugués avec être : verbes de mouvement + tous les pronominaux."},
     {type:"qcm",prompt:"Dans \'Elle avait déjà lu ce livre quand on le lui offrit\', \'avait lu\' est au plus-que-parfait car :",
      options:["C\'est une erreur, il faudrait l\'imparfait.","La lecture est antérieure à l\'offrande.","Le verbe lire exige toujours le PQP.","Le PQP exprime une action soudaine."],
      correctIndex:1,explanation:"ANTÉRIORITÉ : \'avait lu\' (accompli avant) → \'on offrit\' (passé simple, événement principal). Schéma : [avait lu = avant] → [on offrit = après]."}
@@ -3196,7 +3198,7 @@ const S={
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
-  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",pwd:"",
+  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,
   welcomeAv:AVATARS[0],
   // fill state
   fillQ:null,fillBank:[],fillBlanks:[],fillPendingWord:null,
@@ -3318,12 +3320,13 @@ function renderInventaireFor(containerId){
     if(unlocked){
       btn.onclick=()=>{
         const ov=document.createElement("div");
+        ov.id="keyDetailOv";
         ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;align-items:center;justify-content:center;";
         ov.innerHTML=`<div style="background:linear-gradient(160deg,#2a1a00,#1a0a00);border:2px solid rgba(217,164,65,.4);border-radius:20px;padding:28px;max-width:360px;width:92%;text-align:center;animation:popIn .4s;">
           <img src="${key.img}" style="width:100px;filter:drop-shadow(0 0 20px rgba(217,164,65,.7));margin-bottom:12px;"/>
           <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:10px;">${key.name}</div>
           <div style="font-size:14px;color:#ead7ae;line-height:1.6;margin-bottom:16px;">${key.desc}</div>
-          <button onclick="this.closest('[style]').remove()" style="padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
+          <button onclick="document.getElementById('keyDetailOv').remove()" style="padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
         </div>`;
         document.body.appendChild(ov);
         ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -3339,8 +3342,9 @@ function toggleReduceMotion(on){
   });
 }
 function updateInventory(){
-  const conjUnlocked=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"].every(k=>S.perfect&&S.perfect[k])||S.conjKeyShown;
-  const gramUnlocked=["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k])||S.gramKeyShown;
+  const isAdminUser=(S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96");
+  const conjUnlocked=isAdminUser||S.conjKeyShown||["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"].every(k=>S.perfect&&S.perfect[k]);
+  const gramUnlocked=isAdminUser||S.gramKeyShown||["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k]);
   const cImg=document.getElementById("invKeyConjImg");
   const cLbl=document.getElementById("invKeyConjLabel");
   if(cImg){cImg.style.filter=conjUnlocked?"none":"grayscale(1)";cImg.style.opacity=conjUnlocked?"1":".4";}
@@ -3359,12 +3363,13 @@ function showKeyDetail(type){
   const keyDesc=isConj?"Cette clé prouve votre maîtrise de la Conjugaison. Elle vous permet de vous confronter au Dieu de la Conjugaison.":"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Déesse de la Grammaire.";
   const col=isConj?"#a78bfa":"#60a5fa";
   const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a2e,#050a1a);border:2px solid ${col}44;border-radius:24px;padding:32px 24px;max-width:360px;width:92%;text-align:center;animation:popIn .4s;">
     <img src="${keyImg}" style="width:140px;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 0 20px ${col});margin-bottom:16px;"/>
     <div style="font-size:22px;font-weight:900;color:${col};margin-bottom:10px;">${keyName}</div>
     <div style="font-size:14px;color:#e0e7ff;line-height:1.6;margin-bottom:18px;">${keyDesc}</div>
-    <button onclick="this.closest('[style]').remove()" style="padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,${col},#5b21b6);color:#fff;font-weight:700;cursor:pointer;">Fermer</button>
+    <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,${col},#5b21b6);color:#fff;font-weight:700;cursor:pointer;">Fermer</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -3623,7 +3628,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||"",pwd:S.pwd||""
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -3642,7 +3647,7 @@ function loadProgress(name){
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
-      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";
+      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;
       if(d.avatar)S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -3665,6 +3670,7 @@ function openPlayerPopup(entry){
     if(raw){const d=JSON.parse(raw);entry={...entry,...d,badges:d.badges||[],desc:d.desc||entry.desc||""};}
   }catch(e){}
   const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.88);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;";
   const badgesList=(Array.isArray(entry.badges)?entry.badges:[...( new Set(entry.badges||[]) )]);
   const badgesHtml=BADGES_DEF.filter(b=>badgesList.includes(b.id)).map(b=>
@@ -3914,8 +3920,32 @@ async function loadBigLB(){
 
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
-function startMod(id){
-  S.mod=id;S.qIdx=0;S.correct=0;S.locked=false;
+function startMod(id, resumeFrom){
+  // If there's a saved position for this module and no explicit resumeFrom, offer resume
+  if(!resumeFrom && S.savedMod===id && S.savedQIdx>0){
+    const qs=MODULES[id]?MODULES[id].questions:[];
+    const pct=qs.length?Math.round((S.savedQIdx/qs.length)*100):0;
+    const cd=document.createElement("div");
+    cd.className="mb-popup-ov";
+    cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center;";
+    cd.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a02,#0a0500);border:2px solid rgba(217,164,65,.4);border-radius:20px;padding:26px;max-width:360px;width:92%;text-align:center;">
+      <div style="font-size:28px;margin-bottom:8px;">⏸</div>
+      <div style="font-size:17px;font-weight:900;color:var(--gold);margin-bottom:8px;">Séance en pause</div>
+      <div style="font-size:13px;color:#ead7ae;margin-bottom:16px;line-height:1.5;">Tu t'étais arrêté(e) à la question <strong>${S.savedQIdx+1}</strong> sur ${qs.length} (${pct}%).<br>Veux-tu reprendre là où tu t'es arrêté(e) ?</div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button id="res_yes" style="padding:10px 18px;border-radius:11px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">▶ Reprendre</button>
+        <button id="res_no" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">🔄 Recommencer</button>
+      </div>
+    </div>`;
+    document.body.appendChild(cd);
+    cd.querySelector("#res_yes").onclick=()=>{cd.remove();startMod(id,{qIdx:S.savedQIdx,correct:S.savedCorrect});};
+    cd.querySelector("#res_no").onclick=()=>{cd.remove();S.savedMod=null;S.savedQIdx=0;startMod(id,null);};
+    return;
+  }
+  const resumeQIdx = resumeFrom?resumeFrom.qIdx:0;
+  const resumeCorrect = resumeFrom?resumeFrom.correct:0;
+  S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
+  if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
   S.sessionScoreStart=S.score;S.canEarnPoints=true;saveToLB();
   S.sessionScoreStart=S.score;
@@ -3941,16 +3971,7 @@ function startMod(id){
   if(!S.canEarnPoints) toast("✨ Séance déjà maîtrisée — entraînement libre, aucun point gagnable.");
   renderQ();
 }
-function abandonMod(){
-  if(!confirm("Abandonner cette séance ? Les points gagnés seront perdus."))return;
-  // Roll back score to what it was before the session
-  S.score=S.sessionScoreStart;
-  S.mod=null;
-  updateHUD();
-  D.quizCard.style.display="none";
-  showLitMenu();
-  toast("Séance abandonnée. À bientôt ! 💪");
-}
+
 function qs(){return S.mod?MODULES[S.mod].questions:[];}
 function rndHint(){return HINTS[Math.floor(Math.random()*HINTS.length)];}
 function resetHint(){D.hintImg.src=PROF.point;D.hintText.textContent=rndHint();}
@@ -4093,12 +4114,13 @@ function showKeyUnlock(type){
   const keyName=isConj?"Clé du Temps":"Clé de la Langue";
   const keyMsg=isConj?"Toutes les séances de conjugaison terminées à 100% !":"Bravo ! Vous avez terminé toutes les séances de grammaire à 100% — vous débloquez la Clé de la Langue !";
   const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,${isConj?"#1a0a2e,#050a1a":"#061028,#0c1f4a"});border:2px solid rgba(${isConj?"180,120,255":"96,165,250"},.5);border-radius:24px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(${isConj?"180,100,255":"59,130,246"},.3);">
     <div style="font-size:26px;font-weight:900;color:${isConj?"#c084fc":"#60a5fa"};margin-bottom:8px;">✨ ${keyName} débloquée !</div>
     <div style="font-size:16px;color:${isConj?"#e9d5ff":"#bfdbfe"};margin-bottom:16px;line-height:1.6;">${keyMsg}<br><span style="font-size:14px;opacity:.8;">Cette clé vous donne accès au boss final de la catégorie.</span></div>
     <img src="${keyImg}" style="width:140px;margin:0 auto 16px;display:block;filter:drop-shadow(0 0 24px rgba(${isConj?"180,100,255":"59,130,246"},.8));animation:bob 3s ease-in-out infinite;"/>
-    <button onclick="this.closest('[style]').remove()" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,${isConj?"#c084fc,#7c3aed":"#60a5fa,#2563eb"});color:#fff;font-size:16px;font-weight:900;cursor:pointer;">🎉 Super !</button>
+    <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,${isConj?"#c084fc,#7c3aed":"#60a5fa,#2563eb"});color:#fff;font-size:16px;font-weight:900;cursor:pointer;">🎉 Super !</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -4113,7 +4135,7 @@ function showAvatarUnlocked(src,name,msg){
     <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:6px;">Avatar débloqué !</div>
     <div style="font-size:17px;color:var(--gold-soft);font-weight:700;margin-bottom:6px;">${name}</div>
     <div style="font-size:14px;color:#ead7ae;">${msg}</div>
-    <button onclick="this.closest('div[style]').remove()" style="margin-top:16px;padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">Super ! ✨</button>
+    <button onclick="this.closest('.mb-popup-ov').remove()" style="margin-top:16px;padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">Super ! ✨</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -4682,6 +4704,7 @@ function showBanScreen(){
 function doLogout(){
   // Confirm before logging out
   const cd=document.createElement("div");
+  cd.className="mb-popup-ov";
   cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center;";
   cd.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a02,#0a0500);border:2px solid rgba(255,100,100,.3);
     border-radius:20px;padding:28px;max-width:360px;width:92%;text-align:center;animation:popIn .3s;">
@@ -4695,7 +4718,7 @@ function doLogout(){
         background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:14px;font-weight:900;cursor:pointer;">
         🚪 Déconnexion
       </button>
-      <button onclick="this.closest('[style]').remove()" style="padding:11px 22px;border-radius:12px;
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:11px 22px;border-radius:12px;
         border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">
         Annuler
       </button>
@@ -4777,9 +4800,11 @@ function doLogin(){
       const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
       allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
       S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
+      S.conjKeyShown=true;S.gramKeyShown=true;
       BADGES_DEF.forEach(b=>S.badges.add(b.id));
       S.unlockedSecrets=new Set(["botticelli"]);
       updateHUD();updateSeanceBadges();renderBadgesGrid();
+      try{renderInventaire();}catch(e){}try{renderInventaireFor("bigInvKeys");}catch(e){}
       saveProgress();saveToLB();
     },300);
     goScreen("home");updateHUD();
@@ -5100,6 +5125,13 @@ D.chip.addEventListener("click",e=>{e.stopPropagation();S.panelOpen=!S.panelOpen
 document.addEventListener("click",()=>{if(S.panelOpen){S.panelOpen=false;D.acctPanel.classList.remove("open");}});
 D.acctPanel.addEventListener("click",e=>e.stopPropagation());
 D.nameInput.addEventListener("input",()=>{S.name=D.nameInput.value||"Élève";D.chipName.textContent=S.name;saveToLB();});
+// Enter key advances to next question
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&document.getElementById("quizCard")&&document.getElementById("quizCard").style.display==="flex"){
+    const nb=document.getElementById("nextBtn");
+    if(nb&&nb.style.display!=="none"&&!nb.disabled){nb.click();e.preventDefault();}
+  }
+});
 document.querySelectorAll(".banner-btn[data-target]").forEach(b=>b.addEventListener("click",()=>goTransition(b.dataset.target)));
 document.querySelectorAll(".banner-btn:not([data-target])").forEach(b=>b.addEventListener("click",()=>toast("Ce module arrive bientôt ! 📖")));
 document.querySelectorAll(".banner-btn[data-target]").forEach(b=>b.addEventListener("click",()=>goTransition(b.dataset.target)));
@@ -5269,14 +5301,14 @@ function explodeAsteroid(img){
 function startAsteroidSpawner(){
   stopAsteroidSpawner();
   const schedule=()=>{
-    const delay=13000+Math.random()*7000; // 13-20s between spawns
+    const delay=5000+Math.random()*6000; // 5-11s between spawns
     asteroidSpawnTimer=setTimeout(()=>{
       spawnAsteroid();
-      if(Math.random()<0.3) setTimeout(spawnAsteroid,1200+Math.random()*1800);
+      if(Math.random()<0.6) setTimeout(spawnAsteroid,1000+Math.random()*1500);
       schedule();
     },delay);
   };
-  asteroidSpawnTimer=setTimeout(()=>{spawnAsteroid();schedule();},3000+Math.random()*4000);
+  asteroidSpawnTimer=setTimeout(()=>{spawnAsteroid();schedule();},1000+Math.random()*1500);
 }
 function stopAsteroidSpawner(){
   clearTimeout(asteroidSpawnTimer);asteroidSpawnTimer=null;
@@ -5452,7 +5484,7 @@ if(!BADGES_DEF.find(b=>b.id==="dieu_conj")){
 // Update boss chapter visibility on screen
 function updateBossChapter(){
   const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-  const unlocked=allConj.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96");
+  const unlocked=S.conjKeyShown||allConj.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé");
   const lockIcon=document.getElementById("bossLockIcon");
   if(lockIcon){lockIcon.style.filter=unlocked?"drop-shadow(0 0 8px rgba(250,204,21,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";}
 }
@@ -5601,7 +5633,7 @@ injectGramBossChapter();
 
 function updateGramBossChapter(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const unlocked=allGram.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96");
+  const unlocked=S.gramKeyShown||allGram.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé");
   const lk=document.getElementById("gramBossLockIcon");
   if(lk){lk.style.filter=unlocked?"drop-shadow(0 0 8px rgba(96,165,250,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";}
 }
@@ -5794,14 +5826,17 @@ function triggerDarkPhase(){
   if(angryVoice){angryVoice.currentTime=0;angryVoice.volume=1;angryVoice.play().catch(()=>{});}
 
   setTimeout(()=>{
-    // Second message line — appears after 2.5s
-    if(qBox){
-      qBox.innerHTML='<span style="font-size:20px;font-weight:900;color:#c084fc;text-shadow:0 0 20px rgba(180,50,255,.8);">La Déesse de la Grammaire entre dans une colère noire…<br><br><span style="font-size:15px;opacity:.8;color:#e9d5ff;">Ses pouvoirs se décuplent.<br>Le temps se compresse à 15 secondes.</span></span>';
-    }
-  },2500);
+    // Message 2 — 3s
+    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#c084fc;text-shadow:0 0 20px rgba(180,50,255,.8);">Son regard se voile…<br><br><span style="font-size:14px;color:#e9d5ff;line-height:1.8;">Elle n\'en peut plus.<br>Une rage froide s\'empare d\'elle.</span></span>';
+  },3000);
 
   setTimeout(()=>{
-    // Flash + change appearance at 4s
+    // Message 3 — 5.5s
+    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#e9d5ff;text-shadow:0 0 20px rgba(180,50,255,.8);">Ses pouvoirs se décuplent…<br><br><span style="font-size:14px;color:#c084fc;">⏱ Le chrono passe à 15 secondes.</span></span>';
+  },5500);
+
+  setTimeout(()=>{
+    // Flash + changement de skin — 7.5s
     const flashDiv=document.createElement("div");
     flashDiv.style.cssText="position:fixed;inset:0;background:rgba(180,50,255,.75);z-index:998;pointer-events:none;";
     document.body.appendChild(flashDiv);
@@ -5810,7 +5845,7 @@ function triggerDarkPhase(){
       char.style.filter="drop-shadow(0 0 40px rgba(180,50,255,.9))";
     }
     setTimeout(()=>flashDiv.remove(),300);
-  },4200);
+  },7500);
 
   setTimeout(()=>{
     // Move boss back to original position
@@ -5881,7 +5916,7 @@ function triggerDarkPhase(){
       gramBossState.timerVal=15;
       renderGramBossQ();
     }, 1000);
-  }, 5500);
+  }, 10000);
 }
 
 function startRainEffect(){
@@ -6066,7 +6101,7 @@ async function adminDeletePlayer(name){
     <div style="font-size:14px;color:#ead7ae;margin-bottom:16px;">Compte : <strong style="color:var(--gold);">${name}</strong></div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="adm_yes" style="padding:10px 20px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:900;cursor:pointer;">Supprimer</button>
-      <button onclick="this.closest('div[style]').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">Annuler</button>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">Annuler</button>
     </div>
   </div>`;
   document.body.appendChild(cd);
@@ -6087,19 +6122,19 @@ let chatIsFullscreen=false;
 
 function toggleChat(){
   const panel=document.getElementById("chatPanel");
-  const open=panel.style.display==="flex";
-  panel.style.display=open?"none":"inline-flex";
+  const open=panel.style.display!=="none"&&panel.style.display!=="";
   if(open){
+    panel.style.display="none";
     stopChatPolling();
     chatIsFullscreen=false;
     _applyChatSize(panel,false);
   } else {
-    // Update my avatar in input bar
+    panel.style.display="flex";
     const myAv=document.getElementById("chatMyAvatar");
     if(myAv)myAv.src=S.avatar||AVATARS[0];
     if(!chatLoaded){initChat();chatLoaded=true;}
     else{startChatPolling();}
-    scrollChatBottom();
+    setTimeout(scrollChatBottom,100);
   }
 }
 
@@ -6162,9 +6197,16 @@ async function initChat(){
   appendChatMsg("","💡 Bienvenue dans le chat Mission Brevet ! Merci de respecter les autres joueurs. Toute insulte ou spam pourra être sanctionné par un bannissement.",new Date().toISOString(),true);
   scrollChatBottom();
 
+  // Pre-populate avatar cache from LB
+  try{
+    fetchLBEntries().then(entries=>{
+      entries.forEach(e=>{if(e.name&&e.avatar)_chatAvatarCache[e.name]=e.avatar;});
+    });
+  }catch(e){}
   // Start polling every 3s
   startChatPolling();
 }
+const _chatAvatarCache={};
 
 function startChatPolling(){
   stopChatPolling();
@@ -6213,8 +6255,15 @@ function appendChatMsg(name,message,ts,isSystem,msgId){
   if(!isMe){
     try{
       const raw=localStorage.getItem(saveKey(name));
-      if(raw){const d=JSON.parse(raw);senderAvatar=d.avatar||AVATARS[0];}
+      if(raw){const d=JSON.parse(raw);if(d.avatar)senderAvatar=d.avatar;}
     }catch(e){}
+    // Also check LB cache (for players on other devices)
+    if(senderAvatar===AVATARS[0]){
+      try{
+        const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");
+        if(lb[name]&&lb[name].avatar)senderAvatar=lb[name].avatar;
+      }catch(e){}
+    }
     if(isAdmin) senderAvatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
   }
 
@@ -6305,6 +6354,7 @@ async function adminDeleteMsg(btn, msgId, playerName){
 function adminBanFromChat(name){
   if(!name||name==="Professeur Daudé")return;
   const cd=document.createElement("div");
+  cd.className="mb-popup-ov";
   cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center;";
   cd.innerHTML=`<div style="background:#1a0002;border:2px solid rgba(239,68,68,.5);border-radius:18px;padding:24px;max-width:360px;width:92%;text-align:center;">
     <div style="font-size:32px;margin-bottom:8px;">⛔</div>
@@ -6314,7 +6364,7 @@ function adminBanFromChat(name){
     </div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="ban_yes" style="padding:10px 20px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:900;cursor:pointer;">⛔ Bannir</button>
-      <button onclick="this.closest('[style]').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Annuler</button>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Annuler</button>
     </div>
   </div>`;
   document.body.appendChild(cd);
@@ -6358,12 +6408,51 @@ async function sendChatMsg(){
     });
   }catch(e){appendChatMsg(S.name,msg,new Date().toISOString());scrollChatBottom();}
 }
+
+
+// Mute all audio when tab is hidden, restore when visible
+document.addEventListener("visibilitychange",()=>{
+  const hidden=document.hidden;
+  const audioIds=["bgMusic","bossMusicAudio","gramMusicAudio","gramMusicAngry","menuMusic"];
+  audioIds.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(hidden){
+      el._wasPlaying=!el.paused;
+      el.pause();
+    } else {
+      if(el._wasPlaying)el.play().catch(()=>{});
+    }
+  });
+});
+
+// Enter key → advance to next question (when nextBtn is visible and not locked)
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const nb=D.nextBtn;
+    // Don't interfere with text inputs, textareas, or chat
+    const tag=(document.activeElement||{}).tagName||"";
+    if(tag==="TEXTAREA"||tag==="INPUT")return;
+    if(nb&&nb.style.display!=="none"&&!S.locked){nb.click();e.preventDefault();}
+  }
+});
+
 // Global ESC closes any open popup
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     _closePlayerPopup();
     const dr=document.getElementById('daudeRichPopup');if(dr)dr.remove();
     const bd=document.getElementById('badgeDetailOv');if(bd)bd.style.display='none';
+  }
+});
+
+// Mute all audio when tab is hidden, restore when visible
+document.addEventListener("visibilitychange",()=>{
+  const allAudio=document.querySelectorAll("audio");
+  if(document.hidden){
+    allAudio.forEach(a=>{if(!a.paused){a._wasPlaying=true;a.pause();}else{a._wasPlaying=false;}});
+  } else {
+    allAudio.forEach(a=>{if(a._wasPlaying&&a.paused){a.play().catch(()=>{});}});
   }
 });
 
