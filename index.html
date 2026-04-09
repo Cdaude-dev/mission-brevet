@@ -3670,6 +3670,7 @@ function openPlayerPopup(entry){
     if(raw){const d=JSON.parse(raw);entry={...entry,...d,badges:d.badges||[],desc:d.desc||entry.desc||""};}
   }catch(e){}
   const ov=document.createElement("div");
+  ov.id="playerPopupOv";
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.88);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;";
   const badgesList=(Array.isArray(entry.badges)?entry.badges:[...( new Set(entry.badges||[]) )]);
@@ -5034,8 +5035,9 @@ document.getElementById("bigNameInput")?.addEventListener("input",()=>{
 
 /* ══════════ BADGE DETAIL POPUP ══════════ */
 function _closePlayerPopup(){
-  // Remove player popup backdrop
-  document.querySelectorAll('#playerPopupOv').forEach(el=>el.remove());
+  // Remove player popup (by id or class)
+  document.querySelectorAll('#playerPopupOv,.mb-popup-ov[data-popup="player"]').forEach(el=>el.remove());
+  const byId=document.getElementById('playerPopupOv');if(byId)byId.remove();
   // Also remove Daudé rich popup if open
   const dr=document.getElementById('daudeRichPopup');if(dr)dr.remove();
   // Also hide static badge detail overlay if open
@@ -6315,7 +6317,7 @@ function appendChatMsg(name,message,ts,isSystem,msgId,msgAvatar){
     nameLabel=`<span style="font-size:12px;color:rgba(26,10,0,.7);font-weight:700;">Moi</span>`;
   } else {
     nameLabel=`<span style="font-size:12px;color:var(--gold-soft);font-weight:700;cursor:pointer;"
-      onclick="openPlayerPopup({name:'${name}',score:0,avatar:'${senderAvatar}'})">${name}</span>`;
+      onclick="openPlayerPopup({name:'${name}',score:0,avatar:'${chatAvatarCache[name]||senderAvatar}'})">${name}</span>`;
   }
 
   const adminTools=canModerate?`
@@ -6345,7 +6347,7 @@ function appendChatMsg(name,message,ts,isSystem,msgId,msgAvatar){
     <!-- Avatar -->
     <img src="${senderAvatar}" alt="" class="chat-msg-av" data-name="${isMe?'__me__':name}" onerror="this.src='${AVATARS[0]}'"
       style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;${avBorder}
-             cursor:pointer;" onclick="${isAdmin?'openDaudePopup()':isMe?'':("openPlayerPopup({name:'"+name+"',score:0,avatar:'"+senderAvatar+"'})")}"/>
+             cursor:pointer;" onclick="${isAdmin?'openDaudePopup()':isMe?'':("openPlayerPopup({name:'"+name+"',score:0,avatar:'"+(chatAvatarCache[name]||senderAvatar)+"'})")}"/>
     <!-- Bubble area -->
     <div style="max-width:75%;display:flex;flex-direction:column;gap:3px;${isMe?"align-items:flex-end;":"align-items:flex-start;"}">
       <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
