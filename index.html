@@ -3602,6 +3602,11 @@ function showGramMenu(){
   S.mod=null;D.quizCard.style.display="none";
   const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
   if(D.gramMenu)D.gramMenu.style.display="flex";
+  // Ensure boss chapters are injected
+  try{injectGramBossChapter();}catch(e){}
+  try{injectOrgografeChapter();}catch(e){}
+  try{updateGramBossChapter();}catch(e){}
+  try{updateOrgChapter();}catch(e){}
 }
 function showConjMenu(){
   S.mod=null;D.quizCard.style.display="none";
@@ -3714,13 +3719,15 @@ async function saveToLB(){
         "apikey":SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+SUPABASE_ANON_KEY
       };
-      // Try PATCH first (update existing row)
+      // PATCH to update existing row first
       const patchRes=await fetch(
         SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
-        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal"},body:JSON.stringify(lbPayload)}
+        {method:"PATCH",headers:{...headers,"Prefer":"return=representation,count=exact"},body:JSON.stringify(lbPayload)}
       );
-      // If no row was updated (404 or 0 rows), INSERT a new row
-      if(patchRes.status===404||patchRes.headers.get("content-range")==="*/0"||patchRes.status===200&&(await patchRes.text()).trim()===""){
+      // If no rows matched (count=0), insert new row
+      const countHeader=patchRes.headers.get("content-range")||"";
+      const matched=countHeader&&!countHeader.startsWith("0/");
+      if(!matched){
         await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
           method:"POST",
           headers:{...headers,"Prefer":"return=minimal"},
@@ -4883,7 +4890,7 @@ function doLogout(){
     // Reset session state (keep saves in localStorage)
     S.name="";S.score=0;S.done={};S.perfect={};S.seancePct={};
     S.badges=new Set();S.unlockedSecrets=new Set();
-    try{sessionStorage.removeItem("mb_session");}catch(e){}
+    try{localStorage.removeItem("mb_session");}catch(e){}
     S.bossDefeated=false;S.gramBossDefeated=false;
     S.bossUnlockShown=false;S.gramBossUnlockShown=false;
     S.conjKeyShown=false;S.gramKeyShown=false;
@@ -4982,7 +4989,7 @@ function doLogin(){
     goScreen("home");updateHUD();
     loadProgress(v);
     saveToLB();
-    try{sessionStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar}));}catch(e){}
+    try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
     maybeShowUpdateMsg();
   });
 }
@@ -5062,7 +5069,7 @@ function finalizeRegister(name, avatar, desc, hashedPwd){
   saveProgress();saveToLB();
   toast("Compte créé ! Bienvenue "+name+" 🎉");
   maybeShowUpdateMsg();
-  try{sessionStorage.setItem("mb_session",JSON.stringify({name:name,avatar:avatar}));}catch(e){}
+  try{localStorage.setItem("mb_session",JSON.stringify({name:name,avatar:avatar,ts:Date.now()}));}catch(e){}
   // Sync desc inputs
   const di=document.getElementById("descInput");if(di)di.value=desc||"";
   const bd=document.getElementById("bigDescInput");if(bd)bd.value=desc||"";
@@ -5265,7 +5272,9 @@ window.addEventListener("load",()=>{
 
   // Auto-restore session on page refresh
   try{
-    const sess=JSON.parse(sessionStorage.getItem("mb_session")||"null");
+    const sessRaw=localStorage.getItem("mb_session");const sess=sessRaw?JSON.parse(sessRaw):null;
+    // Expire after 30 days
+    if(sess&&sess.ts&&(Date.now()-sess.ts)>30*24*3600*1000){localStorage.removeItem("mb_session");}
     if(sess&&sess.name){
       // Restore the session directly
       S.name=sess.name;S.avatar=sess.avatar||AVATARS[0];
@@ -5279,6 +5288,7 @@ window.addEventListener("load",()=>{
       // Skip welcome screen
       setTimeout(()=>{
         goScreen("home");updateHUD();
+        saveToLB(); // Push current score to Supabase on restore
         maybeShowUpdateMsg();
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
@@ -5815,6 +5825,7 @@ function injectGramBossChapter(){
   gramMenu.appendChild(card);
 }
 injectGramBossChapter();
+injectOrgografeChapter();
 
 function updateGramBossChapter(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
@@ -6987,11 +6998,14 @@ function updateOrgChapter(){
 
 
 function maybeShowUpdateMsg(){
+  // Only show when we are already on home screen, never on welcome
   if(!localStorage.getItem('mb_update_seen_v2')){
     setTimeout(()=>{
-      const o=document.getElementById('updateMsgOv');
-      if(o)o.style.display='flex';
-    },1500);
+      if(S.currentScreen==='home'||S.currentScreen==='grammaire'||S.currentScreen==='conjugaison'||S.currentScreen==='literature'){
+        const o=document.getElementById('updateMsgOv');
+        if(o)o.style.display='flex';
+      }
+    },1800);
   }
 }
 
