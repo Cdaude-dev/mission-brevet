@@ -20,11 +20,15 @@
     /* ── Floating books ── */
     .fbook{position:absolute;pointer-events:none;z-index:1;
       filter:drop-shadow(0 0 22px rgba(255,215,120,.55));
-      animation:bob 4.5s ease-in-out infinite;}
+      animation:bob 3.2s ease-in-out infinite 0s ease-in-out infinite;}
     .bl{top:110px;left:44px;width:115px;}
     .br{top:280px;right:32px;width:132px;animation-duration:3.8s;}
     .bb{bottom:32px;right:200px;width:200px;animation-duration:5.2s;}
     @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+    @keyframes bob2{0%,100%{transform:translateY(0) rotate(-1deg);}40%{transform:translateY(-18px) rotate(1deg);}80%{transform:translateY(-8px) rotate(0deg);}}
+    @keyframes bob3{0%,100%{transform:translateY(0);}30%{transform:translateY(-10px);}70%{transform:translateY(-20px);}90%{transform:translateY(-5px);}}
+    @keyframes bob4{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-16px) scale(1.03);}}
+    @keyframes bob5{0%,100%{transform:translateY(0) rotate(1deg);}60%{transform:translateY(-12px) rotate(-1deg);}}
 
     /* ── Overlays ── */
     .popup{position:fixed;top:18px;left:50%;transform:translateX(-50%);
@@ -78,7 +82,7 @@
     .start-btn:disabled{opacity:.5;cursor:default;transform:none;}
 
     /* ══ HUD ══ */
-    .hud{position:fixed;top:18px;right:20px;z-index:90;
+    .hud{position:fixed;top:18px;right:20px;z-index:95;
       display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
     .chip{display:flex;align-items:center;gap:10px;
       background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.15);
@@ -158,10 +162,9 @@
     /* Student character decorations */
     .deco-eleve{position:absolute;pointer-events:none;
       filter:drop-shadow(0 8px 20px rgba(0,0,0,.4));}
-    .deco-eleve-welcome{bottom:0;right:3%;width:220px;z-index:2;
-      animation:bob 4.2s ease-in-out infinite;opacity:.9;}
+    .deco-eleve-welcome{bottom:0;right:3%;widthanimation:bob2 4.1s ease-in-out infinite 0.8s      animation:bob 4.2s ease-in-out infinite;opacity:.9;}
     .deco-eleve-results{position:relative;width:110px;flex-shrink:0;
-      filter:drop-shadow(0 6px 14px rgba(0,0,0,.3));
+      fianimation:bob3 3.7s ease-in-out infinite 1.5s 6px 14px rgba(0,0,0,.3));
       animation:bob 3.5s ease-in-out infinite;}
     .mission-card{width:420px;padding:24px 28px;border-radius:24px;
       background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);
@@ -190,7 +193,7 @@
       animation:floatBook 3.5s ease-in-out infinite;}
     @keyframes floatBook{0%,100%{transform:rotate(-12deg);}50%{transform:rotate(-12deg) translateY(-12px);}}
     .deco-prof-lit{position:absolute;bottom:0;left:18%;width:210px;
-      filter:drop-shadow(0 8px 20px rgba(0,0,0,.45));z-index:4;pointer-events:none;
+      filteranimation:bob4 4.8s ease-in-out infinite 0.3spx 20px rgba(0,0,0,.45));z-index:4;pointer-events:none;
       animation:bob 4s ease-in-out infinite;}
     .lit-menu{
       position:fixed;top:0;left:50%;transform:translateX(-50%);
@@ -216,7 +219,7 @@
       line-height:1.25;text-shadow:0 1px 0 rgba(255,240,200,.6);
       word-break:keep-all;white-space:normal;max-width:100%;}
     /* Foreground book (large, blurred, partially offscreen) */
-    .fbook-fg{position:absolute;pointer-events:none;z-index:2;
+    .fbook-fg{position:absolute;pointer-animation:bob5 3.5s ease-in-out infinite 2.1sdex:2;
       filter:blur(3px) drop-shadow(0 0 30px rgba(255,200,80,.4));
       opacity:.75;animation:bob 6s ease-in-out infinite;}
     .fg-bl{bottom:-40px;left:-60px;width:340px;transform:rotate(15deg);animation-duration:7s;}
@@ -1159,7 +1162,7 @@
   <!-- FAILURE OVERLAY -->
   <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:95;
        flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;">
-    <img src="https://i.postimg.cc/CLdBfhzY/echec.png" alt="échec"
+    <img src="httpsanimation:bob 5.2s ease-in-out infinite 1.1sCLdBfhzY/echec.png" alt="échec"
          style="width:min(220px,60vw);filter:drop-shadow(0 8px 24px rgba(255,50,50,.4));animation:bob 3s ease-in-out infinite;"/>
     <div style="font-size:26px;font-weight:900;color:#ff6060;text-shadow:0 0 20px rgba(255,50,50,.6);">Résultat insuffisant…</div>
     <div id="failureMsg" style="font-size:16px;color:#f0dbb5;max-width:380px;line-height:1.5;"></div>
@@ -3214,7 +3217,7 @@ const S={
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
-  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,orgBossDefeated:false,
+  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,orgBossDefeated:false,stars:{},
   welcomeAv:AVATARS[0],
   // fill state
   fillQ:null,fillBank:[],fillBlanks:[],fillPendingWord:null,
@@ -3460,7 +3463,7 @@ function showKeyDetail(type){
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;";
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a2e,#050a1a);border:2px solid ${col}44;border-radius:24px;padding:32px 24px;max-width:360px;width:92%;text-align:center;animation:popIn .4s;">
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a2e,#050a1a);border:2pxanimation:bob2 3.9s ease-in-out infinite 0.5sborder-radius:24px;padding:32px 24px;max-width:360px;width:92%;text-align:center;animation:popIn .4s;">
     <img src="${keyImg}" style="width:140px;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 0 20px ${col});margin-bottom:16px;"/>
     <div style="font-size:22px;font-weight:900;color:${col};margin-bottom:10px;">${keyName}</div>
     <div style="font-size:14px;color:#e0e7ff;line-height:1.6;margin-bottom:18px;">${keyDesc}</div>
@@ -3591,6 +3594,7 @@ function goScreen(name){
   if(D.gramScr) D.gramScr.classList.toggle("active",name==="grammaire");
   if(D.conjScr) D.conjScr.classList.toggle("active",name==="conjugaison");
   D.hud.style.display=name==="welcome"?"none":"flex";
+  if(name==="home") maybeShowUpdateMsg();
   const menus={literature:D.litMenu,grammaire:D.gramMenu,conjugaison:D.conjMenu};
   Object.values(menus).forEach(m=>{if(m)m.style.display="none";});
   D.quizCard.style.display="none";
@@ -3749,7 +3753,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{}
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -3768,7 +3772,7 @@ function loadProgress(name){
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
-      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;
+      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -4100,8 +4104,9 @@ function startMod(id, resumeFrom){
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
   S.sessionScoreStart=S.score;S.canEarnPoints=true;saveToLB();
   S.sessionScoreStart=S.score;
-  // Points can only be earned if module was never completed, OR completed but not 100%
-  S.canEarnPoints = !S.done[id] || !S.perfect[id];
+  // Allow repeat scoring for practice modules (s2, s3, p2, p3)
+  const ALLOW_REPEAT=['s2','s3','p2','p3'];
+  S.canEarnPoints = !S.done[id] || !S.perfect[id] || ALLOW_REPEAT.includes(id);
   D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
@@ -4219,7 +4224,7 @@ function renderIllustrations(mod,qIdx){
     // No frame for transparent PNGs
     const frameStyle=img.noFrame
       ?"border:none;background:none;box-shadow:none;"
-      :"border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.5);border:2px solid rgba(217,164,65,.25);";
+      :"borderanimation:bob3 4.4s ease-in-out infinite 1.8s-shadow:0 4px 24px rgba(0,0,0,.5);border:2px solid rgba(217,164,65,.25);";
     imgEl.style.cssText=`width:${size}px;max-height:60vh;object-fit:contain;${frameStyle}${img.float?"animation:bob 3s ease-in-out infinite;":""}`;
     imgEl.onerror=()=>wrap.remove();
 
@@ -4269,7 +4274,7 @@ function showKeyUnlock(type){
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,${isConj?"#1a0a2e,#050a1a":"#061028,#0c1f4a"});border:2px solid rgba(${isConj?"180,120,255":"96,165,250"},.5);border-radius:24px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(${isConj?"180,100,255":"59,130,246"},.3);">
     <div style="font-size:26px;font-weight:900;color:${isConj?"#c084fc":"#60a5fa"};margin-bottom:8px;">✨ ${keyName} débloquée !</div>
-    <div style="font-size:16px;color:${isConj?"#e9d5ff":"#bfdbfe"};margin-bottom:16px;line-height:1.6;">${keyMsg}<br><span style="font-size:14px;opacity:.8;">Cette clé vous donne accès au boss final de la catégorie.</span></div>
+    <div style="font-size:16px;color:${isConj?"#e9d5ff":"#bfdbfe"};margin-bottom:16px;line-height:1.6;">${keyMsg}<br><span style="font-size:14px;opacity:.8;">Canimation:bob 3.2s ease-in-out infinite 0snne accès au boss final de la catégorie.</span></div>
     <img src="${keyImg}" style="width:140px;margin:0 auto 16px;display:block;filter:drop-shadow(0 0 24px rgba(${isConj?"180,100,255":"59,130,246"},.8));animation:bob 3s ease-in-out infinite;"/>
     <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,${isConj?"#c084fc,#7c3aed":"#60a5fa,#2563eb"});color:#fff;font-size:16px;font-weight:900;cursor:pointer;">🎉 Super !</button>
   </div>`;
@@ -4646,9 +4651,13 @@ function showFeedback(ok,explanation){
 function showResults(){
   const total=qs().length,p=total>0?Math.round((S.correct/total)*100):0;
   S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
-  // Store percentage for display
+  // Store percentage for display (keep best)
   if(!S.seancePct)S.seancePct={};
-  S.seancePct[S.mod]=p+"%";
+  const prevPct=parseInt(S.seancePct[S.mod])||0;
+  if(p>prevPct) S.seancePct[S.mod]=p+"%";
+  const displayPct=Math.max(p,prevPct);
+  // Keep perfect if was already perfect
+  if(prevPct===100) S.perfect[S.mod]=true;
   checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();
   // Check boss unlock conditions after séance completion
   setTimeout(()=>{
@@ -4663,8 +4672,10 @@ function showResults(){
   D.quizCounter.textContent="Terminé ! "+S.correct+"/"+total+" bonnes réponses";
   D.hintImg.src=PROF.smile;D.hintText.textContent=p>=66?"Bravo ! Tu es prêt(e) pour le brevet 🎓":"Continue à réviser, tu vas y arriver !";
   if(!S.stars)S.stars={};
-  S.stars[S.mod]=pctToStars(p);
-  const starCount=pctToStars(p);
+  const newStars=pctToStars(p);
+  // Never downgrade: keep the best score
+  S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
+  const starCount=S.stars[S.mod];
   let stars=starImgHtml(starCount),msg="Continue à réviser !";
   if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉 (3 étoiles)";}
   else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
@@ -4990,7 +5001,6 @@ function doLogin(){
     loadProgress(v);
     saveToLB();
     try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
-    maybeShowUpdateMsg();
   });
 }
 
@@ -5068,7 +5078,6 @@ function finalizeRegister(name, avatar, desc, hashedPwd){
   goScreen("home");updateHUD();
   saveProgress();saveToLB();
   toast("Compte créé ! Bienvenue "+name+" 🎉");
-  maybeShowUpdateMsg();
   try{localStorage.setItem("mb_session",JSON.stringify({name:name,avatar:avatar,ts:Date.now()}));}catch(e){}
   // Sync desc inputs
   const di=document.getElementById("descInput");if(di)di.value=desc||"";
@@ -5277,22 +5286,34 @@ window.addEventListener("load",()=>{
     if(sess&&sess.ts&&(Date.now()-sess.ts)>30*24*3600*1000){localStorage.removeItem("mb_session");}
     if(sess&&sess.name){
       // Restore the session directly
-      S.name=sess.name;S.avatar=sess.avatar||AVATARS[0];
+      S.name=sess.name;
       loadProgress(sess.name);
+      // After loadProgress, prefer saved avatar, fallback to session avatar
+      if(!S.avatar||S.avatar===AVATARS[0]) S.avatar=sess.avatar||AVATARS[0];
       // Restore Daudé specially
-      if(sess.name==="Professeur Daudé"||sess.name===ADMIN_CODE){
+      if(sess.name==="Professeur Daudé"||sess.name===ADMIN_CODE||sess.name==="Daude96"){
+        S.name="Professeur Daudé";
         S.avatar="https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png";
         S.desc="Le créateur de Mission Brevet. Imbattable.";
         S.conjKeyShown=true;S.gramKeyShown=true;
+        S.stars=S.stars||{};
       }
+      // Refresh session with current avatar
+      try{localStorage.setItem("mb_session",JSON.stringify({name:S.name,avatar:S.avatar,ts:Date.now()}));}catch(ex){}
       // Skip welcome screen
       setTimeout(()=>{
         goScreen("home");updateHUD();
-        saveToLB(); // Push current score to Supabase on restore
-        maybeShowUpdateMsg();
+        migrateToStars();
+        try{buildAvGrid();}catch(e){}
+        try{buildBigAvGrid();}catch(e){}
+        // Ensure name shows in panel inputs
+        const ni=document.getElementById("nameInput");if(ni)ni.value=S.name;
+        const bni=document.getElementById("bigNameInput");if(bni)bni.value=S.name;
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
+        try{updateOrgChapter();}catch(e){}
         try{renderInventaire();}catch(e){}
+        saveToLB();
       },200);
       return; // don't show welcome screen
     }
@@ -6926,10 +6947,10 @@ function abandonOrgografe(){
 
 function tryOpenOrgografe(){
   const stars=totalStars();
-  const req=10;
-  const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé";
+  const req=6;
+  const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
   if(!isAdmin&&stars<req){
-    toast("🔒 Il te faut "+req+" étoiles pour affronter la grande Orgografe ! ("+stars+"/"+req+")");
+    toast("🔒 Il te faut "+req+" ⭐ pour affronter la grande Orgografe ! ("+stars+"/"+req+")");
     return;
   }
   // Intro animation
@@ -6972,7 +6993,7 @@ function injectOrgografeChapter(){
   card.className="chapter-card";card.id="orgChapterCard";
   card.style="border:2px solid rgba(34,197,94,.5);background:rgba(20,83,45,.08);";
   card.innerHTML=`<div class="chapter-header" onclick="tryOpenOrgografe()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
-    <div class="chapter-title" style="color:#f97316;">La grande Orgografe</div>
+    <div class="chapter-title" style="color:#22c55e;">La grande Orgografe</div>
     <div style="font-size:10px;color:#fed7aa;opacity:.7;margin-top:-4px;">Mini-boss d'orthographe · 10 ⭐ requises</div>
     <img id="orgLockIcon" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
       style="width:110px;height:110px;object-fit:contain;filter:grayscale(1) brightness(.35);
