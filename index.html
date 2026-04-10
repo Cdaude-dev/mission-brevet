@@ -604,6 +604,22 @@
     @keyframes p3Ember{0%{transform:translateY(0) translateX(0) scale(1);opacity:1;}100%{transform:translateY(-120px) translateX(var(--ex)) scale(0);opacity:0;}}
     @keyframes p3Shake{0%,100%{transform:translateX(0) translateY(0);}20%{transform:translateX(-8px) translateY(4px);}40%{transform:translateX(8px) translateY(-4px);}60%{transform:translateX(-6px) translateY(2px);}80%{transform:translateX(6px) translateY(-2px);}}
 
+  
+    @keyframes dustFloat{
+      0%{transform:translateY(0) translateX(0);opacity:0;}
+      10%{opacity:var(--op);}
+      90%{opacity:var(--op);}
+      100%{transform:translateY(calc(-100px - var(--drift))) translateX(var(--dx));opacity:0;}
+    }
+    .org-dust{
+      position:absolute;
+      border-radius:50%;
+      background:rgba(255,255,255,.55);
+      filter:blur(var(--blur));
+      animation:dustFloat var(--dur) ease-in-out infinite;
+      pointer-events:none;
+    }
+
   </style>
 </head>
 <body>
@@ -1219,7 +1235,7 @@
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button></button>
+    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:104px;width:auto;display:block;" alt="Fuir"/></button></button>
   </div>
   <!-- end quizCard -->
 
@@ -1492,7 +1508,8 @@
     </div>
   
   </div>
-</div><!-- end conjMenu -->
+  <audio id="teddySnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/teddynounet_moussieur.mp3" type="audio/mpeg"/></audio>
+  </div><!-- end conjMenu -->
 </div>
 
   <!-- BOSS UNLOCK OVERLAY -->
@@ -1552,7 +1569,7 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(255,100,100,.4);
              background:rgba(60,0,0,.55);color:rgba(255,160,160,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:104px;width:auto;display:block;" alt="Fuir"/></button>
     <!-- Audio elements -->
     <audio id="bossMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Dieu-de-la-conjugaison.mp3" type="audio/mpeg"/></audio>
     <audio id="bossHit1"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/bruit01-dieuconjugaison.mp3" type="audio/mpeg"/></audio>
@@ -1630,7 +1647,7 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(100,150,255,.35);
              background:rgba(0,10,50,.55);color:rgba(147,197,253,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:104px;width:auto;display:block;" alt="Fuir"/></button>
     <!-- Audio -->
     <audio id="gramMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-de-la-Grammaire.mp3" type="audio/mpeg"/></audio>
     <audio id="gramMusicAngry" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-Grammaire-enervee..mp3" type="audio/mpeg"/></audio>
@@ -6861,6 +6878,7 @@ function startOrgografe(){
   const orgBg=document.getElementById("orgBg");
   if(orgBg)orgBg.style.filter="";
   document.getElementById("orgOv").style.display="block";
+  startOrgDust();
   renderOrgLives();
   renderOrgQuestion();
 }
@@ -7099,6 +7117,28 @@ function abandonOrgografe(){
   };
 }
 
+
+function startOrgDust(){
+  const container=document.getElementById("orgDustContainer");
+  if(!container||container.children.length>0)return;
+  for(let i=0;i<22;i++){
+    const d=document.createElement("div");
+    d.className="org-dust";
+    const size=2+Math.random()*5;
+    const left=Math.random()*100;
+    const dur=6+Math.random()*10;
+    const delay=Math.random()*-12;
+    const dx=(Math.random()-.5)*60;
+    const drift=Math.random()*40;
+    const blur=0.5+Math.random()*2;
+    const op=0.2+Math.random()*0.4;
+    d.style.cssText=`width:${size}px;height:${size}px;left:${left}%;bottom:${Math.random()*80}%;
+      --dur:${dur}s;--dx:${dx}px;--drift:${drift}px;--blur:${blur}px;--op:${op};
+      animation-delay:${delay}s;`;
+    container.appendChild(d);
+  }
+}
+
 function tryOpenOrgografe(){
   // Recompute stars from seancePct in case migrateToStars wasn't called
   migrateToStars();
@@ -7288,6 +7328,8 @@ function tryOpenMemelite(){
 
 
 function tryOpenTeddynounet(){
+  // Play/restart sound each click
+  try{const ts=document.getElementById("teddySnd");if(ts){ts.pause();ts.currentTime=0;ts.volume=0.8;ts.play().catch(()=>{});}}catch(e){}
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
@@ -7473,7 +7515,7 @@ function startMemelit(){
   melState={phase:1,qIdx:0,hp:15,lives:5,timerVal:20,timerInt:null,
     catCount:0,catsMissed:0,noPerfect:false,catsToRepel:15,catsRepelled:0,
     shuffledQs:[...MEMELITE_QUESTIONS].sort(()=>Math.random()-.5),
-    inCatPhase:false,_lastCatAt:-1};
+    inCatPhase:false,_lastCatAt:-1,transitioning:false};
   const melChar=document.getElementById("melChar");
   if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.filter="drop-shadow(0 0 20px rgba(220,38,38,.4))";melChar.style.animation="melBreathe 3s ease-in-out infinite";}
   const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";}
@@ -7646,7 +7688,7 @@ function launchCats(count){
         setTimeout(()=>{cat.remove();check();},650);
       };
       cat.addEventListener("animationend",()=>{
-        if(cat.dataset.hit)return;
+        if(cat.dataset.hit||melState.transitioning)return;
         missed++;melState.catsMissed++;
         melState.lives--;renderMelLives();melState.noPerfect=true;
         const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
@@ -7695,7 +7737,7 @@ function launchMeteors(count){
         setTimeout(()=>{m.remove();check();},520);
       };
       m.addEventListener("animationend",()=>{
-        if(m.dataset.hit)return;
+        if(m.dataset.hit||melState.transitioning)return;
         melState.lives--;renderMelLives();melState.noPerfect=true;
         const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
         document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
@@ -7728,8 +7770,12 @@ function melHit(){
 
 // ── PHASE 2 CINEMATIC ──
 function melPhase2Cinematic(){
+  if(melState.transitioning)return;
+  melState.transitioning=true;
   clearInterval(melState.timerInt);
   melState.phase=2;
+  // Clear all remaining cats — player is invulnerable during cinematic
+  const _cc=document.getElementById("melCatContainer");if(_cc){_cc.innerHTML="";_cc.style.pointerEvents="none";}
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const cineOv=document.getElementById("melCineOv");
   const cineImg=document.getElementById("melCineImg");
@@ -7759,14 +7805,18 @@ function melPhase2Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusic(2);
+    melState.transitioning=false;
     renderMelQ();
   },5000);
 }
 
 // ── PHASE 3 CINEMATIC ──
 function melPhase3Cinematic(){
+  if(melState.transitioning)return;
+  melState.transitioning=true;
   clearInterval(melState.timerInt);
   melState.phase=3;
+  const _cc=document.getElementById("melCatContainer");if(_cc){_cc.innerHTML="";_cc.style.pointerEvents="none";}
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const cineOv=document.getElementById("melCineOv");
   const cineImg=document.getElementById("melCineImg");
@@ -7797,11 +7847,13 @@ function melPhase3Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusic(3);
+    melState.transitioning=false;
     renderMelQ();
   },6000);
 }
 
 function melVictory(){
+  melState.transitioning=true;
   clearInterval(melState.timerInt);
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const snd=document.getElementById("melDefSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
@@ -7963,6 +8015,8 @@ function abandonMemelite(){
       <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;"/>
       <!-- Subtle dark overlay for legibility -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.15);pointer-events:none;"></div>
+      <!-- Floating dust particles -->
+      <div id="orgDustContainer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
     </div>
 
     <!-- ── CHALKBOARD — left 62%, raw image ── -->
@@ -7978,14 +8032,8 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:45px;left:43%;width:min(46vw,380px);z-index:6;">
-      <!-- HP bar above character -->
-      <div style="padding:0 8px 6px;text-align:center;">
-        <div id="orgBossLabel" style="font-size:12px;color:#fed7aa;font-weight:900;margin-bottom:3px;">⚔️ La grande Orgografe</div>
-        <div style="background:rgba(0,0,0,.5);border-radius:10px;height:11px;border:1px solid rgba(249,115,22,.4);">
-          <div id="orgHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
-        </div>
-      </div>
+    <div id="orgCharWrap" style="position:absolute;bottom:20px;left:40%;width:min(52vw,430px);z-index:6;">
+      <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
            style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));display:block;position:relative;z-index:1;animation:orgBreathe 3.5s ease-in-out infinite;"/>
@@ -7994,7 +8042,7 @@ function abandonMemelite(){
     <!-- ── HUD: counter top-left, flee top-right ── -->
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
       <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;"><button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button></button>
+      <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;"><button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:104px;width:auto;display:block;" alt="Fuir"/></button></button>
     </div>
 
     <!-- ── Bottom HUD: lives centred ── -->
@@ -8086,7 +8134,7 @@ function abandonMemelite(){
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <!-- Flee -->
-        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
+        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:104px;width:auto;display:block;" alt="Fuir"/></button>
         <!-- Timer centred -->
         <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
         <!-- Spacer -->
