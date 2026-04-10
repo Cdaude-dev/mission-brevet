@@ -610,6 +610,12 @@
     @keyframes orgDustAnim2{0%{transform:translateY(0) translateX(0);opacity:0;}20%{opacity:.9;}80%{opacity:.5;}100%{transform:translateY(-130px) translateX(15px);opacity:0;}}
     @keyframes orgDustAnim3{0%{transform:translateY(0) translateX(5px);opacity:0;}15%{opacity:.7;}85%{opacity:.3;}100%{transform:translateY(-100px) translateX(-20px);opacity:0;}}
 
+  
+    @keyframes fireRise{0%{transform:translateY(0) translateX(0) scale(1);opacity:1;}
+      30%{opacity:.9;}70%{opacity:.6;}100%{transform:translateY(-160px) translateX(var(--fx)) scale(0.2);opacity:0;}}
+    @keyframes fireFlicker{0%,100%{transform:scale(1);}25%{transform:scale(1.3) translateX(-3px);}75%{transform:scale(.8) translateX(3px);}}
+    .fire-particle{position:absolute;border-radius:50%;pointer-events:none;animation:fireRise var(--fd) linear var(--fdel) infinite;}
+
   </style>
 </head>
 <body>
@@ -990,7 +996,8 @@
       <button class="banner-btn" data-target="conjugaison">Conjugaison</button>
       <button class="banner-btn">Rédaction</button>
     </div>
-    <div style="display:flex;justify-content:center;margin-top:18px;position:relative;z-index:8;">
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:18px;position:relative;z-index:8;flex-wrap:wrap;">
+      <button onclick="showActualites()" style="padding:10px 20px;border-radius:14px;border:1px solid rgba(217,164,65,.35);background:rgba(217,164,65,.12);color:var(--gold-soft);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">📰 Actualités</button>
       <button id="homeLbBtn" onclick="showHomeLb()" style="
         padding:12px 32px;border-radius:14px;border:1px solid rgba(245,215,161,.35);
         background:rgba(0,0,0,.35);color:var(--gold-soft);font-size:16px;font-weight:700;
@@ -1395,7 +1402,7 @@
 
   <!-- TEDDYNOUNET MINI-BOSS (conjugaison) — coming soon -->
   <div class="chapter-card" id="teddynounetCard" style="border:2px solid rgba(251,146,60,.5);background:rgba(124,45,18,.08);">
-    <div class="chapter-header" onclick="tryOpenTeddynounet()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
+    <div class="chapter-header" onclick="tryOpenTeddynounet()" ontouchstart="playTeddySound();event.preventDefault();" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
       <div class="chapter-title" style="color:#fb923c;">Teddynounet</div>
       <img id="teddyLockIcon" src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png"
         style="width:130px;height:130px;object-fit:contain;filter:grayscale(1) brightness(.35);
@@ -7108,6 +7115,42 @@ function abandonOrgografe(){
 }
 
 
+
+function startFireParticles(){
+  const container=document.getElementById("melFireContainer");
+  if(!container)return;
+  container.innerHTML="";
+  container.style.display="block";
+  for(let i=0;i<55;i++){
+    const p=document.createElement("div");
+    p.className="fire-particle";
+    const size=(4+Math.random()*12).toFixed(1);
+    const left=(Math.random()*100).toFixed(1);
+    const bottom=(Math.random()*40).toFixed(1);
+    const dur=(0.6+Math.random()*1.2).toFixed(2);
+    const del=(-Math.random()*2).toFixed(2);
+    const fx=((Math.random()-.5)*50).toFixed(0);
+    const r=220+Math.floor(Math.random()*35);
+    const g=100+Math.floor(Math.random()*120);
+    const blur=(Math.random()<0.4?(1+Math.random()*4):(0.2+Math.random())).toFixed(1);
+    p.style.cssText=`width:${size}px;height:${size}px;left:${left}%;bottom:${bottom}%;`+
+      `background:rgb(${r},${g},0);`+
+      `filter:blur(${blur}px);`+
+      `--fd:${dur}s;--fdel:${del}s;--fx:${fx}px;`;
+    container.appendChild(p);
+  }
+  // Extra bright embers
+  for(let j=0;j<20;j++){
+    const e=document.createElement("div");
+    e.style.cssText=`position:absolute;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;border-radius:50%;`+
+      `left:${Math.random()*100}%;bottom:${Math.random()*70}%;`+
+      `background:white;filter:blur(0.5px);`+
+      `animation:fireRise ${(0.4+Math.random()*.8).toFixed(2)}s linear ${(-Math.random()*1.5).toFixed(2)}s infinite;`+
+      `--fx:${((Math.random()-.5)*30).toFixed(0)}px;--fd:${(0.5+Math.random()*.7).toFixed(2)}s;--fdel:${(-Math.random()*1.5).toFixed(2)}s;`;
+    container.appendChild(e);
+  }
+}
+
 function startOrgDust(){
   const container=document.getElementById("orgDustContainer");
   if(!container||container.children.length>0)return;
@@ -7318,9 +7361,11 @@ function tryOpenMemelite(){
 }
 
 
-function tryOpenTeddynounet(){
-  // Play/restart sound each click
+function playTeddySound(){
   try{const ts=document.getElementById("teddySnd");if(ts){ts.pause();ts.currentTime=0;ts.volume=0.8;ts.play().catch(()=>{});}}catch(e){}
+}
+function tryOpenTeddynounet(){
+  playTeddySound();
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
@@ -7379,6 +7424,56 @@ function _renderUpdateSlide(){
   if(prev)prev.style.display=_updSlideIdx>0?'':'none';
   if(next)next.style.display=isLast?'none':'';
   if(close)close.style.display=isLast?'':'none';
+}
+
+
+function showActualites(){
+  const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#100a02,#0a0702);border:2px solid rgba(217,164,65,.3);border-radius:22px;padding:24px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;animation:popIn .35s;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <div style="font-size:20px;font-weight:900;color:var(--gold);">📰 Actualités</div>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="background:none;border:none;color:#ead7ae;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+
+    <!-- Update v3 — Orgografe + Mémélité -->
+    <div style="margin-bottom:20px;border-left:3px solid #f97316;padding-left:14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026</div>
+      <div style="font-size:15px;font-weight:900;color:#f97316;margin-bottom:8px;">🐉 Orgografe & 📚 Mémélité</div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">
+        <img src="https://i.postimg.cc/N04Cp0Rt/Gadou.png" style="width:60px;filter:drop-shadow(0 0 8px rgba(249,115,22,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+          <strong style="color:#fed7aa;">La grande Orgografe</strong> débarque dans le menu Grammaire !<br>
+          Corrigez ses fautes d'orthographe pour la vaincre.<br>
+          <span style="font-size:11px;opacity:.7;">Requis : 6 ⭐</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <img src="https://i.postimg.cc/bwfcRt83/Memelite.png" style="width:60px;filter:drop-shadow(0 0 8px rgba(220,38,38,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+          <strong style="color:#fca5a5;">Mémélité</strong> arrive dans le menu Littérature !<br>
+          60+ questions de culture littéraire sur 3 phases épiques.<br>
+          <span style="font-size:11px;opacity:.7;">Requis : Clé de la Librairie (100% en littérature)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update v2 — Système étoiles + boss -->
+    <div style="margin-bottom:20px;border-left:3px solid #c084fc;padding-left:14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Mars 2026</div>
+      <div style="font-size:15px;font-weight:900;color:#c084fc;margin-bottom:8px;">⚔️ Conjugus & Grammairia</div>
+      <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+        Les boss principaux font leur apparition.<br>
+        <strong style="color:#e9d5ff;">Conjugus</strong> — maîtrisez la conjugaison (Clé du Temps).<br>
+        <strong style="color:#93c5fd;">Grammairia</strong> — maîtrisez la grammaire (Clé de la Langue).<br>
+        Nouveau système d'⭐ étoiles et de classement en ligne.
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:#ead7ae;opacity:.4;text-align:center;margin-top:8px;">Mission Brevet · Révisions interactives</div>
+  </div>`;
+  document.body.appendChild(ov);
 }
 
 function maybeShowUpdateMsg(){
@@ -7509,7 +7604,7 @@ function startMemelit(){
     inCatPhase:false,_lastCatAt:-1,transitioning:false};
   const melChar=document.getElementById("melChar");
   if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.filter="drop-shadow(0 0 20px rgba(220,38,38,.4))";melChar.style.animation="melBreathe 3s ease-in-out infinite";}
-  const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";}
+  const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";cw.style.width="min(44vw,360px)";}
   renderMelLives();
   playMelMusic(1);
   renderMelQ();
@@ -7616,16 +7711,40 @@ function startCatPhase(){
       "Le ciel s'embrase : Mémélité fait tomber des chats-météores ! Empêche-les de frapper le sol !";
     warn.style.display="flex";
   }
-  // Animate Mémélité throwing
+  // Animate Mémélité throwing — phase-dependent
   const melChar=document.getElementById("melChar");
-  const throwSkins=["https://i.postimg.cc/BQ0cJSCL/memelite-sp1.png","https://i.postimg.cc/TY6qTdcy/memelite-sp2.png",
-    "https://i.postimg.cc/kXmF7Jy4/memelite-sp3.png","https://i.postimg.cc/hPBbKD0X/memelite-sp4.png"];
-  let si=0;const sk=setInterval(()=>{if(melChar)melChar.src=throwSkins[si%throwSkins.length];si++;},200);
+  if(melState.phase===1){
+    // Phase 1: cycling throw skins
+    const throwSkins=["https://i.postimg.cc/BQ0cJSCL/memelite-sp1.png","https://i.postimg.cc/TY6qTdcy/memelite-sp2.png",
+      "https://i.postimg.cc/kXmF7Jy4/memelite-sp3.png","https://i.postimg.cc/hPBbKD0X/memelite-sp4.png"];
+    let si=0;const sk=setInterval(()=>{if(melChar)melChar.src=throwSkins[si%throwSkins.length];si++;},200);
+    setTimeout(()=>{ clearInterval(sk); if(melChar)melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png"; },2400);
+  } else {
+    // Phase 2/3: attack sprite + stamp-down animation
+    const attackSrc=melState.phase===2?"https://i.postimg.cc/jSbXgfXB/Memelite-V2-attack.png":"https://i.postimg.cc/ZR4PjzxP/Memelite-V3-attack.png";
+    const restSrc=melState.phase===2?"https://i.postimg.cc/hjP5ghXp/Memelite-V2.png":"https://i.postimg.cc/g0V34PK4/memelite-V3.png";
+    const charWrap=document.getElementById("melCharWrap");
+    if(melChar)melChar.src=attackSrc;
+    if(melChar)melChar.style.animation="none";
+    // Stamp-down: quick up then slam down, repeat 3 times
+    let stamps=0;
+    const stampInterval=setInterval(()=>{
+      if(!charWrap)return;
+      charWrap.style.transition="transform .1s ease-in";
+      charWrap.style.transform="translateY(-18px)";
+      setTimeout(()=>{charWrap.style.transition="transform .12s ease-out";charWrap.style.transform="translateY(6px)";},110);
+      setTimeout(()=>{charWrap.style.transform="";},240);
+      stamps++;
+      if(stamps>=3)clearInterval(stampInterval);
+    },350);
+    setTimeout(()=>{
+      if(melChar){melChar.src=restSrc;melChar.style.animation=melState.phase===2?"melFloat 8s ease-in-out infinite":"melP3Breathe 2s ease-in-out infinite";}
+      if(charWrap){charWrap.style.transform="";charWrap.style.transition="";}
+    },2400);
+  }
+  // 2.5s after warn: start cats/meteors
   setTimeout(()=>{
-    clearInterval(sk);
-    if(melChar)melChar.src=melState.phase===1?"https://i.postimg.cc/bwfcRt83/Memelite.png":melState.phase===2?"https://i.postimg.cc/hjP5ghXp/Memelite-V2.png":"https://i.postimg.cc/g0V34PK4/memelite-V3.png";
     if(warn)warn.style.display="none";
-    // Enable cat container clicks
     const cc=document.getElementById("melCatContainer");
     if(cc){cc.style.pointerEvents="all";cc.style.zIndex="12";}
     if(melState.phase===1)launchCats(6);else launchMeteors(melState.phase===3?9:8); // cats/meteors per wave
@@ -7713,7 +7832,7 @@ function launchMeteors(count){
       const startX=10+Math.random()*80;
       m.style.cssText=`position:absolute;width:clamp(100px,14vw,160px);height:clamp(100px,14vw,160px);
         left:${startX}%;top:-10%;cursor:pointer;z-index:12;
-        animation:melMeteorFall ${melState.phase===3?2+Math.random()*.8:2.5+Math.random()*1}s linear forwards;padding:18px;`;
+        animation:melMeteorFall ${melState.phase===3?3+Math.random()*1.2:3.5+Math.random()*1.2}s linear forwards;padding:18px;`;
       m.innerHTML=`<img src="${skin}" style="width:100%;height:100%;object-fit:contain;"/>
         <div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,100,0,.4),transparent);border-radius:50%;animation:melFirePulse .4s ease infinite;pointer-events:none;"></div>`;
       m.onclick=()=>{
@@ -7837,9 +7956,10 @@ function melPhase3Cinematic(){
     document.body.appendChild(fl);setTimeout(()=>fl.remove(),400);
     const bgImg=document.getElementById("melBgImg");
     if(bgImg)bgImg.src="https://i.postimg.cc/xdrSFt7v/fond-memelite-P3.png";
-    const fireC=document.getElementById("melFireContainer");if(fireC)fireC.style.display="block";
+    const fireC=document.getElementById("melFireContainer");if(fireC){fireC.style.display="block";startFireParticles();}
     if(ch){ch.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";ch.style.filter="drop-shadow(0 0 40px rgba(168,85,247,.9))";ch.style.animation="melP3Breathe 2s ease-in-out infinite";}
     if(cineImg)cineImg.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";
+    const cw3=document.getElementById("melCharWrap");if(cw3)cw3.style.width="min(62vw,520px)";
     if(cineMsg){cineMsg.textContent="La fusion est totale. Arrêtez-la avant qu'il ne soit trop tard !";cineMsg.style.color="#e9d5ff";}
     if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Fusion Finale";
     const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#8b5cf6,#c084fc)";}
@@ -8015,7 +8135,7 @@ function abandonMemelite(){
     <!-- ── Classroom background ── -->
     <div id="orgBg" style="position:absolute;inset:0;background:#1a1008;transition:filter 1s;overflow:hidden;">
       <!-- Forest/classroom background -->
-      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;"/>
+      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:110%;top:-5%;object-fit:cover;object-position:center 30%;pointer-events:none;"/>
       <!-- Subtle dark overlay for legibility -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.15);pointer-events:none;"></div>
       <!-- Floating dust particles -->
@@ -8107,7 +8227,7 @@ function abandonMemelite(){
     </div>
 
     <!-- Boss character - left side -->
-    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(44vw,360px);z-index:5;">
+    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(44vw,360px);z-index:5;transition:width .5s;">
       <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
       <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
            style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
