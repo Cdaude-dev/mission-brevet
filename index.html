@@ -1232,7 +1232,7 @@
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button></button>
+    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
   </div>
   <!-- end quizCard -->
 
@@ -1402,7 +1402,7 @@
 
   <!-- TEDDYNOUNET MINI-BOSS (conjugaison) — coming soon -->
   <div class="chapter-card" id="teddynounetCard" style="border:2px solid rgba(251,146,60,.5);background:rgba(124,45,18,.08);">
-    <div class="chapter-header" onclick="tryOpenTeddynounet()" ontouchstart="playTeddySound();event.preventDefault();" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
+    <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="tryOpenTeddynounet()" ontouchend="tryOpenTeddynounet();event.preventDefault();event.stopPropagation();">
       <div class="chapter-title" style="color:#fb923c;">Teddynounet</div>
       <img id="teddyLockIcon" src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png"
         style="width:130px;height:130px;object-fit:contain;filter:grayscale(1) brightness(.35);
@@ -3870,15 +3870,11 @@ const DAUDE={
 
 
 function openPlayerPopup(entry){
-  // Load fresh data from localStorage if available (for same-device players)
   try{
     const raw=localStorage.getItem(saveKey(entry.name));
     if(raw){
-      const d=JSON.parse(raw);
-      const _av=entry.avatar;const _sc=entry.score;
-      entry={...d,...entry,
-        badges:d.badges&&d.badges.length?d.badges:(entry.badges||[]),
-        desc:entry.desc||d.desc||""};
+      const d=JSON.parse(raw);const _av=entry.avatar;const _sc=entry.score;
+      entry={...d,...entry,badges:d.badges&&d.badges.length?d.badges:(entry.badges||[]),desc:entry.desc||d.desc||""};
       if(_av&&_av!==AVATARS[0])entry.avatar=_av;
       else if(typeof chatAvatarCache!=="undefined"&&chatAvatarCache[entry.name])entry.avatar=chatAvatarCache[entry.name];
       entry.score=Math.max(_sc||0,d.score||0);
@@ -3889,75 +3885,48 @@ function openPlayerPopup(entry){
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.9);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;padding:12px;";
   const badgesList=(Array.isArray(entry.badges)?entry.badges:[...(new Set(entry.badges||[]))]);
-  const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
   const lvl=Math.floor(Math.sqrt((entry.score||0)/50))+1;
-  const badgeCardsHtml=BADGES_DEF.map(b=>{
-    const owned=badgesList.includes(b.id);
-    return `<div onclick="showBadgeDetail(BADGES_DEF.find(x=>x.id==='${b.id}'))"
-      title="${b.name}" style="background:${owned?'rgba(217,164,65,.12)':'rgba(255,255,255,.04)'};
-      border:1px solid ${owned?'rgba(217,164,65,.3)':'rgba(255,255,255,.08)'};border-radius:12px;
-      padding:8px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;
-      transition:background .15s;opacity:${owned?'1':'.3'}"
-      onmouseover="this.style.background='rgba(217,164,65,.2)'"
-      onmouseout="this.style.background='${owned?'rgba(217,164,65,.12)':'rgba(255,255,255,.04)'}'">
-      <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
-        ${b.img?`<img src="${b.img}" style="width:40px;height:40px;object-fit:contain;" onerror="this.style.display='none'"/>`
-                :`<span style="font-size:32px;line-height:1;">${b.emoji||"🏅"}</span>`}
-      </div>
-      <div style="font-size:9px;font-weight:700;color:var(--gold-soft);text-align:center;line-height:1.2;">${b.name}</div>
-    </div>`;
-  }).join("");
-  const statsHtml=`
-    <div class="big-stats" style="justify-content:center;margin-bottom:14px;">
-      <div class="big-pill"><div class="big-pill-val">${lvl}</div><div class="big-pill-lbl">Niveau</div></div>
-      <div class="big-pill"><div class="big-pill-val">${entry.score||0}</div><div class="big-pill-lbl">Points</div></div>
-      <div class="big-pill"><div class="big-pill-val">${unlockedBadges.length}</div><div class="big-pill-lbl">Badges</div></div>
-    </div>`;
+  // Only show unlocked badges, clickable for detail
+  const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
+  const badgeCardsHtml=unlockedBadges.length
+    ? unlockedBadges.map(b=>`
+      <div onclick="showBadgeDetail(BADGES_DEF.find(x=>x.id==='${b.id}'))"
+        title="${b.name}" style="background:rgba(217,164,65,.12);border:1px solid rgba(217,164,65,.3);
+        border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;
+        cursor:pointer;transition:background .15s;"
+        onmouseover="this.style.background='rgba(217,164,65,.25)'"
+        onmouseout="this.style.background='rgba(217,164,65,.12)'">
+        <div style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;">
+          ${b.img?`<img src="${b.img}" style="width:48px;height:48px;object-fit:contain;" onerror="this.style.display='none'"/>`
+                  :`<span style="font-size:38px;line-height:1;">${b.emoji||"🏅"}</span>`}
+        </div>
+        <div style="font-size:10px;font-weight:700;color:var(--gold-soft);text-align:center;line-height:1.2;">${b.name}</div>
+      </div>`).join("")
+    : '<div style="font-size:13px;color:#ead7ae;opacity:.5;padding:16px;text-align:center;">Aucun badge encore</div>';
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#3a1a05,#1a0a02);border:2px solid rgba(217,164,65,.4);
-    border-radius:24px;padding:24px;max-width:560px;width:100%;animation:popIn .35s;max-height:90vh;overflow-y:auto;">
-    <!-- Header -->
+    border-radius:24px;padding:24px;max-width:520px;width:100%;animation:popIn .35s;max-height:90vh;overflow-y:auto;">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
       <img src="${entry.avatar||AVATARS[0]}" style="width:74px;height:74px;border-radius:50%;object-fit:cover;
            border:3px solid rgba(217,164,65,.55);flex-shrink:0;" onerror="this.src='${AVATARS[0]}'"/>
       <div style="flex:1;text-align:left;">
         <div style="font-size:19px;font-weight:900;color:var(--gold);">${entry.name}</div>
-        ${entry.desc?`<div style="font-size:12px;color:#ead7ae;font-style:italic;margin-top:3px;line-height:1.4;">"${entry.desc}"</div>`:''}
+        ${entry.desc?`<div style="font-size:12px;color:#ead7ae;font-style:italic;margin-top:3px;">"${entry.desc}"</div>`:''}
         <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
           <div class="pill" style="font-size:11px;">Niveau ${lvl}</div>
           <div class="pill" style="font-size:11px;">${entry.score||0} pts</div>
-          <div class="pill" style="font-size:11px;">Joueur</div>
+          <div class="pill" style="font-size:11px;">${unlockedBadges.length} badge${unlockedBadges.length!==1?'s':''}</div>
         </div>
       </div>
       <button onclick="_closePlayerPopup()" style="background:rgba(255,255,255,.08);border:none;color:#ead7ae;font-size:20px;cursor:pointer;width:34px;height:34px;border-radius:50%;flex-shrink:0;">✕</button>
     </div>
-    <!-- Tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid rgba(217,164,65,.15);padding-bottom:10px;">
-      <button id="pptab_stats" onclick="_ppTab('stats')"
-        style="padding:7px 14px;border-radius:10px;border:none;background:rgba(217,164,65,.2);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;">📊 Stats</button>
-      <button id="pptab_badges" onclick="_ppTab('badges')"
-        style="padding:7px 14px;border-radius:10px;border:none;background:rgba(255,255,255,.06);color:#ead7ae;font-size:12px;font-weight:700;cursor:pointer;">🏅 Badges</button>
+    <div class="mini-note" style="margin-bottom:10px;">🏅 Badges débloqués</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;margin-bottom:16px;">
+      ${badgeCardsHtml}
     </div>
-    <!-- Stats tab -->
-    <div id="ppcontent_stats">${statsHtml}</div>
-    <!-- Badges tab -->
-    <div id="ppcontent_badges" style="display:none;">
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px;">
-        ${badgeCardsHtml}
-      </div>
-    </div>
-    <button onclick="_closePlayerPopup()" style="margin-top:16px;padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;display:block;margin-left:auto;margin-right:auto;">Fermer</button>
+    <button onclick="_closePlayerPopup()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;display:block;margin:0 auto;">Fermer</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
-}
-function _ppTab(tab){
-  ["stats","badges"].forEach(t=>{
-    const btn=document.getElementById("pptab_"+t);
-    const content=document.getElementById("ppcontent_"+t);
-    if(btn)btn.style.background=t===tab?"rgba(217,164,65,.2)":"rgba(255,255,255,.06)";
-    if(btn)btn.style.color=t===tab?"var(--gold)":"#ead7ae";
-    if(content)content.style.display=t===tab?"":"none";
-  });
 }
 function _closePlayerPopup(){const o=document.getElementById("playerPopupOv");if(o)o.remove();}
 
@@ -5550,7 +5519,7 @@ let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shu
 function showLockedBossMsg(title, text){
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a00,#0a0500);border:2px solid rgba(217,164,65,.3);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .3s;">
     <div style="font-size:44px;margin-bottom:12px;">🔒</div>
     <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:12px;">${title}</div>
@@ -7404,7 +7373,7 @@ function tryOpenMemelite(){
   }
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0202,#0a0000);border:2px solid rgba(220,38,38,.4);border-radius:22px;padding:28px;max-width:420px;width:100%;text-align:center;animation:popIn .35s;">
     <img src="https://i.postimg.cc/bwfcRt83/Memelite.png" style="width:120px;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(239,68,68,.5));"/>
     <div style="font-size:22px;font-weight:900;color:#f87171;margin-bottom:10px;">Mémélité</div>
@@ -7429,7 +7398,7 @@ function tryOpenTeddynounet(){
   playTeddySound();
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0500);border:2px solid rgba(251,146,60,.4);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .35s;">
     <img src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png" onclick="playTeddySound()" ontouchstart="playTeddySound();event.stopPropagation();" style="width:110px;margin-bottom:12px;filter:drop-shadow(0 0 14px rgba(251,146,60,.5));animation:bossIdle 4s ease-in-out infinite;cursor:pointer;" title="Clique pour entendre Teddynounet !"/>
     <div style="font-size:20px;font-weight:900;color:#fb923c;margin-bottom:10px;">Teddynounet</div>
@@ -8216,7 +8185,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:0;left:54%;width:min(52vw,440px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:54%;width:min(52vw,440px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
@@ -8226,11 +8195,17 @@ function abandonMemelite(){
     <!-- ── HUD: counter top-left, flee top-right ── -->
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
       <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;"><button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button></button>
+      <button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button></button>
     </div>
 
-    <!-- ── Bottom HUD: lives centred ── -->
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 16px 8px;background:linear-gradient(0deg,rgba(0,0,0,.5),transparent);text-align:center;">
+    <!-- ── Bottom HUD: HP then lives ── -->
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 16px 10px;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent);text-align:center;">
+      <!-- HP bar -->
+      <div id="orgBossLabel" style="font-size:14px;color:#fed7aa;font-weight:900;margin-bottom:4px;letter-spacing:.3px;">⚔️ La grande Orgografe</div>
+      <div style="width:min(340px,85vw);margin:0 auto 8px;background:rgba(0,0,0,.55);border-radius:12px;height:18px;border:1px solid rgba(249,115,22,.5);box-shadow:0 0 12px rgba(249,115,22,.2);">
+        <div id="orgHpFill" style="height:100%;border-radius:12px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
+      </div>
+      <!-- Lives -->
       <div id="orgLives" style="display:flex;gap:10px;align-items:center;justify-content:center;">
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
@@ -8238,13 +8213,7 @@ function abandonMemelite(){
       </div>
     </div>
 
-    <!-- ── HP bar top centre ── -->
-    <div style="position:absolute;top:90px;left:0;right:0;z-index:10;text-align:center;pointer-events:none;">
-      <div id="orgBossLabel" style="font-size:13px;color:#fed7aa;font-weight:900;margin-bottom:4px;letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.8);">⚔️ La grande Orgografe</div>
-      <div style="width:min(280px,70vw);margin:0 auto;background:rgba(0,0,0,.55);border-radius:12px;height:15px;border:1px solid rgba(249,115,22,.5);">
-        <div id="orgHpFill" style="height:100%;border-radius:12px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
-      </div>
-    </div>
+
 
     <!-- ── Correction input ── -->
     <div id="orgCorrArea" style="display:none;position:absolute;bottom:22%;left:3%;width:58%;z-index:10;
