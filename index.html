@@ -3870,38 +3870,97 @@ const DAUDE={
 
 
 function openPlayerPopup(entry){
-  // Load fresh data from localStorage if available
+  // Load fresh data from localStorage if available (for same-device players)
   try{
     const raw=localStorage.getItem(saveKey(entry.name));
-    if(raw){const d=JSON.parse(raw);const _av=entry.avatar;const _sc=entry.score;entry={...d,...entry,badges:d.badges&&d.badges.length?d.badges:(entry.badges||[]),desc:entry.desc||d.desc||""};if(_av&&_av!==AVATARS[0])entry.avatar=_av;else if(typeof chatAvatarCache!=="undefined"&&chatAvatarCache[entry.name])entry.avatar=chatAvatarCache[entry.name];entry.score=Math.max(_sc||0,d.score||0);}
+    if(raw){
+      const d=JSON.parse(raw);
+      const _av=entry.avatar;const _sc=entry.score;
+      entry={...d,...entry,
+        badges:d.badges&&d.badges.length?d.badges:(entry.badges||[]),
+        desc:entry.desc||d.desc||""};
+      if(_av&&_av!==AVATARS[0])entry.avatar=_av;
+      else if(typeof chatAvatarCache!=="undefined"&&chatAvatarCache[entry.name])entry.avatar=chatAvatarCache[entry.name];
+      entry.score=Math.max(_sc||0,d.score||0);
+    }
   }catch(e){}
   const ov=document.createElement("div");
   ov.id="playerPopupOv";
   ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.88);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;";
-  const badgesList=(Array.isArray(entry.badges)?entry.badges:[...( new Set(entry.badges||[]) )]);
-  const badgesHtml=BADGES_DEF.filter(b=>badgesList.includes(b.id)).map(b=>
-    `<div title="${b.name}" style="width:36px;height:36px;border-radius:8px;background:rgba(217,164,65,.15);display:flex;align-items:center;justify-content:center;" >
-      ${b.img?`<img src="${b.img}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none'"/>`:
-              `<span style="font-size:20px;">${b.emoji||"🏅"}</span>`}
-    </div>`
-  ).join("")||'<span style="font-size:12px;color:#ead7ae;opacity:.6;">Aucun badge encore</span>';
+  ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.9);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;padding:12px;";
+  const badgesList=(Array.isArray(entry.badges)?entry.badges:[...(new Set(entry.badges||[]))]);
+  const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
   const lvl=Math.floor(Math.sqrt((entry.score||0)/50))+1;
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#3a1a05,#1a0a02);border:2px solid rgba(217,164,65,.35);border-radius:24px;padding:28px;max-width:400px;width:92%;text-align:center;animation:popIn .35s;max-height:88vh;overflow-y:auto;">
-    <img src="${entry.avatar||AVATARS[0]}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(217,164,65,.5);margin-bottom:12px;" onerror="this.src='${AVATARS[0]}'"/>
-    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;">${entry.name}</div>
-    ${entry.desc?`<div style="font-size:13px;color:#ead7ae;font-style:italic;margin-bottom:10px;line-height:1.4;">"${entry.desc}"</div>`:""}
-    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;">
-      <div class="pill" style="font-size:12px;">Niveau ${lvl}</div>
-      <div class="pill" style="font-size:12px;">${entry.score||0} pts</div>
+  const badgeCardsHtml=BADGES_DEF.map(b=>{
+    const owned=badgesList.includes(b.id);
+    return `<div onclick="showBadgeDetail(BADGES_DEF.find(x=>x.id==='${b.id}'))"
+      title="${b.name}" style="background:${owned?'rgba(217,164,65,.12)':'rgba(255,255,255,.04)'};
+      border:1px solid ${owned?'rgba(217,164,65,.3)':'rgba(255,255,255,.08)'};border-radius:12px;
+      padding:8px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;
+      transition:background .15s;opacity:${owned?'1':'.3'}"
+      onmouseover="this.style.background='rgba(217,164,65,.2)'"
+      onmouseout="this.style.background='${owned?'rgba(217,164,65,.12)':'rgba(255,255,255,.04)'}'">
+      <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+        ${b.img?`<img src="${b.img}" style="width:40px;height:40px;object-fit:contain;" onerror="this.style.display='none'"/>`
+                :`<span style="font-size:32px;line-height:1;">${b.emoji||"🏅"}</span>`}
+      </div>
+      <div style="font-size:9px;font-weight:700;color:var(--gold-soft);text-align:center;line-height:1.2;">${b.name}</div>
+    </div>`;
+  }).join("");
+  const statsHtml=`
+    <div class="big-stats" style="justify-content:center;margin-bottom:14px;">
+      <div class="big-pill"><div class="big-pill-val">${lvl}</div><div class="big-pill-lbl">Niveau</div></div>
+      <div class="big-pill"><div class="big-pill-val">${entry.score||0}</div><div class="big-pill-lbl">Points</div></div>
+      <div class="big-pill"><div class="big-pill-val">${unlockedBadges.length}</div><div class="big-pill-lbl">Badges</div></div>
+    </div>`;
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#3a1a05,#1a0a02);border:2px solid rgba(217,164,65,.4);
+    border-radius:24px;padding:24px;max-width:560px;width:100%;animation:popIn .35s;max-height:90vh;overflow-y:auto;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <img src="${entry.avatar||AVATARS[0]}" style="width:74px;height:74px;border-radius:50%;object-fit:cover;
+           border:3px solid rgba(217,164,65,.55);flex-shrink:0;" onerror="this.src='${AVATARS[0]}'"/>
+      <div style="flex:1;text-align:left;">
+        <div style="font-size:19px;font-weight:900;color:var(--gold);">${entry.name}</div>
+        ${entry.desc?`<div style="font-size:12px;color:#ead7ae;font-style:italic;margin-top:3px;line-height:1.4;">"${entry.desc}"</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
+          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div>
+          <div class="pill" style="font-size:11px;">${entry.score||0} pts</div>
+          <div class="pill" style="font-size:11px;">Joueur</div>
+        </div>
+      </div>
+      <button onclick="_closePlayerPopup()" style="background:rgba(255,255,255,.08);border:none;color:#ead7ae;font-size:20px;cursor:pointer;width:34px;height:34px;border-radius:50%;flex-shrink:0;">✕</button>
     </div>
-    <div class="mini-note" style="margin-bottom:8px;">Badges</div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px;">${badgesHtml}</div>
-    <button onclick="_closePlayerPopup()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
+    <!-- Tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid rgba(217,164,65,.15);padding-bottom:10px;">
+      <button id="pptab_stats" onclick="_ppTab('stats')"
+        style="padding:7px 14px;border-radius:10px;border:none;background:rgba(217,164,65,.2);color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;">📊 Stats</button>
+      <button id="pptab_badges" onclick="_ppTab('badges')"
+        style="padding:7px 14px;border-radius:10px;border:none;background:rgba(255,255,255,.06);color:#ead7ae;font-size:12px;font-weight:700;cursor:pointer;">🏅 Badges</button>
+    </div>
+    <!-- Stats tab -->
+    <div id="ppcontent_stats">${statsHtml}</div>
+    <!-- Badges tab -->
+    <div id="ppcontent_badges" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px;">
+        ${badgeCardsHtml}
+      </div>
+    </div>
+    <button onclick="_closePlayerPopup()" style="margin-top:16px;padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;display:block;margin-left:auto;margin-right:auto;">Fermer</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
+function _ppTab(tab){
+  ["stats","badges"].forEach(t=>{
+    const btn=document.getElementById("pptab_"+t);
+    const content=document.getElementById("ppcontent_"+t);
+    if(btn)btn.style.background=t===tab?"rgba(217,164,65,.2)":"rgba(255,255,255,.06)";
+    if(btn)btn.style.color=t===tab?"var(--gold)":"#ead7ae";
+    if(content)content.style.display=t===tab?"":"none";
+  });
+}
+function _closePlayerPopup(){const o=document.getElementById("playerPopupOv");if(o)o.remove();}
+
 function openDaudePopup(){
   // Build rich Daudé profile popup matching the player popup style
   const existing=document.getElementById("daudeRichPopup");
@@ -5357,6 +5416,8 @@ document.getElementById("daudePopupOv").addEventListener("click",e=>{
 });
 
 /* ══════════ EVENTS ══════════ */
+window.addEventListener("focus",()=>{if(S.name&&SUPABASE_URL!=="VOTRE_URL_SUPABASE")saveToLB();});
+window.addEventListener("online",()=>{if(S.name)saveToLB();});
 window.addEventListener("load",()=>{
   // Always hide loading screen — no matter what happens
   const hideLoading=()=>{
@@ -7154,7 +7215,7 @@ function startFireParticles(){
 function startOrgDust(){
   const container=document.getElementById("orgDustContainer");
   if(!container||container.children.length>0)return;
-  for(let i=0;i<28;i++){
+  for(let i=0;i<50;i++){
     const d=document.createElement("div");
     const size=Math.random()<0.5 ? 2+Math.random()*3 : 4+Math.random()*6;
     const left=Math.random()*100;
@@ -8135,7 +8196,7 @@ function abandonMemelite(){
     <!-- ── Classroom background ── -->
     <div id="orgBg" style="position:absolute;inset:0;background:#1a1008;transition:filter 1s;overflow:hidden;">
       <!-- Forest/classroom background -->
-      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:115%;top:-15%;object-fit:cover;object-position:center top;pointer-events:none;"/>
+      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:125%;top:-25%;object-fit:cover;object-position:center top;pointer-events:none;"/>
       <!-- Subtle dark overlay for legibility -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.15);pointer-events:none;"></div>
       <!-- Floating dust particles -->
@@ -8143,7 +8204,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── CHALKBOARD — left 62%, raw image ── -->
-    <div style="position:absolute;top:2%;left:1%;width:54%;height:80%;z-index:3;">
+    <div style="position:absolute;top:2%;left:18%;width:50%;height:80%;z-index:3;">
       <!-- Tableau image as-is -->
       <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;"/>
       <!-- Board content over image -->
@@ -8155,7 +8216,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:0;left:36%;width:min(60vw,500px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:0;left:54%;width:min(52vw,440px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
@@ -8174,6 +8235,14 @@ function abandonMemelite(){
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
+      </div>
+    </div>
+
+    <!-- ── HP bar top centre ── -->
+    <div style="position:absolute;top:90px;left:0;right:0;z-index:10;text-align:center;pointer-events:none;">
+      <div id="orgBossLabel" style="font-size:13px;color:#fed7aa;font-weight:900;margin-bottom:4px;letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.8);">⚔️ La grande Orgografe</div>
+      <div style="width:min(280px,70vw);margin:0 auto;background:rgba(0,0,0,.55);border-radius:12px;height:15px;border:1px solid rgba(249,115,22,.5);">
+        <div id="orgHpFill" style="height:100%;border-radius:12px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
       </div>
     </div>
 
