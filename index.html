@@ -605,20 +605,10 @@
     @keyframes p3Shake{0%,100%{transform:translateX(0) translateY(0);}20%{transform:translateX(-8px) translateY(4px);}40%{transform:translateX(8px) translateY(-4px);}60%{transform:translateX(-6px) translateY(2px);}80%{transform:translateX(6px) translateY(-2px);}}
 
   
-    @keyframes dustFloat{
-      0%{transform:translateY(0) translateX(0);opacity:0;}
-      10%{opacity:var(--op);}
-      90%{opacity:var(--op);}
-      100%{transform:translateY(calc(-100px - var(--drift))) translateX(var(--dx));opacity:0;}
-    }
-    .org-dust{
-      position:absolute;
-      border-radius:50%;
-      background:rgba(255,255,255,.55);
-      filter:blur(var(--blur));
-      animation:dustFloat var(--dur) ease-in-out infinite;
-      pointer-events:none;
-    }
+    @keyframes orgDustAnim0{0%{transform:translateY(0) translateX(0);opacity:0;}15%{opacity:1;}85%{opacity:.6;}100%{transform:translateY(-110px) translateX(25px);opacity:0;}}
+    @keyframes orgDustAnim1{0%{transform:translateY(0) translateX(0);opacity:0;}15%{opacity:.8;}85%{opacity:.4;}100%{transform:translateY(-90px) translateX(-30px);opacity:0;}}
+    @keyframes orgDustAnim2{0%{transform:translateY(0) translateX(0);opacity:0;}20%{opacity:.9;}80%{opacity:.5;}100%{transform:translateY(-130px) translateX(15px);opacity:0;}}
+    @keyframes orgDustAnim3{0%{transform:translateY(0) translateX(5px);opacity:0;}15%{opacity:.7;}85%{opacity:.3;}100%{transform:translateY(-100px) translateX(-20px);opacity:0;}}
 
   </style>
 </head>
@@ -6872,7 +6862,7 @@ function startOrgografe(){
   orgState={qIdx:0,lives:3,hp:15,selectedWord:null,noPerfect:false,darkPhase:false};
   // Reset char to normal skin and HP bar
   const ch=document.getElementById("orgChar");
-  if(ch){ch.src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";ch.style.filter="drop-shadow(0 0 24px rgba(249,115,22,.5))";ch.style.animation="none";ch.style.transform="";}
+  if(ch){ch.src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";ch.style.filter="drop-shadow(0 0 24px rgba(249,115,22,.5))";ch.style.animation="orgBreathe 3.5s ease-in-out infinite";ch.style.transform="";}
   const hpf=document.getElementById("orgHpFill");
   if(hpf){hpf.style.width="100%";hpf.style.background="linear-gradient(90deg,#f97316,#fb923c)";}
   const orgBg=document.getElementById("orgBg");
@@ -7121,20 +7111,21 @@ function abandonOrgografe(){
 function startOrgDust(){
   const container=document.getElementById("orgDustContainer");
   if(!container||container.children.length>0)return;
-  for(let i=0;i<22;i++){
+  for(let i=0;i<28;i++){
     const d=document.createElement("div");
-    d.className="org-dust";
-    const size=2+Math.random()*5;
+    const size=Math.random()<0.5 ? 2+Math.random()*3 : 4+Math.random()*6;
     const left=Math.random()*100;
-    const dur=6+Math.random()*10;
-    const delay=Math.random()*-12;
-    const dx=(Math.random()-.5)*60;
-    const drift=Math.random()*40;
-    const blur=0.5+Math.random()*2;
-    const op=0.2+Math.random()*0.4;
-    d.style.cssText=`width:${size}px;height:${size}px;left:${left}%;bottom:${Math.random()*80}%;
-      --dur:${dur}s;--dx:${dx}px;--drift:${drift}px;--blur:${blur}px;--op:${op};
-      animation-delay:${delay}s;`;
+    const bottom=Math.random()*90;
+    const dur=(7+Math.random()*10).toFixed(1);
+    const delay=(-Math.random()*15).toFixed(1);
+    const dx=((Math.random()-.5)*80).toFixed(0);
+    const blur=(0.5+Math.random()*2.5).toFixed(1);
+    const op=(0.15+Math.random()*0.45).toFixed(2);
+    d.style.cssText=`position:absolute;width:${size}px;height:${size}px;border-radius:50%;`+
+      `left:${left}%;bottom:${bottom}%;`+
+      `background:rgba(255,255,255,${op});`+
+      `filter:blur(${blur}px);pointer-events:none;`+
+      `animation:orgDustAnim${i%4} ${dur}s ease-in-out ${delay}s infinite;`;
     container.appendChild(d);
   }
 }
@@ -7537,6 +7528,9 @@ function renderMelLives(){
 
 function renderMelQ(){
   if(melState.inCatPhase)return;
+  // Always ensure question box is visible
+  const _qwrap=document.getElementById("melQWrap");if(_qwrap)_qwrap.style.display="";
+  const _timer=document.getElementById("melTimer");if(_timer)_timer.style.display="";
   const q=melState.shuffledQs[melState.qIdx%melState.shuffledQs.length];
   const qBox=document.getElementById("melQBox");
   const aWrap=document.getElementById("melAWrap");
@@ -7776,6 +7770,9 @@ function melPhase2Cinematic(){
   melState.phase=2;
   // Clear all remaining cats — player is invulnerable during cinematic
   const _cc=document.getElementById("melCatContainer");if(_cc){_cc.innerHTML="";_cc.style.pointerEvents="none";}
+  // Restore question box (cats cleared, safe now)
+  const _qw=document.getElementById("melQWrap");if(_qw)_qw.style.display="";
+  const _mt=document.getElementById("melTimer");if(_mt)_mt.style.display="";
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const cineOv=document.getElementById("melCineOv");
   const cineImg=document.getElementById("melCineImg");
@@ -7817,6 +7814,8 @@ function melPhase3Cinematic(){
   clearInterval(melState.timerInt);
   melState.phase=3;
   const _cc=document.getElementById("melCatContainer");if(_cc){_cc.innerHTML="";_cc.style.pointerEvents="none";}
+  const _qw2=document.getElementById("melQWrap");if(_qw2)_qw2.style.display="";
+  const _mt2=document.getElementById("melTimer");if(_mt2)_mt2.style.display="";
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const cineOv=document.getElementById("melCineOv");
   const cineImg=document.getElementById("melCineImg");
@@ -8032,7 +8031,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:20px;left:40%;width:min(52vw,430px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:0;left:36%;width:min(60vw,500px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
