@@ -3891,7 +3891,26 @@ function openPlayerPopup(entry){
   ov.id="playerPopupOv";
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.9);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;padding:12px;";
-  const badgesList=(Array.isArray(entry.badges)?entry.badges:[...(new Set(entry.badges||[]))]);
+  // Normalise badges — handle array, Set, or JSON string from any source
+  let badgesList=[];
+  try{
+    const raw=entry.badges;
+    if(!raw||raw.length===0) badgesList=[];
+    else if(Array.isArray(raw)) badgesList=raw.map(String);
+    else if(typeof raw==="string") badgesList=JSON.parse(raw).map(String);
+    else if(raw instanceof Set) badgesList=[...raw].map(String);
+    else badgesList=[];
+  }catch(_){badgesList=[];}
+  // Also try loading from local save for same-device players
+  try{
+    const localRaw=localStorage.getItem(saveKey(entry.name));
+    if(localRaw){
+      const d=JSON.parse(localRaw);
+      const localBadges=(d.badges||[]).map(String);
+      // Merge: union of Supabase + local badges
+      badgesList=[...new Set([...badgesList,...localBadges])];
+    }
+  }catch(_){}
   const lvl=Math.floor(Math.sqrt((entry.score||0)/50))+1;
   // Only show unlocked badges, clickable for detail
   const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
@@ -4042,7 +4061,7 @@ function renderLbEntries(entries, container){
   let all = entries.filter(e=>e.name&&e.name!==DAUDE.name&&!ADMIN_NAMES.includes(e.name));
   const isAdmin=S.name&&(S.name===ADMIN_CODE||ADMIN_NAMES.includes(S.name));
   if(S.name && !isAdmin && !all.find(e=>e.name===S.name))
-    all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||""});
+    all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||"",badges:[...(S.badges||new Set())]});
   all.push({name:DAUDE.name,score:DAUDE.score,avatar:DAUDE.avatar});
   all.sort((a,b)=>b.score-a.score);
   all.slice(0,10).forEach((e,i)=>{
@@ -4118,18 +4137,24 @@ async function fetchLBEntries(){
           score:r.score,
           avatar:r.avatar||"",  // real avatar from Supabase
           desc:r.desc||"",
-          badges:r.badges?JSON.parse(r.badges):[]
+          badges:(()=>{try{return r.badges?JSON.parse(r.badges):[];}catch(_){return [];}})()
         }));
       }
     }catch(e){}
   }
-  // 2. Fallback: merge with local scores
+  // 2. Fallback: merge with local scores (include own badges)
   try{
-    const entry={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||""};
     const localLB=JSON.parse(localStorage.getItem("mb_lb")||"{}");
     Object.values(localLB).forEach(e=>{
       if(!entries.find(x=>x.name===e.name)) entries.push(e);
     });
+    // Always ensure current player is present with full badge data
+    if(S.name){
+      const existingIdx=entries.findIndex(x=>x.name===S.name);
+      const fullEntry={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||"",badges:[...(S.badges||new Set())]};
+      if(existingIdx>=0) entries[existingIdx]={...entries[existingIdx],...fullEntry};
+      else entries.push(fullEntry);
+    }
   }catch(e){}
   return entries;
 }
