@@ -3949,7 +3949,9 @@ function openPlayerPopup(entry){
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;margin-bottom:16px;">
       ${badgeCardsHtml}
     </div>
-    <button onclick="_closePlayerPopup()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;display:block;margin:0 auto;">Fermer</button>
+    ${(S.name===ADMIN_CODE||S.name==="Professeur Daudé")&&entry.name!==S.name?
+      `<button onclick="_openBanPanel('${entry.name}')" style="margin-top:10px;padding:8px 20px;border-radius:10px;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.1);color:#fca5a5;font-weight:700;cursor:pointer;display:block;margin-left:auto;margin-right:auto;font-size:13px;">⛔ Bannir ce joueur</button>`:``}
+    <button onclick="_closePlayerPopup()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;display:block;margin:0 auto;margin-top:12px;">Fermer</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -4806,13 +4808,15 @@ function showResults(){
   setTimeout(()=>{
     const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
     const conjDone=allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(conjDone&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");}
+    let _keyUnlocked=false;
+    if(conjDone&&!S.conjKeyShown){S.conjKeyShown=true;_keyUnlocked=true;showKeyUnlock("conjugaison");}
     const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
     const gramDone=allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");}
+    if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;_keyUnlocked=true;showKeyUnlock("grammaire");}
     const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
     const litDone=allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(litDone&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");}
+    if(litDone&&!S.litKeyShown){S.litKeyShown=true;_keyUnlocked=true;showKeyUnlock("litterature");}
+    if(_keyUnlocked)saveProgress(); // persist key flags immediately
   },800);
   D.quizProgFill.style.width="100%";
   D.quizCounter.textContent="Terminé ! "+S.correct+"/"+total+" bonnes réponses";
@@ -5143,13 +5147,14 @@ function doLogin(){
   if(pwdHint)pwdHint.style.display="none";
 
   // Check ban before allowing in
-  checkBanOnLogin(v).then(banned=>{
-    if(banned){showBanScreen();return;}
-    S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  checkBanStatus(v).then(_ban=>{
+    if(_ban){S.name="";showBanMessage(_ban);return;}
     goScreen("home");updateHUD();
     loadProgress(v);
     saveToLB();
     try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
+    setTimeout(maybeShowUpdateMsg,600);
   });
 }
 
@@ -7574,6 +7579,133 @@ function showActualites(){
   document.body.appendChild(ov);
 }
 
+
+function _openBanPanel(playerName){
+  _closePlayerPopup();
+  const ov=document.createElement("div");
+  ov.id="banPanelOv";
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0200,#0a0000);border:2px solid rgba(239,68,68,.4);border-radius:22px;padding:28px;max-width:480px;width:100%;animation:popIn .35s;max-height:90vh;overflow-y:auto;">
+    <div style="font-size:18px;font-weight:900;color:#ef4444;margin-bottom:6px;">⛔ Bannissement</div>
+    <div style="font-size:13px;color:#fca5a5;margin-bottom:18px;">Joueur : <strong>${playerName}</strong></div>
+
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:#ead7ae;font-weight:700;display:block;margin-bottom:4px;">Motif du bannissement</label>
+      <input id="banReason" type="text" placeholder="ex: Triche, comportement inapproprié…"
+        style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(239,68,68,.3);
+        background:rgba(0,0,0,.4);color:#fff;font-size:14px;box-sizing:border-box;" maxlength="120"/>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:#ead7ae;font-weight:700;display:block;margin-bottom:4px;">Durée du bannissement</label>
+      <select id="banDuration" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(239,68,68,.3);background:rgba(10,0,0,.6);color:#fff;font-size:14px;box-sizing:border-box;">
+        <option value="1">1 jour</option>
+        <option value="7">7 jours</option>
+        <option value="30">30 jours</option>
+        <option value="90">90 jours</option>
+        <option value="0" selected>Permanent</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <label style="font-size:12px;color:#ead7ae;font-weight:700;display:block;margin-bottom:4px;">Description détaillée (visible par le joueur)</label>
+      <textarea id="banDesc" rows="3" placeholder="Détails du bannissement, preuves, contexte…"
+        style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(239,68,68,.3);
+        background:rgba(0,0,0,.4);color:#fff;font-size:13px;resize:none;box-sizing:border-box;" maxlength="400"></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="_executeBan('${playerName}')"
+        style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#dc2626,#b91c1c);color:#fff;font-weight:900;cursor:pointer;">
+        ⛔ Confirmer le bannissement
+      </button>
+      <button onclick="document.getElementById('banPanelOv').remove()"
+        style="padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#ead7ae;font-weight:700;cursor:pointer;">
+        Annuler
+      </button>
+    </div>
+    <div id="banStatus" style="text-align:center;font-size:12px;margin-top:12px;min-height:16px;"></div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+async function _executeBan(playerName){
+  const reason=document.getElementById("banReason").value.trim()||"Violation des règles";
+  const duration=parseInt(document.getElementById("banDuration").value);
+  const desc=document.getElementById("banDesc").value.trim();
+  const banUntil=duration===0?null:new Date(Date.now()+duration*86400000).toISOString();
+  const status=document.getElementById("banStatus");
+  if(status)status.textContent="Bannissement en cours…";
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      const payload={
+        player_name:playerName,
+        reason:reason,
+        description:desc,
+        banned_until:banUntil,
+        created_at:new Date().toISOString()
+      };
+      const res=await fetch(SUPABASE_URL+"/rest/v1/banned_players",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,
+                  "Authorization":"Bearer "+SUPABASE_ANON_KEY,"Prefer":"resolution=merge-duplicates"},
+        body:JSON.stringify(payload)
+      });
+      if(res.ok||res.status===201||res.status===204){
+        if(status){status.textContent="✅ Joueur banni avec succès.";status.style.color="#86efac";}
+        setTimeout(()=>{document.getElementById("banPanelOv")?.remove();},1500);
+      } else {
+        const err=await res.text();
+        if(status){status.textContent="Erreur : "+res.status+" — "+err.substring(0,80);status.style.color="#fca5a5";}
+      }
+    }catch(e){
+      if(status){status.textContent="Erreur réseau : "+e.message;status.style.color="#fca5a5";}
+    }
+  } else {
+    if(status){status.textContent="⚠️ Supabase non configuré.";status.style.color="#fbbf24";}
+  }
+}
+
+
+async function checkBanStatus(name){
+  if(SUPABASE_URL==="VOTRE_URL_SUPABASE")return null;
+  try{
+    const res=await fetch(
+      SUPABASE_URL+"/rest/v1/banned_players?player_name=eq."+encodeURIComponent(name)+"&select=reason,description,banned_until",
+      {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
+    );
+    if(!res.ok)return null;
+    const rows=await res.json();
+    if(!rows||!rows.length)return null;
+    const ban=rows[0];
+    // Check if ban has expired
+    if(ban.banned_until){
+      if(new Date(ban.banned_until)<new Date())return null; // expired
+    }
+    return ban;
+  }catch(e){return null;}
+}
+
+function showBanMessage(ban){
+  const until=ban.banned_until?
+    " jusqu'au "+new Date(ban.banned_until).toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"}):
+    " de façon permanente";
+  const ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0200,#0a0000);border:2px solid rgba(239,68,68,.5);border-radius:22px;padding:32px;max-width:460px;width:100%;text-align:center;">
+    <img src="https://i.postimg.cc/8cb7tm6t/banni.png" style="width:min(180px,50vw);margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(239,68,68,.5));"/>
+    <div style="font-size:22px;font-weight:900;color:#ef4444;margin-bottom:14px;">Compte banni</div>
+    <div style="font-size:14px;color:#fca5a5;line-height:1.7;margin-bottom:10px;">
+      Votre compte a été banni <strong>${until}</strong>.<br>
+    </div>
+    <div style="font-size:13px;color:#fed7aa;margin-bottom:8px;"><strong>Motif :</strong> ${ban.reason||"Non précisé"}</div>
+    ${ban.description?`<div style="font-size:12px;color:#ead7ae;background:rgba(0,0,0,.3);border-radius:10px;padding:10px 14px;text-align:left;line-height:1.6;margin-bottom:16px;">${ban.description}</div>`:""}
+    <div style="font-size:11px;color:rgba(252,165,165,.5);font-style:italic;">Si vous pensez qu'il s'agit d'une erreur, contactez l'administrateur.</div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
 function maybeShowUpdateMsg(){
   if(localStorage.getItem('mb_update_seen_v3'))return;
   if(!S.name)return; // not logged in yet
@@ -7702,10 +7834,33 @@ function startMemelit(){
     inCatPhase:false,_lastCatAt:-1,transitioning:false};
   const melChar=document.getElementById("melChar");
   if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.filter="drop-shadow(0 0 20px rgba(220,38,38,.4))";melChar.style.animation="melBreathe 3s ease-in-out infinite";}
-  const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";cw.style.width="min(44vw,360px)";}
+  const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";cw.style.width="min(38vw,300px)";}
   renderMelLives();
   playMelMusic(1);
   renderMelQ();
+}
+
+
+// Deferred music for mobile: play on next user touch/click if autoplay fails
+let _melDeferredPhase=0;
+function playMelMusicSafe(phase){
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  const m=document.getElementById("melMusicP"+phase);
+  if(!m)return;
+  m.currentTime=0;m.volume=0.6;
+  const p=m.play();
+  if(p&&typeof p.catch==="function"){
+    p.catch(()=>{
+      // Autoplay blocked (mobile) — queue for next interaction
+      _melDeferredPhase=phase;
+    });
+  }
+}
+function _flushDeferredMelMusic(){
+  if(_melDeferredPhase>0){
+    const p=_melDeferredPhase;_melDeferredPhase=0;
+    playMelMusicSafe(p);
+  }
 }
 
 function playMelMusic(phase){
@@ -7738,7 +7893,7 @@ function renderMelQ(){
     btn.style.cssText="width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.4);color:#fff;font-size:clamp(12px,1.8vw,15px);font-weight:600;cursor:pointer;text-align:left;transition:background .15s;";
     btn.onmouseover=()=>btn.style.background="rgba(220,38,38,.25)";
     btn.onmouseout=()=>btn.style.background="rgba(0,0,0,.4)";
-    btn.onclick=()=>answerMel(opt.orig===q.correct, q.expl, btn, aWrap);
+    btn.onclick=()=>{_flushDeferredMelMusic();answerMel(opt.orig===q.correct, q.expl, btn, aWrap);};
     aWrap.appendChild(btn);
   });
   // Timer
@@ -7876,6 +8031,7 @@ function launchCats(count){
         animation:melCatFly ${4+Math.random()*1.5}s linear forwards;`;
       cat.style.padding="20px";
       cat.onclick=()=>{
+        _flushDeferredMelMusic();
         if(cat.dataset.hit)return;
         cat.dataset.hit="1";
         const sound=document.getElementById(Math.random()>.5?"catHurt1Snd":"catHurt2Snd");
@@ -8019,7 +8175,7 @@ function melPhase2Cinematic(){
   setTimeout(()=>{
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
-    playMelMusic(2);
+    playMelMusicSafe(2);
     melState.transitioning=false;
     renderMelQ();
   },5000);
@@ -8057,7 +8213,7 @@ function melPhase3Cinematic(){
     const fireC=document.getElementById("melFireContainer");if(fireC){fireC.style.display="block";startFireParticles();}
     if(ch){ch.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";ch.style.filter="drop-shadow(0 0 40px rgba(168,85,247,.9))";ch.style.animation="melP3Breathe 2s ease-in-out infinite";}
     if(cineImg)cineImg.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";
-    const cw3=document.getElementById("melCharWrap");if(cw3)cw3.style.width="min(62vw,520px)";
+    const cw3=document.getElementById("melCharWrap");if(cw3)cw3.style.width="min(52vw,420px)";
     if(cineMsg){cineMsg.textContent="La fusion est totale. Arrêtez-la avant qu'il ne soit trop tard !";cineMsg.style.color="#e9d5ff";}
     if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Fusion Finale";
     const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#8b5cf6,#c084fc)";}
@@ -8065,7 +8221,7 @@ function melPhase3Cinematic(){
   setTimeout(()=>{
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
-    playMelMusic(3);
+    playMelMusicSafe(3);
     melState.transitioning=false;
     renderMelQ();
   },6000);
@@ -8333,7 +8489,7 @@ function abandonMemelite(){
     </div>
 
     <!-- Boss character - left side -->
-    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(44vw,360px);z-index:5;transition:width .5s;">
+    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(38vw,300px);z-index:5;transition:width .5s;">
       <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
       <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
            style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
@@ -8352,9 +8508,10 @@ function abandonMemelite(){
     </div>
 
     <!-- Question area - right side -->
-    <div id="melQWrap" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-         width:min(62vw,580px);background:rgba(0,0,0,.82);backdrop-filter:blur(8px);
-         border:1.5px solid rgba(220,38,38,.3);border-radius:18px;padding:18px 22px;z-index:6;">
+    <div id="melQWrap" style="position:absolute;top:max(85px,12%);left:50%;transform:translateX(-50%);
+         width:min(90vw,580px);max-height:60vh;overflow-y:auto;
+         background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+         border:1.5px solid rgba(220,38,38,.3);border-radius:18px;padding:14px 18px;z-index:6;">
       <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.6;margin-bottom:12px;text-align:center;min-height:48px;"></div>
       <div id="melAWrap" style="display:flex;flex-direction:column;gap:7px;"></div>
     </div>
