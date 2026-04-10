@@ -1387,6 +1387,16 @@
       </div>
     </div>
 
+  <!-- TEDDYNOUNET MINI-BOSS (conjugaison) — coming soon -->
+  <div class="chapter-card" id="teddynounetCard" style="border:2px solid rgba(251,146,60,.5);background:rgba(124,45,18,.08);">
+    <div class="chapter-header" onclick="tryOpenTeddynounet()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
+      <div class="chapter-title" style="color:#fb923c;">Teddynounet</div>
+      <img id="teddyLockIcon" src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png"
+        style="width:130px;height:130px;object-fit:contain;filter:grayscale(1) brightness(.35);
+        animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:6px;" alt="Teddynounet"/>
+    </div>
+  </div>
+
     <!-- Ch.3: Futur -->
     <div class="chapter-card">
       <div class="chapter-header" onclick="toggleChapter('conj3')">
@@ -1481,14 +1491,6 @@
       </div>
     </div>
   
-  <!-- TEDDYNOUNET MINI-BOSS (conjugaison) — coming soon -->
-  <div class="chapter-card" id="teddynounetCard" style="border:2px solid rgba(251,146,60,.5);background:rgba(124,45,18,.08);">
-    <div class="chapter-header" onclick="tryOpenTeddynounet()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
-      <div class="chapter-title" style="color:#fb923c;">Teddynounet</div>
-      <img id="teddyLockIcon" src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png"
-        style="width:130px;height:130px;object-fit:contain;filter:grayscale(1) brightness(.35);
-        animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:6px;" alt="Teddynounet"/>
-    </div>
   </div>
 </div><!-- end conjMenu -->
 </div>
@@ -7459,6 +7461,8 @@ function startMemelit(){
   // Full reset
   clearInterval(melState&&melState.timerInt);
   const cc=document.getElementById("melCatContainer");if(cc){cc.innerHTML="";cc.style.pointerEvents="none";}
+  const qw=document.getElementById("melQWrap");if(qw)qw.style.display="";
+  const mt=document.getElementById("melTimer");if(mt)mt.style.display="";
   const warn=document.getElementById("melCatWarning");if(warn)warn.style.display="none";
   const cineOv=document.getElementById("melCineOv");if(cineOv)cineOv.style.display="none";
   const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#dc2626,#f87171)";}
@@ -7567,6 +7571,8 @@ function answerMel(correct, expl, btn, aWrap){
 // ── CAT PHASE (phase 1) ──
 function startCatPhase(){
   melState.inCatPhase=true;
+  const qw=document.getElementById("melQWrap");if(qw)qw.style.display="none";
+  const mt=document.getElementById("melTimer");if(mt)mt.style.display="none";
   const warn=document.getElementById("melCatWarning");
   if(warn){
     document.getElementById("melCatWarnText").textContent=
@@ -7600,6 +7606,8 @@ function launchCats(count){
       container.style.pointerEvents="none";
       container.innerHTML="";
       melState.inCatPhase=false;
+      const qw=document.getElementById("melQWrap");if(qw)qw.style.display="";
+      const mt=document.getElementById("melTimer");if(mt)mt.style.display="";
       setTimeout(renderMelQ,600);
     }
   };
@@ -7631,6 +7639,10 @@ function launchCats(count){
         // Boss takes damage
         melState.catsRepelled++;
         melHit();
+        // Phase transition check
+        if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),800);
+        else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),800);
+        else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,800);
         setTimeout(()=>{cat.remove();check();},650);
       };
       cat.addEventListener("animationend",()=>{
@@ -7654,7 +7666,10 @@ function launchMeteors(count){
   if(!container)return;
   container.innerHTML="";
   let done=0;
-  const check=()=>{if(done>=count){container.style.pointerEvents="none";container.innerHTML="";melState.inCatPhase=false;setTimeout(renderMelQ,600);}};
+  const check=()=>{if(done>=count){container.style.pointerEvents="none";container.innerHTML="";melState.inCatPhase=false;
+    const qw=document.getElementById("melQWrap");if(qw)qw.style.display="";
+    const mt=document.getElementById("melTimer");if(mt)mt.style.display="";
+    setTimeout(renderMelQ,600);}};
   for(let i=0;i<count;i++){
     setTimeout(()=>{
       const m=document.createElement("div");
@@ -7672,10 +7687,11 @@ function launchMeteors(count){
         m.innerHTML=`<div style="font-size:clamp(28px,5vw,42px);animation:melExplode .5s forwards;">💥</div>`;
         m.style.background="none";
         melState.catsRepelled++;melHit();
-  // Check phase transitions
-  if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),600);
-  else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),600);
-  else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,600);done++;
+        // Phase transition check
+        if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),800);
+        else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),800);
+        else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,800);
+        done++;
         setTimeout(()=>{m.remove();check();},520);
       };
       m.addEventListener("animationend",()=>{
@@ -7821,6 +7837,8 @@ function closeMelResult(){
   // Full cleanup
   clearInterval(melState&&melState.timerInt);
   const cc=document.getElementById("melCatContainer");if(cc){cc.innerHTML="";cc.style.pointerEvents="none";}
+  const qw=document.getElementById("melQWrap");if(qw)qw.style.display="";
+  const mt=document.getElementById("melTimer");if(mt)mt.style.display="";
   _restoreBgMusic();showLitMenu();
 }
 
@@ -7981,10 +7999,10 @@ function abandonMemelite(){
 
     <!-- ── Bottom HUD: lives centred ── -->
     <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 16px 8px;background:linear-gradient(0deg,rgba(0,0,0,.5),transparent);text-align:center;">
-      <div id="orgLives" style="display:flex;gap:8px;align-items:center;justify-content:center;">
-        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
-        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
-        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+      <div id="orgLives" style="display:flex;gap:10px;align-items:center;justify-content:center;">
+        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
+        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
+        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:40px;height:40px;"/>
       </div>
     </div>
 
@@ -8057,28 +8075,31 @@ function abandonMemelite(){
     </div>
 
     <!-- Question area - right side -->
-    <div id="melQWrap" style="position:absolute;top:50%;right:1%;transform:translateY(-50%);
-         width:min(57vw,540px);background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
-         border:1.5px solid rgba(220,38,38,.25);border-radius:18px;padding:16px 20px;z-index:6;">
+    <div id="melQWrap" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+         width:min(62vw,580px);background:rgba(0,0,0,.82);backdrop-filter:blur(8px);
+         border:1.5px solid rgba(220,38,38,.3);border-radius:18px;padding:18px 22px;z-index:6;">
       <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.6;margin-bottom:12px;text-align:center;min-height:48px;"></div>
       <div id="melAWrap" style="display:flex;flex-direction:column;gap:7px;"></div>
     </div>
 
-    <!-- HUD -->
-    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;
-         justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent);">
-      <!-- Lives -->
-      <div id="melLives" style="display:flex;gap:5px;align-items:center;">
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
+    <!-- HUD top bar: timer centred, flee left, nothing right -->
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <!-- Flee -->
+        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
+        <!-- Timer centred -->
+        <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
+        <!-- Spacer -->
+        <div style="width:52px;"></div>
       </div>
-      <!-- Timer -->
-      <div id="melTimer" style="font-size:22px;font-weight:900;color:#facc15;text-shadow:0 0 12px rgba(250,204,21,.5);width:40px;text-align:center;"></div>
-      <!-- Flee -->
-      <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
+      <!-- Lives centred below timer -->
+      <div id="melLives" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px;">
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+      </div>
     </div>
 
     <!-- HP bar bottom -->
