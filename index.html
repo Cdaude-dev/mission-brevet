@@ -1402,7 +1402,7 @@
 
   <!-- TEDDYNOUNET MINI-BOSS (conjugaison) — coming soon -->
   <div class="chapter-card" id="teddynounetCard" style="border:2px solid rgba(251,146,60,.5);background:rgba(124,45,18,.08);">
-    <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="tryOpenTeddynounet()" ontouchend="tryOpenTeddynounet();event.preventDefault();event.stopPropagation();">
+    <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="tryOpenTeddynounet()" ontouchstart="playTeddySound();event.stopPropagation();" onmousedown="playTeddySound()">
       <div class="chapter-title" style="color:#fb923c;">Teddynounet</div>
       <img id="teddyLockIcon" src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png"
         style="width:130px;height:130px;object-fit:contain;filter:grayscale(1) brightness(.35);
@@ -3950,7 +3950,10 @@ function openPlayerPopup(entry){
       ${badgeCardsHtml}
     </div>
     ${(S.name===ADMIN_CODE||S.name==="Professeur Daudé")&&entry.name!==S.name?
-      `<button onclick="_openBanPanel('${entry.name}')" style="margin-top:10px;padding:8px 20px;border-radius:10px;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.1);color:#fca5a5;font-weight:700;cursor:pointer;display:block;margin-left:auto;margin-right:auto;font-size:13px;">⛔ Bannir ce joueur</button>`:``}
+`<div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">`+
+      `<button onclick="_openBanPanel('${entry.name}')" style="padding:8px 16px;border-radius:10px;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.1);color:#fca5a5;font-weight:700;cursor:pointer;font-size:13px;">⛔ Bannir</button>`+
+      `<button onclick="_openUnbanPanel('${entry.name}')" style="padding:8px 16px;border-radius:10px;border:1px solid rgba(34,197,94,.4);background:rgba(34,197,94,.1);color:#86efac;font-weight:700;cursor:pointer;font-size:13px;">🔓 Débannir</button>`+
+      `</div>`:``}
     <button onclick="_closePlayerPopup()" style="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;display:block;margin:0 auto;margin-top:12px;">Fermer</button>
   </div>`;
   document.body.appendChild(ov);
@@ -6244,7 +6247,6 @@ function gramBossHit(){
 }
 
 function triggerDarkPhase(){
-  // Pause and play midlife cutscene first
   clearInterval(gramBossState.timerInt);
   document.getElementById("gramAnswerWrap").innerHTML="";
 
@@ -6253,39 +6255,87 @@ function triggerDarkPhase(){
   const qBox=document.getElementById("gramQBox");
   const qCounter=document.getElementById("gramQCounter");
 
-  // Move boss to center for cutscene
-  if(wrapEl){
-    wrapEl.style.transition="all 1s ease";
-    wrapEl.style.position="fixed";
-    wrapEl.style.left="50%";wrapEl.style.bottom="20%";
-    wrapEl.style.transform="translateX(-50%)";
-    wrapEl.style.width="min(280px,60vw)";
-    wrapEl.style.zIndex="15";
-  }
-  // Show message
-  if(qBox){
-    qBox.innerHTML='<span style="font-size:20px;font-weight:900;color:#c084fc;text-shadow:0 0 20px rgba(180,50,255,.8);">La Grammairia entre dans une colère noire…</span>';
-  }
+  // Hide question box for cinematic (Mémelité style)
+  if(qBox){qBox.style.display="none";qBox.innerHTML="";}
   if(qCounter)qCounter.textContent="";
+
+  // ── Cinematic overlay (dark bg, like Mémelité) ──────────────────
+  const cineEl=document.createElement("div");
+  cineEl.id="gramCineOv";
+  cineEl.style.cssText=[
+    "position:fixed;inset:0;z-index:25;",
+    "background:rgba(0,0,0,0);",
+    "display:flex;flex-direction:column;align-items:center;justify-content:flex-start;",
+    "padding-top:10vh;pointer-events:none;",
+    "transition:background .6s ease;"
+  ].join("");
+  document.getElementById("gramBossOv").appendChild(cineEl);
+  // Fade in dark bg
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    cineEl.style.background="rgba(0,0,0,.82)";
+  }));
+
+  // Text container
+  const cineMsg=document.createElement("div");
+  cineMsg.style.cssText=[
+    "font-size:clamp(15px,2.5vw,21px);font-weight:900;",
+    "color:#fff;text-align:center;max-width:440px;",
+    "padding:0 20px;line-height:1.65;",
+    "text-shadow:0 2px 8px rgba(0,0,0,.9);",
+    "opacity:0;transition:opacity .4s;"
+  ].join("");
+  cineEl.appendChild(cineMsg);
 
   // Play angry voice
   const angryVoice=document.getElementById("gramAngryVoice");
   if(angryVoice){angryVoice.currentTime=0;angryVoice.volume=1;angryVoice.play().catch(()=>{});}
 
+  // ── Message 1 : 0.5s ─────────────────────────────────────────────
   setTimeout(()=>{
-    // Message 2 — 3s
-    if(qBox) qBox.innerHTML='<div style="background:rgba(0,0,0,.75);border-radius:14px;padding:16px 20px;border:1px solid rgba(216,180,254,.4);"><span style="font-size:20px;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.8);">Son regard se voile…</span><br><br><span style="font-size:15px;color:#f3e8ff;line-height:1.8;text-shadow:0 1px 3px rgba(0,0,0,.8);">Elle n\'en peut plus.<br>Une rage froide s\'empare d\'elle.</span></div>';
-  },3000);
+    cineMsg.textContent="Grammairia entre dans une colère noire…";
+    cineMsg.style.opacity="1";
+  },500);
 
+  // ── Move boss to centre-centre ────────────────────────────────────
   setTimeout(()=>{
-    // Message 3 — 5.5s
-    if(qBox) qBox.innerHTML='<div style="background:rgba(0,0,0,.75);border-radius:14px;padding:16px 20px;border:1px solid rgba(216,180,254,.4);"><span style="font-size:20px;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.8);">⚡ Ses pouvoirs se décuplent…</span><br><br><span style="font-size:15px;color:#f3e8ff;text-shadow:0 1px 3px rgba(0,0,0,.8);">⏱ Le chrono passe à 15 secondes.</span></div>';
+    if(wrapEl){
+      wrapEl.style.transition="all 1s ease";
+      wrapEl.style.position="fixed";
+      wrapEl.style.left="50%";
+      wrapEl.style.top="50%";
+      wrapEl.style.bottom="auto";
+      wrapEl.style.transform="translate(-50%,-50%)";
+      wrapEl.style.width="min(220px,48vw)";
+      wrapEl.style.zIndex="26";
+    }
+  },800);
+
+  // ── Message 2 : 3.5s ─────────────────────────────────────────────
+  setTimeout(()=>{
+    cineMsg.style.opacity="0";
+    setTimeout(()=>{
+      cineMsg.innerHTML="Son regard se voile…<br>"
+        +"<span style='font-size:.78em;color:#e9d5ff;font-weight:600;'>"
+        +"Elle n'en peut plus.<br>Une rage froide s'empare d'elle.</span>";
+      cineMsg.style.opacity="1";
+    },300);
+  },3500);
+
+  // ── Message 3 : 6.5s ─────────────────────────────────────────────
+  setTimeout(()=>{
+    cineMsg.style.opacity="0";
+    setTimeout(()=>{
+      cineMsg.innerHTML="⚡ Ses pouvoirs se décuplent…<br>"
+        +"<span style='font-size:.78em;color:#e9d5ff;font-weight:600;'>"
+        +"⏱ Le chrono passe à 15 secondes.</span>";
+      cineMsg.style.opacity="1";
+    },300);
   },6500);
 
+  // ── Flash + skin change : 9s ──────────────────────────────────────
   setTimeout(()=>{
-    // Flash + changement de skin — 7.5s
     const flashDiv=document.createElement("div");
-    flashDiv.style.cssText="position:fixed;inset:0;background:rgba(180,50,255,.75);z-index:998;pointer-events:none;";
+    flashDiv.style.cssText="position:fixed;inset:0;background:rgba(180,50,255,.8);z-index:30;pointer-events:none;";
     document.body.appendChild(flashDiv);
     if(char){
       char.src="https://i.postimg.cc/SNnHfGXT/deesse-grammaire-enervee.png";
@@ -6294,78 +6344,86 @@ function triggerDarkPhase(){
     setTimeout(()=>flashDiv.remove(),300);
   },9000);
 
+  // ── End cinematic : 10s → restore + apply all existing effects ────
   setTimeout(()=>{
-    // Move boss back to original position
+    // Remove overlay
+    const _cine=document.getElementById("gramCineOv");if(_cine)_cine.remove();
+    // Restore boss position
     if(wrapEl){
       wrapEl.style.transition="all 1s ease";
       wrapEl.style.position="absolute";
-      wrapEl.style.left="20px";wrapEl.style.bottom="80px";
+      wrapEl.style.left="20px";
+      wrapEl.style.top="auto";
+      wrapEl.style.bottom="80px";
       wrapEl.style.transform="none";
       wrapEl.style.width="min(280px,35vw)";
+      wrapEl.style.zIndex="";
     }
+    // Restore question box
+    if(qBox)qBox.style.display="";
+    // Now apply ALL existing environment effects (unchanged)
     // Now darken environment
-    const bg=document.getElementById("gramSkyBg");
-    if(bg){
-      bg.style.background="linear-gradient(180deg,#0d0520 0%,#08102a 50%,#020508 100%)";
-    }
-    const forest=document.getElementById("gramForestBg");
-    if(forest){forest.style.transition="filter 2s";forest.style.filter="brightness(.2) saturate(.2)";}
-    const cloudIds=["gc1","gc2","gc3","gc4","gc5"];
-    const darkSrcs=["https://i.postimg.cc/FRMV9P1W/nuagesombre01.png","https://i.postimg.cc/0QT08trt/nuagesombre02.png","https://i.postimg.cc/ydMyVfWL/nuagesombre03.png","https://i.postimg.cc/FRMV9P1C/nuagesombre04.png","https://i.postimg.cc/ydMyVfW5/nuagesombre05.png"];
-    cloudIds.forEach((id,i)=>{const el=document.getElementById(id);if(el&&darkSrcs[i])el.src=darkSrcs[i];});
-    const birdsInner=document.getElementById("gramBirds");
-    if(birdsInner){
-      birdsInner.src="https://i.postimg.cc/yYQWcDy7/oiseauxinquiets.png";
-      birdsInner.id="gramBirdsInner";
-      birdsInner.style.animation="birdPanic 1.2s ease-in-out infinite";
-    }
-    const rain=document.getElementById("rainCanvas");
-    if(rain)rain.style.opacity="1";
-
-    // Change text colors for readability on dark background
-    const qb=document.getElementById("gramQBox");
-    if(qb){qb.style.background="rgba(10,5,20,.9)";qb.style.color="#e9d5ff";qb.style.border="2px solid rgba(180,50,255,.4)";}
-    const qc=document.getElementById("gramQCounter");
-    if(qc)qc.style.color="#c084fc";
-    const hpTxt=document.getElementById("gramHpText");
-    if(hpTxt)hpTxt.style.color="#c084fc";
-    const hpFill=document.getElementById("gramHpFill");
-    if(hpFill)hpFill.style.background="linear-gradient(90deg,#7c3aed,#c084fc,#ec4899)";
-    const bossLbl=document.getElementById("gramBossLabel");
-    if(bossLbl){bossLbl.style.color="#e9d5ff";bossLbl.style.textShadow="0 0 10px rgba(180,50,255,.5)";}
-
-    // Switch music
-    const gm=document.getElementById("gramMusicAudio");if(gm){gm.pause();}
-    const ga=document.getElementById("gramMusicAngry");
-    if(ga){
-      const volNow=parseInt((document.getElementById("musicVolumeSlider")||{value:"80"}).value)/100;
-      ga.currentTime=0;ga.volume=volNow*0.65;ga.play().catch(()=>{});
-    }
-
-    // Timer drops to 15s
-    gramBossState.timerVal=30; // reset then will tick down
-
-    // Thunder + flash loop
-    let thunderDelay=3000;
-    const thunderLoop=()=>{
-      if(!gramBossState.darkPhase)return;
-      const fl=document.createElement("div");
-      fl.style.cssText="position:fixed;inset:0;background:rgba(255,255,255,.3);z-index:997;pointer-events:none;";
-      document.body.appendChild(fl);
-      // Thunder sound
-      try{const t=document.getElementById("thunderSnd");if(t){t.currentTime=0;t.volume=0.5;t.play().catch(()=>{});}}catch(e){}
-      setTimeout(()=>{fl.remove();},120);
-      thunderDelay=8000+Math.random()*6000;
-      setTimeout(thunderLoop, thunderDelay);
-    };
-    setTimeout(thunderLoop, 6000);
-
-    // Resume quiz with fresh 15s timer
-    setTimeout(()=>{
-      gramBossState.timerVal=15;gramBossState._timerStart=Date.now();gramBossState._timerBase=15;
-      renderGramBossQ();
-    }, 1000);
-  }, 12000);
+        const bg=document.getElementById("gramSkyBg");
+        if(bg){
+          bg.style.background="linear-gradient(180deg,#0d0520 0%,#08102a 50%,#020508 100%)";
+        }
+        const forest=document.getElementById("gramForestBg");
+        if(forest){forest.style.transition="filter 2s";forest.style.filter="brightness(.2) saturate(.2)";}
+        const cloudIds=["gc1","gc2","gc3","gc4","gc5"];
+        const darkSrcs=["https://i.postimg.cc/FRMV9P1W/nuagesombre01.png","https://i.postimg.cc/0QT08trt/nuagesombre02.png","https://i.postimg.cc/ydMyVfWL/nuagesombre03.png","https://i.postimg.cc/FRMV9P1C/nuagesombre04.png","https://i.postimg.cc/ydMyVfW5/nuagesombre05.png"];
+        cloudIds.forEach((id,i)=>{const el=document.getElementById(id);if(el&&darkSrcs[i])el.src=darkSrcs[i];});
+        const birdsInner=document.getElementById("gramBirds");
+        if(birdsInner){
+          birdsInner.src="https://i.postimg.cc/yYQWcDy7/oiseauxinquiets.png";
+          birdsInner.id="gramBirdsInner";
+          birdsInner.style.animation="birdPanic 1.2s ease-in-out infinite";
+        }
+        const rain=document.getElementById("rainCanvas");
+        if(rain)rain.style.opacity="1";
+    
+        // Change text colors for readability on dark background
+        const qb=document.getElementById("gramQBox");
+        if(qb){qb.style.background="rgba(10,5,20,.9)";qb.style.color="#e9d5ff";qb.style.border="2px solid rgba(180,50,255,.4)";}
+        const qc=document.getElementById("gramQCounter");
+        if(qc)qc.style.color="#c084fc";
+        const hpTxt=document.getElementById("gramHpText");
+        if(hpTxt)hpTxt.style.color="#c084fc";
+        const hpFill=document.getElementById("gramHpFill");
+        if(hpFill)hpFill.style.background="linear-gradient(90deg,#7c3aed,#c084fc,#ec4899)";
+        const bossLbl=document.getElementById("gramBossLabel");
+        if(bossLbl){bossLbl.style.color="#e9d5ff";bossLbl.style.textShadow="0 0 10px rgba(180,50,255,.5)";}
+    
+        // Switch music
+        const gm=document.getElementById("gramMusicAudio");if(gm){gm.pause();}
+        const ga=document.getElementById("gramMusicAngry");
+        if(ga){
+          const volNow=parseInt((document.getElementById("musicVolumeSlider")||{value:"80"}).value)/100;
+          ga.currentTime=0;ga.volume=volNow*0.65;ga.play().catch(()=>{});
+        }
+    
+        // Timer drops to 15s
+        gramBossState.timerVal=30; // reset then will tick down
+    
+        // Thunder + flash loop
+        let thunderDelay=3000;
+        const thunderLoop=()=>{
+          if(!gramBossState.darkPhase)return;
+          const fl=document.createElement("div");
+          fl.style.cssText="position:fixed;inset:0;background:rgba(255,255,255,.3);z-index:997;pointer-events:none;";
+          document.body.appendChild(fl);
+          // Thunder sound
+          try{const t=document.getElementById("thunderSnd");if(t){t.currentTime=0;t.volume=0.5;t.play().catch(()=>{});}}catch(e){}
+          setTimeout(()=>{fl.remove();},120);
+          thunderDelay=8000+Math.random()*6000;
+          setTimeout(thunderLoop, thunderDelay);
+        };
+        setTimeout(thunderLoop, 6000);
+        // Resume quiz with fresh 15s timer
+        setTimeout(()=>{
+          gramBossState.timerVal=15;gramBossState._timerStart=Date.now();gramBossState._timerBase=15;
+          renderGramBossQ();
+        }, 1000);
+  }, 10000);
 }
 
 function startRainEffect(){
@@ -7482,10 +7540,23 @@ function tryOpenMemelite(){
 
 
 function playTeddySound(){
-  try{const ts=document.getElementById("teddySnd");if(ts){ts.pause();ts.currentTime=0;ts.volume=0.8;ts.play().catch(()=>{});}}catch(e){}
+  try{
+    const ts=document.getElementById("teddySnd");
+    if(!ts)return;
+    // Always restart from beginning
+    ts.pause();ts.currentTime=0;ts.volume=0.8;
+    ts.play().catch(()=>{
+      // iOS requires user gesture — try unlocking
+      document.addEventListener("touchend",function _ul(){
+        ts.play().catch(()=>{});
+        document.removeEventListener("touchend",_ul);
+      },{once:true});
+    });
+  }catch(e){}
 }
 function tryOpenTeddynounet(){
-  playTeddySound();
+  // Sound triggered by card click/touch directly
+  if(!("ontouchstart" in window))playTeddySound(); // desktop only (mobile uses touchstart)
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
@@ -7596,6 +7667,49 @@ function showActualites(){
   document.body.appendChild(ov);
 }
 
+
+
+async function _openUnbanPanel(playerName){
+  _closePlayerPopup();
+  const ov=document.createElement("div");
+  ov.id="unbanPanelOv";
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#001a00,#000a00);border:2px solid rgba(34,197,94,.4);border-radius:22px;padding:28px;max-width:420px;width:100%;text-align:center;animation:popIn .35s;">
+    <div style="font-size:36px;margin-bottom:12px;">🔓</div>
+    <div style="font-size:18px;font-weight:900;color:#86efac;margin-bottom:10px;">Annuler le bannissement</div>
+    <div style="font-size:14px;color:#bbf7d0;margin-bottom:20px;">Voulez-vous lever le ban de <strong>${playerName}</strong> ?</div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="_executeUnban('${playerName}')" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#16a34a,#15803d);color:#fff;font-weight:900;cursor:pointer;">✅ Confirmer</button>
+      <button onclick="document.getElementById('unbanPanelOv').remove()" style="padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#ead7ae;font-weight:700;cursor:pointer;">Annuler</button>
+    </div>
+    <div id="unbanStatus" style="text-align:center;font-size:12px;margin-top:12px;min-height:16px;"></div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+async function _executeUnban(playerName){
+  const status=document.getElementById("unbanStatus");
+  if(status)status.textContent="En cours…";
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{
+      const res=await fetch(
+        SUPABASE_URL+"/rest/v1/banned_players?player_name=eq."+encodeURIComponent(playerName),
+        {method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
+      );
+      if(res.ok||res.status===204){
+        if(status){status.textContent="✅ Ban levé.";status.style.color="#86efac";}
+        setTimeout(()=>{document.getElementById("unbanPanelOv")?.remove();},1200);
+      } else {
+        if(status){status.textContent="Erreur "+res.status;status.style.color="#fca5a5";}
+      }
+    }catch(e){
+      if(status){status.textContent="Erreur réseau";status.style.color="#fca5a5";}
+    }
+  } else {
+    if(status){status.textContent="⚠️ Supabase non configuré.";status.style.color="#fbbf24";}
+  }
+}
 
 function _openBanPanel(playerName){
   _closePlayerPopup();
@@ -7710,7 +7824,7 @@ function showBanMessage(ban){
     " de façon permanente";
   const ov=document.createElement("div");
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;";
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0200,#0a0000);border:2px solid rgba(239,68,68,.5);border-radius:22px;padding:32px;max-width:460px;width:100%;text-align:center;">
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0200,#0a0000);border:2px solid rgba(239,68,68,.5);border-radius:22px;padding:clamp(20px,5vw,32px);max-width:460px;width:100%;text-align:center;max-height:90vh;overflow-y:auto;">
     <img src="https://i.postimg.cc/8cb7tm6t/banni.png" style="width:min(180px,50vw);margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(239,68,68,.5));"/>
     <div style="font-size:22px;font-weight:900;color:#ef4444;margin-bottom:14px;">Compte banni</div>
     <div style="font-size:14px;color:#fca5a5;line-height:1.7;margin-bottom:10px;">
