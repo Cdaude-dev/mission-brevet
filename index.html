@@ -594,6 +594,16 @@
     @keyframes melFirePulse{0%,100%{opacity:.6;}50%{opacity:1;}}
     @keyframes melExplode{0%{transform:scale(1);}50%{transform:scale(1.8);}100%{transform:scale(0);opacity:0;}}
 
+  
+    @keyframes orgBreathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.04) translateY(-8px);}}
+    @keyframes orgParticle{0%{transform:translateY(0) translateX(0) scale(1);opacity:.8;}100%{transform:translateY(-80px) translateX(var(--dx)) scale(0);opacity:0;}}
+    @keyframes melBreathe{0%,100%{transform:scale(1);}50%{transform:scale(1.03) translateY(-6px);}}
+    @keyframes melFloat{0%{transform:translateX(0) translateY(0);}25%{transform:translateX(30px) translateY(-20px);}50%{transform:translateX(60px) translateY(-5px);}75%{transform:translateX(20px) translateY(-30px);}100%{transform:translateX(0) translateY(0);}}
+    @keyframes melVibrate{0%,100%{transform:translateX(0);}20%{transform:translateX(-4px);}40%{transform:translateX(4px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);}}
+    @keyframes melP3Breathe{0%,100%{transform:scale(1);}30%{transform:scale(1.05) translateY(-10px);}60%{transform:scale(.97) translateY(4px);}}
+    @keyframes p3Ember{0%{transform:translateY(0) translateX(0) scale(1);opacity:1;}100%{transform:translateY(-120px) translateX(var(--ex)) scale(0);opacity:0;}}
+    @keyframes p3Shake{0%,100%{transform:translateX(0) translateY(0);}20%{transform:translateX(-8px) translateY(4px);}40%{transform:translateX(8px) translateY(-4px);}60%{transform:translateX(-6px) translateY(2px);}80%{transform:translateX(6px) translateY(-2px);}}
+
   </style>
 </head>
 <body>
@@ -1209,7 +1219,7 @@
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:38px;width:auto;display:block;" alt="Fuir"/></button></button>
+    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button></button>
   </div>
   <!-- end quizCard -->
 
@@ -1454,7 +1464,7 @@
     <!-- Boss chapter -->
     <div class="chapter-card" id="bossChapterCard" style="border:2px solid rgba(168,85,247,.5);background:rgba(88,28,135,.08);">
       <div class="chapter-header" onclick="tryOpenBoss()" style="flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
-        <div class="chapter-title" style="color:#facc15;">Conjugus</div>
+        <div class="chapter-title" style="color:#c084fc;">Conjugus</div>
         <img id="bossLockIcon" src="https://i.postimg.cc/j5NdKHYq/dieu-conjugaison.png"
           style="width:140px;height:140px;object-fit:contain;filter:grayscale(1) brightness(.35);
           animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:8px;" alt="Boss"/>
@@ -1470,7 +1480,17 @@
         </div>
       </div>
     </div>
-  </div><!-- end conjMenu -->
+  
+  <!-- TEDDYNOUNET MINI-BOSS (conjugaison) — coming soon -->
+  <div class="chapter-card" id="teddynounetCard" style="border:2px solid rgba(251,146,60,.5);background:rgba(124,45,18,.08);">
+    <div class="chapter-header" onclick="tryOpenTeddynounet()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
+      <div class="chapter-title" style="color:#fb923c;">Teddynounet</div>
+      <img id="teddyLockIcon" src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png"
+        style="width:130px;height:130px;object-fit:contain;filter:grayscale(1) brightness(.35);
+        animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:6px;" alt="Teddynounet"/>
+    </div>
+  </div>
+</div><!-- end conjMenu -->
 </div>
 
   <!-- BOSS UNLOCK OVERLAY -->
@@ -1530,7 +1550,7 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(255,100,100,.4);
              background:rgba(60,0,0,.55);color:rgba(255,160,160,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:38px;width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
     <!-- Audio elements -->
     <audio id="bossMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Dieu-de-la-conjugaison.mp3" type="audio/mpeg"/></audio>
     <audio id="bossHit1"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/bruit01-dieuconjugaison.mp3" type="audio/mpeg"/></audio>
@@ -1608,7 +1628,7 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(100,150,255,.35);
              background:rgba(0,10,50,.55);color:rgba(147,197,253,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:38px;width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
     <!-- Audio -->
     <audio id="gramMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-de-la-Grammaire.mp3" type="audio/mpeg"/></audio>
     <audio id="gramMusicAngry" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-Grammaire-enervee..mp3" type="audio/mpeg"/></audio>
@@ -3761,13 +3781,14 @@ async function saveToLB(){
         "apikey":SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+SUPABASE_ANON_KEY
       };
-      // PATCH to update existing row first
-      const patchRes=await fetch(
-        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
-        {method:"PATCH",headers:{...headers,"Prefer":"return=representation,count=exact"},body:JSON.stringify(lbPayload)}
-      );
-      // If no rows matched (count=0), insert new row
-      const countHeader=patchRes.headers.get("content-range")||"";
+      // UPSERT — insert or update in one call, more reliable than PATCH+INSERT
+      await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
+        method:"POST",
+        headers:{...headers,"Prefer":"resolution=merge-duplicates,return=minimal"},
+        body:JSON.stringify(lbPayload)
+      });
+      // Legacy fallback kept for older Supabase configs
+      const patchRes={headers:{get:()=>null}};const countHeader=patchRes.headers.get("content-range")||"";
       const matched=countHeader&&!countHeader.startsWith("0/");
       if(!matched){
         await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
@@ -4309,9 +4330,12 @@ function unlockBotticelliSecret(imgEl){
 
 function showKeyUnlock(type){
   const isConj=type==="conjugaison";
-  const keyImg=isConj?"https://i.postimg.cc/rmCC7Djh/cle-conjugaison.png":"https://i.postimg.cc/PJj1TZcB/Cle-grammaire.png";
-  const keyName=isConj?"Clé du Temps":"Clé de la Langue";
-  const keyMsg=isConj?"Toutes les séances de conjugaison terminées à 100% !":"Bravo ! Vous avez terminé toutes les séances de grammaire à 100% — vous débloquez la Clé de la Langue !";
+  const isLit=type==="litterature";
+  const keyImg=isConj?"https://i.postimg.cc/rmCC7Djh/cle-conjugaison.png":isLit?"https://i.postimg.cc/xj4zjjfB/Cle-de-la-Librairie.png":"https://i.postimg.cc/PJj1TZcB/Cle-grammaire.png";
+  const keyName=isConj?"Clé du Temps":isLit?"Clé de la Librairie":"Clé de la Langue";
+  const keyMsg=isConj?"Toutes les séances de conjugaison terminées à 100% !"
+    :isLit?"Bravo ! Toutes les séances de littérature terminées à 100% — vous débloquez la Clé de la Librairie ! Vous pouvez maintenant affronter Mémélité."
+    :"Bravo ! Vous avez terminé toutes les séances de grammaire à 100% — vous débloquez la Clé de la Langue !";
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
@@ -4705,13 +4729,13 @@ function showResults(){
   // Check boss unlock conditions after séance completion
   setTimeout(()=>{
     const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-    const conjDone=allConj.every(k=>S.perfect&&S.perfect[k]);
+    const conjDone=allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
     if(conjDone&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");}
     const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-    const gramDone=allGram.every(k=>S.perfect&&S.perfect[k]);
+    const gramDone=allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
     if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");}
     const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-    const litDone=allLit.every(k=>S.perfect&&S.perfect[k]);
+    const litDone=allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
     if(litDone&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");}
   },800);
   D.quizProgFill.style.width="100%";
@@ -5015,8 +5039,11 @@ function doLogin(){
     setTimeout(()=>{
       const allIds=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9","g1","g2","g3","g4","g5","g6","g7","g8","c1","c2","c3","c4","c5","c6","c7","c8"];
       allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
-      S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
-      S.conjKeyShown=true;S.gramKeyShown=true;
+      S.score=9990;
+      S.bossDefeated=true;S.gramBossDefeated=true;S.orgBossDefeated=true;
+      S.memeliteDefeated=true;S.memeliteFlawless=true;
+      S.conjKeyShown=true;S.gramKeyShown=true;S.litKeyShown=true;
+      S.bossUnlockShown=true;S.gramBossUnlockShown=true;
       BADGES_DEF.forEach(b=>S.badges.add(b.id));
       S.unlockedSecrets=new Set(["botticelli"]);
       updateHUD();updateSeanceBadges();renderBadgesGrid();
@@ -5350,6 +5377,7 @@ window.addEventListener("load",()=>{
         S.conjKeyShown=true;S.gramKeyShown=true;S.litKeyShown=true;
         S.bossDefeated=true;S.gramBossDefeated=true;S.orgBossDefeated=true;
         S.memeliteDefeated=true;S.memeliteFlawless=true;
+        S.bossUnlockShown=true;S.gramBossUnlockShown=true;
         S.stars=S.stars||{};
       }
       // Refresh session with current avatar
@@ -5441,12 +5469,26 @@ const BOSS_QUESTIONS=[
 
 let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions()};
 
+
+function showLockedBossMsg(title, text){
+  const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a00,#0a0500);border:2px solid rgba(217,164,65,.3);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .3s;">
+    <div style="font-size:44px;margin-bottom:12px;">🔒</div>
+    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:12px;">${title}</div>
+    <div style="font-size:14px;color:#ead7ae;line-height:1.7;margin-bottom:20px;">${text}</div>
+    <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:11px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">D'accord</button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
 function tryOpenBoss(){
   const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-  const allDone=allConj.every(k=>S.perfect&&S.perfect[k]);
-  if(!allDone&&!(S.name===ADMIN_CODE||S.name==="Daude96")){
-    // Show locked message
-    toast("🔒 Trouve la Clé du Temps ! Termine toutes les séances de conjugaison à 100%.");
+  const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
+  const allDone=S.conjKeyShown||allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
+  if(!allDone){
+    showLockedBossMsg("🔒 Clé du Temps requise","Termine toutes les séances de conjugaison à 100% pour obtenir la Clé du Temps et affronter Conjugus.");
     return;
   }
   // Check if just unlocked for first time
@@ -5473,7 +5515,7 @@ function showBossKeyAnimation(){
   setTimeout(()=>{
     const btn=document.getElementById("bossKeyClose");
     btn.style.display="inline-block";
-  },3000);
+  },3500);
 }
 function closeBossKey(){
   document.getElementById("bossKeyOv").style.display="none";
@@ -5921,8 +5963,9 @@ function updateGramBossChapter(){
 
 function tryOpenGramBoss(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const unlocked=allGram.every(k=>S.perfect&&S.perfect[k])||(S.name===ADMIN_CODE||S.name==="Daude96");
-  if(!unlocked){toast("🔒 Trouve la Clé de la Langue ! Termine toutes les séances de grammaire à 100%.");return;}
+  const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
+  const unlocked=S.gramKeyShown||allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
+  if(!unlocked){showLockedBossMsg("🔒 Clé de la Langue requise","Termine toutes les séances de grammaire à 100% pour obtenir la Clé de la Langue et affronter Grammairia.");return;}
   confirmGramBoss();
 }
 
@@ -6110,13 +6153,13 @@ function triggerDarkPhase(){
 
   setTimeout(()=>{
     // Message 2 — 3s
-    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#e9d5ff;text-shadow:0 0 24px rgba(216,180,254,1),0 0 6px #fff;">Son regard se voile…<br><br><span style="font-size:14px;color:#f3e8ff;line-height:1.8;text-shadow:0 0 12px rgba(216,180,254,.8);">Elle n\'en peut plus.<br>Une rage froide s\'empare d\'elle.</span></span>';
+    if(qBox) qBox.innerHTML='<div style="background:rgba(0,0,0,.75);border-radius:14px;padding:16px 20px;border:1px solid rgba(216,180,254,.4);"><span style="font-size:20px;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.8);">Son regard se voile…</span><br><br><span style="font-size:15px;color:#f3e8ff;line-height:1.8;text-shadow:0 1px 3px rgba(0,0,0,.8);">Elle n\'en peut plus.<br>Une rage froide s\'empare d\'elle.</span></div>';
   },3000);
 
   setTimeout(()=>{
     // Message 3 — 5.5s
-    if(qBox) qBox.innerHTML='<span style="font-size:18px;font-weight:900;color:#f3e8ff;text-shadow:0 0 24px rgba(216,180,254,1),0 0 8px #fff;">Ses pouvoirs se décuplent…<br><br><span style="font-size:14px;color:#e9d5ff;text-shadow:0 0 12px rgba(216,180,254,.9);">⏱ Le chrono passe à 15 secondes.</span></span>';
-  },5500);
+    if(qBox) qBox.innerHTML='<div style="background:rgba(0,0,0,.75);border-radius:14px;padding:16px 20px;border:1px solid rgba(216,180,254,.4);"><span style="font-size:20px;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.8);">⚡ Ses pouvoirs se décuplent…</span><br><br><span style="font-size:15px;color:#f3e8ff;text-shadow:0 1px 3px rgba(0,0,0,.8);">⏱ Le chrono passe à 15 secondes.</span></div>';
+  },6500);
 
   setTimeout(()=>{
     // Flash + changement de skin — 7.5s
@@ -6128,7 +6171,7 @@ function triggerDarkPhase(){
       char.style.filter="drop-shadow(0 0 40px rgba(180,50,255,.9))";
     }
     setTimeout(()=>flashDiv.remove(),300);
-  },7500);
+  },9000);
 
   setTimeout(()=>{
     // Move boss back to original position
@@ -6201,7 +6244,7 @@ function triggerDarkPhase(){
       gramBossState.timerVal=15;gramBossState._timerStart=Date.now();gramBossState._timerBase=15;
       renderGramBossQ();
     }, 1000);
-  }, 10000);
+  }, 12000);
 }
 
 function startRainEffect(){
@@ -6787,7 +6830,7 @@ const ORG_QUESTIONS = [
   {phrase:"Une robe bleu très élégante.", words:["Une","robe","bleu","très","élégante."], errorIdx:2, correction:"bleue", explanation:"L'adjectif 'bleu' s'accorde avec le nom féminin 'robe' → 'bleue'."},
   {phrase:"Tout le monde sont prêt.", words:["Tout","le","monde","sont","prêt."], errorIdx:3, correction:"est", explanation:"'Tout le monde' est un sujet singulier → 'est' (et non 'sont')."},
   {phrase:"Des mandats internationals ont été promulgués.", words:["Des","mandats","internationals","ont","été","promulgués."], errorIdx:2, correction:"internationaux", explanation:"Le pluriel de 'international' est 'internationaux' (-al → -aux)."},
-  {phrase:"Si j'aurais su j'aurais fait autrement.", words:["Si","j'aurais","su","j'aurais","fait","autrement."], errorIdx:1, correction:"j'avais", explanation:"Après 'si' conditionnel, on emploie l'imparfait : 'si j'avais su'."},
+  {phrase:"Si j'aurais su j'aurais fait autrement.", words:["Si","j'aurais","su","j'aurais","fait","autrement."], errorIdx:[1,3], correction:"j'avais", explanation:"Après 'si' conditionnel, on emploie l'imparfait : 'si j'avais su'."},
   {phrase:"Il c'est levé très tôt ce matin.", words:["Il","c'est","levé","très","tôt","ce","matin."], errorIdx:1, correction:"s'est", explanation:"Il s'agit du verbe pronominal 'se lever' : 'il s'est levé'."},
   {phrase:"Je regarde les cheveaux courir sur la plage.", words:["Je","regarde","les","cheveaux","courir","sur","la","plage."], errorIdx:3, correction:"chevaux", explanation:"Le pluriel de 'cheval' est 'chevaux' (pas 'cheveaux')."},
   {phrase:"Les efforts qu'ils ont fait sont remarquables !", words:["Les","efforts","qu'ils","ont","fait","sont","remarquables","!"], errorIdx:4, correction:"faits", explanation:"Le COD 'que' (= les efforts, masc. plur.) précède avoir → accord : 'faits'."},
@@ -6888,7 +6931,7 @@ function submitOrgCorrection(){
   if(!answer){toast("Tape ta réponse !");return;}
 
   // Check: selected word must be the error AND correction must be right
-  const rightWord=orgState.selectedWord===q.errorIdx;
+  const rightWord=Array.isArray(q.errorIdx)?q.errorIdx.includes(orgState.selectedWord):orgState.selectedWord===q.errorIdx;
   const rightCorr=normalizeAnswer(answer)===normalizeAnswer(q.correction);
 
   if(rightWord&&rightCorr){
@@ -7061,7 +7104,7 @@ function tryOpenOrgografe(){
   const req=6;
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
   if(!isAdmin&&stars<req){
-    toast("🔒 Il te faut "+req+" ⭐ pour affronter la grande Orgografe ! ("+stars+"/"+req+")");
+    showLockedBossMsg("🔒 "+req+" étoiles requises","Il te faut "+req+" ⭐ pour affronter la grande Orgografe. Tu en as actuellement "+stars+".");
     return;
   }
   // Intro animation
@@ -7196,7 +7239,8 @@ function updateMemeliteChapter(){
 
 function tryOpenMemelite(){
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
-  const hasKey=S.litKeyShown||isAdmin;
+  const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+  const hasKey=S.litKeyShown||isAdmin||allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
   if(hasKey){
     // Show intro popup like other bosses
     const ov=document.createElement("div");
@@ -7227,9 +7271,10 @@ function tryOpenMemelite(){
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0202,#0a0000);border:2px solid rgba(220,38,38,.4);border-radius:22px;padding:28px;max-width:420px;width:100%;text-align:center;animation:popIn .35s;">
     <img src="https://i.postimg.cc/bwfcRt83/Memelite.png" style="width:120px;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(239,68,68,.5));"/>
     <div style="font-size:22px;font-weight:900;color:#f87171;margin-bottom:10px;">Mémélité</div>
-    <div style="font-size:14px;color:#fecaca;line-height:1.7;margin-bottom:18px;">
+    <div style="font-size:14px;color:#fecaca;line-height:1.7;margin-bottom:18px;text-align:center;" id="melLockedMsg">
       🔐 <strong style="color:#fca5a5;">Module verrouillé</strong><br><br>
-      Il vous faut la <strong style="color:#facc15;">Clé de la Librairie</strong> pour pouvoir accéder à cet affrontement.
+      Il vous faut la <strong style="color:#facc15;">Clé de la Librairie</strong> pour affronter Mémélité.<br><br>
+      <span style="font-size:12px;opacity:.7;">Obtenez 100% à toutes les séances de littérature.</span>
     </div>
     <button onclick="this.closest('.mb-popup-ov').remove()"
       style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#fecaca;font-weight:700;cursor:pointer;">
@@ -7237,6 +7282,68 @@ function tryOpenMemelite(){
     </button>
   </div>`;
   document.body.appendChild(ov);
+}
+
+
+function tryOpenTeddynounet(){
+  const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0500);border:2px solid rgba(251,146,60,.4);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .35s;">
+    <img src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png" style="width:110px;margin-bottom:12px;filter:drop-shadow(0 0 14px rgba(251,146,60,.5));animation:bossIdle 4s ease-in-out infinite;"/>
+    <div style="font-size:20px;font-weight:900;color:#fb923c;margin-bottom:10px;">Teddynounet</div>
+    <div style="font-size:14px;color:#fed7aa;line-height:1.7;margin-bottom:16px;">
+      🔨 <strong style="color:#fbbf24;">Module en cours de création</strong><br><br>
+      Ce boss arrive bientôt. Entraîne-toi en attendant !
+    </div>
+    <button onclick="this.closest('.mb-popup-ov').remove()"
+      style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#fed7aa;font-weight:700;cursor:pointer;">
+      D'accord
+    </button>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+
+/* ══════════ UPDATE MESSAGE SLIDER ══════════ */
+const UPD_SLIDES=[
+  {img:"https://i.postimg.cc/N04Cp0Rt/Gadou.png",
+   aura:"rgba(249,115,22,.6)",
+   title:"🐉 La grande Orgografe",
+   text:"La cheffe des rebelles de l'orthographe sème le chaos dans les phrases françaises ! Corrigez ses erreurs pour la vaincre. Il vous faut <strong style='color:#86efac;'>6 étoiles</strong> pour l'affronter."},
+  {img:"https://i.postimg.cc/bwfcRt83/Memelite.png",
+   aura:"rgba(220,38,38,.7)",
+   title:"📚 Mémélité — Nouveau boss",
+   text:"La bibliothécaire des Enfers vous défie sur la culture littéraire. 3 phases, des chats lancés et une battle épique ! Il vous faut 100% en littérature pour obtenir la Clé de la Librairie et l'affronter."},
+];
+let _updSlideIdx=0;
+
+function initUpdateSlider(){
+  _updSlideIdx=0;
+  _renderUpdateSlide();
+}
+
+function _renderUpdateSlide(){
+  const s=UPD_SLIDES[_updSlideIdx];
+  const isLast=_updSlideIdx===UPD_SLIDES.length-1;
+  const slider=document.getElementById('updSlider');
+  const dots=document.getElementById('updDots');
+  const prev=document.getElementById('updPrev');
+  const next=document.getElementById('updNext');
+  const close=document.getElementById('updClose');
+  if(!slider)return;
+  slider.innerHTML='<div style="text-align:center;padding:4px 0;">'
+    +'<img src="'+s.img+'" style="width:90px;object-fit:contain;margin-bottom:10px;'
+    +'filter:drop-shadow(0 0 16px '+s.aura+');animation:bossIdle 4s ease-in-out infinite;"/>'
+    +'<div style="font-size:16px;font-weight:900;color:var(--gold);margin-bottom:8px;">'+s.title+'</div>'
+    +'<div style="font-size:13px;color:#ead7ae;line-height:1.6;text-align:left;">'+s.text+'</div>'
+    +'</div>';
+  if(dots)dots.innerHTML=UPD_SLIDES.map((_,i)=>
+    '<div style="width:8px;height:8px;border-radius:50%;transition:background .2s;background:'
+    +(i===_updSlideIdx?'var(--gold)':'rgba(217,164,65,.3)') +'"></div>').join('');
+  if(prev)prev.style.display=_updSlideIdx>0?'':'none';
+  if(next)next.style.display=isLast?'none':'';
+  if(close)close.style.display=isLast?'':'none';
 }
 
 function maybeShowUpdateMsg(){
@@ -7247,7 +7354,7 @@ function maybeShowUpdateMsg(){
   window._updateMsgTimer=setTimeout(()=>{
     if(S.currentScreen!=='welcome'){
       const o=document.getElementById('updateMsgOv');
-      if(o)o.style.display='flex';
+      if(o){o.style.display='flex';initUpdateSlider();}
     }
   },1500);
 }
@@ -7317,6 +7424,18 @@ const MEMELITE_QUESTIONS=[
   {prompt:"Le Petit Prince est écrit par :",options:["Jules Verne","Antoine de Saint-Exupéry","Marcel Pagnol","Albert Camus","André Gide"],correct:1,expl:"Antoine de Saint-Exupéry publie Le Petit Prince en 1943."},
   {prompt:"L'allégorie est :",options:["Une répétition de sons","Une personnification d'idées abstraites","Un type de versification","Un jeu de mots","Une strophe libre"],correct:1,expl:"L'allégorie représente une idée abstraite par une image concrète ou un personnage (ex : la Justice = femme aux yeux bandés)."},
   {prompt:"Quel auteur a théorisé le théâtre épique ?",options:["Stanislavski","Artaud","Brecht","Molière","Beckett"],correct:2,expl:"Bertolt Brecht (1898-1956) théorise le théâtre épique, fondé sur la distanciation."},
+  {prompt:"L'exposition d'une pièce a pour but de :",options:["Faire rire","Présenter personnages et situation initiale","Résoudre l'intrigue","Créer un coup de théâtre","Décrire le décor"],correct:1,expl:"L'exposition installe les données nécessaires à la compréhension de l'action."},
+  {prompt:"Que signifie le terme 'épique' ?",options:["Relatif au théâtre","Relatif à la poésie lyrique","Relatif aux récits héroïques en vers","Relatif au roman réaliste","Relatif à la comédie"],correct:2,expl:"L'épique désigne le genre narratif héroïque, illustré par Homère ou Virgile."},
+  {prompt:"Qu'est-ce qu'un roman picaresque ?",options:["Un roman de chevalerie","Un roman centré sur un héros aventurier de basse condition","Un roman gothique","Un roman épistolaire","Un roman psychologique"],correct:1,expl:"Le roman picaresque (Don Quichotte, Gil Blas) suit un héros roublard naviguant dans la société."},
+  {prompt:"Victor Hugo dit : 'La liberté dans l'art, la liberté dans la société'. À quel mouvement appartient cette idée ?",options:["Classicisme","Lumières","Romantisme","Réalisme","Symbolisme"],correct:2,expl:"Cette phrase est caractéristique du romantisme qui revendique la liberté créatrice contre les règles classiques."},
+  {prompt:"Qu'est-ce qu'un haïku ?",options:["Un sonnet japonais","Un court poème japonais en 3 vers (5-7-5 syllabes)","Un poème lyrique long","Un genre épique oriental","Un roman court"],correct:1,expl:"Le haïku est une forme poétique japonaise en 3 vers exprimant un instant, souvent lié à la nature."},
+  {prompt:"Qui a écrit 'À la recherche du temps perdu' ?",options:["Zola","Flaubert","Proust","Gide","Aragon"],correct:2,expl:"Marcel Proust publie À la recherche du temps perdu entre 1913 et 1927 (7 volumes)."},
+  {prompt:"Le théâtre de l'absurde se caractérise par :",options:["Des intrigues très logiques","L'absence de sens et la répétition comme procédé","Des décors très réalistes","Des alexandrins classiques","Des histoires d'amour"],correct:1,expl:"Ionesco (La Cantatrice chauve) et Beckett (En attendant Godot) mettent en scène l'absurdité de l'existence."},
+  {prompt:"Qu'est-ce qu'un drame romantique ?",options:["Une comédie musicale","Une pièce mêlant comique et tragique, rejetant les règles classiques","Un opéra","Un vaudeville","Un mélodrame populaire"],correct:1,expl:"Hugo théorise le drame romantique dans la Préface de Cromwell : mélange du sublime et du grotesque."},
+  {prompt:"Qu'appelle-t-on la 'tirade' au théâtre ?",options:["Un type de strophe","Une longue réplique d'un personnage","Un entracte","Un résumé de scène","Une indication scénique"],correct:1,expl:"La tirade est une longue réplique d'un seul personnage sans interruption."},
+  {prompt:"Qu'est-ce que le naturalisme cherche à démontrer ?",options:["La beauté de la nature","L'influence du milieu et de l'hérédité sur l'être humain","La supériorité de l'imagination","L'absurdité du monde","La permanence des valeurs classiques"],correct:1,expl:"Zola veut appliquer la méthode scientifique au roman : l'être humain est déterminé par son milieu et ses gènes."},
+  {prompt:"Qui a écrit 'Candide' ?",options:["Rousseau","Diderot","Voltaire","Montesquieu","D'Alembert"],correct:2,expl:"Voltaire publie Candide, ou l'Optimisme en 1759, conte philosophique satirique."},
+  {prompt:"Une 'apostrophe' en rhétorique est :",options:["Un signe de ponctuation","Une interpellation directe d'une personne ou d'une chose absente","Un procédé de rime","Un type de métaphore","Une figure d'atténuation"],correct:1,expl:"L'apostrophe consiste à interpeller directement un être absent, mort ou une abstraction."},
 ];
 
 
@@ -7347,12 +7466,12 @@ function startMemelit(){
   const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
-  melState={phase:1,qIdx:0,hp:20,lives:5,timerVal:20,timerInt:null,
-    catCount:0,catsMissed:0,noPerfect:false,catsToRepel:20,catsRepelled:0,
+  melState={phase:1,qIdx:0,hp:15,lives:5,timerVal:20,timerInt:null,
+    catCount:0,catsMissed:0,noPerfect:false,catsToRepel:15,catsRepelled:0,
     shuffledQs:[...MEMELITE_QUESTIONS].sort(()=>Math.random()-.5),
-    inCatPhase:false,p2hp:20,p3hp:20,_lastCatAt:-1};
+    inCatPhase:false,_lastCatAt:-1};
   const melChar=document.getElementById("melChar");
-  if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.filter="drop-shadow(0 0 20px rgba(220,38,38,.4))";melChar.style.animation="";}
+  if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.filter="drop-shadow(0 0 20px rgba(220,38,38,.4))";melChar.style.animation="melBreathe 3s ease-in-out infinite";}
   const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";}
   renderMelLives();
   playMelMusic(1);
@@ -7426,7 +7545,9 @@ function answerMel(correct, expl, btn, aWrap){
   if(aWrap)aWrap.querySelectorAll("button").forEach(b=>{
     b.disabled=true;b.style.opacity=".6";
   });
-  if(btn&&correct)btn.style.background="rgba(34,197,94,.4)";
+  if(btn&&correct){btn.style.background="rgba(34,197,94,.4)";
+    // Vibrate Mémelité on correct answer
+    const mc=document.getElementById("melChar");if(mc){mc.style.animation="melVibrate .3s ease-out";setTimeout(()=>{mc.style.animation=melState.phase===1?"melBreathe 3s ease-in-out infinite":melState.phase===2?"melFloat 8s ease-in-out infinite":"melP3Breathe 2s ease-in-out infinite";},320);}}
   if(btn&&!correct)btn.style.background="rgba(239,68,68,.4)";
   // Show brief explanation
   const qBox=document.getElementById("melQBox");
@@ -7440,13 +7561,6 @@ function answerMel(correct, expl, btn, aWrap){
     if(melState.lives<=0){setTimeout(melDefeat,800);return;}
   }
   melState.qIdx++;
-  // Phase transitions
-  if(melState.phase===1 && melState.catsRepelled>=melState.catsToRepel){
-    setTimeout(()=>melPhase2Cinematic(),800);return;
-  }
-  if(melState.phase===2 && melState.catsRepelled>=melState.catsToRepel+20){
-    setTimeout(()=>melPhase3Cinematic(),800);return;
-  }
   setTimeout(renderMelQ, 800);
 }
 
@@ -7472,7 +7586,7 @@ function startCatPhase(){
     // Enable cat container clicks
     const cc=document.getElementById("melCatContainer");
     if(cc){cc.style.pointerEvents="all";cc.style.zIndex="12";}
-    if(melState.phase===1)launchCats(6);else launchMeteors(melState.phase===3?9:8);
+    if(melState.phase===1)launchCats(6);else launchMeteors(melState.phase===3?9:8); // cats/meteors per wave
   },2500);
 }
 
@@ -7498,7 +7612,7 @@ function launchCats(count){
         object-fit:contain;cursor:pointer;left:-180px;
         top:${10+Math.random()*55}%;z-index:12;
         transform:scaleX(-1);
-        animation:melCatFly ${3+Math.random()*1.5}s linear forwards;`;
+        animation:melCatFly ${4+Math.random()*1.5}s linear forwards;`;
       cat.style.padding="20px";
       cat.onclick=()=>{
         if(cat.dataset.hit)return;
@@ -7548,7 +7662,7 @@ function launchMeteors(count){
       const startX=10+Math.random()*80;
       m.style.cssText=`position:absolute;width:clamp(100px,14vw,160px);height:clamp(100px,14vw,160px);
         left:${startX}%;top:-10%;cursor:pointer;z-index:12;
-        animation:melMeteorFall ${2.5+Math.random()*1.2}s linear forwards;padding:18px;`;
+        animation:melMeteorFall ${melState.phase===3?2+Math.random()*.8:2.5+Math.random()*1}s linear forwards;padding:18px;`;
       m.innerHTML=`<img src="${skin}" style="width:100%;height:100%;object-fit:contain;"/>
         <div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,100,0,.4),transparent);border-radius:50%;animation:melFirePulse .4s ease infinite;pointer-events:none;"></div>`;
       m.onclick=()=>{
@@ -7557,7 +7671,11 @@ function launchMeteors(count){
         // Explosion
         m.innerHTML=`<div style="font-size:clamp(28px,5vw,42px);animation:melExplode .5s forwards;">💥</div>`;
         m.style.background="none";
-        melState.catsRepelled++;melHit();done++;
+        melState.catsRepelled++;melHit();
+  // Check phase transitions
+  if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),600);
+  else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),600);
+  else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,600);done++;
         setTimeout(()=>{m.remove();check();},520);
       };
       m.addEventListener("animationend",()=>{
@@ -7581,10 +7699,15 @@ function melHit(){
   const phaseTotal=20;
   const pct=Math.max(0,((phaseTotal-repelledInPhase)/phaseTotal)*100);
   if(hpFill)hpFill.style.width=pct+"%";
-  // Blink
+  // Blink + vibrate on damage
   const ch=document.getElementById("melChar");
-  if(ch){ch.classList.add("hit");setTimeout(()=>ch.classList.remove("hit"),520);}
-  const snd=document.getElementById("melHurtSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
+  if(ch){
+    ch.classList.add("hit");
+    const baseAnim=melState.phase===1?"melBreathe 3s ease-in-out infinite":melState.phase===2?"melFloat 8s ease-in-out infinite":"melP3Breathe 2s ease-in-out infinite";
+    ch.style.animation="melVibrate .3s ease-out";
+    setTimeout(()=>{ch.classList.remove("hit");ch.style.animation=baseAnim;},520);
+  }
+  const _hs=document.getElementById(Math.random()>.5?"melHurtSnd1":"melHurtSnd2");if(_hs){_hs.currentTime=0;_hs.volume=0.7;_hs.play().catch(()=>{});}
 }
 
 // ── PHASE 2 CINEMATIC ──
@@ -7609,7 +7732,7 @@ function melPhase2Cinematic(){
     // Flash + new skin
     const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(255,220,50,.8);z-index:9999;pointer-events:none;";
     document.body.appendChild(fl);setTimeout(()=>fl.remove(),350);
-    if(ch){ch.src="https://i.postimg.cc/hjP5ghXp/Memelite-V2.png";ch.style.filter="drop-shadow(0 0 40px rgba(250,204,21,.9))";}
+    if(ch){ch.src="https://i.postimg.cc/hjP5ghXp/Memelite-V2.png";ch.style.filter="drop-shadow(0 0 40px rgba(250,204,21,.9))";ch.style.animation="melFloat 8s ease-in-out infinite";}
     if(cineImg)cineImg.src="https://i.postimg.cc/hjP5ghXp/Memelite-V2.png";
     if(cineMsg)cineMsg.textContent="Mémélité est en fusion avec ses chats ! Sa puissance décuple !";
     if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Phase 2";
@@ -7620,7 +7743,6 @@ function melPhase2Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusic(2);
-    melState.catsToRepel=40;
     renderMelQ();
   },5000);
 }
@@ -7647,9 +7769,9 @@ function melPhase3Cinematic(){
     const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(150,50,255,.75);z-index:9999;pointer-events:none;";
     document.body.appendChild(fl);setTimeout(()=>fl.remove(),400);
     const bgImg=document.getElementById("melBgImg");
-    if(bgImg)bgImg.src="https://i.postimg.cc/KzKm026p/fond-memelite-P3.png";
+    if(bgImg)bgImg.src="https://i.postimg.cc/xdrSFt7v/fond-memelite-P3.png";
     const fireC=document.getElementById("melFireContainer");if(fireC)fireC.style.display="block";
-    if(ch){ch.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";ch.style.filter="drop-shadow(0 0 40px rgba(168,85,247,.9))";}
+    if(ch){ch.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";ch.style.filter="drop-shadow(0 0 40px rgba(168,85,247,.9))";ch.style.animation="melP3Breathe 2s ease-in-out infinite";}
     if(cineImg)cineImg.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";
     if(cineMsg){cineMsg.textContent="La fusion est totale. Arrêtez-la avant qu'il ne soit trop tard !";cineMsg.style.color="#e9d5ff";}
     if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Fusion Finale";
@@ -7659,7 +7781,6 @@ function melPhase3Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusic(3);
-    melState.catsToRepel=60;
     renderMelQ();
   },6000);
 }
@@ -7806,56 +7927,11 @@ function abandonMemelite(){
       </div>
       <div id="updDots" style="display:flex;gap:6px;justify-content:center;margin:12px 0;"></div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button id="updPrev" style="padding:9px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">←</button>
-        <button id="updNext" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Suivant →</button>
-        <button id="updClose" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">C'est parti ! 🚀</button>
+        <button id="updPrev" onclick="_updSlideIdx--;_renderUpdateSlide()" style="padding:9px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">←</button>
+        <button id="updNext" onclick="_updSlideIdx++;_renderUpdateSlide()" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Suivant →</button>
+        <button id="updClose" onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v3','1');" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">C'est parti ! 🚀</button>
       </div>
-      <script>
-      (function(){
-        const UPD_SLIDES=[
-          {img:"https://i.postimg.cc/N04Cp0Rt/Gadou.png",
-           aura:"rgba(249,115,22,.6)",
-           title:"🐉 La grande Orgografe",
-           text:"La cheffe des rebelles de l'orthographe sème le chaos dans les phrases françaises ! Corrigez ses erreurs pour la vaincre. Il vous faut <strong style='color:#86efac;'>6 étoiles</strong> pour l'affronter."},
-          {img:"https://i.postimg.cc/bwfcRt83/Memelite.png",
-           aura:"rgba(220,38,38,.7)",
-           title:"📚 Mémélité — Nouveau boss",
-           text:"La bibliothécaire des Enfers vous défie sur la culture littéraire. 3 phases, des chats lancés et une battle épique ! Il vous faut <strong style='color:#fca5a5;'>100% en littérature</strong> pour obtenir la Clé de la Librairie et l'affronter."},
-        ];
-        let si=0;
-        function render(){
-          const s=UPD_SLIDES[si];
-          const slider=document.getElementById('updSlider');
-          const dots=document.getElementById('updDots');
-          const prev=document.getElementById('updPrev');
-          const next=document.getElementById('updNext');
-          const close=document.getElementById('updClose');
-          if(!slider)return;
-          const isLast=si===UPD_SLIDES.length-1;
-          slider.innerHTML='<div style="text-align:center;">'
-            +'<img src="'+s.img+'" style="width:90px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 16px '+s.aura+');animation:bossIdle 4s ease-in-out infinite;"/>'
-            +'<div style="font-size:16px;font-weight:900;color:var(--gold);margin-bottom:8px;">'+s.title+'</div>'
-            +'<div style="font-size:13px;color:#ead7ae;line-height:1.6;text-align:left;">'+s.text+'</div>'
-            +'</div>';
-          dots.innerHTML=UPD_SLIDES.map((_,i)=>'<div style="width:8px;height:8px;border-radius:50%;background:'+(i===si?'var(--gold)':'rgba(217,164,65,.3)')+';"></div>').join('');
-          if(prev)prev.style.display=si>0?'':'none';
-          if(next)next.style.display=isLast?'none':'';
-          if(close)close.style.display=isLast?'':'none';
-        }
-        document.addEventListener('DOMContentLoaded',()=>{
-          render();
-          const prev=document.getElementById('updPrev');
-          const next=document.getElementById('updNext');
-          const close=document.getElementById('updClose');
-          if(prev)prev.onclick=()=>{si--;render();};
-          if(next)next.onclick=()=>{si++;render();};
-          if(close)close.onclick=()=>{
-            document.getElementById('updateMsgOv').style.display='none';
-            localStorage.setItem('mb_update_seen_v3','1');
-          };
-        });
-      })();
-      </script>
+<!-- slider populated by initUpdateSlider() -->
     </div>
   </div>
 
@@ -7872,7 +7948,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── CHALKBOARD — left 62%, raw image ── -->
-    <div style="position:absolute;top:3%;left:1%;width:58%;height:74%;z-index:3;">
+    <div style="position:absolute;top:2%;left:1%;width:54%;height:80%;z-index:3;">
       <!-- Tableau image as-is -->
       <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;"/>
       <!-- Board content over image -->
@@ -7884,7 +7960,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:55px;right:0;width:min(44vw,360px);z-index:5;">
+    <div id="orgCharWrap" style="position:absolute;bottom:45px;left:43%;width:min(46vw,380px);z-index:6;">
       <!-- HP bar above character -->
       <div style="padding:0 8px 6px;text-align:center;">
         <div id="orgBossLabel" style="font-size:12px;color:#fed7aa;font-weight:900;margin-bottom:3px;">⚔️ La grande Orgografe</div>
@@ -7892,16 +7968,15 @@ function abandonMemelite(){
           <div id="orgHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
         </div>
       </div>
-      <!-- Ground shadow -->
-      <div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:70%;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent);border-radius:50%;"></div>
+
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
-           style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));display:block;position:relative;z-index:1;"/>
+           style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));display:block;position:relative;z-index:1;animation:orgBreathe 3.5s ease-in-out infinite;"/>
     </div>
 
     <!-- ── HUD: counter top-left, flee top-right ── -->
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
       <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;"><button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:38px;width:auto;display:block;" alt="Fuir"/></button></button>
+      <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;"><button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button></button>
     </div>
 
     <!-- ── Bottom HUD: lives centred ── -->
@@ -7963,7 +8038,7 @@ function abandonMemelite(){
     </div>
 
     <!-- Boss character - left side -->
-    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(34vw,280px);z-index:5;">
+    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(44vw,360px);z-index:5;">
       <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
       <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
            style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
@@ -7982,10 +8057,10 @@ function abandonMemelite(){
     </div>
 
     <!-- Question area - right side -->
-    <div id="melQWrap" style="position:absolute;top:50%;right:2%;transform:translateY(-50%);
-         width:min(55vw,520px);background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
-         border:1.5px solid rgba(220,38,38,.25);border-radius:18px;padding:16px;z-index:6;">
-      <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.5;margin-bottom:12px;text-align:center;"></div>
+    <div id="melQWrap" style="position:absolute;top:50%;right:1%;transform:translateY(-50%);
+         width:min(57vw,540px);background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+         border:1.5px solid rgba(220,38,38,.25);border-radius:18px;padding:16px 20px;z-index:6;">
+      <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.6;margin-bottom:12px;text-align:center;min-height:48px;"></div>
       <div id="melAWrap" style="display:flex;flex-direction:column;gap:7px;"></div>
     </div>
 
@@ -8003,7 +8078,7 @@ function abandonMemelite(){
       <!-- Timer -->
       <div id="melTimer" style="font-size:22px;font-weight:900;color:#facc15;text-shadow:0 0 12px rgba(250,204,21,.5);width:40px;text-align:center;"></div>
       <!-- Flee -->
-      <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:38px;width:auto;display:block;" alt="Fuir"/></button>
+      <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:52px;width:auto;display:block;" alt="Fuir"/></button>
     </div>
 
     <!-- HP bar bottom -->
@@ -8024,7 +8099,8 @@ function abandonMemelite(){
     <audio id="melMusicP1" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP1.mp3" type="audio/mpeg"/></audio>
     <audio id="melMusicP2" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP2.mp3" type="audio/mpeg"/></audio>
     <audio id="melMusicP3" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP3.mp3" type="audio/mpeg"/></audio>
-    <audio id="melHurtSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted.mp3" type="audio/mpeg"/></audio>
+    <audio id="melHurtSnd1"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted1.mp3" type="audio/mpeg"/></audio>
+    <audio id="melHurtSnd2"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted2.mp3" type="audio/mpeg"/></audio>
     <audio id="melVicSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_victory.mp3" type="audio/mpeg"/></audio>
     <audio id="melDefSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_defeated.mp3" type="audio/mpeg"/></audio>
     <audio id="catHurt1Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt.mp3" type="audio/mpeg"/></audio>
