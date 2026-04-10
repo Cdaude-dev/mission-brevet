@@ -4127,14 +4127,31 @@ async function fetchLBEntries(){
   // 1. Load from Supabase if configured
   if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
     try{
+      // Fetch active bans to exclude from LB
+      let _bannedNames=new Set();
+      try{
+        const banRes=await fetch(
+          SUPABASE_URL+"/rest/v1/banned_players?select=player_name,banned_until",
+          {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}
+        );
+        if(banRes.ok){
+          const bans=await banRes.json();
+          const now=new Date();
+          bans.forEach(b=>{
+            // Include if ban is permanent (banned_until=null) or not yet expired
+            if(!b.banned_until||new Date(b.banned_until)>now) _bannedNames.add(b.player_name);
+          });
+        }
+      }catch(_){}
+
       const res=await fetch(SUPABASE_URL+"/rest/v1/leaderboard?select=player_name,score,avatar,desc,badges&order=score.desc&limit=20",{
         headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}
       });
       if(res.ok){
         const data=await res.json();
-        // Update chatAvatarCache with fresh avatars from Supabase
+        // Update chatAvatarCache and filter out banned players
         data.forEach(r=>{if(r.player_name&&r.avatar)chatAvatarCache[r.player_name]=r.avatar;});
-        entries=data.map(r=>({
+        entries=data.filter(r=>!_bannedNames.has(r.player_name)).map(r=>({
           name:r.player_name,
           score:r.score,
           avatar:r.avatar||"",  // real avatar from Supabase
