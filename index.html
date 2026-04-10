@@ -7770,6 +7770,7 @@ function melPhase2Cinematic(){
   melState.phase=2;
   // Clear all remaining cats — player is invulnerable during cinematic
   const _cc=document.getElementById("melCatContainer");if(_cc){_cc.innerHTML="";_cc.style.pointerEvents="none";}
+  melState.inCatPhase=false; // cats forcibly cleared — unlock question rendering
   // Restore question box (cats cleared, safe now)
   const _qw=document.getElementById("melQWrap");if(_qw)_qw.style.display="";
   const _mt=document.getElementById("melTimer");if(_mt)_mt.style.display="";
@@ -7814,6 +7815,7 @@ function melPhase3Cinematic(){
   clearInterval(melState.timerInt);
   melState.phase=3;
   const _cc=document.getElementById("melCatContainer");if(_cc){_cc.innerHTML="";_cc.style.pointerEvents="none";}
+  melState.inCatPhase=false; // cats forcibly cleared — unlock question rendering
   const _qw2=document.getElementById("melQWrap");if(_qw2)_qw2.style.display="";
   const _mt2=document.getElementById("melTimer");if(_mt2)_mt2.style.display="";
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
@@ -7853,6 +7855,8 @@ function melPhase3Cinematic(){
 
 function melVictory(){
   melState.transitioning=true;
+  melState.inCatPhase=false;
+  const _ccv=document.getElementById("melCatContainer");if(_ccv){_ccv.innerHTML="";_ccv.style.pointerEvents="none";}
   clearInterval(melState.timerInt);
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const snd=document.getElementById("melDefSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
