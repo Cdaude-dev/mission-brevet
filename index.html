@@ -1567,6 +1567,11 @@
              background:rgba(60,0,0,.55);color:rgba(255,160,160,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
    <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
+    <!-- Player lives (Conjugus) -->
+    <div id="bossLivesDisplay" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:6px;">
+      <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+      <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+    </div>
     <!-- Audio elements -->
     <audio id="bossMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Dieu-de-la-conjugaison.mp3" type="audio/mpeg"/></audio>
     <audio id="bossHit1"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/bruit01-dieuconjugaison.mp3" type="audio/mpeg"/></audio>
@@ -1645,6 +1650,11 @@
              background:rgba(0,10,50,.55);color:rgba(147,197,253,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
    <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
+    <!-- Player lives (Grammairia) -->
+    <div id="gramLivesDisplay" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:6px;">
+      <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+      <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+    </div>
     <!-- Audio -->
     <audio id="gramMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-de-la-Grammaire.mp3" type="audio/mpeg"/></audio>
     <audio id="gramMusicAngry" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-Grammaire-enervee..mp3" type="audio/mpeg"/></audio>
@@ -3797,16 +3807,15 @@ async function saveToLB(){
         "apikey":SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+SUPABASE_ANON_KEY
       };
-      // UPSERT — insert or update in one call, more reliable than PATCH+INSERT
-      await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
-        method:"POST",
-        headers:{...headers,"Prefer":"resolution=merge-duplicates,return=minimal"},
-        body:JSON.stringify(lbPayload)
-      });
-      // Legacy fallback kept for older Supabase configs
-      const patchRes={headers:{get:()=>null}};const countHeader=patchRes.headers.get("content-range")||"";
-      const matched=countHeader&&!countHeader.startsWith("0/");
-      if(!matched){
+      // Try PATCH first (update existing row)
+      const patchRes=await fetch(
+        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
+        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal,count=exact"},body:JSON.stringify(lbPayload)}
+      );
+      // If no row was updated (new player), INSERT
+      const contentRange=patchRes.headers.get("Content-Range")||patchRes.headers.get("content-range")||"";
+      const rowsUpdated=contentRange?parseInt(contentRange.split("/")[0]||"0",10):0;
+      if(rowsUpdated===0){
         await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
           method:"POST",
           headers:{...headers,"Prefer":"return=minimal"},
@@ -5513,7 +5522,9 @@ const BOSS_QUESTIONS=[
   {prompt:"Conjugue 'avoir' au subjonctif passé, 3e pers. plur.",answer:["aient eu","qu'ils aient eu","ils aient eu"],explanation:"AVOIR subjonctif passé : qu'ils AIENT EU"}
 ];
 
-let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions()};
+let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2};
+  // Reset hearts
+  setTimeout(()=>{const h=document.querySelectorAll(".boss-life-heart");h.forEach(x=>x.style.filter="");},50);
 
 
 function showLockedBossMsg(title, text){
@@ -5708,7 +5719,7 @@ function renderBossQ(){
     if(ok){
       bossHit();
     } else {
-      bossDefeat(q.explanation);
+      bossLoseLife(q.explanation);
     }
   };
   btn.onclick=validate;
@@ -5727,7 +5738,7 @@ function renderBossQ(){
     if(bossState.timerVal<=0){
       clearInterval(bossState.timerInt);
       inp.disabled=true;btn.disabled=true;
-      bossDefeat("Temps écoulé ! La bonne réponse était : "+q.answer[0]);
+      bossLoseLife("Temps écoulé ! La bonne réponse était : "+q.answer[0]);
     }
   },1000);
   setTimeout(()=>inp.focus(),50);
@@ -5768,6 +5779,23 @@ function bossHit(){
   // Next question
   setTimeout(()=>renderBossQ(),600);
 }
+
+function bossLoseLife(reason){
+  bossState.lives--;
+  // Update hearts display
+  const hearts=document.querySelectorAll(".boss-life-heart");
+  hearts.forEach((h,i)=>{h.style.filter=i<bossState.lives?"":"grayscale(1) brightness(.3)";});
+  // Red flash
+  const fl=document.createElement("div");
+  fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
+  document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
+  if(bossState.lives<=0){setTimeout(()=>bossDefeat(reason),600);}
+  else{
+    // Brief visual then next question
+    setTimeout(()=>{clearInterval(bossState.timerInt);renderBossQ();},1200);
+  }
+}
+
 function bossDefeat(reason){
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
@@ -5977,7 +6005,8 @@ const GRAM_BOSS_QUESTIONS=[
    explanation:"À PEINE… QUE : construction d'antériorité immédiate (à peine X que Y). L'inversion du sujet (était-il) est obligatoire ici. Signifie 'juste après que X'."}
 ];
 
-let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:[],darkPhase:false};
+let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:[],darkPhase:false,lives:2};
+  setTimeout(()=>{const h=document.querySelectorAll(".gram-life-heart");h.forEach(x=>x.style.filter="");},50);
 
 // Grammar boss: inject chapter card into gramMenu
 function injectGramBossChapter(){
@@ -6082,7 +6111,7 @@ function renderGramBossQ(){
       clearInterval(gramBossState.timerInt);
       inp.style.borderColor=ok?"#16a34a":"#dc2626";
       inp.style.background=ok?"rgba(220,252,231,.95)":"rgba(254,226,226,.95)";
-      if(ok){gramBossHit();}else{gramBossDefeat();}
+      if(ok){gramBossHit();}else{gramBossLoseLife();}
     };
     btn.onclick=validate;
     inp.addEventListener("keydown",e=>{if(e.key==="Enter")validate();});
@@ -6112,7 +6141,7 @@ function renderGramBossQ(){
           else if(i===displayPos&&displayPos!==correctDisplayPos)b.style.background="rgba(254,226,226,.95)";
         });
         const ok=(displayPos===correctDisplayPos);
-        setTimeout(()=>{if(ok){gramBossHit();}else{gramBossDefeat();}},600);
+        setTimeout(()=>{if(ok){gramBossHit();}else{gramBossLoseLife();}},600);
       };
       wrap.appendChild(btn);
     });
@@ -6311,6 +6340,18 @@ function startRainEffect(){
     requestAnimationFrame(drawRain);
   }
   drawRain();
+}
+
+
+function gramBossLoseLife(){
+  gramBossState.lives--;
+  const hearts=document.querySelectorAll(".gram-life-heart");
+  hearts.forEach((h,i)=>{h.style.filter=i<gramBossState.lives?"":"grayscale(1) brightness(.3)";});
+  const fl=document.createElement("div");
+  fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
+  document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
+  if(gramBossState.lives<=0){setTimeout(gramBossDefeat,600);}
+  else{setTimeout(()=>{clearInterval(gramBossState.timerInt);renderGramBossQ();},1200);}
 }
 
 function gramBossDefeat(){
@@ -7675,7 +7716,7 @@ function renderMelQ(){
   });
   // Timer
   clearInterval(melState.timerInt);
-  const _melTBase=melState.phase===3?10:20;
+  const _melTBase=melState.phase===3?8:20;
   melState.timerVal=_melTBase;melState._timerStart=Date.now();melState._timerBase=_melTBase;
   updateMelTimer();
   melState.timerInt=setInterval(()=>{
