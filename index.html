@@ -588,6 +588,12 @@
       .dd-col{width:100%;}
       .hero-char{width:110px;margin-bottom:-24px;}
     }
+  
+    @keyframes melCatFly{0%{right:-80px;opacity:1;}100%{right:110%;opacity:.8;}}
+    @keyframes melMeteorFall{0%{top:-10%;opacity:1;}100%{top:110%;opacity:.9;}}
+    @keyframes melFirePulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+    @keyframes melExplode{0%{transform:scale(1);}50%{transform:scale(1.8);}100%{transform:scale(0);opacity:0;}}
+
   </style>
 </head>
 <body>
@@ -1736,7 +1742,15 @@ const EXCLUSIVE_AV=[
   {src:"https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png",
    label:"Grammairia",
    desc:"Vaincre Grammairia",
-   check:()=>!!S.gramBossDefeated}
+   check:()=>!!S.gramBossDefeated},
+  {src:"https://i.postimg.cc/28NrNRdZ/avatar-spe-memelite.png",
+   label:"Mémélité",
+   desc:"Vaincre Mémélité",
+   check:()=>!!S.memeliteDefeated},
+  {src:"https://i.postimg.cc/8PgNgQdc/avatar-spe-chaperlipopette.png",
+   label:"Chaperlipopette",
+   desc:"Vaincre Mémélité sans perdre de vie",
+   check:()=>!!S.memeliteFlawless}
 ];
 const PROF={point:"https://i.postimg.cc/V6gqrbp4/personnage-CD5.png",smile:"https://i.postimg.cc/9MCPQB8L/personnage-CD4.png",dub:"https://i.postimg.cc/4xqS8j8K/personnage-CD2.png"};
 const HINTS=["Lis bien chaque proposition avant de répondre !","Rappelle-toi du cours… Tu l'as !","Prends le temps de réfléchir.","Fais confiance à ta mémoire !","La bonne réponse est là, concentre-toi.","Souviens-toi des définitions vues en classe."];
@@ -1754,6 +1768,8 @@ const BADGES_DEF=[
   {id:"flawless", img:"https://i.postimg.cc/MHmY32fn/sans-faute.png",           emoji:null, name:"Impeccable",           desc:"100% sur le quiz final autobiographie"},
   {id:"trancheur_ogre",img:"https://i.postimg.cc/RFHcFS4z/Trancheur-d-ogre.png",emoji:null,name:"Trancheur d'ogre",desc:"Vaincre la grande Orgografe"},
   {id:"inkrevable",img:"https://i.postimg.cc/Ls7t2YKp/Inkrevable.png",emoji:null,name:"Inkrevable",desc:"Vaincre la grande Orgografe sans perdre une seule vie"},
+  {id:"memelite_badge",img:"https://i.postimg.cc/J04cfpQF/les-chiens-ne-font-pas-des-chats.png",emoji:null,name:"Les chiens ne font pas des chats",desc:"Vaincre Mémélité"},
+  {id:"chaperlipopette",img:"https://i.postimg.cc/SRN7BgGf/Chaperlipopette.png",emoji:null,name:"Chaperlipopette",desc:"Vaincre Mémélité sans perdre de vie"},
   {id:"grammairien",img:"https://i.postimg.cc/yYtt6RDk/grammairien.png",emoji:null, name:"Grammairien",          desc:"Terminer 2 séances de grammaire"},
   {id:"gram100",  img:"https://i.postimg.cc/nL2KdDdg/precision-absolue.png",    emoji:null, name:"Précision absolue",    desc:"100% sur une séance de grammaire"},
   {id:"poete",    img:"https://i.postimg.cc/zf7wdgdF/ame-poetique.png",         emoji:null, name:"Âme poétique",         desc:"Terminer toutes les séances de poésie"},
@@ -3234,7 +3250,7 @@ const S={
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
-  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,orgBossDefeated:false,stars:{},
+  unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,litKeyShown:false,memeliteDefeated:false,memeliteFlawless:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,orgBossDefeated:false,stars:{},
   welcomeAv:AVATARS[0],
   // fill state
   fillQ:null,fillBank:[],fillBlanks:[],fillPendingWord:null,
@@ -3418,7 +3434,10 @@ function renderInventaireFor(containerId){
      check:()=>S.conjKeyShown||(["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")},
     {id:"gram",name:"Clé de la Langue",img:"https://i.postimg.cc/CxXNv67v/Cle-grammaire.png",
      desc:"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Grammairia.",
-     check:()=>S.gramKeyShown||(["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")}
+     check:()=>S.gramKeyShown||(["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")},
+    {id:"lit",name:"Clé de la Librairie",img:"https://i.postimg.cc/xj4zjjfB/Cle-de-la-Librairie.png",
+     desc:"Cette Clé semble regorger d'écrits anciens qui mènent à l'Omniscience. Qui sait vers quoi elle vous conduira ?",
+     check:()=>S.litKeyShown||(["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")}
   ];
   const wrap=document.getElementById(containerId);if(!wrap)return;
   wrap.innerHTML="";
@@ -3772,7 +3791,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{}
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{}
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -3791,7 +3810,7 @@ function loadProgress(name){
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
-      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
+      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.litKeyShown=d.litKeyShown||false;S.memeliteDefeated=d.memeliteDefeated||false;S.memeliteFlawless=d.memeliteFlawless||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -4689,6 +4708,9 @@ function showResults(){
     const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
     const gramDone=allGram.every(k=>S.perfect&&S.perfect[k]);
     if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");}
+    const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+    const litDone=allLit.every(k=>S.perfect&&S.perfect[k]);
+    if(litDone&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");}
   },800);
   D.quizProgFill.style.width="100%";
   D.quizCounter.textContent="Terminé ! "+S.correct+"/"+total+" bonnes réponses";
@@ -5654,6 +5676,7 @@ function bossDefeat(reason){
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
   document.getElementById("bossOv").style.display="none";
+  playGameOverMusic();
   const ov=document.getElementById("bossResultOv");
   document.getElementById("bossResultImg").src="https://i.postimg.cc/j5NdKHYq/dieu-conjugaison.png";
   document.getElementById("bossResultTitle").textContent="💀 Défaite !";
@@ -6888,10 +6911,13 @@ function submitOrgCorrection(){
     toast(hint);
     input.value="";
     document.getElementById("orgCorrArea").style.display="none";
-    // Reset word selection
     document.querySelectorAll("#orgPhrase span").forEach(s=>{s.style.background="";s.style.color="#1a3a6a";s.style.textDecoration="";});
     orgState.selectedWord=null;
     document.getElementById("orgClickHint").style.display="block";
+    // Red screen flash on life lost
+    const lifeFlash=document.createElement("div");
+    lifeFlash.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.35);z-index:999;pointer-events:none;animation:bossHitBlink .6s ease-out forwards;";
+    document.body.appendChild(lifeFlash);setTimeout(()=>lifeFlash.remove(),650);
 
     if(orgState.lives<=0){orgDefeat();return;}
   }
@@ -7031,29 +7057,46 @@ function tryOpenOrgografe(){
 }
 
 function showOrgIntro(){
+  const SLIDES=[
+    {img:"https://i.postimg.cc/mkMXynh9/slider1-orgografe.png",
+     text:"La grande Orgografe a écrit des phrases sur le tableau. Ton objectif : identifier l'erreur dans chaque phrase et la corriger."},
+    {img:"https://i.postimg.cc/PJZ3Q7NM/slider2-orgografe.png",
+     text:"Clique sur le mot du tableau qui a été mal écrit (orthographe, grammaire, conjugaison, syntaxe…)"},
+    {img:"https://i.postimg.cc/PJZ3Q7NQ/slider3-orgografe.png",
+     text:"Une fois le mot identifié, réécris-le correctement dans la barre de saisie et valide ta réponse."},
+    {img:"https://i.postimg.cc/Hn5Z9Nj4/slider4-orgografe.png",
+     text:"Attention ! Tu as trois vies. Chaque erreur te coûte une vie. Bonne chance ! 🍀"},
+  ];
+  let slide=0;
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .3s;";
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0400);border:2px solid rgba(249,115,22,.45);border-radius:22px;padding:28px;max-width:460px;width:100%;text-align:center;animation:popIn .35s;">
-    <img src="https://i.postimg.cc/N04Cp0Rt/Gadou.png" style="width:120px;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(249,115,22,.6));" onerror="this.style.display='none'"/>
-    <div style="font-size:22px;font-weight:900;color:#f97316;margin-bottom:8px;">⚔️ La grande Orgografe</div>
-    <div style="font-size:13px;color:#fed7aa;line-height:1.7;margin-bottom:16px;">
-      Cette cheffe de rebelles sème la terreur orthographique dans les phrases françaises.<br><br>
-      <strong style="color:#facc15;">Ton objectif</strong> : trouver le mot erroné dans chaque phrase et le corriger.<br>
-      <strong style="color:#fca5a5;">❤️ Tu as 3 vies</strong> — une erreur = une vie perdue.<br>
-      <strong style="color:#86efac;">15 phrases</strong> à corriger pour la vaincre.
-    </div>
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <button onclick="this.closest('.mb-popup-ov').remove();startOrgografe();"
-        style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">
-        ⚔️ Affronter !
-      </button>
-      <button onclick="this.closest('.mb-popup-ov').remove()"
-        style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">
-        Plus tard
-      </button>
-    </div>
-  </div>`;
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
+  function renderSlide(){
+    const s=SLIDES[slide];
+    const isLast=slide===SLIDES.length-1;
+    ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0400);border:2px solid rgba(249,115,22,.45);border-radius:22px;padding:24px;max-width:480px;width:100%;text-align:center;animation:popIn .3s;">
+      <div style="font-size:16px;font-weight:900;color:#f97316;margin-bottom:14px;letter-spacing:.5px;">❓ Comment jouer ?</div>
+      <img src="${s.img}" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;margin-bottom:14px;border:1px solid rgba(249,115,22,.2);" onerror="this.style.display='none'"/>
+      <div style="font-size:14px;color:#fed7aa;line-height:1.6;margin-bottom:18px;min-height:56px;">${s.text}</div>
+      <!-- Dot indicators -->
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:16px;">
+        ${SLIDES.map((_,i)=>`<div style="width:8px;height:8px;border-radius:50%;background:${i===slide?'#f97316':'rgba(249,115,22,.3)'};transition:background .2s;"></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        ${slide>0?`<button id="org_prev" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">← Précédent</button>`:''}
+        ${isLast
+          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ C'est parti !</button>`
+          :`<button id="org_next" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;cursor:pointer;">Suivant →</button>`
+        }
+        <button id="org_cancel" style="padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;">Annuler</button>
+      </div>
+    </div>`;
+    const prev=ov.querySelector("#org_prev");if(prev)prev.onclick=()=>{slide--;renderSlide();};
+    const next=ov.querySelector("#org_next");if(next)next.onclick=()=>{slide++;renderSlide();};
+    const start=ov.querySelector("#org_start");if(start)start.onclick=()=>{ov.remove();startOrgografe();};
+    const cancel=ov.querySelector("#org_cancel");if(cancel)cancel.onclick=()=>ov.remove();
+  }
+  renderSlide();
   document.body.appendChild(ov);
 }
 
@@ -7129,6 +7172,12 @@ function stopGameOverMusic(){
 
 /* ══════════ MÉMÉLITÉ (boss littérature — coming soon) ══════════ */
 function tryOpenMemelite(){
+  const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
+  const hasKey=S.litKeyShown||isAdmin;
+  if(hasKey){
+    startMemelit();
+    return;
+  }
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
@@ -7137,7 +7186,7 @@ function tryOpenMemelite(){
     <div style="font-size:22px;font-weight:900;color:#f87171;margin-bottom:10px;">Mémélité</div>
     <div style="font-size:14px;color:#fecaca;line-height:1.7;margin-bottom:18px;">
       🔐 <strong style="color:#fca5a5;">Module verrouillé</strong><br><br>
-      Maîtrisez la littérature pour obtenir la <strong style="color:#facc15;">Clé du Savoir</strong> et affronter Mémélité.
+      Il vous faut la <strong style="color:#facc15;">Clé de la Librairie</strong> pour pouvoir accéder à cet affrontement.
     </div>
     <button onclick="this.closest('.mb-popup-ov').remove()"
       style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#fecaca;font-weight:700;cursor:pointer;">
@@ -7161,6 +7210,441 @@ function maybeShowUpdateMsg(){
 }
 
 // Chat button visibility updated from goScreen (integrated below)
+
+
+const MEMELITE_QUESTIONS=[
+  // ── GENRES LITTÉRAIRES ──
+  {prompt:"Lequel de ces textes appartient au genre théâtral ?",options:["Un roman de chevalerie","Une pièce en cinq actes","Un recueil de sonnets","Un journal intime","Une nouvelle réaliste"],correct:1,expl:"Le théâtre se divise en actes et scènes."},
+  {prompt:"Qu'est-ce qu'une tragédie ?",options:["Une comédie qui finit bien","Une pièce où le héros est vaincu par le destin","Un roman d'aventures","Un poème narratif","Un essai philosophique"],correct:1,expl:"La tragédie met en scène un héros face à un destin inexorable."},
+  {prompt:"La comédie a pour but principal de :",options:["Émouvoir par le malheur","Instruire par le drame","Faire rire et divertir","Terrifier le spectateur","Décrire la réalité sociale"],correct:2,expl:"La comédie vise à faire rire tout en pouvant instruire."},
+  {prompt:"Qu'est-ce qu'une nouvelle littéraire ?",options:["Un journal de bord","Un récit court à chute souvent surprenante","Un poème en prose","Une pièce en un acte","Un manuel scolaire"],correct:1,expl:"La nouvelle est un récit bref, souvent resserré autour d'un événement."},
+  {prompt:"L'épopée est un genre qui raconte :",options:["Des aventures quotidiennes","Les exploits héroïques d'un personnage légendaire","Des amours impossibles","La vie d'un artiste","Des faits divers contemporains"],correct:1,expl:"L'épopée narre les hauts faits d'un héros (ex : L'Iliade, L'Odyssée)."},
+  // ── CULTURE LITTÉRAIRE ──
+  {prompt:"Qui a écrit Les Misérables ?",options:["Balzac","Flaubert","Victor Hugo","Zola","Stendhal"],correct:2,expl:"Victor Hugo publie Les Misérables en 1862."},
+  {prompt:"Dans quel siècle Molière a-t-il vécu ?",options:["XVe siècle","XVIe siècle","XVIIe siècle","XVIIIe siècle","XIXe siècle"],correct:2,expl:"Molière (1622-1673) est le grand dramaturge du XVIIe siècle."},
+  {prompt:"Qui est l'auteur de L'Étranger ?",options:["Sartre","Camus","Malraux","Gide","Proust"],correct:1,expl:"Albert Camus publie L'Étranger en 1942."},
+  {prompt:"Cyrano de Bergerac est une œuvre de :",options:["Corneille","Racine","Edmond Rostand","Molière","Hugo"],correct:2,expl:"Edmond Rostand écrit Cyrano de Bergerac en 1897."},
+  {prompt:"La Fontaine est célèbre pour ses :",options:["Sonnets","Tragédies","Fables","Romans","Comédies"],correct:2,expl:"Jean de La Fontaine (1621-1695) est l'auteur des Fables."},
+  {prompt:"Quel auteur a écrit Madame Bovary ?",options:["Balzac","Stendhal","Zola","Flaubert","Maupassant"],correct:3,expl:"Gustave Flaubert publie Madame Bovary en 1857."},
+  {prompt:"Roméo et Juliette est une œuvre de :",options:["Racine","Molière","Shakespeare","Corneille","Cervantes"],correct:2,expl:"William Shakespeare écrit Roméo et Juliette vers 1594-1596."},
+  {prompt:"Don Quichotte est écrit par :",options:["Shakespeare","Dante","Cervantes","Rabelais","Montaigne"],correct:2,expl:"Miguel de Cervantes publie Don Quichotte en 1605 et 1615."},
+  // ── HISTOIRE LITTÉRAIRE ──
+  {prompt:"Le mouvement humaniste est né au :",options:["XIIIe siècle","XIVe siècle","XVe-XVIe siècle","XVIIe siècle","XVIIIe siècle"],correct:2,expl:"L'humanisme émerge à la Renaissance, XVe-XVIe siècles."},
+  {prompt:"Le classicisme français correspond au :",options:["XVIe siècle","XVIIe siècle","XVIIIe siècle","XIXe siècle","XXe siècle"],correct:1,expl:"Le classicisme s'épanouit sous Louis XIV au XVIIe siècle."},
+  {prompt:"Le romantisme en France se développe surtout au :",options:["XVIIe siècle","XVIIIe siècle","1ère moitié du XIXe siècle","2e moitié du XIXe siècle","XXe siècle"],correct:2,expl:"Le romantisme domine la littérature française de 1820 à 1850 environ."},
+  {prompt:"Le réalisme en littérature cherche à :",options:["Idéaliser la nature","Représenter fidèlement la réalité sociale","Exprimer les sentiments intérieurs","Explorer le monde fantastique","Célébrer les dieux antiques"],correct:1,expl:"Le réalisme (Balzac, Flaubert, Zola) décrit la société avec exactitude."},
+  {prompt:"Le naturalisme est représenté par :",options:["Lamartine","Rimbaud","Zola","Baudelaire","Verlaine"],correct:2,expl:"Émile Zola est le chef de file du naturalisme (Les Rougon-Macquart)."},
+  {prompt:"Le symbolisme en poésie correspond au :",options:["XVIe siècle","XVIIe siècle","XVIIIe siècle","Fin XIXe siècle","Début XXe siècle"],correct:3,expl:"Le symbolisme (Baudelaire, Verlaine, Rimbaud) s'épanouit à la fin du XIXe."},
+  {prompt:"Le surréalisme est fondé par :",options:["Apollinaire","Breton","Éluard","Aragon","Desnos"],correct:1,expl:"André Breton rédige le Manifeste du surréalisme en 1924."},
+  {prompt:"La Pléiade est un groupe de poètes du :",options:["XVe siècle","XVIe siècle","XVIIe siècle","XVIIIe siècle","XIXe siècle"],correct:1,expl:"La Pléiade (Ronsard, Du Bellay…) est un mouvement du XVIe siècle."},
+  {prompt:"L'Encyclopédie est associée aux :",options:["Classiques","Romantiques","Philosophes des Lumières","Symbolistes","Humanistes"],correct:2,expl:"Diderot et d'Alembert dirigent l'Encyclopédie (1751-1772), œuvre des Lumières."},
+  {prompt:"Qui est le chef de file du Parnasse ?",options:["Hugo","Leconte de Lisle","Baudelaire","Verlaine","Apollinaire"],correct:1,expl:"Leconte de Lisle dirige le mouvement parnassien."},
+  // ── VOCABULAIRE LITTÉRAIRE ──
+  {prompt:"Un monologue est :",options:["Un dialogue entre deux personnages","Un discours tenu par un seul personnage","Une strophe de quatre vers","Un résumé de pièce","Un procédé de versification"],correct:1,expl:"Le monologue est un discours d'un seul personnage, seul sur scène ou à part."},
+  {prompt:"Un alexandrin est un vers de :",options:["8 syllabes","10 syllabes","12 syllabes","14 syllabes","6 syllabes"],correct:2,expl:"L'alexandrin compte 12 syllabes, réparties en deux hémistiches de 6."},
+  {prompt:"Une métaphore est :",options:["Une comparaison avec 'comme'","Une image sans outil comparatif","Une répétition de sons","Un renversement de la phrase","Une opposition de sens"],correct:1,expl:"La métaphore établit une ressemblance sans outil comparatif."},
+  {prompt:"Un oxymore associe :",options:["Deux synonymes","Deux réalités de même nature","Deux termes contradictoires","Une rime et un rythme","Deux métaphores"],correct:2,expl:"L'oxymore rapproche deux mots de sens contraire (ex : 'obscure clarté')."},
+  {prompt:"La didascalie est :",options:["Un type de strophe","Une indication scénique dans une pièce","Un procédé de rime","Un genre narratif","Un monologue intérieur"],correct:1,expl:"Les didascalies sont les indications de mise en scène dans un texte théâtral."},
+  {prompt:"Un quatrain est une strophe de :",options:["2 vers","3 vers","4 vers","5 vers","6 vers"],correct:2,expl:"Le quatrain est une strophe de quatre vers."},
+  {prompt:"La périphrase consiste à :",options:["Répéter un mot","Remplacer un mot par une expression","Inverser les mots","Omettre un mot","Comparer deux objets"],correct:1,expl:"La périphrase remplace un terme simple par une expression plus développée."},
+  {prompt:"L'anaphore est :",options:["Un type de rythme","La répétition d'un mot en début de phrase","Une figure d'opposition","Un type de vers libre","Un genre épique"],correct:1,expl:"L'anaphore répète un même mot ou groupe au début de phrases ou de vers."},
+  {prompt:"Un sonnet est composé de :",options:["2 quatrains et 1 tercet","2 quatrains et 2 tercets","3 quatrains et 1 sizain","4 quatrains","3 tercets et 1 quatrain"],correct:1,expl:"Le sonnet classique = 2 quatrains + 2 tercets, soit 14 vers au total."},
+  {prompt:"L'hyperbole est une figure qui :",options:["Atténue la réalité","Exagère la réalité pour frapper","Compare deux éléments","Personnifie un objet","Répète une idée"],correct:1,expl:"L'hyperbole amplifie la réalité : 'Il a des tonnes de travail.'"},
+  {prompt:"Le point de vue omniscient signifie que :",options:["Le narrateur ne sait rien","Le narrateur sait tout des personnages","Le narrateur est un personnage","Le lecteur choisit la fin","Il n'y a pas de narrateur"],correct:1,expl:"Le narrateur omniscient connaît les pensées et les sentiments de tous les personnages."},
+  // ── QUESTIONS COMPLEXES ──
+  {prompt:"Qu'est-ce que la catharsis selon Aristote ?",options:["La purification des passions par le spectacle tragique","Le respect des trois unités","L'imitation de la réalité","La hiérarchie des genres","L'unité d'action et de temps"],correct:0,expl:"Aristote définit la catharsis comme la purification des passions (pitié, crainte) provoquée par la tragédie."},
+  {prompt:"Le principe de 'vraisemblance' au XVIIe siècle exige :",options:["Représenter la réalité exactement","Que l'action paraisse crédible au public","D'éviter toute fantaisie","De copier les Anciens","De montrer des faits historiques"],correct:1,expl:"La vraisemblance classique impose que l'action soit crédible, non nécessairement réelle."},
+  {prompt:"Qu'est-ce que le courant de conscience (stream of consciousness) ?",options:["Un genre épique","Technique narrative rendant le flux des pensées","Un mouvement du XVIIe siècle","Un type de comédie","Une forme de sonnet"],correct:1,expl:"Technique moderniste (Virginia Woolf, Joyce) reproduisant le flux des pensées d'un personnage."},
+  {prompt:"Qu'est-ce que l'intertextualité ?",options:["L'étude du contexte historique","Les relations entre un texte et d'autres textes","L'analyse stylistique","Le résumé d'une œuvre","La biographie de l'auteur"],correct:1,expl:"L'intertextualité désigne l'ensemble des relations (allusion, citation, parodie) entre textes."},
+  {prompt:"Dans quel genre la règle des trois unités s'applique-t-elle ?",options:["Le roman","La poésie lyrique","La tragédie classique","Le conte","L'épopée"],correct:2,expl:"Les trois unités (action, temps, lieu) s'imposent au théâtre classique du XVIIe siècle."},
+  // ── CULTURE GÉNÉ ──
+  {prompt:"Don Juan est un personnage créé par :",options:["Cervantes","Tirso de Molina","Molière","Marivaux","Beaumarchais"],correct:1,expl:"Don Juan naît dans El Burlador de Sevilla de Tirso de Molina (1630)."},
+  {prompt:"L'Iliade et L'Odyssée sont attribuées à :",options:["Virgile","Ovide","Eschyle","Homère","Sophocle"],correct:3,expl:"Homère est le poète grec légendaire auteur de L'Iliade et L'Odyssée."},
+  {prompt:"La Divine Comédie est écrite par :",options:["Pétrarque","Boccace","Dante Alighieri","Arioste","Virgile"],correct:2,expl:"Dante Alighieri compose La Divine Comédie entre 1307 et 1321."},
+  {prompt:"'Être ou ne pas être' est une réplique de :",options:["Don Juan","Hamlet","Macbeth","Le Cid","Faust"],correct:1,expl:"Cette réplique ouvre le monologue d'Hamlet (acte III, scène 1) de Shakespeare."},
+  {prompt:"Le Horla est une nouvelle de :",options:["Zola","Flaubert","Maupassant","Merimée","Baudelaire"],correct:2,expl:"Guy de Maupassant publie Le Horla en 1887, récit fantastique."},
+  {prompt:"Qui a écrit Les Fleurs du Mal ?",options:["Verlaine","Rimbaud","Baudelaire","Mallarmé","Apollinaire"],correct:2,expl:"Charles Baudelaire publie Les Fleurs du Mal en 1857."},
+  {prompt:"Phèdre est une tragédie de :",options:["Corneille","Molière","Racine","Voltaire","Hugo"],correct:2,expl:"Jean Racine écrit Phèdre en 1677."},
+  {prompt:"L'Avare est une comédie de :",options:["Racine","Corneille","Molière","Beaumarchais","Marivaux"],correct:2,expl:"Molière crée L'Avare en 1668, comédie centrée sur Harpagon."},
+  {prompt:"Qu'est-ce que le théâtre de l'absurde ?",options:["Un théâtre très comique","Un théâtre qui joue avec l'absurdité de l'existence","Un théâtre documentaire","Un théâtre en plein air","Un théâtre sans dialogue"],correct:1,expl:"Ionesco, Beckett : le théâtre de l'absurde met en scène l'absence de sens de l'existence."},
+  {prompt:"Rimbaud écrit Une saison en enfer à quel âge ?",options:["15 ans","17 ans","19 ans","21 ans","25 ans"],correct:2,expl:"Arthur Rimbaud écrit Une saison en enfer en 1873, à 19 ans."},
+  {prompt:"Quel siècle est appelé 'le siècle des Lumières' ?",options:["XVe siècle","XVIe siècle","XVIIe siècle","XVIIIe siècle","XIXe siècle"],correct:3,expl:"Le XVIIIe siècle est le siècle des Lumières (Voltaire, Rousseau, Diderot…)."},
+  {prompt:"La farce est un genre :",options:["Tragique et sombre","Comique populaire et bouffon","Épique et héroïque","Lyrique et sentimental","Épistolaire et intimiste"],correct:1,expl:"La farce est un genre comique médiéval, très populaire, fondé sur des situations burlesques."},
+  {prompt:"Un roman épistolaire est :",options:["Un roman d'aventures","Un roman raconté par lettres","Un roman policier","Un roman fantastique","Un roman historique"],correct:1,expl:"Le roman épistolaire est raconté à travers des échanges de lettres (ex : Les Liaisons dangereuses)."},
+  {prompt:"Le Petit Prince est écrit par :",options:["Jules Verne","Antoine de Saint-Exupéry","Marcel Pagnol","Albert Camus","André Gide"],correct:1,expl:"Antoine de Saint-Exupéry publie Le Petit Prince en 1943."},
+  {prompt:"L'allégorie est :",options:["Une répétition de sons","Une personnification d'idées abstraites","Un type de versification","Un jeu de mots","Une strophe libre"],correct:1,expl:"L'allégorie représente une idée abstraite par une image concrète ou un personnage (ex : la Justice = femme aux yeux bandés)."},
+  {prompt:"Quel auteur a théorisé le théâtre épique ?",options:["Stanislavski","Artaud","Brecht","Molière","Beckett"],correct:2,expl:"Bertolt Brecht (1898-1956) théorise le théâtre épique, fondé sur la distanciation."},
+];
+
+
+/* ══════════ BOSS : MÉMÉLITÉ ══════════ */
+let melState={
+  phase:1, qIdx:0, hp:20, lives:5, timerVal:20, timerInt:null,
+  catCount:0, catsMissed:0, noPerfect:false,
+  catsToRepel:20, catsRepelled:0,
+  shuffledQs:[], inCatPhase:false, p2hp:20, p3hp:20
+};
+const MEL_CAT_SKINS=["https://i.postimg.cc/13QMs4TW/fond-orgografe.png",
+  "https://i.postimg.cc/bwfcRt83/Memelite.png","https://i.postimg.cc/BQ0cJSCL/memelite-sp1.png",
+  "https://i.postimg.cc/TY6qTdcy/memelite-sp2.png","https://i.postimg.cc/kXmF7Jy4/memelite-sp3.png",
+  "https://i.postimg.cc/hPBbKD0X/memelite-sp4.png"];
+const MEL_CAT_NORMAL="https://i.postimg.cc/fLvWXf6W/chatblanc.png";
+const MEL_CAT_HIT="https://i.postimg.cc/W37prwQb/chatblanc02.png";
+const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","https://i.postimg.cc/5tFR2Dgg/chat-meteore2.png",
+  "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
+
+function startMemelit(){
+  document.getElementById("memeliteOv").style.display="block";
+  const bg=document.getElementById("bgMusic");if(bg)bg.pause();
+  melState={phase:1,qIdx:0,hp:20,lives:5,timerVal:20,timerInt:null,
+    catCount:0,catsMissed:0,noPerfect:false,catsToRepel:20,catsRepelled:0,
+    shuffledQs:[...MEMELITE_QUESTIONS].sort(()=>Math.random()-.5),
+    inCatPhase:false,p2hp:20,p3hp:20};
+  const melChar=document.getElementById("melChar");
+  if(melChar)melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";
+  renderMelLives();
+  playMelMusic(1);
+  renderMelQ();
+}
+
+function playMelMusic(phase){
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  const m=document.getElementById("melMusicP"+phase);
+  if(m){m.currentTime=0;m.volume=0.6;m.play().catch(()=>{});}
+}
+
+function renderMelLives(){
+  const hearts=document.querySelectorAll(".mel-heart");
+  hearts.forEach((h,i)=>{h.style.filter=i<melState.lives?"":"grayscale(1) brightness(.25)";});
+}
+
+function renderMelQ(){
+  if(melState.inCatPhase)return;
+  const q=melState.shuffledQs[melState.qIdx%melState.shuffledQs.length];
+  const qBox=document.getElementById("melQBox");
+  const aWrap=document.getElementById("melAWrap");
+  if(!qBox||!aWrap)return;
+  qBox.textContent=q.prompt;
+  aWrap.innerHTML="";
+  // Shuffle options
+  const opts=q.options.map((o,i)=>({text:o,orig:i})).sort(()=>Math.random()-.5);
+  opts.forEach(opt=>{
+    const btn=document.createElement("button");
+    btn.textContent=opt.text;
+    btn.style.cssText="width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.4);color:#fff;font-size:clamp(12px,1.8vw,15px);font-weight:600;cursor:pointer;text-align:left;transition:background .15s;";
+    btn.onmouseover=()=>btn.style.background="rgba(220,38,38,.25)";
+    btn.onmouseout=()=>btn.style.background="rgba(0,0,0,.4)";
+    btn.onclick=()=>answerMel(opt.orig===q.correct, q.expl, btn, aWrap);
+    aWrap.appendChild(btn);
+  });
+  // Timer
+  clearInterval(melState.timerInt);
+  melState.timerVal=20;
+  updateMelTimer();
+  melState.timerInt=setInterval(()=>{
+    melState.timerVal--;
+    updateMelTimer();
+    if(melState.timerVal<=0){
+      clearInterval(melState.timerInt);
+      answerMel(false,"⏱ Temps écoulé !", null, aWrap);
+    }
+  },1000);
+  // Check if cat phase triggers (every 5 questions, but not at q0)
+  if(melState.qIdx>0 && melState.qIdx%5===0 && !melState.inCatPhase){
+    clearInterval(melState.timerInt);
+    setTimeout(()=>startCatPhase(), 500);
+    return;
+  }
+}
+
+function updateMelTimer(){
+  const el=document.getElementById("melTimer");
+  if(el){
+    el.textContent=melState.timerVal;
+    el.style.color=melState.timerVal<=5?"#ef4444":melState.timerVal<=10?"#f97316":"#facc15";
+  }
+}
+
+function answerMel(correct, expl, btn, aWrap){
+  clearInterval(melState.timerInt);
+  // Disable all buttons
+  if(aWrap)aWrap.querySelectorAll("button").forEach(b=>{
+    b.disabled=true;b.style.opacity=".6";
+  });
+  if(btn&&correct)btn.style.background="rgba(34,197,94,.4)";
+  if(btn&&!correct)btn.style.background="rgba(239,68,68,.4)";
+  // Show brief explanation
+  const qBox=document.getElementById("melQBox");
+  if(qBox)qBox.innerHTML+='<br><span style="font-size:11px;color:#e9d5ff;opacity:.85;">'+expl+'</span>';
+  if(!correct){
+    melState.lives--;renderMelLives();melState.noPerfect=true;
+    // Red flash
+    const fl=document.createElement("div");
+    fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
+    document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
+    if(melState.lives<=0){setTimeout(melDefeat,800);return;}
+  }
+  melState.qIdx++;
+  // Phase transitions
+  if(melState.phase===1 && melState.catsRepelled>=melState.catsToRepel){
+    setTimeout(()=>melPhase2Cinematic(),800);return;
+  }
+  if(melState.phase===2 && melState.catsRepelled>=melState.catsToRepel+20){
+    setTimeout(()=>melPhase3Cinematic(),800);return;
+  }
+  setTimeout(renderMelQ, 800);
+}
+
+// ── CAT PHASE (phase 1) ──
+function startCatPhase(){
+  melState.inCatPhase=true;
+  const warn=document.getElementById("melCatWarning");
+  if(warn){
+    document.getElementById("melCatWarnText").textContent=
+      melState.phase===1?"Attention ! Mémélité s'apprête à lancer ses chats ! Empêche-les de t'atteindre !":
+      "Le ciel s'embrase : Mémélité fait tomber des chats-météores ! Empêche-les de frapper le sol !";
+    warn.style.display="flex";
+  }
+  // Animate Mémélité throwing
+  const melChar=document.getElementById("melChar");
+  const throwSkins=["https://i.postimg.cc/BQ0cJSCL/memelite-sp1.png","https://i.postimg.cc/TY6qTdcy/memelite-sp2.png",
+    "https://i.postimg.cc/kXmF7Jy4/memelite-sp3.png","https://i.postimg.cc/hPBbKD0X/memelite-sp4.png"];
+  let si=0;const sk=setInterval(()=>{if(melChar)melChar.src=throwSkins[si%throwSkins.length];si++;},200);
+  setTimeout(()=>{
+    clearInterval(sk);
+    if(melChar)melChar.src=melState.phase===1?"https://i.postimg.cc/bwfcRt83/Memelite.png":melState.phase===2?"https://i.postimg.cc/hjP5ghXp/Memelite-V2.png":"https://i.postimg.cc/g0V34PK4/memelite-V3.png";
+    if(warn)warn.style.display="none";
+    // Enable cat container clicks
+    const cc=document.getElementById("melCatContainer");if(cc)cc.style.pointerEvents="all";
+    if(melState.phase===1)launchCats(6);else launchMeteors(5);
+  },2500);
+}
+
+function launchCats(count){
+  const container=document.getElementById("melCatContainer");
+  if(!container)return;
+  container.innerHTML="";
+  let launched=0,hit=0,missed=0;
+  const check=()=>{
+    if(hit+missed>=count){
+      container.style.pointerEvents="none";
+      container.innerHTML="";
+      melState.inCatPhase=false;
+      setTimeout(renderMelQ,600);
+    }
+  };
+  const launch=(i)=>{
+    setTimeout(()=>{
+      const cat=document.createElement("img");
+      cat.src=MEL_CAT_NORMAL;
+      cat.style.cssText=`position:absolute;width:clamp(50px,8vw,80px);height:clamp(50px,8vw,80px);
+        object-fit:contain;cursor:pointer;right:${-80}px;
+        top:${15+Math.random()*60}%;z-index:10;
+        animation:melCatFly ${2.5+Math.random()*.8}s linear forwards;`;
+      // hitbox padding
+      cat.style.padding="12px";
+      cat.onclick=()=>{
+        if(cat.dataset.hit)return;
+        cat.dataset.hit="1";
+        const sound=document.getElementById(Math.random()>.5?"catHurt1Snd":"catHurt2Snd");
+        if(sound){sound.currentTime=0;sound.play().catch(()=>{});}
+        cat.src=MEL_CAT_HIT;
+        // Random deflect direction
+        const dir=Math.random()>.5?"top":"bottom";
+        const rot=(Math.random()-.5)*720;
+        cat.style.transition="transform 0.6s, top 0.6s, opacity 0.6s";
+        cat.style.transform=`rotate(${rot}deg)`;
+        cat.style.top=dir==="top"?"-20%":"120%";
+        cat.style.opacity="0";
+        hit++;
+        // Boss takes damage
+        melState.catsRepelled++;
+        melHit();
+        setTimeout(()=>{cat.remove();check();},650);
+      };
+      cat.addEventListener("animationend",()=>{
+        if(cat.dataset.hit)return;
+        missed++;melState.catsMissed++;
+        melState.lives--;renderMelLives();melState.noPerfect=true;
+        const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
+        document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
+        cat.remove();
+        if(melState.lives<=0){melDefeat();return;}
+        check();
+      });
+      container.appendChild(cat);
+    }, i*700);
+  };
+  for(let i=0;i<count;i++)launch(i);
+}
+
+function launchMeteors(count){
+  const container=document.getElementById("melCatContainer");
+  if(!container)return;
+  container.innerHTML="";
+  let done=0;
+  const check=()=>{if(done>=count){container.style.pointerEvents="none";container.innerHTML="";melState.inCatPhase=false;setTimeout(renderMelQ,600);}};
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const m=document.createElement("div");
+      const skin=MEL_METEORE_SKINS[i%MEL_METEORE_SKINS.length];
+      const startX=10+Math.random()*80;
+      m.style.cssText=`position:absolute;width:clamp(48px,7vw,72px);height:clamp(48px,7vw,72px);
+        left:${startX}%;top:-10%;cursor:pointer;z-index:10;
+        animation:melMeteorFall ${2+Math.random()*.6}s linear forwards;padding:10px;`;
+      m.innerHTML=`<img src="${skin}" style="width:100%;height:100%;object-fit:contain;"/>
+        <div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,100,0,.4),transparent);border-radius:50%;animation:melFirePulse .4s ease infinite;pointer-events:none;"></div>`;
+      m.onclick=()=>{
+        if(m.dataset.hit)return;m.dataset.hit="1";
+        const snd=document.getElementById("catMeteoreSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
+        // Explosion
+        m.innerHTML=`<div style="font-size:clamp(28px,5vw,42px);animation:melExplode .5s forwards;">💥</div>`;
+        m.style.background="none";
+        melState.catsRepelled++;melHit();done++;
+        setTimeout(()=>{m.remove();check();},520);
+      };
+      m.addEventListener("animationend",()=>{
+        if(m.dataset.hit)return;
+        melState.lives--;renderMelLives();melState.noPerfect=true;
+        const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
+        document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
+        done++;m.remove();if(melState.lives<=0){melDefeat();return;}check();
+      });
+      container.appendChild(m);
+    },i*600);
+  }
+}
+
+function melHit(){
+  // Boss takes damage (from cats/meteors only)
+  const hpFill=document.getElementById("melHpFill");
+  const totalHp=melState.phase===1?melState.catsToRepel:melState.phase===2?melState.catsToRepel:20;
+  const pct=Math.max(0,(totalHp-melState.catsRepelled+
+    (melState.phase===1?0:melState.phase===2?melState.catsToRepel:melState.catsToRepel*2))/totalHp*100);
+  if(hpFill)hpFill.style.width=pct+"%";
+  // Blink
+  const ch=document.getElementById("melChar");
+  if(ch){ch.classList.add("hit");setTimeout(()=>ch.classList.remove("hit"),520);}
+  const snd=document.getElementById("melHurtSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
+}
+
+// ── PHASE 2 CINEMATIC ──
+function melPhase2Cinematic(){
+  clearInterval(melState.timerInt);
+  melState.phase=2;
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  const cineOv=document.getElementById("melCineOv");
+  const cineImg=document.getElementById("melCineImg");
+  const cineMsg=document.getElementById("melCineMsg");
+  if(!cineOv)return;
+  cineOv.style.display="flex";
+  cineImg.src="https://i.postimg.cc/bwfcRt83/Memelite.png";
+  cineMsg.textContent="On dirait que Mémélité fait appel à son gros matou…";
+  cineMsg.style.color="#fef3c7";
+  // Grow boss to center
+  const ch=document.getElementById("melChar");
+  if(ch){ch.style.transition="all 1.5s";ch.style.width="min(60vw,500px)";ch.style.position="fixed";ch.style.left="50%";ch.style.transform="translateX(-50%)";}
+  setTimeout(()=>{
+    // Flash + new skin
+    const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(255,220,50,.8);z-index:9999;pointer-events:none;";
+    document.body.appendChild(fl);setTimeout(()=>fl.remove(),350);
+    if(ch){ch.src="https://i.postimg.cc/hjP5ghXp/Memelite-V2.png";ch.style.filter="drop-shadow(0 0 40px rgba(250,204,21,.9))";}
+    if(cineImg)cineImg.src="https://i.postimg.cc/hjP5ghXp/Memelite-V2.png";
+    if(cineMsg)cineMsg.textContent="Mémélité est en fusion avec ses chats ! Sa puissance décuple !";
+    if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Phase 2";
+    const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#facc15,#f97316)";}
+  },2500);
+  // Restore boss position and close cine
+  setTimeout(()=>{
+    if(ch){ch.style.transition="all 0.8s";ch.style.width="min(38vw,320px)";ch.style.position="absolute";ch.style.left="0";ch.style.transform="";}
+    cineOv.style.display="none";
+    playMelMusic(2);
+    melState.catsToRepel=40; // total cats to defeat (20 more for p2)
+    renderMelQ();
+  },5000);
+}
+
+// ── PHASE 3 CINEMATIC ──
+function melPhase3Cinematic(){
+  clearInterval(melState.timerInt);
+  melState.phase=3;
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  const cineOv=document.getElementById("melCineOv");
+  const cineImg=document.getElementById("melCineImg");
+  const cineMsg=document.getElementById("melCineMsg");
+  if(!cineOv)return;
+  cineOv.style.display="flex";
+  cineImg.src="https://i.postimg.cc/hjP5ghXp/Memelite-V2.png";
+  cineMsg.textContent="On dirait que Mémélité prépare un rituel avec ses chats… Elle semble ne faire plus qu'un avec eux !";
+  cineMsg.style.color="#e9d5ff";
+  const ch=document.getElementById("melChar");
+  if(ch){ch.style.transition="all 1.5s";ch.style.width="min(60vw,500px)";ch.style.position="fixed";ch.style.left="50%";ch.style.transform="translateX(-50%)";}
+  setTimeout(()=>{
+    // Flash + new bg + skin
+    const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(150,50,255,.75);z-index:9999;pointer-events:none;";
+    document.body.appendChild(fl);setTimeout(()=>fl.remove(),400);
+    const bgImg=document.getElementById("melBgImg");
+    if(bgImg)bgImg.src="https://i.postimg.cc/KzKm026p/fond-memelite-P3.png";
+    const fireC=document.getElementById("melFireContainer");if(fireC)fireC.style.display="block";
+    if(ch){ch.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";ch.style.filter="drop-shadow(0 0 40px rgba(168,85,247,.9))";}
+    if(cineImg)cineImg.src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";
+    if(cineMsg){cineMsg.textContent="La fusion est totale. Arrêtez-la avant qu'il ne soit trop tard !";cineMsg.style.color="#e9d5ff";}
+    if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Fusion Finale";
+    const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#8b5cf6,#c084fc)";}
+  },2500);
+  setTimeout(()=>{
+    if(ch){ch.style.transition="all 0.8s";ch.style.width="min(38vw,320px)";ch.style.position="absolute";ch.style.left="0";ch.style.transform="";}
+    cineOv.style.display="none";
+    playMelMusic(3);
+    melState.catsToRepel=60; // total cats
+    renderMelQ();
+  },6000);
+}
+
+function melVictory(){
+  clearInterval(melState.timerInt);
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  const snd=document.getElementById("melDefSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
+  document.getElementById("memeliteOv").style.display="none";
+  S.memeliteDefeated=true;
+  if(melState.noPerfect===false)S.memeliteFlawless=true;
+  if(!S.badges.has("memelite_badge"))unlockBadge("memelite_badge");
+  if(!melState.noPerfect&&!S.badges.has("chaperlipopette"))unlockBadge("chaperlipopette");
+  saveProgress();playVictoryMusic();
+  document.getElementById("melResultImg").src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";
+  document.getElementById("melResultTitle").textContent="🏆 VICTOIRE !";
+  document.getElementById("melResultTitle").style.color="#facc15";
+  document.getElementById("melResultMsg").textContent="Mémélité est vaincue ! La littérature est sauvée !";
+  document.getElementById("melResultOv").style.display="flex";
+}
+
+function melDefeat(){
+  clearInterval(melState.timerInt);
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  const snd=document.getElementById("melVicSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
+  document.getElementById("memeliteOv").style.display="none";
+  playGameOverMusic();
+  document.getElementById("melResultImg").src="https://i.postimg.cc/bwfcRt83/Memelite.png";
+  document.getElementById("melResultTitle").textContent="💀 Défaite…";
+  document.getElementById("melResultTitle").style.color="#ef4444";
+  document.getElementById("melResultMsg").textContent="Mémélité ricane. Reviens t'entraîner !";
+  document.getElementById("melResultOv").style.display="flex";
+}
+
+function closeMelResult(){
+  stopVictoryMusic();stopGameOverMusic();
+  document.getElementById("melResultOv").style.display="none";
+  _restoreBgMusic();showLitMenu();
+}
+
+function abandonMemelite(){
+  clearInterval(melState.timerInt);
+  [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
+  document.getElementById("memeliteOv").style.display="none";
+  _restoreBgMusic();showLitMenu();
+  toast("Mémélité te surveille… 📚");
+}
+
 </script>
 
   <!-- ADMIN PANEL OVERLAY -->
@@ -7271,13 +7755,13 @@ function maybeShowUpdateMsg(){
     <!-- ── Classroom background ── -->
     <div id="orgBg" style="position:absolute;inset:0;background:#1a1008;transition:filter 1s;overflow:hidden;">
       <!-- Forest/classroom background -->
-      <img src="https://i.postimg.cc/XNDyXV3b/fond-orgrografe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;"/>
+      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;"/>
       <!-- Subtle dark overlay for legibility -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.15);pointer-events:none;"></div>
     </div>
 
     <!-- ── CHALKBOARD — left 62%, raw image ── -->
-    <div style="position:absolute;top:4%;left:1%;width:63%;height:68%;z-index:3;">
+    <div style="position:absolute;top:4%;left:3%;width:60%;height:70%;z-index:3;">
       <!-- Tableau image as-is -->
       <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;"/>
       <!-- Board content over image -->
@@ -7289,30 +7773,32 @@ function maybeShowUpdateMsg(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:0;right:0;width:min(52vw,460px);z-index:5;">
-      <!-- HP bar above character -->
-      <div style="padding:0 12px 8px;text-align:center;">
-        <div style="font-size:11px;color:#f97316;font-weight:900;margin-bottom:4px;" id="orgBossLabel">⚔️ La grande Orgografe</div>
-        <div style="background:rgba(0,0,0,.5);border-radius:10px;height:12px;border:1px solid rgba(249,115,22,.5);">
-          <div id="orgHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
-        </div>
-      </div>
+    <div id="orgCharWrap" style="position:absolute;bottom:60px;right:0;width:min(52vw,460px);z-index:5;">
+      <!-- Ground shadow -->
+      <div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:70%;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent);border-radius:50%;"></div>
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
-           style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));display:block;"/>
+           style="width:100%;object-fit:contain;object-position:top;filter:drop-shadow(0 0 24px rgba(249,115,22,.5));display:block;position:relative;z-index:1;"/>
     </div>
 
-    <!-- ── HUD top bar ── -->
-    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent);">
-      <!-- Lives -->
-      <div id="orgLives" style="display:flex;gap:6px;align-items:center;">
-        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
-        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
-        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
+    <!-- ── HUD: counter top-left, flee top-right ── -->
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
+      <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
+      <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;">🚪 Fuir</button>
+    </div>
+
+    <!-- ── Bottom HUD: lives + HP bar centred ── -->
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:8px 16px 10px;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent);text-align:center;">
+      <!-- Lives above HP -->
+      <div id="orgLives" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:6px;">
+        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+        <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
       </div>
-      <!-- Counter -->
-      <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.4);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <!-- Flee -->
-      <button onclick="abandonOrgografe()" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.4);color:rgba(255,255,255,.8);font-size:12px;font-weight:700;cursor:pointer;">🚪 Fuir</button>
+      <!-- HP label + bar -->
+      <div id="orgBossLabel" style="font-size:13px;color:#fed7aa;font-weight:900;margin-bottom:4px;letter-spacing:.5px;">⚔️ La grande Orgografe</div>
+      <div style="width:min(260px,70vw);margin:0 auto;background:rgba(0,0,0,.5);border-radius:10px;height:13px;border:1px solid rgba(249,115,22,.5);">
+        <div id="orgHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
+      </div>
     </div>
 
     <!-- ── Correction input ── -->
@@ -7351,5 +7837,99 @@ function maybeShowUpdateMsg(){
     </button>
   </div>
 
+
+  <!-- ══════════ MÉMÉLITÉ BOSS OVERLAY ══════════ -->
+  <div id="memeliteOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;">
+    <!-- Background phase 1/2 -->
+    <div id="melBg" style="position:absolute;inset:0;background:#0a0508;overflow:hidden;transition:opacity .5s;">
+      <img id="melBgImg" src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1s;"/>
+      <!-- Fire particles container for phase 3 -->
+      <div id="melFireContainer" style="position:absolute;inset:0;pointer-events:none;display:none;"></div>
+      <!-- Lightning effects -->
+      <div id="melLightning" style="position:absolute;inset:0;pointer-events:none;display:none;background:rgba(255,240,50,.04);"></div>
+    </div>
+
+    <!-- Boss character - left side -->
+    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(38vw,320px);z-index:5;">
+      <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
+      <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
+           style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
+    </div>
+
+    <!-- Cat projectiles container -->
+    <div id="melCatContainer" style="position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;"></div>
+
+    <!-- Cat attack warning banner -->
+    <div id="melCatWarning" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;
+         background:rgba(0,0,0,.85);border:2px solid rgba(239,68,68,.6);border-radius:16px;
+         padding:20px 28px;text-align:center;max-width:360px;animation:popIn .3s;">
+      <div style="font-size:28px;margin-bottom:8px;">😾</div>
+      <div id="melCatWarnText" style="font-size:16px;font-weight:900;color:#fca5a5;line-height:1.5;"></div>
+      <div style="font-size:12px;color:#ead7ae;margin-top:6px;opacity:.7;">Prépare-toi !</div>
+    </div>
+
+    <!-- Question area - right side -->
+    <div id="melQWrap" style="position:absolute;top:50%;right:2%;transform:translateY(-50%);
+         width:min(55vw,520px);background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+         border:1.5px solid rgba(220,38,38,.25);border-radius:18px;padding:16px;z-index:6;">
+      <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.5;margin-bottom:12px;text-align:center;"></div>
+      <div id="melAWrap" style="display:flex;flex-direction:column;gap:7px;"></div>
+    </div>
+
+    <!-- HUD -->
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;
+         justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent);">
+      <!-- Lives -->
+      <div id="melLives" style="display:flex;gap:5px;align-items:center;">
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:26px;height:26px;"/>
+      </div>
+      <!-- Timer -->
+      <div id="melTimer" style="font-size:22px;font-weight:900;color:#facc15;text-shadow:0 0 12px rgba(250,204,21,.5);width:40px;text-align:center;"></div>
+      <!-- Flee -->
+      <button onclick="abandonMemelite()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;">🚪 Fuir</button>
+    </div>
+
+    <!-- HP bar bottom -->
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 14px 8px;background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);">
+      <div style="font-size:12px;color:#fca5a5;font-weight:900;text-align:center;margin-bottom:3px;" id="melBossLabel">Mémélité</div>
+      <div style="width:min(300px,80vw);margin:0 auto;background:rgba(0,0,0,.5);border-radius:10px;height:12px;border:1px solid rgba(220,38,38,.4);">
+        <div id="melHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#dc2626,#f87171);transition:width .4s;width:100%;"></div>
+      </div>
+    </div>
+
+    <!-- Cinematic overlay -->
+    <div id="melCineOv" style="display:none;position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
+      <img id="melCineImg" src="" alt="" style="width:min(200px,45vw);filter:drop-shadow(0 0 30px rgba(250,204,21,.6));"/>
+      <div id="melCineMsg" style="font-size:clamp(14px,2.5vw,20px);font-weight:900;color:#fef3c7;max-width:440px;line-height:1.6;"></div>
+    </div>
+
+    <!-- Audios -->
+    <audio id="melMusicP1" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP1.mp3" type="audio/mpeg"/></audio>
+    <audio id="melMusicP2" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP2.mp3" type="audio/mpeg"/></audio>
+    <audio id="melMusicP3" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP3.mp3" type="audio/mpeg"/></audio>
+    <audio id="melHurtSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted.mp3" type="audio/mpeg"/></audio>
+    <audio id="melVicSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_victory.mp3" type="audio/mpeg"/></audio>
+    <audio id="melDefSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_defeated.mp3" type="audio/mpeg"/></audio>
+    <audio id="catHurt1Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt.mp3" type="audio/mpeg"/></audio>
+    <audio id="catHurt2Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt2.mp3" type="audio/mpeg"/></audio>
+    <audio id="catMeteoreSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/chat-meteore_hurt.mp3" type="audio/mpeg"/></audio>
+  </div>
+
+  <!-- MÉMELITÉ RESULT -->
+  <div id="melResultOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:700;
+       flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
+    <img id="melResultImg" src="" alt="" style="width:min(200px,55vw);"/>
+    <div id="melResultTitle" style="font-size:28px;font-weight:900;"></div>
+    <div id="melResultMsg" style="font-size:15px;color:#ead7ae;max-width:420px;line-height:1.6;"></div>
+    <button onclick="closeMelResult()" style="padding:12px 28px;border-radius:14px;border:none;
+      background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
+      Continuer →
+    </button>
+  </div>
 </body>
 </html>
