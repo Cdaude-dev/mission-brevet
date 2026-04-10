@@ -1652,7 +1652,7 @@ bossStyle.textContent=`
     100%{top:115vh;  right:110vw;  transform:rotate(600deg);}
   }
   @keyframes bossFloat2{0%,100%{transform:translateY(0);}33%{transform:translateY(-18px) rotate(-6deg);}66%{transform:translateY(10px) rotate(5deg);}}
-  #bossChar.hit{
+  #bossChar.hit,#orgChar.hit,#melChar.hit,#gramBossChar.hit{
     animation:bossHitBlink .5s ease-out forwards !important;
   }
   @keyframes bossHitBlink{
@@ -6940,7 +6940,9 @@ function orgHit(){
   // Hit animation: red blink + shake
   const ch=document.getElementById("orgChar");
   if(ch){
-    ch.classList.add("hit"); // bossHitBlink CSS
+    // Red blink
+    ch.style.animation="bossHitBlink .5s ease-out forwards";
+    setTimeout(()=>{ch.style.animation="";},520);
     // Shake: quick horizontal movement
     ch.style.transition="transform .05s";
     const shakes=[-12,10,-8,6,-4,0];
@@ -7350,7 +7352,8 @@ function startMemelit(){
     shuffledQs:[...MEMELITE_QUESTIONS].sort(()=>Math.random()-.5),
     inCatPhase:false,p2hp:20,p3hp:20,_lastCatAt:-1};
   const melChar=document.getElementById("melChar");
-  if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.transition="";melChar.style.width="";melChar.style.position="";melChar.style.left="";melChar.style.transform="";}
+  if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.filter="drop-shadow(0 0 20px rgba(220,38,38,.4))";melChar.style.animation="";}
+  const cw=document.getElementById("melCharWrap");if(cw){cw.style.left="0";cw.style.transform="";}
   renderMelLives();
   playMelMusic(1);
   renderMelQ();
@@ -7388,7 +7391,8 @@ function renderMelQ(){
   });
   // Timer
   clearInterval(melState.timerInt);
-  melState.timerVal=20;melState._timerStart=Date.now();melState._timerBase=20;
+  const _melTBase=melState.phase===3?10:20;
+  melState.timerVal=_melTBase;melState._timerStart=Date.now();melState._timerBase=_melTBase;
   updateMelTimer();
   melState.timerInt=setInterval(()=>{
     const _me=Math.floor((Date.now()-melState._timerStart)/1000);
@@ -7468,7 +7472,7 @@ function startCatPhase(){
     // Enable cat container clicks
     const cc=document.getElementById("melCatContainer");
     if(cc){cc.style.pointerEvents="all";cc.style.zIndex="12";}
-    if(melState.phase===1)launchCats(6);else launchMeteors(5);
+    if(melState.phase===1)launchCats(6);else launchMeteors(melState.phase===3?9:8);
   },2500);
 }
 
@@ -7494,7 +7498,7 @@ function launchCats(count){
         object-fit:contain;cursor:pointer;left:-180px;
         top:${10+Math.random()*55}%;z-index:12;
         transform:scaleX(-1);
-        animation:melCatFly ${4.5+Math.random()*2}s linear forwards;`;
+        animation:melCatFly ${3+Math.random()*1.5}s linear forwards;`;
       cat.style.padding="20px";
       cat.onclick=()=>{
         if(cat.dataset.hit)return;
@@ -7544,7 +7548,7 @@ function launchMeteors(count){
       const startX=10+Math.random()*80;
       m.style.cssText=`position:absolute;width:clamp(100px,14vw,160px);height:clamp(100px,14vw,160px);
         left:${startX}%;top:-10%;cursor:pointer;z-index:12;
-        animation:melMeteorFall ${3.5+Math.random()*1.5}s linear forwards;padding:18px;`;
+        animation:melMeteorFall ${2.5+Math.random()*1.2}s linear forwards;padding:18px;`;
       m.innerHTML=`<img src="${skin}" style="width:100%;height:100%;object-fit:contain;"/>
         <div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,100,0,.4),transparent);border-radius:50%;animation:melFirePulse .4s ease infinite;pointer-events:none;"></div>`;
       m.onclick=()=>{
@@ -7569,11 +7573,13 @@ function launchMeteors(count){
 }
 
 function melHit(){
-  // Boss takes damage (from cats/meteors only)
+  // Boss HP per phase: each phase has 20 cats to repel
   const hpFill=document.getElementById("melHpFill");
-  const totalHp=melState.phase===1?melState.catsToRepel:melState.phase===2?melState.catsToRepel:20;
-  const pct=Math.max(0,(totalHp-melState.catsRepelled+
-    (melState.phase===1?0:melState.phase===2?melState.catsToRepel:melState.catsToRepel*2))/totalHp*100);
+  const p1start=0, p2start=20, p3start=40;
+  let phaseStart=melState.phase===1?p1start:melState.phase===2?p2start:p3start;
+  let repelledInPhase=Math.max(0,melState.catsRepelled-phaseStart);
+  const phaseTotal=20;
+  const pct=Math.max(0,((phaseTotal-repelledInPhase)/phaseTotal)*100);
   if(hpFill)hpFill.style.width=pct+"%";
   // Blink
   const ch=document.getElementById("melChar");
@@ -7594,9 +7600,11 @@ function melPhase2Cinematic(){
   cineImg.src="https://i.postimg.cc/bwfcRt83/Memelite.png";
   cineMsg.textContent="On dirait que Mémélité fait appel à son gros matou…";
   cineMsg.style.color="#fef3c7";
-  // Grow boss to center
+  // Move boss to center (keep size)
   const ch=document.getElementById("melChar");
-  if(ch){ch.style.transition="all 1.5s";ch.style.width="min(60vw,500px)";ch.style.position="fixed";ch.style.left="50%";ch.style.transform="translateX(-50%)";}
+  if(ch){ch.style.transition="filter .5s";ch.style.filter="drop-shadow(0 0 30px rgba(255,220,50,.8))";}
+  const charWrap=document.getElementById("melCharWrap");
+  if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="50%";charWrap.style.transform="translateX(-50%)";}
   setTimeout(()=>{
     // Flash + new skin
     const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(255,220,50,.8);z-index:9999;pointer-events:none;";
@@ -7607,12 +7615,12 @@ function melPhase2Cinematic(){
     if(document.getElementById("melBossLabel"))document.getElementById("melBossLabel").textContent="Mémélité — Phase 2";
     const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#facc15,#f97316)";}
   },2500);
-  // Restore boss position and close cine
+  // Restore boss position
   setTimeout(()=>{
-    if(ch){ch.style.transition="all 0.8s";ch.style.width="min(38vw,320px)";ch.style.position="absolute";ch.style.left="0";ch.style.transform="";}
+    if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusic(2);
-    melState.catsToRepel=40; // total cats to defeat (20 more for p2)
+    melState.catsToRepel=40;
     renderMelQ();
   },5000);
 }
@@ -7631,7 +7639,9 @@ function melPhase3Cinematic(){
   cineMsg.textContent="On dirait que Mémélité prépare un rituel avec ses chats… Elle semble ne faire plus qu'un avec eux !";
   cineMsg.style.color="#e9d5ff";
   const ch=document.getElementById("melChar");
-  if(ch){ch.style.transition="all 1.5s";ch.style.width="min(60vw,500px)";ch.style.position="fixed";ch.style.left="50%";ch.style.transform="translateX(-50%)";}
+  if(ch){ch.style.transition="filter .5s";ch.style.filter="drop-shadow(0 0 30px rgba(168,85,247,.8))";}
+  const charWrap=document.getElementById("melCharWrap");
+  if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="50%";charWrap.style.transform="translateX(-50%)";}
   setTimeout(()=>{
     // Flash + new bg + skin
     const fl=document.createElement("div");fl.style.cssText="position:fixed;inset:0;background:rgba(150,50,255,.75);z-index:9999;pointer-events:none;";
@@ -7646,10 +7656,10 @@ function melPhase3Cinematic(){
     const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#8b5cf6,#c084fc)";}
   },2500);
   setTimeout(()=>{
-    if(ch){ch.style.transition="all 0.8s";ch.style.width="min(38vw,320px)";ch.style.position="absolute";ch.style.left="0";ch.style.transform="";}
+    if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusic(3);
-    melState.catsToRepel=60; // total cats
+    melState.catsToRepel=60;
     renderMelQ();
   },6000);
 }
@@ -7862,7 +7872,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── CHALKBOARD — left 62%, raw image ── -->
-    <div style="position:absolute;top:4%;left:2%;width:62%;height:72%;z-index:3;">
+    <div style="position:absolute;top:3%;left:1%;width:58%;height:74%;z-index:3;">
       <!-- Tableau image as-is -->
       <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;"/>
       <!-- Board content over image -->
@@ -7874,7 +7884,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:55px;right:1%;width:min(44vw,380px);z-index:5;">
+    <div id="orgCharWrap" style="position:absolute;bottom:55px;right:0;width:min(44vw,360px);z-index:5;">
       <!-- HP bar above character -->
       <div style="padding:0 8px 6px;text-align:center;">
         <div id="orgBossLabel" style="font-size:12px;color:#fed7aa;font-weight:900;margin-bottom:3px;">⚔️ La grande Orgografe</div>
