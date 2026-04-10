@@ -589,7 +589,7 @@
       .hero-char{width:110px;margin-bottom:-24px;}
     }
   
-    @keyframes melCatFly{0%{right:-80px;opacity:1;}100%{right:110%;opacity:.8;}}
+    @keyframes melCatFly{0%{left:-160px;opacity:1;transform:scaleX(-1);}100%{left:110%;opacity:.8;transform:scaleX(-1);}}
     @keyframes melMeteorFall{0%{top:-10%;opacity:1;}100%{top:110%;opacity:.9;}}
     @keyframes melFirePulse{0%,100%{opacity:.6;}50%{opacity:1;}}
     @keyframes melExplode{0%{transform:scale(1);}50%{transform:scale(1.8);}100%{transform:scale(0);opacity:0;}}
@@ -5327,6 +5327,7 @@ window.addEventListener("load",()=>{
   try{ updateGramBossChapter(); }catch(e){}
   try{ injectOrgografeChapter(); }catch(e){}
   try{ updateOrgChapter(); }catch(e){}
+  try{ updateMemeliteChapter(); }catch(e){}
 
   // Auto-restore session on page refresh
   try{
@@ -7074,9 +7075,9 @@ function showOrgIntro(){
   function renderSlide(){
     const s=SLIDES[slide];
     const isLast=slide===SLIDES.length-1;
-    ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0400);border:2px solid rgba(249,115,22,.45);border-radius:22px;padding:24px;max-width:480px;width:100%;text-align:center;animation:popIn .3s;">
+    ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0400);border:2px solid rgba(249,115,22,.45);border-radius:22px;padding:24px 28px;max-width:min(640px,96vw);width:100%;text-align:center;animation:popIn .3s;">
       <div style="font-size:16px;font-weight:900;color:#f97316;margin-bottom:14px;letter-spacing:.5px;">❓ Comment jouer ?</div>
-      <img src="${s.img}" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;margin-bottom:14px;border:1px solid rgba(249,115,22,.2);" onerror="this.style.display='none'"/>
+      <img src="${s.img}" style="width:100%;max-height:min(260px,35vh);object-fit:contain;border-radius:12px;margin-bottom:14px;border:1px solid rgba(249,115,22,.2);" onerror="this.style.display='none'"/>
       <div style="font-size:14px;color:#fed7aa;line-height:1.6;margin-bottom:18px;min-height:56px;">${s.text}</div>
       <!-- Dot indicators -->
       <div style="display:flex;gap:6px;justify-content:center;margin-bottom:16px;">
@@ -7171,11 +7172,42 @@ function stopGameOverMusic(){
 
 
 /* ══════════ MÉMÉLITÉ (boss littérature — coming soon) ══════════ */
+
+function updateMemeliteChapter(){
+  const lk=document.getElementById("memeliteLockIcon");
+  if(!lk)return;
+  const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
+  const unlocked=S.litKeyShown||isAdmin||
+    ["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"].every(k=>S.perfect&&S.perfect[k]);
+  lk.style.filter=unlocked?"drop-shadow(0 0 12px rgba(220,38,38,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";
+  lk.style.opacity=unlocked?"1":"0.6";
+}
+
 function tryOpenMemelite(){
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
   const hasKey=S.litKeyShown||isAdmin;
   if(hasKey){
-    startMemelit();
+    // Show intro popup like other bosses
+    const ov=document.createElement("div");
+    ov.className="mb-popup-ov";
+    ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .3s;";
+    ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0002,#0a0000);border:2px solid rgba(220,38,38,.45);border-radius:22px;padding:28px;max-width:480px;width:100%;text-align:center;animation:popIn .35s;">
+      <img src="https://i.postimg.cc/bwfcRt83/Memelite.png" style="width:min(140px,35vw);margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(239,68,68,.6));animation:bossIdle 4s ease-in-out infinite;"/>
+      <div style="font-size:22px;font-weight:900;color:#f87171;margin-bottom:10px;">⚔️ Mémélité</div>
+      <div style="font-size:13px;color:#fecaca;line-height:1.7;margin-bottom:18px;">
+        Mémélité, la bibliothécaire des Enfers, attend vos questions.<br><br>
+        <strong style="color:#facc15;">60 questions</strong> de culture littéraire · <strong style="color:#facc15;">20 secondes</strong> par question<br>
+        <strong style="color:#fca5a5;">❤️ 5 vies</strong> — Attention à ses chats !<br>
+        <strong style="color:#86efac;">3 phases</strong> de plus en plus redoutables.
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button id="mel_start" style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#dc2626,#b91c1c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ Affronter !</button>
+        <button id="mel_cancel" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Plus tard</button>
+      </div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector("#mel_start").onclick=()=>{ov.remove();startMemelit();};
+    ov.querySelector("#mel_cancel").onclick=()=>ov.remove();
     return;
   }
   const ov=document.createElement("div");
@@ -7294,6 +7326,14 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
+  // Full reset
+  clearInterval(melState&&melState.timerInt);
+  const cc=document.getElementById("melCatContainer");if(cc){cc.innerHTML="";cc.style.pointerEvents="none";}
+  const warn=document.getElementById("melCatWarning");if(warn)warn.style.display="none";
+  const cineOv=document.getElementById("melCineOv");if(cineOv)cineOv.style.display="none";
+  const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#dc2626,#f87171)";}
+  const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
+  const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   melState={phase:1,qIdx:0,hp:20,lives:5,timerVal:20,timerInt:null,
@@ -7301,7 +7341,7 @@ function startMemelit(){
     shuffledQs:[...MEMELITE_QUESTIONS].sort(()=>Math.random()-.5),
     inCatPhase:false,p2hp:20,p3hp:20};
   const melChar=document.getElementById("melChar");
-  if(melChar)melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";
+  if(melChar){melChar.src="https://i.postimg.cc/bwfcRt83/Memelite.png";melChar.style.transition="";melChar.style.width="";melChar.style.position="";melChar.style.left="";melChar.style.transform="";}
   renderMelLives();
   playMelMusic(1);
   renderMelQ();
@@ -7415,7 +7455,8 @@ function startCatPhase(){
     if(melChar)melChar.src=melState.phase===1?"https://i.postimg.cc/bwfcRt83/Memelite.png":melState.phase===2?"https://i.postimg.cc/hjP5ghXp/Memelite-V2.png":"https://i.postimg.cc/g0V34PK4/memelite-V3.png";
     if(warn)warn.style.display="none";
     // Enable cat container clicks
-    const cc=document.getElementById("melCatContainer");if(cc)cc.style.pointerEvents="all";
+    const cc=document.getElementById("melCatContainer");
+    if(cc){cc.style.pointerEvents="all";cc.style.zIndex="12";}
     if(melState.phase===1)launchCats(6);else launchMeteors(5);
   },2500);
 }
@@ -7437,12 +7478,13 @@ function launchCats(count){
     setTimeout(()=>{
       const cat=document.createElement("img");
       cat.src=MEL_CAT_NORMAL;
-      cat.style.cssText=`position:absolute;width:clamp(50px,8vw,80px);height:clamp(50px,8vw,80px);
-        object-fit:contain;cursor:pointer;right:${-80}px;
-        top:${15+Math.random()*60}%;z-index:10;
-        animation:melCatFly ${2.5+Math.random()*.8}s linear forwards;`;
-      // hitbox padding
-      cat.style.padding="12px";
+      // Cats go left→right, flipped, big, slow
+      cat.style.cssText=`position:absolute;width:clamp(110px,16vw,180px);height:clamp(110px,16vw,180px);
+        object-fit:contain;cursor:pointer;left:-180px;
+        top:${10+Math.random()*55}%;z-index:12;
+        transform:scaleX(-1);
+        animation:melCatFly ${4.5+Math.random()*2}s linear forwards;`;
+      cat.style.padding="20px";
       cat.onclick=()=>{
         if(cat.dataset.hit)return;
         cat.dataset.hit="1";
@@ -7489,9 +7531,9 @@ function launchMeteors(count){
       const m=document.createElement("div");
       const skin=MEL_METEORE_SKINS[i%MEL_METEORE_SKINS.length];
       const startX=10+Math.random()*80;
-      m.style.cssText=`position:absolute;width:clamp(48px,7vw,72px);height:clamp(48px,7vw,72px);
-        left:${startX}%;top:-10%;cursor:pointer;z-index:10;
-        animation:melMeteorFall ${2+Math.random()*.6}s linear forwards;padding:10px;`;
+      m.style.cssText=`position:absolute;width:clamp(100px,14vw,160px);height:clamp(100px,14vw,160px);
+        left:${startX}%;top:-10%;cursor:pointer;z-index:12;
+        animation:melMeteorFall ${3.5+Math.random()*1.5}s linear forwards;padding:18px;`;
       m.innerHTML=`<img src="${skin}" style="width:100%;height:100%;object-fit:contain;"/>
         <div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,100,0,.4),transparent);border-radius:50%;animation:melFirePulse .4s ease infinite;pointer-events:none;"></div>`;
       m.onclick=()=>{
@@ -7634,6 +7676,9 @@ function melDefeat(){
 function closeMelResult(){
   stopVictoryMusic();stopGameOverMusic();
   document.getElementById("melResultOv").style.display="none";
+  // Full cleanup
+  clearInterval(melState&&melState.timerInt);
+  const cc=document.getElementById("melCatContainer");if(cc){cc.innerHTML="";cc.style.pointerEvents="none";}
   _restoreBgMusic();showLitMenu();
 }
 
@@ -7773,7 +7818,14 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:60px;right:0;width:min(52vw,460px);z-index:5;">
+    <div id="orgCharWrap" style="position:absolute;bottom:55px;right:2%;width:min(40vw,350px);z-index:5;">
+      <!-- HP bar above character -->
+      <div style="padding:0 8px 6px;text-align:center;">
+        <div id="orgBossLabel" style="font-size:12px;color:#fed7aa;font-weight:900;margin-bottom:3px;">⚔️ La grande Orgografe</div>
+        <div style="background:rgba(0,0,0,.5);border-radius:10px;height:11px;border:1px solid rgba(249,115,22,.4);">
+          <div id="orgHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
+        </div>
+      </div>
       <!-- Ground shadow -->
       <div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:70%;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent);border-radius:50%;"></div>
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
@@ -7786,18 +7838,12 @@ function abandonMemelite(){
       <button onclick="abandonOrgografe()" style="padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:rgba(255,255,255,.75);font-size:12px;font-weight:700;cursor:pointer;">🚪 Fuir</button>
     </div>
 
-    <!-- ── Bottom HUD: lives + HP bar centred ── -->
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:8px 16px 10px;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent);text-align:center;">
-      <!-- Lives above HP -->
-      <div id="orgLives" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:6px;">
+    <!-- ── Bottom HUD: lives centred ── -->
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 16px 8px;background:linear-gradient(0deg,rgba(0,0,0,.5),transparent);text-align:center;">
+      <div id="orgLives" style="display:flex;gap:8px;align-items:center;justify-content:center;">
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
         <img class="org-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
-      </div>
-      <!-- HP label + bar -->
-      <div id="orgBossLabel" style="font-size:13px;color:#fed7aa;font-weight:900;margin-bottom:4px;letter-spacing:.5px;">⚔️ La grande Orgografe</div>
-      <div style="width:min(260px,70vw);margin:0 auto;background:rgba(0,0,0,.5);border-radius:10px;height:13px;border:1px solid rgba(249,115,22,.5);">
-        <div id="orgHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#f97316,#fb923c);transition:width .4s;width:100%;"></div>
       </div>
     </div>
 
@@ -7851,7 +7897,7 @@ function abandonMemelite(){
     </div>
 
     <!-- Boss character - left side -->
-    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(38vw,320px);z-index:5;">
+    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(52vw,460px);z-index:5;">
       <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
       <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
            style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
