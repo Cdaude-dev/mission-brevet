@@ -1569,8 +1569,7 @@
    <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
     <!-- Player lives (Conjugus) -->
     <div id="bossLivesDisplay" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:6px;">
-      <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
-      <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+      <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
     </div>
     <!-- Audio elements -->
     <audio id="bossMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Dieu-de-la-conjugaison.mp3" type="audio/mpeg"/></audio>
@@ -1651,9 +1650,8 @@
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
    <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
     <!-- Player lives (Grammairia) -->
-    <div id="gramLivesDisplay" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:6px;">
-      <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
-      <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:28px;height:28px;"/>
+    <div id="gramLivesDisplay" style="position:absolute;top:12px;left:16px;z-index:15;display:flex;gap:6px;align-items:center;">
+      <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
     </div>
     <!-- Audio -->
     <audio id="gramMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Deesse-de-la-Grammaire.mp3" type="audio/mpeg"/></audio>
@@ -5522,7 +5520,7 @@ const BOSS_QUESTIONS=[
   {prompt:"Conjugue 'avoir' au subjonctif passé, 3e pers. plur.",answer:["aient eu","qu'ils aient eu","ils aient eu"],explanation:"AVOIR subjonctif passé : qu'ils AIENT EU"}
 ];
 
-let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2};
+let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
   // Reset hearts
   setTimeout(()=>{const h=document.querySelectorAll(".boss-life-heart");h.forEach(x=>x.style.filter="");},50);
 
@@ -5781,18 +5779,19 @@ function bossHit(){
 }
 
 function bossLoseLife(reason){
+  if(bossState._losingLife)return; // prevent re-entry
+  bossState._losingLife=true;
+  clearInterval(bossState.timerInt); // stop timer immediately
   bossState.lives--;
-  // Update hearts display
   const hearts=document.querySelectorAll(".boss-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<bossState.lives?"":"grayscale(1) brightness(.3)";});
-  // Red flash
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
   document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
-  if(bossState.lives<=0){setTimeout(()=>bossDefeat(reason),600);}
-  else{
-    // Brief visual then next question
-    setTimeout(()=>{clearInterval(bossState.timerInt);renderBossQ();},1200);
+  if(bossState.lives<=0){
+    setTimeout(()=>bossDefeat(reason),600);
+  } else {
+    setTimeout(()=>{bossState._losingLife=false;renderBossQ();},1000);
   }
 }
 
@@ -6005,7 +6004,7 @@ const GRAM_BOSS_QUESTIONS=[
    explanation:"À PEINE… QUE : construction d'antériorité immédiate (à peine X que Y). L'inversion du sujet (était-il) est obligatoire ici. Signifie 'juste après que X'."}
 ];
 
-let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:[],darkPhase:false,lives:2};
+let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:[],darkPhase:false,lives:2,_losingLife:false};
   setTimeout(()=>{const h=document.querySelectorAll(".gram-life-heart");h.forEach(x=>x.style.filter="");},50);
 
 // Grammar boss: inject chapter card into gramMenu
@@ -6344,6 +6343,9 @@ function startRainEffect(){
 
 
 function gramBossLoseLife(){
+  if(gramBossState._losingLife)return;
+  gramBossState._losingLife=true;
+  clearInterval(gramBossState.timerInt); // stop timer immediately
   gramBossState.lives--;
   const hearts=document.querySelectorAll(".gram-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<gramBossState.lives?"":"grayscale(1) brightness(.3)";});
@@ -6351,7 +6353,7 @@ function gramBossLoseLife(){
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
   document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
   if(gramBossState.lives<=0){setTimeout(gramBossDefeat,600);}
-  else{setTimeout(()=>{clearInterval(gramBossState.timerInt);renderGramBossQ();},1200);}
+  else{setTimeout(()=>{gramBossState._losingLife=false;renderGramBossQ();},1200);}
 }
 
 function gramBossDefeat(){
