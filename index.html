@@ -5779,7 +5779,7 @@ function abandonBoss(){
     <div style="font-size:19px;font-weight:900;color:#facc15;margin-bottom:10px;">Fuir le combat ?</div>
     <div style="font-size:14px;color:#ead7ae;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>Le boss sera de retour la prochaine fois…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:36px;width:auto;"/></button>
+      <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:130px;width:auto;"/></button>
       <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">⚔️ Continuer</button>
     </div>
   </div>`;
@@ -6331,7 +6331,7 @@ function abandonGramBoss(){
     <div style="font-size:19px;font-weight:900;color:#60a5fa;margin-bottom:10px;">Fuir le combat ?</div>
     <div style="font-size:14px;color:#bfdbfe;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>La Déesse t'attendra patiemment…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:36px;width:auto;"/></button>
+      <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:130px;width:auto;"/></button>
       <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">Continuer</button>
     </div>
   </div>`;
@@ -7099,7 +7099,7 @@ function abandonOrgografe(){
     <div style="font-size:18px;font-weight:900;color:#f97316;margin-bottom:8px;">Fuir ?</div>
     <div style="font-size:13px;color:#ead7ae;margin-bottom:14px;">La grande Orgografe va t'attendre...</div>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:36px;width:auto;"/></button>
+      <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:130px;width:auto;"/></button>
       <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Continuer</button>
     </div>
   </div>`;
@@ -7370,7 +7370,7 @@ function tryOpenTeddynounet(){
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0500);border:2px solid rgba(251,146,60,.4);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .35s;">
-    <img src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png" style="width:110px;margin-bottom:12px;filter:drop-shadow(0 0 14px rgba(251,146,60,.5));animation:bossIdle 4s ease-in-out infinite;"/>
+    <img src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png" onclick="playTeddySound()" ontouchstart="playTeddySound();event.stopPropagation();" style="width:110px;margin-bottom:12px;filter:drop-shadow(0 0 14px rgba(251,146,60,.5));animation:bossIdle 4s ease-in-out infinite;cursor:pointer;" title="Clique pour entendre Teddynounet !"/>
     <div style="font-size:20px;font-weight:900;color:#fb923c;margin-bottom:10px;">Teddynounet</div>
     <div style="font-size:14px;color:#fed7aa;line-height:1.7;margin-bottom:16px;">
       🔨 <strong style="color:#fbbf24;">Module en cours de création</strong><br><br>
@@ -7986,7 +7986,7 @@ function melVictory(){
   if(!S.badges.has("memelite_badge"))unlockBadge("memelite_badge");
   if(!melState.noPerfect&&!S.badges.has("chaperlipopette"))unlockBadge("chaperlipopette");
   saveProgress();playVictoryMusic();
-  document.getElementById("melResultImg").src="https://i.postimg.cc/g0V34PK4/memelite-V3.png";
+  document.getElementById("melResultImg").src="https://i.postimg.cc/Fzz2sHHV/Memelite-defeated.png";
   document.getElementById("melResultTitle").textContent="🏆 VICTOIRE !";
   document.getElementById("melResultTitle").style.color="#facc15";
   document.getElementById("melResultMsg").textContent="Mémélité est vaincue ! La littérature est sauvée !";
@@ -8135,7 +8135,7 @@ function abandonMemelite(){
     <!-- ── Classroom background ── -->
     <div id="orgBg" style="position:absolute;inset:0;background:#1a1008;transition:filter 1s;overflow:hidden;">
       <!-- Forest/classroom background -->
-      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:110%;top:-5%;object-fit:cover;object-position:center 30%;pointer-events:none;"/>
+      <img src="https://i.postimg.cc/13QMs4TW/fond-orgografe.png" style="position:absolute;inset:0;width:100%;height:115%;top:0%;object-fit:cover;object-position:center top;pointer-events:none;"/>
       <!-- Subtle dark overlay for legibility -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.15);pointer-events:none;"></div>
       <!-- Floating dust particles -->
