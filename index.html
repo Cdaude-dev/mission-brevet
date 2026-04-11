@@ -3442,7 +3442,7 @@ const MODULES={
 const S={
   name:"",avatar:AVATARS[0],score:0,
   panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,scoredQIds:new Set(),
-  mod:null,qIdx:0,correct:0,
+  mod:null,qIdx:0,correct:0,wrongCount:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
   unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,litKeyShown:false,memeliteDefeated:false,memeliteFlawless:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,orgBossDefeated:false,stars:{},
@@ -3585,7 +3585,20 @@ function migrateToStars(){
 }
 
 function earnPoints(qKey){
-  S.correct++; // comptage uniquement — points attribués en fin de séance
+  S.correct++; // comptage uniquement — points à la fin de la séance
+}
+
+function toast(msg){
+  try{
+    let el=document.getElementById("_simpleToast");
+    if(!el){
+      el=document.createElement("div");el.id="_simpleToast";
+      el.style.cssText="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(20,10,2,.96);border:1px solid rgba(217,164,65,.5);border-radius:14px;padding:10px 22px;color:#f5e6c8;font-size:14px;font-weight:700;z-index:10000;pointer-events:none;transition:opacity .3s;text-align:center;max-width:88vw;";
+      document.body.appendChild(el);
+    }
+    el.textContent=msg||"";el.style.opacity="1";
+    clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity="0";},2600);
+  }catch(e){}
 }
 
 function setAllMusicVolume(val){
@@ -3927,6 +3940,16 @@ function checkBadges(){
 // ── Supabase config ── Remplis SUPABASE_URL et SUPABASE_ANON_KEY après création du projet
 const SUPABASE_URL = "https://ksfataxgdnfcyftlpppr.supabase.co"; // ex: https://abcdef.supabase.co
 const SUPABASE_ANON_KEY = "sb_publishable_uybe_ZSzzAiGYJfDHSFE6Q_0hrzKlcR"; // clé anon publique Supabase
+
+
+async function deleteFromLB(name){
+  if(!name)return;
+  try{const lb=JSON.parse(localStorage.getItem("mb_lb")||"{}");delete lb[name];localStorage.setItem("mb_lb",JSON.stringify(lb));}catch(e){}
+  if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"){
+    try{await fetch(SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(name),
+      {method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});}catch(e){}
+  }
+}
 
 async function saveToLB(){
   if(!S.name)return;
@@ -4434,7 +4457,7 @@ function startMod(id, resumeFrom){
   // Cap to valid range — if savedQIdx >= questions.length, restart from 0
   const resumeQIdx=(_rawIdx>0&&_rawIdx<_allQs.length)?_rawIdx:0;
   const resumeCorrect = (resumeQIdx>0&&resumeFrom)?resumeFrom.correct:0;
-  S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
+  S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.wrongCount=0;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
   S.sessionScoreStart=S.score;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
@@ -4456,6 +4479,7 @@ function startMod(id, resumeFrom){
     else bannerEl.textContent="Qui suis-je ?";
   }
   if(starEl) starEl.textContent=(isPoetry||isGram||isConj)?"★★":"★";
+  // Show "already mastered" hint if no points to earn
   renderQ();
 }
 
@@ -4469,7 +4493,8 @@ function renderQ(){
   // Safety: reset out-of-bounds qIdx
   const _all=MODULES[S.mod]?MODULES[S.mod].questions:[];
   if(!S.mod||_all.length===0){showResults();return;}
-  if(S.qIdx<0||S.qIdx>=_all.length){S.qIdx=0;}
+  if(S.qIdx<0){S.qIdx=0;}
+  if(S.qIdx>=_all.length){showResults();return;}
   const q=_all[S.qIdx],total=_all.length;
   if(!q){showResults();return;}
   // Reset UI
@@ -4482,7 +4507,7 @@ function renderQ(){
   S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
   try{resetHint();}catch(e){}
   if(D.quizProgFill)D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
-  if(D.quizCounter)D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
+  if(D.quizCounter){D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;D.quizCounter.style.textAlign="center";}
   // Set question text
   if(D.qBox)D.qBox.textContent=q.prompt||"";
   try{renderIllustrations(S.mod,S.qIdx);}catch(e){}
@@ -4493,7 +4518,14 @@ function renderQ(){
     else if(q.type==="fill")renderFill(q);
     else if(q.type==="dragdrop")renderDragDrop(q);
     else if(q.type==="typed")renderTyped(q);
-  }catch(e){console.error("answer render error:",e.message);}
+    else{
+      // Type inconnu : afficher un QCM vide de secours
+      if(D.aWrap)D.aWrap.innerHTML='<div style="color:#fca5a5;padding:16px;text-align:center;">Type de question inconnu : '+q.type+'</div>';
+    }
+  }catch(e){
+    console.error("renderQ error:",e);
+    if(D.aWrap)D.aWrap.innerHTML='<div style="color:#fca5a5;padding:16px;text-align:center;font-size:13px;">Erreur de rendu. Appuie sur Fuir.<br><small>'+e.message+'</small></div>';
+  }
 }
 
 /* ── Illustrations per module/question ── */
@@ -4970,32 +5002,47 @@ function validateDD(){
 
 /* ══════════ SHARED FEEDBACK DISPLAY ══════════ */
 function showFeedback(ok,explanation){
-  D.hintImg.src=ok?PROF.smile:PROF.dub;
-  D.hintText.textContent=ok?"Excellent ! Tu as bien retenu le cours 👏":"Ce n'est pas grave ! Lis bien la correction pour retenir.";
-  D.feedback.style.display="block";
-  D.feedback.className="feedback-box "+(ok?"good":"bad");
-  D.feedback.innerHTML=`<div class="fb-inner"><img class="fb-prof" src="${ok?PROF.smile:PROF.dub}" alt=""/><div class="fb-text"><div class="fb-title">${ok?"✅ Correct !":"❌ Incorrect"}</div><div>${explanation}</div></div></div>`;
+  if(!ok) S.wrongCount=(S.wrongCount||0)+1;
+
+  try{
+    if(D.hintImg) D.hintImg.src=ok?PROF.smile:PROF.dub;
+    if(D.hintText) D.hintText.textContent=ok?"Excellent ! Tu as bien retenu le cours 👏":"Ce n\'est pas grave ! Lis bien la correction pour retenir.";
+  }catch(e){}
+
+  if(D.feedback){
+    D.feedback.style.display="block";
+    D.feedback.className="feedback-box "+(ok?"good":"bad");
+    D.feedback.innerHTML='<div class="fb-inner">'
+      +'<img class="fb-prof" src="'+(ok?PROF.smile:PROF.dub)+'" alt=""/>'
+      +'<div class="fb-text"><div class="fb-title">'+(ok?"✅ Correct !":"❌ Incorrect")+'</div>'
+      +'<div>'+explanation+'</div></div></div>';
+  }
+
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
-  // Only check failure if NOT the last question (avoid blocking final results)
-  if(!ok && !isLast){
-    const remaining=total-(S.qIdx+1);
-    const maxPossible=S.correct+remaining;
-    const maxPct=total>0?Math.round((maxPossible/total)*100):100;
-    if(maxPct<50&&S.qIdx>0){
-      setTimeout(()=>{
-        const curP=total>0?Math.round((S.correct/total)*100):0;
-        showFailure(curP,total);
-      },1200);
-      return;
-    }
+
+  // Échec si 5 mauvaises réponses (pas sur la dernière question)
+  if(!isLast && S.wrongCount>=5){
+    setTimeout(()=>{
+      const curP=total>0?Math.round((S.correct/total)*100):0;
+      showFailure(curP,total);
+    },1200);
+    return;
   }
-  D.nextBtn.style.display="inline-block";
-  D.nextBtn.innerHTML=isLast?
-      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;" alt=""/>'
-      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;" alt=""/>';
-    D.nextBtn.style.background="none";D.nextBtn.style.border="none";
-  D.nextBtn.onclick=()=>{S.locked=false;S.qIdx++;renderQ();};
+
+  // Bouton suivant
+  const nb=document.getElementById("nextBtn");
+  if(nb){
+    nb.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    nb.innerHTML=isLast
+      ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
+      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
+    // Onclick explicite : showResults pour la dernière, avancer sinon
+    nb.onclick = isLast
+      ? ()=>{ showResults(); }
+      : ()=>{ S.locked=false; S.qIdx++; renderQ(); };
+    setTimeout(()=>{try{nb.scrollIntoView({behavior:"smooth",block:"nearest"});}catch(e){}},50);
+  }
 }
 
 /* ══════════ RESULTS ══════════ */
@@ -5005,23 +5052,11 @@ function showResults(){
   const total=_qs.length;
   const p=total>0?Math.round((S.correct/total)*100):0;
 
-  // === Mise à jour stats & badges (try/catch pour robustesse) ===
   try{
     S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-    // Speedrunner
-    if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)
-      try{unlockBadge("speedrunner");}catch(e){}
-    if(!S._seancesCompleted)S._seancesCompleted=0;
-    S._seancesCompleted++;
+    if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)try{unlockBadge("speedrunner");}catch(e){}
+    if(!S._seancesCompleted)S._seancesCompleted=0; S._seancesCompleted++;
     if(S._seancesCompleted>=20)try{unlockBadge("invaincu");}catch(e){}
-    // Category 100% badges
-    const _litM=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-    const _grM=["g1","g2","g3","g4","g5","g6","g7","g8"];
-    const _cjM=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-    if(_litM.every(k=>S.perfect&&S.perfect[k]))try{unlockBadge("biblioclaste");}catch(e){}
-    if(_grM.every(k=>S.perfect&&S.perfect[k]))try{unlockBadge("grammaricide");}catch(e){}
-    if(_cjM.every(k=>S.perfect&&S.perfect[k]))try{unlockBadge("conj_expert");}catch(e){}
-    // Stats
     S.done[_modId]=true;
     if(!S.seancePct)S.seancePct={};
     const prevPct=parseInt(S.seancePct[_modId])||0;
@@ -5031,68 +5066,50 @@ function showResults(){
     S.stars[_modId]=Math.max(pctToStars(p),S.stars[_modId]||0);
     try{checkBadges();}catch(e){}
     try{updateSeanceBadges();}catch(e){}
-  }catch(statsErr){}
+  }catch(e){}
 
-  // === Points proportionnels au %, uniquement si pas déjà 100% ===
-  const _wasAlreadyPerfect=(S.seancePct&&parseInt(S.seancePct[_modId])||0)===100
-    &&S.correct<total; // was already done at 100% before this attempt
-  const _alreadyPerfect=S.perfect&&S.perfect[_modId]&&_wasAlreadyPerfect;
-  if(!_alreadyPerfect){
-    // correct * 10 pts (proportionnel : 50% → moitié, 100% → tout)
-    const _pts=S.correct*10;
-    S.score+=_pts;
-  }
-  S.perfect[_modId]=(p===100)||!!(S.perfect&&S.perfect[_modId]);
+  // Points proportionnels : correct*10, sauf si séance déjà 100%
+  const _prevWas100=(S.seancePct&&parseInt(S.seancePct[_modId])>=100)&&p<100;
+  const _alreadyPerfect=S.perfect&&S.perfect[_modId]&&_prevWas100;
+  if(!_alreadyPerfect){S.score+=S.correct*10;}
+  if(p===100)S.perfect[_modId]=true;
+
   try{updateHUD();}catch(e){}
   try{saveToLB();}catch(e){}
   try{saveProgress();}catch(e){}
 
-  // === Check boss unlock ===
   setTimeout(()=>{
     try{
-      const _ac=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-      const _ag=["g1","g2","g3","g4","g5","g6","g7","g8"];
-      const _al=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-      if(_ac.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.conjKeyShown){
-        S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();
-      }
-      if(_ag.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.gramKeyShown){
-        S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();
-      }
-      if(_al.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.litKeyShown){
-        S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();
-      }
+      const allC=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+      const allG=["g1","g2","g3","g4","g5","g6","g7","g8"];
+      const allL=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+      if(allC.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();}
+      if(allG.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();}
+      if(allL.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();}
     }catch(e){}
   },800);
 
-  // === Affichage résultats : overlay z-index:9999 TOUJOURS visible ===
   try{if(D.quizCard)D.quizCard.style.display="none";}catch(e){}
   try{if(D.feedback)D.feedback.style.display="none";}catch(e){}
   try{if(D.nextBtn)D.nextBtn.style.display="none";}catch(e){}
 
-  // Supprimer overlay précédent si existant
-  const _ro=document.getElementById("resultsOv");
-  if(_ro)_ro.remove();
+  const _ro=document.getElementById("resultsOv");if(_ro)_ro.remove();
 
-  // Calcul visuel
   const starCount=(S.stars&&S.stars[_modId])||0;
   let starsHtml="";try{starsHtml=p===100?"🏆":starImgHtml(starCount);}catch(e){}
   let msg="Continue à réviser !";
   if(p===100)msg="Parfait ! Tu maîtrises cette séance 🎉";
   else if(p>=66)msg="Bien joué ! Encore un effort !";
   else if(p>=33)msg="Tu peux mieux faire !";
-  const eleveImg2=p>=66
-    ?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
-    :"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
+  const eImg=p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png":"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
 
   const _ov=document.createElement("div");
   _ov.id="resultsOv";
   _ov.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;background:radial-gradient(circle at 30% 0%,#a05018,#4a2207 60%,#1a0a02);";
-  const _card=document.createElement("div");
-  _card.style.cssText="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 20px;max-width:420px;width:100%;text-align:center;";
-  _card.innerHTML=
-    '<div style="display:flex;align-items:flex-end;gap:14px;justify-content:center;margin-bottom:10px;">'
-    +'<img src="'+eleveImg2+'" style="width:90px;flex-shrink:0;" alt=""/>'
+  const _c=document.createElement("div");
+  _c.style.cssText="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 20px;max-width:420px;width:100%;text-align:center;";
+  _c.innerHTML='<div style="display:flex;align-items:flex-end;gap:14px;justify-content:center;margin-bottom:10px;">'
+    +'<img src="'+eImg+'" style="width:90px;flex-shrink:0;" alt=""/>'
     +'<div><div style="font-size:18px;font-weight:900;color:#d9a441;margin-bottom:4px;">Séance terminée !</div>'
     +'<div style="font-size:42px;font-weight:900;color:'+(p===100?"#facc15":"#f5e6c8")+';">'+p+'%</div>'
     +'<div style="font-size:13px;color:#ead7ae;">'+S.correct+' / '+total+' bonnes réponses</div></div></div>'
@@ -5102,13 +5119,8 @@ function showResults(){
     +'<button id="_res_r" style="padding:12px 16px;border-radius:14px;border:1px solid rgba(217,164,65,.4);background:rgba(217,164,65,.15);color:#d9a441;font-weight:800;font-size:14px;cursor:pointer;">🔁 Recommencer</button>'
     +'<button id="_res_b" style="padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(180deg,#d9a441,#c87a10);color:#1a0a00;font-weight:900;font-size:14px;cursor:pointer;">📚 Séances</button>'
     +'</div>';
-  _ov.appendChild(_card);
-  document.body.appendChild(_ov);
-
-  document.getElementById("_res_r").onclick=function(){
-    _ov.remove();
-    if(_modId)startMod(_modId);else showLitMenu();
-  };
+  _ov.appendChild(_c);document.body.appendChild(_ov);
+  document.getElementById("_res_r").onclick=function(){_ov.remove();if(_modId)startMod(_modId);else showLitMenu();};
   document.getElementById("_res_b").onclick=function(){
     _ov.remove();
     if(!_modId)return showLitMenu();
@@ -5614,10 +5626,7 @@ function renderBigBadgesGrid(){
     grid.appendChild(d);
   });
 }
-document.getElementById("bigNameInput")?.addEventListener("input",()=>{
-  S.name=document.getElementById("bigNameInput").value||"Élève";
-  D.chipName.textContent=S.name; saveToLB();
-});
+document.getElementById("bigNameInput")?.addEventListener("input",()=>{const _obn=S.name;S.name=document.getElementById("bigNameInput").value||"Élève";D.chipName.textContent=S.name;if(_obn&&_obn!==S.name)deleteFromLB(_obn);saveToLB();});
 
 /* ══════════ BADGE DETAIL POPUP ══════════ */
 function _closePlayerPopup(){
@@ -5763,7 +5772,7 @@ window.addEventListener("load",()=>{
 D.chip.addEventListener("click",e=>{e.stopPropagation();S.panelOpen=!S.panelOpen;D.acctPanel.classList.toggle("open",S.panelOpen);});
 document.addEventListener("click",()=>{if(S.panelOpen){S.panelOpen=false;D.acctPanel.classList.remove("open");}});
 D.acctPanel.addEventListener("click",e=>e.stopPropagation());
-D.nameInput.addEventListener("input",()=>{S.name=D.nameInput.value||"Élève";D.chipName.textContent=S.name;saveToLB();});
+D.nameInput.addEventListener("input",()=>{const _on=S.name;S.name=D.nameInput.value||"Élève";D.chipName.textContent=S.name;if(_on&&_on!==S.name)deleteFromLB(_on);saveToLB();});
 // Enter key advances to next question
 document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&document.getElementById("quizCard")&&document.getElementById("quizCard").style.display==="flex"){
@@ -5808,9 +5817,39 @@ const BOSS_QUESTIONS=[
   {prompt:"Conjugue 'choir' au passé composé, 3e pers. sing. (littéraire).",answer:["est chu","il est chu","a chu","il a chu"],explanation:"CHOIR (tomber, vx) : il EST CHU ou a chu"},
   {prompt:"Conjugue 'être' au subjonctif imparfait, 3e pers. sing.",answer:["fût","qu'il fût"],explanation:"ÊTRE subjonctif imparfait : qu'il FÛT"},
   {prompt:"Conjugue 'avoir' au subjonctif passé, 3e pers. plur.",answer:["aient eu","qu'ils aient eu","ils aient eu"],explanation:"AVOIR subjonctif passé : qu'ils AIENT EU"}
-];
+,
+  {prompt:"Conjugue 'être' à l'imparfait, 3e pers. sing.",answer:["était","il était","elle était"],explanation:"ÊTRE imparfait : il ÉTAIT."},
+  {prompt:"Conjugue 'avoir' au futur simple, 1re pers. sing.",answer:["aurai","j'aurai"],explanation:"AVOIR futur : j'AURAI (radical AUR-)."},
+  {prompt:"Conjugue 'aller' au subjonctif présent, 1re pers. sing.",answer:["aille","que j'aille","j'aille"],explanation:"ALLER subjonctif : que j'AILLE."},
+  {prompt:"Conjugue 'faire' au passé simple, 3e pers. plur.",answer:["firent","ils firent"],explanation:"FAIRE passé simple : ils FIRENT."},
+  {prompt:"Conjugue 'prendre' au futur simple, 2e pers. sing.",answer:["prendras","tu prendras"],explanation:"PRENDRE futur : tu PRENDRAS."},
+  {prompt:"Conjugue 'vouloir' au subjonctif présent, 3e pers. plur.",answer:["veuillent","qu'ils veuillent","ils veuillent"],explanation:"VOULOIR subjonctif : qu'ils VEUILLENT."},
+  {prompt:"Conjugue 'dire' au passé simple, 3e pers. sing.",answer:["dit","il dit"],explanation:"DIRE passé simple : il DIT."},
+  {prompt:"Conjugue 'mettre' au présent, 1re pers. sing.",answer:["mets","je mets"],explanation:"METTRE présent : je METS."},
+  {prompt:"Conjugue 'falloir' au subjonctif présent, 3e pers. sing.",answer:["faille","qu'il faille","il faille"],explanation:"FALLOIR subjonctif : qu'il FAILLE."},
+  {prompt:"Conjugue 'aller' au passé composé, 1re pers. plur. masc.",answer:["sommes allés","nous sommes allés"],explanation:"ALLER PC : nous SOMMES ALLÉS."},
+  {prompt:"Conjugue 'faire' au conditionnel présent, 1re pers. sing.",answer:["ferais","je ferais"],explanation:"FAIRE conditionnel : je FERAIS (radical FER-)."},
+  {prompt:"Conjugue 'rire' au présent, 3e pers. plur.",answer:["rient","ils rient"],explanation:"RIRE présent : ils RIENT."},
+  {prompt:"Conjugue 'croire' au présent, 1re pers. sing.",answer:["crois","je crois"],explanation:"CROIRE présent : je CROIS."},
+  {prompt:"Conjugue 'suivre' au futur simple, 3e pers. sing.",answer:["suivra","il suivra"],explanation:"SUIVRE futur : il SUIVRA."},
+  {prompt:"Conjugue 'connaître' à l'imparfait, 1re pers. sing.",answer:["connaissais","je connaissais"],explanation:"CONNAÎTRE imparfait : je CONNAISSAIS."},
+  {prompt:"Conjugue 'écrire' au passé simple, 3e pers. sing.",answer:["écrivit","il écrivit"],explanation:"ÉCRIRE passé simple : il ÉCRIVIT."},
+  {prompt:"Conjugue 'lire' au présent, 3e pers. plur.",answer:["lisent","ils lisent"],explanation:"LIRE présent : ils LISENT."},
+  {prompt:"Conjugue 'ouvrir' au présent, 3e pers. sing.",answer:["ouvre","il ouvre"],explanation:"OUVRIR présent : il OUVRE."},
+  {prompt:"Conjugue 'partir' au futur simple, 3e pers. plur.",answer:["partiront","ils partiront"],explanation:"PARTIR futur : ils PARTIRONT."},
+  {prompt:"Conjugue 'valoir' au subjonctif présent, 3e pers. sing.",answer:["vaille","qu'il vaille","il vaille"],explanation:"VALOIR subjonctif : qu'il VAILLE."},
+  {prompt:"Conjugue 'pleuvoir' au subjonctif présent.",answer:["pleuve","qu'il pleuve","il pleuve"],explanation:"PLEUVOIR subjonctif : qu'il PLEUVE."},
+  {prompt:"Conjugue 'rire' au passé simple, 3e pers. sing.",answer:["rit","il rit"],explanation:"RIRE passé simple : il RIT."},
+  {prompt:"Conjugue 'coudre' au présent, 3e pers. sing.",answer:["coud","il coud"],explanation:"COUDRE présent : il COUD (sans -t)."},
+  {prompt:"Conjugue 'bouillir' au présent, 3e pers. plur.",answer:["bouillent","ils bouillent"],explanation:"BOUILLIR présent : ils BOUILLENT."},
+  {prompt:"Conjugue 'plaindre' au passé simple, 3e pers. sing.",answer:["plaignit","il plaignit"],explanation:"PLAINDRE passé simple : il PLAIGNIT."},
+  {prompt:"Conjugue 'rejoindre' au présent, 1re pers. sing.",answer:["rejoins","je rejoins"],explanation:"REJOINDRE présent : je REJOINS."},
+  {prompt:"Conjugue 'devoir' au passé composé, 3e pers. sing.",answer:["a dû","il a dû","elle a dû"],explanation:"DEVOIR PC : il A DÛ (accent sur û)."},
+  {prompt:"Conjugue 'naître' au présent, 3e pers. sing.",answer:["naît","il naît"],explanation:"NAÎTRE présent : il NAÎT."},
+  {prompt:"Conjugue 'mouvoir' au présent, 1re pers. sing.",answer:["meus","je meus"],explanation:"MOUVOIR présent : je MEUS."},
+  {prompt:"Conjugue 'servir' au présent, 3e pers. plur.",answer:["servent","ils servent"],explanation:"SERVIR présent : ils SERVENT."}];
 
-let bossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
+let bossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
   // Reset boss hearts (scoped to bossOv)
   bossState.askedQIds=new Set();
   setTimeout(()=>{
@@ -5983,7 +6022,7 @@ function stopAsteroidSpawner(){
 function shuffleBossQuestions(){
   const arr=[...BOSS_QUESTIONS];
   for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-  return arr.slice(0,40); // Return 40 from available pool
+  return arr.slice(0,50); // 50 sur 60 sélectionnées aléatoirement
 }
 function renderBossQ(){
   if(!bossState.shuffledQs||!bossState.shuffledQs.length){
@@ -6053,11 +6092,12 @@ function bossHit(){
   bossState.hp--;
   bossState.qIdx++;
   // Update HP bar
-  const pct=(bossState.hp/30)*100;
+  const pct=Math.max(0,(bossState.hp/40)*100);
   const fill=document.getElementById("bossHpFill");
   const txt=document.getElementById("bossHpText");
   if(fill)fill.style.width=pct+"%";
-  if(txt)txt.textContent=bossState.hp+" / 30";
+  if(txt)txt.textContent=bossState.hp+" / 40";
+  if(bossState.hp<=0){setTimeout(bossVictory,300);return;}
   // Hit animation — blink + slide
   const char=document.getElementById("bossChar");
   const wrap=document.getElementById("bossCharWrap");
