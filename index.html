@@ -724,7 +724,7 @@
       top:8px !important;
       left:8px !important;
       bottom:auto !important;
-      z-index:85 !important;
+      z-index:210 !important;
     }
     #abandonBtn img{height:clamp(26px,5vh,36px) !important;}
   }
@@ -1318,7 +1318,7 @@
   </div><!-- end litMenu -->
 
   <!-- FAILURE OVERLAY -->
-  <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:95;
+  <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;
        flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;">
     <img src="https://i.postimg.cc/Y9rMpwZr/echec.png" alt="échec"
          style="width:min(220px,60vw);filter:drop-shadow(0 8px 24px rgba(255,50,50,.4));animation:bob 3s ease-in-out infinite;"/>
@@ -3999,6 +3999,7 @@ async function saveToLB(){
   const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
   if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&!_adminNames.includes(S.name)){
     try{
+      // Only update if score improved (never decrease)
       const lbPayload={
         player_name:S.name,
         score:S.score||0,
@@ -4011,22 +4012,17 @@ async function saveToLB(){
         "apikey":SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+SUPABASE_ANON_KEY
       };
-      // Try PATCH first (update existing row)
-      const patchRes=await fetch(
-        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
-        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal,count=exact"},body:JSON.stringify(lbPayload)}
+      // UPSERT: insert or update, but ONLY increase score (never decrease)
+      await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
+        method:"POST",
+        headers:{...headers,"Prefer":"return=minimal,resolution=merge-duplicates"},
+        body:JSON.stringify(lbPayload)
+      });
+      // Also PATCH but only if current score > existing (prevent score decrease)
+      await fetch(
+        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name)+"&score=lt."+lbPayload.score,
+        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal"},body:JSON.stringify(lbPayload)}
       );
-      // If no row was updated (new player), INSERT
-      // Check if update worked - use status 204 + Content-Range
-      const contentRange=patchRes.headers.get("Content-Range")||patchRes.headers.get("content-range")||"";
-      const rowsUpdated=contentRange?parseInt(contentRange.split("/")[0]||"0",10):(patchRes.status===204?1:0);
-      if(rowsUpdated===0){
-        await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
-          method:"POST",
-          headers:{...headers,"Prefer":"return=minimal,resolution=merge-duplicates"},
-          body:JSON.stringify(lbPayload)
-        });
-      }
     }catch(e){}
   }
 }
@@ -4441,7 +4437,8 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
-  S._seancesCompleted=0; // Reset no-abandon streak
+  const _roA=document.getElementById("resultsOv");if(_roA)_roA.remove();
+  S._seancesCompleted=0;
   // Save progress (no rollback — keep points earned so far)
   if(S.mod){
     S.savedMod=S.mod;
@@ -5102,8 +5099,8 @@ function showFeedback(ok,explanation){
     const remaining=total-(S.qIdx+1);
     const maxPossible=S.correct+remaining;
     if(total>0 && Math.round((maxPossible/total)*100)<50 && S.qIdx>=2){
-      setTimeout(()=>{try{showFailure(Math.round((S.correct/total)*100),total);}catch(e){}},1200);
-      return;
+      setTimeout(()=>{try{showFailure(Math.round((S.correct/total)*100),total);}catch(e){}},800);
+      // Don't return — still show nextBtn so player can continue
     }
   }
   // Show next button — bulletproof via D.nextBtn
