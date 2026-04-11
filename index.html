@@ -4418,6 +4418,7 @@ function startMod(id, resumeFrom){
   const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
   // Remove any leftover resume dialog (z-index:9999 overlay)
   document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(el.style.zIndex==="9999")el.remove();});
+  const _fov=document.getElementById("failureOv");if(_fov)_fov.style.display="none";
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
   if(!resumeFrom && S.savedMod===id && S.savedQIdx>0 && MODULES[id] && S.savedQIdx<MODULES[id].questions.length){
     const qs=MODULES[id]?MODULES[id].questions:[];
@@ -5001,7 +5002,7 @@ function showFeedback(ok,explanation){
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
   // Only check failure if NOT the last question (avoid blocking final results)
-  if(!ok && !isLast){
+  if(!ok && !isLast && S.canEarnPoints){
     const remaining=total-(S.qIdx+1);
     const maxPossible=S.correct+remaining;
     const maxPct=total>0?Math.round((maxPossible/total)*100):100;
