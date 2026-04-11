@@ -3602,6 +3602,20 @@ function doBurst(){
   setTimeout(()=>burst.classList.remove("active"),600);
 }
 
+function toast(msg,iconSrc){
+  try{
+    const el=document.getElementById("badgeToast");
+    const nm=document.getElementById("btName");
+    const ic=document.getElementById("btImg");
+    if(!el)return;
+    if(nm)nm.textContent=msg||"";
+    if(ic)ic.src=iconSrc||"";
+    el.style.display="flex";el.style.opacity="1";
+    clearTimeout(el._toastTimer);
+    el._toastTimer=setTimeout(()=>{el.style.opacity="0";setTimeout(()=>{el.style.display="none";},400);},2800);
+  }catch(e){}
+}
+
 function earnPoints(qKey){
   S.correct++;
   if(!S.canEarnPoints)return; // already perfect — no points
@@ -4471,7 +4485,6 @@ function startMod(id, resumeFrom){
   S.scoredQIds=new Set();
   // canEarnPoints: false if module already perfect
   S.canEarnPoints=!(S.perfect&&S.perfect[id]);
-  if(!S.canEarnPoints)toast("🏆 Mode entraînement — aucun point en jeu.");
   saveToLB();
   if(D.litMenu)D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
@@ -5082,6 +5095,7 @@ function showFeedback(ok,explanation){
 
 function _goBackFromResults(modId){
   S.mod=null;
+  try{const vm=document.getElementById("victoryMusic");if(vm){vm.pause();vm.currentTime=0;}}catch(e){}
   if(!modId)return goTransition('home');
   if(modId.startsWith('g'))showGramMenu();
   else if(modId.startsWith('c'))showConjMenu();
