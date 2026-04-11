@@ -3452,7 +3452,7 @@ const MODULES={
 /* ══════════ STATE ══════════ */
 const S={
   name:"",avatar:AVATARS[0],score:0,
-  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,scoredQIds:new Set(),
+  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
@@ -5068,7 +5068,8 @@ function showFeedback(ok,explanation){
   const isLast=S.qIdx+1>=total;
   // Show next button — bulletproof via D.nextBtn
   if(D.nextBtn){
-    D.nextBtn.style.cssText="display:block !important;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    D.nextBtn.style.cssText="background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    D.nextBtn.style.display="block";
     D.nextBtn.innerHTML=isLast
       ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>'
       :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>';
