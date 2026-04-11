@@ -624,9 +624,7 @@
   .mel-answer-btn{font-size:14px !important;padding:10px !important;}
 }
 
-@media(max-width:640px) and (orientation:portrait){
-  #orgBg img[src*="fond-orgografe"]{content:url("https://i.postimg.cc/T1zRhSLN/responsive-orgografe.png") !important;}
-}
+
 
   
   .hint-banner{position:relative;overflow:visible !important;}
@@ -637,6 +635,73 @@
   @media(min-width:641px){
     .hero-char{position:relative;margin-right:auto;left:min(-20px,calc(50vw - 620px)) !important;}
     .hero-title-wrap{margin-left:-40px;}
+  }
+
+  
+  /* ── Image buttons ───────────────────────────────────── */
+  .img-btn{
+    background:none;border:none;cursor:pointer;padding:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:transform .12s, filter .12s;
+    border-radius:50%;
+  }
+  .img-btn:hover{filter:brightness(1.15) drop-shadow(0 0 8px rgba(217,164,65,.55));}
+  .img-btn:active{transform:scale(.9);filter:brightness(.85);}
+  .img-btn img{display:block;height:var(--bh,clamp(34px,5.5vh,52px));width:auto;}
+
+  /* ── Ptab icons (no text, no background) ────────────── */
+  .ptab{
+    background:none !important;border:none !important;
+    padding:6px 8px !important;border-radius:12px !important;
+    transition:filter .15s,transform .15s !important;
+    flex:none !important;
+  }
+  .ptab:hover{filter:drop-shadow(0 0 6px rgba(217,164,65,.6));transform:scale(1.1);}
+  .ptab.active{filter:drop-shadow(0 0 10px rgba(217,164,65,.8));}
+  .ptab span{display:none !important;}
+  .ptab img{width:clamp(22px,3.5vw,28px);height:clamp(22px,3.5vw,28px);object-fit:contain;}
+
+  /* ── Fuir button ─────────────────────────────────────── */
+  .fuir-btn{
+    background:none;border:none;cursor:pointer;padding:0;
+    transition:transform .12s,filter .12s;
+  }
+  .fuir-btn:hover{filter:drop-shadow(0 0 8px rgba(239,68,68,.6));transform:scale(1.05);}
+  .fuir-btn:active{transform:scale(.88);}
+  .fuir-btn img{height:clamp(36px,5.5vh,54px);width:auto;display:block;}
+
+  @media(max-width:640px){
+    .fuir-btn img{height:clamp(30px,5vh,42px) !important;}
+    .img-btn img{height:var(--bh,clamp(28px,5vh,42px)) !important;}
+  }
+
+  
+  @media(max-width:640px){
+    #melLives{
+      position:fixed !important;
+      bottom:12px !important;
+      top:auto !important;
+      left:50% !important;
+      transform:translateX(-50%) !important;
+      justify-content:center !important;
+      margin-top:0 !important;
+      z-index:15 !important;
+      background:rgba(0,0,0,.4);
+      border-radius:20px;
+      padding:4px 10px;
+    }
+    .mel-heart{width:24px !important;height:24px !important;}
+    #melQWrap{top:max(60px,9%) !important;}
+  }
+
+  
+  @media(max-width:640px) and (orientation:portrait){
+    #orgOv > div[style*="left:1%"], #orgOv > div[style*="left:18%"]{
+      left:2% !important;width:68% !important;top:3% !important;height:60% !important;
+    }
+    #orgCharWrap{left:52% !important;width:min(46vw,260px) !important;bottom:-3% !important;}
+    #orgBoardText{font-size:clamp(12px,2.5vw,18px) !important;}
+    #orgPhrase{font-size:clamp(14px,3.5vw,22px) !important;}
   }
 
   </style>
@@ -1021,7 +1086,7 @@
     </div>
     <div style="display:flex;justify-content:center;gap:12px;margin-top:18px;position:relative;z-index:8;flex-wrap:wrap;">
       <button onclick="showActualites()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/zXmfpb3q/actualites.png" style="height:clamp(36px,5vh,48px);width:auto;" alt="Actualités"/></button>
-      <button <button id="homeLbBtn" onclick="showHomeLb()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/MKkGtMXZ/classement-en-ligne.png" style="height:clamp(40px,6vh,54px);width:auto;" alt="Classement"/></button>
+      <button <button id="homeLbBtn" onclick="showHomeLb()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/MKkGtMXZ/classement-en-ligne.png" style="height:clamp(48px,7vh,72px);width:auto;" alt="Classement"/></button>
     </div>
   </div>
 
@@ -1242,14 +1307,14 @@
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
     <div id="feedbackBox" class="feedback-box"></div>
-    <button id="nextBtn" class="primary-btn" style="background:none;border:none;" style="display:none;margin-bottom:8px;width:100%;max-width:360px;"></button>
+    <button id="nextBtn" class="img-btn primary-btn" style="--bh:clamp(34px,5.5vh,50px);display:none;margin-bottom:8px;" style="display:none;margin-bottom:8px;width:100%;max-width:360px;"></button>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
+    <button id="abandonBtn" onclick="abandonMod()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
   </div>
   <!-- end quizCard -->
 
@@ -1583,7 +1648,7 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(255,100,100,.4);
              background:rgba(60,0,0,.55);color:rgba(255,160,160,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonBoss()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
     <!-- Player lives (Conjugus) -->
     <div id="bossLivesDisplay" style="position:absolute;top:14px;left:16px;z-index:15;display:flex;gap:6px;">
       <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
@@ -1665,7 +1730,7 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(100,150,255,.35);
              background:rgba(0,10,50,.55);color:rgba(147,197,253,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonGramBoss()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
     <!-- Player lives (Grammaria) -->
     <div id="gramLivesDisplay" style="position:absolute;top:12px;left:16px;z-index:15;display:flex;gap:6px;align-items:center;">
       <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
@@ -1747,7 +1812,9 @@ const AVATARS=[
   "https://i.postimg.cc/VN7FhQKx/avatar-8.png",
   "https://i.postimg.cc/sDZ6tqrJ/avatar-9.png"
 ,
-  {src:"https://i.postimg.cc/SxXWBzkG/avatar-spe-teddynounet.png",unlock:k=>(S.badges&&(S.badges.has?S.badges.has("teddyboss"):[...S.badges].includes("teddyboss"))),label:"Teddynounet",special:true}
+  {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
+   unlock:k=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé"),
+   label:"Professeur Daudé",special:true,exclusive:true}
 ];
 const LOCKED_AV=[
   {src:"https://i.postimg.cc/qMNncGRZ/avatar-spe-1.png",  level:3,  label:"Niv. 3"},
@@ -1814,6 +1881,15 @@ const EXCLUSIVE_AV=[
    label:"Chaperlipopette",
    desc:"Vaincre Mémélité sans perdre de vie",
    check:()=>!!S.memeliteFlawless}
+,
+  {src:"https://i.postimg.cc/SxXWBzkG/avatar-spe-teddynounet.png",
+   label:"Teddynounet",
+   desc:"Vaincre le mini-boss Teddynounet",
+   check:()=>S.badges&&(S.badges.has?S.badges.has("teddyboss"):[...S.badges].includes("teddyboss"))},
+  {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
+   label:"Professeur Daudé",
+   desc:"Être le créateur du jeu, le seul l'unique",
+   check:()=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé")}
 ];
 const PROF={point:"https://i.postimg.cc/V6gqrbp4/personnage-CD5.png",smile:"https://i.postimg.cc/9MCPQB8L/personnage-CD4.png",dub:"https://i.postimg.cc/4xqS8j8K/personnage-CD2.png"};
 const HINTS=["Lis bien chaque proposition avant de répondre !","Rappelle-toi du cours… Tu l'as !","Prends le temps de réfléchir.","Fais confiance à ta mémoire !","La bonne réponse est là, concentre-toi.","Souviens-toi des définitions vues en classe."];
@@ -2264,7 +2340,7 @@ const MODULES={
        {left:"Rimes embrassées",right:"ABBA"}
      ],
      explanation:"Rimes PLATES (suivies) : AABB — faciles, naturelles. Rimes CROISÉES (alternées) : ABAB — les plus fréquentes. Rimes EMBRASSÉES : ABBA — effect d'encadrement. La poésie classique alterne aussi rimes masculines (finale non -e) et féminines (finale -e muet)."},
-    {type:"qcm",prompt:"Quel est le schéma de rimes de ce quatrain de Victor Hugo ?\n\n\u00ab\u00a0Demain, d\u00e8s l'aube, \u00e0 l'heure o\u00f9 blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m'attends.\nJ'irai par la for\u00eat, j'irai par la montagne.\nJe ne puis demeurer plus longtemps loin de toi.\u00a0\u00bb",
+    {type:"qcm",prompt:"Quel est le schéma de rimes de ce quatrain de Victor Hugo ?\n\n\u00ab\u00a0Demain, d\u00e8s l'aube, \u00e0 l'heure o\u00f9 blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m'attends.\nJ'irai par la for\u00eat, j'irai par la montagne.\nJe ne puis demeurer loin de toi plus longtemps.\u00a0\u00bb",
      options:["Rimes plates AABB","Rimes croisées ABAB","Rimes embrassées ABBA","Rimes libres sans schéma"],
      correctIndex:1,explanation:"RIMES CROISÉES ou ALTERNÉES : ABAB. La rime de vers 1 (A : campagne) répond à celle du vers 3 (A : montagne), et la rime du vers 2 (B : attends) répond à celle du vers 4 (B : toi) — attention : Hugo utilise ici une rime pauvre sur -oi/-oi (attendS / toI approximatif), mais le schéma ABAB reste reconnaissable. C'est le schéma le plus courant dans la poésie française."},
     {type:"qcm",prompt:"Quelle est la différence entre une rime riche et une rime pauvre ?",
@@ -4262,6 +4338,8 @@ function abandonMod(){
 }
 
 function startMod(id, resumeFrom){
+  // Hide chat during quiz
+  const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
   if(!resumeFrom && S.savedMod===id && S.savedQIdx>0){
     const qs=MODULES[id]?MODULES[id].questions:[];
@@ -4654,7 +4732,7 @@ function renderFillUI(){
 
   // ── Validate ──
   const allFilled=!S.fillBlanks.includes(null);
-  html+=`<button class="fill-validate-btn" onclick="validateFill()"${!allFilled?' style="opacity:.5;cursor:default;"':''}>Valider ✓</button>`;
+  html+=`<button class="fill-validate-btn" onclick="validateFill()"${!allFilled?' style="opacity:.5;cursor:default;"':''}><img src="https://i.postimg.cc/FstKGd1L/valider.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>`;
 
   D.aWrap.innerHTML=html;
 }
@@ -4758,7 +4836,7 @@ function renderDDUI(){
   });
   html+='</div>';
   html+='</div>';
-  html+=`<div class="dd-validate-wrap"><span class="dd-count">${connCount}/${q.pairs.length} reliés</span><button class="dd-validate-btn" onclick="validateDD()"${connCount<q.pairs.length?' style="opacity:.55;"':''}>Valider ✓</button></div>`;
+  html+=`<div class="dd-validate-wrap"><span class="dd-count">${connCount}/${q.pairs.length} reliés</span><button class="dd-validate-btn" onclick="validateDD()"${connCount<q.pairs.length?' style="opacity:.55;"':''}><img src="https://i.postimg.cc/FstKGd1L/valider.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button></div>`;
   D.aWrap.innerHTML=html;
 }
 
@@ -5518,7 +5596,7 @@ window.addEventListener("load",()=>{
         try{buildBigAvGrid();}catch(e){}
         // Ensure name shows in panel inputs
         const ni=document.getElementById("nameInput");if(ni)ni.value=S.name;
-        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="inline-flex";
+        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="none"; // hidden during quiz
         const bni=document.getElementById("bigNameInput");if(bni)bni.value=S.name;
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
@@ -5660,7 +5738,7 @@ function confirmBossBattle(){
     <div style="font-size:15px;color:#f0dbb5;line-height:1.6;margin-bottom:20px;">Vous vous apprêtez à affronter le <strong style="color:#facc15;">Conjugus</strong>.<br>Une seule erreur sera <strong style="color:#ef4444;">fatale</strong>.<br>Êtes-vous prêt(e) ?</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="bossYes" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,#facc15,#d97706);color:#1a0a00;font-size:16px;font-weight:900;cursor:pointer;">⚔️ OUI</button>
-      <button id="bossNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;">← Non</button>
+      <button id="bossNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/tC0gDZ7s/non.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -5854,7 +5932,7 @@ function bossHit(){
 }
 
 function bossLoseLife(reason){
-  if(bossState._losingLife)return; // prevent re-entry
+  if(bossState._losingLife||bossState.lives<=0)return; // prevent re-entry
   bossState._losingLife=true;
   clearInterval(bossState.timerInt); // stop timer immediately
   bossState.lives--;
@@ -6168,7 +6246,7 @@ function confirmGramBoss(){
     <div style="font-size:15px;color:#bfdbfe;line-height:1.6;margin-bottom:20px;">Vous vous apprêtez à affronter la <strong style="color:#60a5fa;">Grammaria</strong>.<br>Une seule erreur sera <strong style="color:#ef4444;">fatale</strong>.<br>Voulez-vous vraiment l'affronter ?</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="gramYes" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;">✍️ OUI</button>
-      <button id="gramNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;">← Non</button>
+      <button id="gramNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/tC0gDZ7s/non.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -6568,7 +6646,7 @@ function abandonGramBoss(){
     <div style="font-size:14px;color:#bfdbfe;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>La Déesse t'attendra patiemment…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">Continuer</button>
+      <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -7111,6 +7189,7 @@ function startOrgografe(){
   const orgBg=document.getElementById("orgBg");
   if(orgBg)orgBg.style.filter="";
   document.getElementById("orgOv").style.display="block";
+  _applyMobileBgs();
   startOrgDust();
   renderOrgLives();
   renderOrgQuestion();
@@ -7337,7 +7416,7 @@ function abandonOrgografe(){
     <div style="font-size:13px;color:#ead7ae;margin-bottom:14px;">La grande Orgografe va t'attendre...</div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Continuer</button>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(cd);
@@ -7569,8 +7648,8 @@ function tryOpenMemelite(){
         <strong style="color:#86efac;">3 phases</strong> de plus en plus redoutables.
       </div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button id="mel_start" style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#dc2626,#b91c1c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,50px);width:auto;" alt="Affronter"/></button>
-        <button id="mel_cancel" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/28p5Tb3b/plus-tard.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
+        <button id="mel_start" class="img-btn" style="--bh:clamp(38px,6vh,54px);"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,50px);width:auto;" alt="Affronter"/></button>
+        <button id="mel_cancel" class="img-btn" style="--bh:clamp(34px,5vh,48px);"><img src="https://i.postimg.cc/28p5Tb3b/plus-tard.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
       </div>
     </div>`;
     document.body.appendChild(ov);
@@ -7941,6 +8020,43 @@ function showBadgePopup(b){
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
+
+
+// Resume boss timers when tab becomes visible again
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden){
+    // Re-anchor timer start to account for tab-hidden time
+    if(bossState.timerInt&&bossState._timerStart){
+      // Already handled by Date.now() math — no adjustment needed
+      // Force an immediate tick to update display
+      if(bossState.timerVal>0) updateBossTimer();
+    }
+    if(gramBossState.timerInt&&gramBossState._timerStart){
+      if(gramBossState.timerVal>0) updateGramTimer();
+    }
+  }
+});
+
+
+function _applyMobileBgs(){
+  const mob=window.innerWidth<=640&&window.innerHeight>window.innerWidth;
+  // Orgografe bg
+  const orgImg=document.querySelector("#orgBg img");
+  if(orgImg){
+    orgImg.src=mob
+      ?"https://i.postimg.cc/T1zRhSLN/responsive-orgografe.png"
+      :"https://i.postimg.cc/13QMs4TW/fond-orgografe.png";
+  }
+  // Grammaria bg — only change the bg color/gradient layer, not the forest/clouds
+  const gramBg=document.getElementById("gramSkyBg");
+  if(gramBg&&mob&&!gramBossState.darkPhase){
+    gramBg.style.backgroundImage='url("https://i.postimg.cc/3N4887Rq/responsive-grammaria.png")';
+    gramBg.style.backgroundSize="cover";gramBg.style.backgroundPosition="center";
+  } else if(gramBg&&!mob){
+    gramBg.style.backgroundImage="";
+  }
+}
+window.addEventListener("resize",_applyMobileBgs);
 
 function maybeShowUpdateMsg(){
   if(localStorage.getItem('mb_update_seen_v3'))return;
@@ -8661,7 +8777,7 @@ function abandonMemelite(){
     <!-- ── HUD: counter top-left, flee top-right ── -->
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
       <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button></button>
+      <button onclick="abandonOrgografe()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button></button>
     </div>
 
     <!-- ── Bottom HUD: HP then lives ── -->
@@ -8762,7 +8878,7 @@ function abandonMemelite(){
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <!-- Flee -->
-        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
+        <button onclick="abandonMemelite()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
         <!-- Timer centred -->
         <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
         <!-- Spacer -->
