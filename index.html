@@ -3618,12 +3618,18 @@ function toast(msg,iconSrc){
 
 function earnPoints(qKey){
   S.correct++;
-  if(!S.canEarnPoints)return; // already perfect — no points
-  const _key=qKey||(S.mod+"_"+S.qIdx);
-  if(!S.scoredQIds.has(_key)){
-    S.scoredQIds.add(_key);
-    S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();
-  }
+  if(!S.canEarnPoints)return;
+  try{
+    const _key=qKey||(S.mod+"_"+S.qIdx);
+    if(S.scoredQIds&&!S.scoredQIds.has(_key)){
+      S.scoredQIds.add(_key);
+      S.score+=10;
+      try{doBurst();}catch(e){}
+      try{updateHUD();}catch(e){}
+      try{saveToLB();}catch(e){}
+      try{saveProgress();}catch(e){}
+    }
+  }catch(e){}
 }
 
 function setAllMusicVolume(val){
@@ -3875,9 +3881,13 @@ function goTransition(t){D.transition.classList.add("show");setTimeout(()=>{D.tr
 function toggleChapter(id){const b=document.getElementById("body-"+id),a=document.getElementById("arrow-"+id);const o=b.classList.toggle("open");a.classList.toggle("open",o);}
 function showGramMenu(){
   S.mod=null;D.quizCard.style.display="none";
-  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  if(D.gramScr)D.gramScr.style.display="flex";
+  if(D.homeScr)D.homeScr.style.display="none";
+  if(D.litScr)D.litScr.style.display="none";
+  if(D.conjScr)D.conjScr.style.display="none";
   if(D.gramMenu)D.gramMenu.style.display="flex";
-  // Ensure boss chapters are injected
+  S.currentScreen="grammaire";
+  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
   try{injectGramBossChapter();}catch(e){}
   try{injectOrgografeChapter();}catch(e){}
   try{updateGramBossChapter();}catch(e){}
@@ -3885,19 +3895,26 @@ function showGramMenu(){
 }
 function showConjMenu(){
   S.mod=null;D.quizCard.style.display="none";
-  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  if(D.conjScr)D.conjScr.style.display="flex";
+  if(D.homeScr)D.homeScr.style.display="none";
+  if(D.litScr)D.litScr.style.display="none";
+  if(D.gramScr)D.gramScr.style.display="none";
   if(D.conjMenu)D.conjMenu.style.display="flex";
+  S.currentScreen="conjugaison";
+  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
 }
 function showLitMenu(){
   S.mod=null;
   D.quizCard.style.display="none";
-  // Hide all menus first
-  [D.litMenu, D.gramMenu, D.conjMenu].forEach(m=>{if(m)m.style.display="none";});
-  // Show the right one
-  const menuMap={literature:D.litMenu,grammaire:D.gramMenu,conjugaison:D.conjMenu};
-  const m=menuMap[S.currentScreen];
-  if(m) m.style.display="flex";
-  updateSeanceBadges();
+  // Show lit screen and menu
+  if(D.litScr)D.litScr.style.display="flex";
+  if(D.homeScr)D.homeScr.style.display="none";
+  if(D.gramScr)D.gramScr.style.display="none";
+  if(D.conjScr)D.conjScr.style.display="none";
+  if(D.litMenu)D.litMenu.style.display="flex";
+  S.currentScreen="literature";
+  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  try{updateSeanceBadges();}catch(e){}
 }
 /* startModFrom: called from grammar screen (needs to know which menu to return to) */
 function startModFrom(id,screen){
@@ -4727,7 +4744,7 @@ function checkQCMShuffled(sel,correctPos,q){
     if(i===correctPos)b.classList.add("correct");
     else if(i===sel&&!ok)b.classList.add("wrong");
   });
-  if(ok){earnPoints(S.mod+"_"+S.qIdx);}
+  try{if(ok)earnPoints(S.mod+"_"+S.qIdx);}catch(e){if(ok)S.correct++;}
   showFeedback(ok,q.explanation);
 }
 
@@ -5080,6 +5097,15 @@ function showFeedback(ok,explanation){
   D.feedback.innerHTML=`<div class="fb-inner"><img class="fb-prof" src="${ok?PROF.smile:PROF.dub}" alt=""/><div class="fb-text"><div class="fb-title">${ok?"✅ Correct !":"❌ Incorrect"}</div><div>${explanation}</div></div></div>`;
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
+  // Failure check (only for first play, skip on 100% replay)
+  if(!ok && !isLast && S.canEarnPoints){
+    const remaining=total-(S.qIdx+1);
+    const maxPossible=S.correct+remaining;
+    if(total>0 && Math.round((maxPossible/total)*100)<50 && S.qIdx>=2){
+      setTimeout(()=>{try{showFailure(Math.round((S.correct/total)*100),total);}catch(e){}},1200);
+      return;
+    }
+  }
   // Show next button — bulletproof via D.nextBtn
   if(D.nextBtn){
     D.nextBtn.style.cssText="background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
@@ -6209,7 +6235,9 @@ function abandonBoss(){
   ov.querySelector("#abb_no").onclick=()=>ov.remove();
 }
 
+function _stopVictoryMusic(){try{const vm=document.getElementById("victoryMusic");if(vm){vm.pause();vm.currentTime=0;}}catch(e){}}
 function closeBossResult(){
+  _stopVictoryMusic();
   stopAsteroidSpawner();
   document.getElementById("bossResultOv").style.display="none";
   const bg=document.getElementById("bgMusic");
@@ -6898,7 +6926,7 @@ function abandonGramBoss(){
 }
 
 function closeGramResult(){
-  stopVictoryMusic();
+  _stopVictoryMusic();
   stopGameOverMusic();
   document.getElementById("gramResultOv").style.display="none";
   gramBossState.darkPhase=false;
@@ -8833,7 +8861,8 @@ function melPhase3Cinematic(){
 }
 
 function melVictory(){
-  // Stop boss music, resume bg music
+  playVictoryMusic();
+  // Stop boss music
   try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
   try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
 
