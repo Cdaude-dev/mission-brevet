@@ -4432,8 +4432,9 @@ function abandonMod(){
 }
 
 function startMod(id, resumeFrom){
+  // Always remove resultsOv overlay first (covers everything z-index:999)
+  const _ro0=document.getElementById("resultsOv");if(_ro0)_ro0.remove();
   const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
-  // Remove any leftover resume dialog (z-index:9999 overlay)
   document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(el.style.zIndex==="9999")el.remove();});
   const _fov=document.getElementById("failureOv");if(_fov)_fov.style.display="none";
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
@@ -5097,15 +5098,17 @@ function nextQuestion(){
 
 /* ══════════ RESULTS ══════════ */
 function showResults(){
-  const total=qs().length;
+  // Remove any stale overlay
+  const _old=document.getElementById("resultsOv");if(_old)_old.remove();
+  // Get mod BEFORE clearing
+  const _mod=S.mod;
+  const _qs=_mod&&MODULES[_mod]?MODULES[_mod].questions:[];
+  const total=_qs.length;
   const p=total>0?Math.round((S.correct/total)*100):0;
-  // Speedrunner badge
+  // Badges
   if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)unlockBadge("speedrunner");
-  // Invaincu
-  if(!S._seancesCompleted)S._seancesCompleted=0;
-  S._seancesCompleted++;
+  if(!S._seancesCompleted)S._seancesCompleted=0; S._seancesCompleted++;
   if(S._seancesCompleted>=20)unlockBadge("invaincu");
-  // Category 100% badges
   const _lm=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
   const _gm=["g1","g2","g3","g4","g5","g6","g7","g8"];
   const _cm=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
@@ -5113,68 +5116,45 @@ function showResults(){
   if(_gm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
   if(_cm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
   // Update stats
-  S.done[S.mod]=true; if(p===100)S.perfect[S.mod]=true;
+  if(_mod){
+    S.done[_mod]=true; if(p===100)S.perfect[_mod]=true;
+    if(!S.seancePct)S.seancePct={};
+    const prev=parseInt(S.seancePct[_mod])||0;
+    if(p>prev)S.seancePct[_mod]=p+"%";
+    if(prev===100)S.perfect[_mod]=true;
+    if(!S.stars)S.stars={};
+    S.stars[_mod]=Math.max(pctToStars(p),S.stars[_mod]||0);
+  }
   S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-  if(!S.seancePct)S.seancePct={};
-  const prevPct=parseInt(S.seancePct[S.mod])||0;
-  if(p>prevPct) S.seancePct[S.mod]=p+"%";
-  const displayPct=Math.max(p,prevPct);
-  if(prevPct===100) S.perfect[S.mod]=true;
-  checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();
-  // Boss key unlocks
-  setTimeout(()=>{
-    const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-    if(allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();}
-    const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-    if(allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();}
-    const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-    if(allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();}
-  },800);
-  // Stars
-  if(!S.stars)S.stars={};
-  const newStars=pctToStars(p);
-  S.stars[S.mod]=Math.max(newStars,S.stars[S.mod]||0);
-  const starCount=S.stars[S.mod];
-  let msg="Continue à réviser !";
-  if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉";}
-  else if(p>=66){msg="Bien joué ! Encore un effort !";}
-  else if(p>=33){msg="Tu peux mieux faire !";}
-  const eleveImg=p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png":"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
-  const modId=S.mod;
-  S.mod=null; // clear mod AFTER saving modId
-
-  // ── SHOW RESULTS IN FULL-SCREEN OVERLAY ──
-  const existing=document.getElementById("resultsOv");if(existing)existing.remove();
-  const ov=document.createElement("div");
-  ov.id="resultsOv";
-  ov.style.cssText="position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(circle at 30% 0%,#a05018 0%,#723a10 32%,#4a2207 65%,#271004 100%);";
-  const starsHtml=p===100
-    ?'<img src="https://i.postimg.cc/QNT5rT24/victoir.png" style="width:min(120px,30vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));" alt=""/>'
-    :starImgHtml(starCount);
-  const imgHtml=p===100
-    ?'<img src="https://i.postimg.cc/QNT5rT24/victoir.png" style="width:min(110px,28vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));" alt=""/>'
-    :`<img src="${eleveImg}" style="width:min(100px,25vw);animation:bob2 4s ease-in-out infinite;" alt=""/>`;
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 24px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);">
-    <div style="display:flex;align-items:flex-end;gap:16px;justify-content:center;margin-bottom:16px;">
-      ${imgHtml}
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
-        <div style="font-size:22px;font-weight:900;color:var(--gold);">Séance terminée !</div>
-        <div style="font-size:32px;">${starsHtml}</div>
-        <div style="font-size:36px;font-weight:900;color:${p===100?"#facc15":"var(--ivory)"};">${p}%</div>
-        <div style="font-size:14px;color:#ead7ae;">${S.correct} / ${total} bonnes réponses</div>
-        <div style="font-size:13px;color:#ead7ae;opacity:.8;">${msg}</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
-      <button onclick="document.getElementById('resultsOv').remove();startMod('${modId}')" style="padding:12px 20px;border-radius:14px;border:none;background:rgba(217,164,65,.2);color:var(--gold);font-weight:800;font-size:15px;cursor:pointer;border:1px solid rgba(217,164,65,.4);">🔁 Recommencer</button>
-      <button onclick="document.getElementById('resultsOv').remove();_goBackFromResults('${modId}')" style="padding:12px 24px;border-radius:14px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:22px;width:auto;vertical-align:middle;margin-right:4px;" alt=""/>Continuer</button>
-    </div>
-  </div>`;
-  document.body.appendChild(ov);
+  S.mod=null;
+  try{checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();}catch(e){}
+  setTimeout(()=>{try{
+    if(_cm.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();}
+    if(_gm.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();}
+    if(_lm.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();}
+  }catch(e){}},800);
   // Hide quiz card
   D.quizCard.style.display="none";
+  // Build overlay
+  const starsHtml=_mod&&S.stars&&S.stars[_mod]?starImgHtml(S.stars[_mod]):starImgHtml(0);
+  let msg="Continue a reviser !";
+  if(p===100)msg="Parfait ! Tu maitrises cette seance !";
+  else if(p>=66)msg="Bien joue ! Encore un effort !";
+  else if(p>=33)msg="Tu peux mieux faire !";
+  const ov=document.createElement("div");
+  ov.id="resultsOv";
+  ov.style.cssText="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(circle at 30% 0%,#a05018 0%,#723a10 32%,#4a2207 65%,#271004 100%);overflow-y:auto;";
+  const topContent=p===100
+    ?'<div style="font-size:56px;line-height:1;filter:drop-shadow(0 0 16px rgba(250,204,21,.8));">\u{1F3C6}</div>'
+    :'<img src="'+(p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png":"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png")+'" style="width:min(80px,22vw);animation:bob2 4s ease-in-out infinite;" alt=""/>';
+  const card=document.createElement("div");
+  card.style.cssText="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 20px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);";
+  card.innerHTML='<div style="display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:12px;">'+topContent+'<div><div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;">Seance terminee !</div><div style="font-size:38px;font-weight:900;color:'+(p===100?"#facc15":"var(--ivory)")+';">'+p+'%</div><div style="font-size:13px;color:#ead7ae;">'+S.correct+' / '+total+' bonnes reponses</div></div></div><div style="font-size:26px;margin:6px 0;">'+starsHtml+'</div><div style="font-size:13px;color:#ead7ae;opacity:.8;margin-bottom:14px;">'+msg+'</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button id="_rr" style="padding:12px 16px;border-radius:14px;border:1px solid rgba(217,164,65,.4);background:rgba(217,164,65,.15);color:var(--gold);font-weight:800;font-size:14px;cursor:pointer;">\uD83D\uDD01 Recommencer</button><button id="_rc" style="padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:14px;cursor:pointer;">Continuer</button></div>';
+  ov.appendChild(card);
+  document.body.appendChild(ov);
+  card.querySelector("#_rr").onclick=function(){ov.remove();if(_mod)startMod(_mod);};
+  card.querySelector("#_rc").onclick=function(){ov.remove();_goBackFromResults(_mod);};
 }
-
 
 /* ══════════ WELCOME ══════════ */
 function buildWelcomeAvGrid(){
@@ -6843,6 +6823,10 @@ function gramBossDefeat(){
 }
 
 function gramBossVictory(){
+  // Stop boss music, resume bg music
+  try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
+  try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
+
   awardBossXP("grammaria");
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
@@ -7598,6 +7582,10 @@ function triggerOrgDarkPhase(){
 }
 
 function orgVictory(){
+  // Stop boss music, resume bg music
+  try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
+  try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
+
   awardBossXP("orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
@@ -8831,6 +8819,10 @@ function melPhase3Cinematic(){
 }
 
 function melVictory(){
+  // Stop boss music, resume bg music
+  try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
+  try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
+
   melState.transitioning=true;
   melState.inCatPhase=false;
   awardBossXP("memelite");
