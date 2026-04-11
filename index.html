@@ -6169,11 +6169,11 @@ let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs
     const _fo=document.getElementById("gramForestBg");
     if(_fo){_fo.style.filter="";}
     // Reset clouds to original
-    const _cloudOrig=["https://i.postimg.cc/G22wQmLV/nuage01.png","https://i.postimg.cc/B6mY0FG3/nuage02.png","https://i.postimg.cc/Wz1GMbtS/nuage03.png","https://i.postimg.cc/44jvWmFt/nuage04.png","https://i.postimg.cc/HxdGV0BG/nuage05.png"];
+    const _cloudOrig=["https://i.postimg.cc/cHgcGq1j/nuage1.png","https://i.postimg.cc/d1bjqWDn/nuage2.png","https://i.postimg.cc/NM9xvhGZ/nuage3.png","https://i.postimg.cc/mDzSWxZ0/nuage4.png","https://i.postimg.cc/gJXKb9cC/nuage5.png"];
     ["gc1","gc2","gc3","gc4","gc5"].forEach((id,i)=>{const el=document.getElementById(id);if(el&&_cloudOrig[i])el.src=_cloudOrig[i];});
     // Reset birds
     const _bi=document.getElementById("gramBirds")||document.getElementById("gramBirdsInner");
-    if(_bi){_bi.src="https://i.postimg.cc/K8g8xg2Q/oiseaux.png";_bi.style.animation="birdFly 18s linear infinite";_bi.id="gramBirds";}
+    if(_bi){_bi.src="https://i.postimg.cc/zBsFJd34/oiseaux.png";_bi.style.animation="birdFly 18s linear infinite";_bi.id="gramBirds";}
     // Hide rain
     const _rain=document.getElementById("rainCanvas");if(_rain)_rain.style.opacity="0";
     // Reset question box styles
@@ -6184,7 +6184,7 @@ let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs
     if(_hp)_hp.style.background="linear-gradient(90deg,#22c55e,#86efac)";
     // Restore boss to normal skin and position
     const _char=document.getElementById("gramBossChar");
-    if(_char){_char.src="https://i.postimg.cc/kGXmqh3p/deesse-grammaire.png";_char.style.filter="";}
+    if(_char){_char.src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";_char.style.filter="";}
     const _wrap=document.getElementById("gramBossCharWrap");
     if(_wrap){_wrap.style.position="";_wrap.style.left="20px";_wrap.style.bottom="80px";_wrap.style.width="min(280px,35vw)";_wrap.style.transform="";_wrap.style.zIndex="";}
     // Switch back to normal music
@@ -6685,7 +6685,7 @@ function closeGramResult(){
 
 // Add deesse_gram badge and avatar to registry
 if(!BADGES_DEF.find(b=>b.id==="deesse_gram")){
-  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/fRTp4Fxw/deesse-de-la-grammaire.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
+  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/SNnHfGXT/deesse-grammaire-enervee.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
 }
 if(!EXCLUSIVE_AV.find(a=>a.label==="Grammaria")){
   EXCLUSIVE_AV.push({
