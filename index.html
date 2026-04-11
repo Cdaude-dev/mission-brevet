@@ -3442,7 +3442,7 @@ const MODULES={
 /* ══════════ STATE ══════════ */
 const S={
   name:"",avatar:AVATARS[0],score:0,
-  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,scoredQIds:new Set(),
+  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,practiceMode:false,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
@@ -3586,8 +3586,8 @@ function migrateToStars(){
 }
 
 function earnPoints(qKey){
-  S.correct++;
-  if(S.canEarnPoints){
+  S.correct++; // always count for session stats
+  if(S.canEarnPoints&&!S.practiceMode){
     const _key=qKey||(S.mod+"_"+S.qIdx);
     if(!S.scoredQIds.has(_key)){
       S.scoredQIds.add(_key);
@@ -4445,12 +4445,15 @@ function startMod(id, resumeFrom){
   const resumeQIdx=(_rawIdx>0&&_rawIdx<_allQs.length)?_rawIdx:0;
   const resumeCorrect = (resumeQIdx>0&&resumeFrom)?resumeFrom.correct:0;
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
+  // Practice mode: module already 100% → free replay, no score changes
+  S.practiceMode=!!(S.done&&S.done[id]&&S.perfect&&S.perfect[id]);
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
   S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
-  const ALLOW_REPEAT=['s1','s2','s3','s4','s5','s6','sf','p1','p2','p3','p4','p5','p6','p7','p8','p9','g1','g2','g3','g4','g5','g6','g7','g8','c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14'];
-  S.canEarnPoints = !(S.done&&S.done[id]) || !(S.perfect&&S.perfect[id]) || ALLOW_REPEAT.includes(id);
+  const ALLOW_REPEAT=['s2','s3','p2','p3']; // modules where re-earning points is allowed
+  // In practice mode (already 100%), never earn points but still play freely
+  S.canEarnPoints = S.practiceMode ? false : (!(S.done&&S.done[id]) || !(S.perfect&&S.perfect[id]) || ALLOW_REPEAT.includes(id));
   if(D.litMenu)D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
@@ -4468,7 +4471,9 @@ function startMod(id, resumeFrom){
   }
   if(starEl) starEl.textContent=(isPoetry||isGram||isConj)?"★★":"★";
   // Show "already mastered" hint if no points to earn
-  if(!S.canEarnPoints) toast("✨ Séance déjà maîtrisée — entraînement libre, aucun point gagnable.");
+  if(S.practiceMode){
+    toast("🏆 Séance maîtrisée — mode entraînement libre, aucun point en jeu.");
+  } else if(!S.canEarnPoints) toast("✨ Séance déjà maîtrisée — entraînement libre, aucun point gagnable.");
   renderQ();
 }
 
@@ -5000,7 +5005,7 @@ function showFeedback(ok,explanation){
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
   // Only check failure if NOT the last question (avoid blocking final results)
-  if(!ok && !isLast && S.canEarnPoints){
+  if(!ok && !isLast && S.canEarnPoints && !S.practiceMode){
     const remaining=total-(S.qIdx+1);
     const maxPossible=S.correct+remaining;
     const maxPct=total>0?Math.round((maxPossible/total)*100):100;
@@ -5039,15 +5044,15 @@ function showResults(){
   if(_litMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
   if(_gramMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
   if(_conjMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
-  S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
-  // Clear saved position so next entry starts fresh
+  // Only update stats if NOT in practice mode
+  if(!S.practiceMode){
+    S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
+  }
   S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-  // Store percentage for display (keep best)
   if(!S.seancePct)S.seancePct={};
   const prevPct=parseInt(S.seancePct[S.mod])||0;
-  if(p>prevPct) S.seancePct[S.mod]=p+"%";
+  if(!S.practiceMode&&p>prevPct) S.seancePct[S.mod]=p+"%";
   const displayPct=Math.max(p,prevPct);
-  // Keep perfect if was already perfect
   if(prevPct===100) S.perfect[S.mod]=true;
   checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();
   // Check boss unlock conditions after séance completion
