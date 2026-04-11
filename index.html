@@ -1332,7 +1332,7 @@
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
     <div id="feedbackBox" class="feedback-box"></div>
-    <button id="nextBtn" class="img-btn primary-btn" style="display:none;margin-bottom:8px;max-width:360px;"></button>
+    <button id="nextBtn" class="img-btn primary-btn" onclick="nextQuestion()" style="display:none;margin-bottom:8px;max-width:360px;"></button>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
@@ -3440,7 +3440,7 @@ const MODULES={
 /* ══════════ STATE ══════════ */
 const S={
   name:"",avatar:AVATARS[0],score:0,
-  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,scoredQIds:new Set(),
+  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
@@ -3585,12 +3585,10 @@ function migrateToStars(){
 
 function earnPoints(qKey){
   S.correct++;
-  if(S.canEarnPoints){
-    const _key=qKey||(S.mod+"_"+S.qIdx);
-    if(!S.scoredQIds.has(_key)){
-      S.scoredQIds.add(_key);
-      S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();
-    }
+  const _key=qKey||(S.mod+"_"+S.qIdx);
+  if(!S.scoredQIds.has(_key)){
+    S.scoredQIds.add(_key);
+    S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();
   }
 }
 
@@ -3992,7 +3990,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,scoredQIds:[...S.scoredQIds]
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -4446,7 +4444,7 @@ function startMod(id, resumeFrom){
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
-  S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
+  S.sessionScoreStart=S.score;S._seanceStartTime=Date.now();saveToLB();
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
   const ALLOW_REPEAT=['s2','s3','p2','p3']; // modules where re-earning points is allowed
   // In practice mode (already 100%), never earn points but still play freely
@@ -4468,7 +4466,7 @@ function startMod(id, resumeFrom){
   }
   if(starEl) starEl.textContent=(isPoetry||isGram||isConj)?"★★":"★";
   // Show "already mastered" hint if no points to earn
-  if(!S.canEarnPoints) toast("🏆 Séance déjà maîtrisée — entraînement libre, aucun point en jeu.");
+
   renderQ();
 }
 
@@ -4487,8 +4485,7 @@ function renderQ(){
   if(!q){showResults();return;}
   // Reset UI
   if(D.feedback){D.feedback.style.display="none";D.feedback.className="feedback-box";}
-  const _nb2=document.getElementById("nextBtn");if(_nb2)D.nextBtn=_nb2;
-  if(D.nextBtn)D.nextBtn.style.display="none";
+  const _nbEl=document.getElementById("nextBtn");if(_nbEl)_nbEl.style.display="none";
   if(D.aWrap)D.aWrap.innerHTML="";
   if(D.qBox)D.qBox.textContent="";
   S.locked=false;S.subIdx=0;S.subOk=0;
@@ -5000,30 +4997,34 @@ function showFeedback(ok,explanation){
   D.feedback.innerHTML=`<div class="fb-inner"><img class="fb-prof" src="${ok?PROF.smile:PROF.dub}" alt=""/><div class="fb-text"><div class="fb-title">${ok?"✅ Correct !":"❌ Incorrect"}</div><div>${explanation}</div></div></div>`;
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
-  // Only check failure if NOT the last question (avoid blocking final results)
-  if(!ok && !isLast && S.canEarnPoints){
+  // Failure check: only if not already mastered and risk of failing
+  if(!ok && !isLast && !(S.perfect&&S.perfect[S.mod])){
     const remaining=total-(S.qIdx+1);
     const maxPossible=S.correct+remaining;
     const maxPct=total>0?Math.round((maxPossible/total)*100):100;
-    if(maxPct<50&&S.qIdx>0){
-      setTimeout(()=>{
-        const curP=total>0?Math.round((S.correct/total)*100):0;
-        showFailure(curP,total);
-      },1200);
+    if(maxPct<50&&S.qIdx>2){
+      setTimeout(()=>showFailure(Math.round((S.correct/total)*100),total),1200);
       return;
     }
   }
-  // Show next button
-  const _nb=document.getElementById("nextBtn");
-  if(_nb){D.nextBtn=_nb;}
-  if(D.nextBtn){
-    D.nextBtn.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
-    D.nextBtn.innerHTML=isLast
+  // Show next button — always works
+  const nb=document.getElementById("nextBtn");
+  if(nb){
+    nb.style.display="block";
+    nb.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    nb.innerHTML=isLast
       ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
       :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
-    D.nextBtn.onclick=function(){S.qIdx++;renderQ();};
   }
 }
+
+
+function nextQuestion(){
+  if(!S.mod)return;
+  S.qIdx++;
+  renderQ();
+}
+
 
 /* ══════════ RESULTS ══════════ */
 function showResults(){
