@@ -4487,6 +4487,7 @@ function renderQ(){
   if(!q){showResults();return;}
   // Reset UI
   if(D.feedback){D.feedback.style.display="none";D.feedback.className="feedback-box";}
+  const _nb2=document.getElementById("nextBtn");if(_nb2)D.nextBtn=_nb2;
   if(D.nextBtn)D.nextBtn.style.display="none";
   if(D.aWrap)D.aWrap.innerHTML="";
   if(D.qBox)D.qBox.textContent="";
@@ -5012,15 +5013,16 @@ function showFeedback(ok,explanation){
       return;
     }
   }
-  // Show next button — clone to remove any stale listeners
-  const _newBtn=D.nextBtn.cloneNode(false);
-  _newBtn.innerHTML=isLast
-    ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
-    :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
-  _newBtn.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
-  _newBtn.addEventListener('click',()=>{S.qIdx++;renderQ();},{ once:true });
-  D.nextBtn.parentNode.replaceChild(_newBtn,D.nextBtn);
-  D.nextBtn=_newBtn;
+  // Show next button
+  const _nb=document.getElementById("nextBtn");
+  if(_nb){D.nextBtn=_nb;}
+  if(D.nextBtn){
+    D.nextBtn.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    D.nextBtn.innerHTML=isLast
+      ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
+      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
+    D.nextBtn.onclick=function(){S.qIdx++;renderQ();};
+  }
 }
 
 /* ══════════ RESULTS ══════════ */
