@@ -170,7 +170,7 @@
     .mission-title{font-size:46px;font-weight:900;color:#fff4dc;
       text-shadow:0 3px 14px rgba(0,0,0,.3);line-height:1;}
     .mission-sub{margin:8px 0 0;color:#f6e4b8;font-size:17px;}
-    .main-menu{margin:22px auto 0;display:flex;justify-content:center;gap:16px;
+    .main-menu{padding-bottom:env(safe-area-inset-bottom,16px);margin:22px auto 0;display:flex;justify-content:center;gap:16px;
       flex-wrap:nowrap;max-width:1280px;padding-inline:24px;position:relative;z-index:8;}
     .banner-btn{width:284px;min-height:106px;border:none;border-radius:20px;cursor:pointer;
       background-image:url("https://i.postimg.cc/8kvscZzV/banniere.png");
@@ -396,7 +396,7 @@
       border-radius:14px;display:flex;align-items:flex-end;overflow:hidden;}
     .hint-text{flex:1;font-size:13px;color:#f0dbb5;line-height:1.5;
       padding:10px 12px 12px 14px;text-align:left;}
-    .hint-prof{width:82px;flex-shrink:0;object-fit:contain;display:block;
+    .hint-prof{position:absolute;right:-8px;top:-28px;pointer-events:none;z-index:10;width:82px;flex-shrink:0;object-fit:contain;display:block;
       transform:scaleX(-1);}
     .star-ico{font-size:26px;color:#facc15;}
     .q-label{font-size:12px;color:#ead7ae;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
@@ -531,7 +531,7 @@
 
     /* ── Responsive ── */
     @media(max-width:1100px){
-      .main-menu{flex-wrap:wrap;}
+      .main-menu{padding-bottom:env(safe-area-inset-bottom,16px);flex-wrap:wrap;}
       .level-book{opacity:.12;}
       .deco-prof-lit{display:none;}
       .home-inner{flex-direction:column;align-items:center;}
@@ -572,7 +572,7 @@
       }
       .hero-title-wrap{width:100%;display:flex;justify-content:center;}
       .hero-title-wrap img{width:min(420px,92vw)!important;margin-bottom:0!important;}
-      .main-menu{flex-wrap:wrap;gap:10px;padding-inline:12px;}
+      .main-menu{padding-bottom:env(safe-area-inset-bottom,16px);flex-wrap:wrap;gap:10px;padding-inline:12px;}
       .banner-btn{width:calc(50% - 6px);min-height:80px;font-size:17px;}
       /* Big modal */
       .big-modal{width:100vw;max-height:95vh;border-radius:16px 16px 0 0;margin-top:auto;}
@@ -615,6 +615,29 @@
       30%{opacity:.9;}70%{opacity:.6;}100%{transform:translateY(-160px) translateX(var(--fx)) scale(0.2);opacity:0;}}
     @keyframes fireFlicker{0%,100%{transform:scale(1);}25%{transform:scale(1.3) translateX(-3px);}75%{transform:scale(.8) translateX(3px);}}
     .fire-particle{position:absolute;border-radius:50%;pointer-events:none;animation:fireRise var(--fd) linear var(--fdel) infinite;}
+
+  @media(max-width:640px){.screen{padding-bottom:max(20px,env(safe-area-inset-bottom,16px));}}
+  
+@media(max-width:640px){
+  #melCharWrap{left:50% !important;transform:translateX(-50%) !important;width:min(62vw,320px) !important;}
+  #melQWrap{top:max(75px,8%) !important;width:min(96vw,560px) !important;padding:10px 12px !important;}
+  .mel-answer-btn{font-size:14px !important;padding:10px !important;}
+}
+
+@media(max-width:640px) and (orientation:portrait){
+  #orgBg img[src*="fond-orgografe"]{content:url("https://i.postimg.cc/T1zRhSLN/responsive-orgografe.png") !important;}
+}
+
+  
+  .hint-banner{position:relative;overflow:visible !important;}
+  .hint-prof{position:absolute;right:-4px;bottom:0;pointer-events:none;z-index:10;height:clamp(52px,8vh,78px);width:auto;}
+  @media(max-width:640px){.hint-prof{height:clamp(44px,7vh,64px);right:-2px;}}
+
+  
+  @media(min-width:641px){
+    .hero-char{position:relative;margin-right:auto;left:min(-20px,calc(50vw - 620px)) !important;}
+    .hero-title-wrap{margin-left:-40px;}
+  }
 
   </style>
 </head>
@@ -659,11 +682,11 @@
     <div id="acctPanel" class="acct-panel">
       <div class="panel-title">Mon compte</div>
       <div class="panel-tabs" style="flex-wrap:wrap;gap:4px;">
-        <button class="ptab active" onclick="switchTab('profil')">Profil</button>
-        <button class="ptab" onclick="switchTab('badges')">Badges</button>
-        <button class="ptab" onclick="switchTab('classement')">Classement</button>
-        <button class="ptab" onclick="switchTab('audio')">Audio</button>
-        <button class="ptab" onclick="switchTab('inventaire')">Inventaire</button>
+        <button class="ptab active" onclick="switchTab('profil')"><img src="https://i.postimg.cc/zXqsJ8c6/icon-profile.png" style="width:22px;height:22px;object-fit:contain;display:block;margin:0 auto 2px;" alt="Profil"/><span style="font-size:10px;">Profil</span></button>
+        <button class="ptab" onclick="switchTab('badges')"><img src="https://i.postimg.cc/Qxj2Xhyy/icon-badge.png" style="width:22px;height:22px;object-fit:contain;display:block;margin:0 auto 2px;" alt="Badges"/><span style="font-size:10px;">Badges</span></button>
+        <button class="ptab" onclick="switchTab('classement')"><img src="https://i.postimg.cc/jdRpstF9/icon-classement.png" style="width:22px;height:22px;object-fit:contain;display:block;margin:0 auto 2px;" alt="Classement"/><span style="font-size:10px;">Classement</span></button>
+        <button class="ptab" onclick="switchTab('audio')"><img src="https://i.postimg.cc/ZKJGT4MD/icon-audio.png" style="width:22px;height:22px;object-fit:contain;display:block;margin:0 auto 2px;" alt="Audio"/><span style="font-size:10px;">Audio</span></button>
+        <button class="ptab" onclick="switchTab('inventaire')"><img src="https://i.postimg.cc/ncnyHpPN/icon-inventaire.png" style="width:22px;height:22px;object-fit:contain;display:block;margin:0 auto 2px;" alt="Inventaire"/><span style="font-size:10px;">Inventaire</span></button>
       </div>
       <div id="tab-profil" class="tab-content active">
         <input id="nameInput" class="text-input" placeholder="Ton pseudo"/>
@@ -911,7 +934,7 @@
          src="https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png"
          alt="Élève qui réfléchit"/>
     <div class="welcome-wrap">
-      <img src="https://i.postimg.cc/prZdL0M2/title.png" alt="Mission Brevet"
+      <img src="https://i.postimg.cc/90DJfgyW/Logo.png" alt="Mission Brevet"
            style="width:min(600px,96vw);filter:drop-shadow(0 10px 32px rgba(0,0,0,.65));margin-bottom:10px;"/>
       <div class="welcome-sub" style="color:var(--gold-soft);font-size:15px;margin-bottom:4px;">Réussir le brevet de français</div>
       <div class="welcome-card" id="loginCard">
@@ -985,7 +1008,7 @@
       <div class="home-inner" style="gap:0;align-items:flex-end;">
         <img class="hero-char" src="https://i.postimg.cc/ZRDYg7p8/personnage-CD.png" alt=""/>
         <div class="hero-title-wrap">
-          <img src="https://i.postimg.cc/prZdL0M2/title.png" alt="Mission Brevet"
+          <img src="https://i.postimg.cc/90DJfgyW/Logo.png" alt="Mission Brevet"
                style="width:min(720px,64vw);filter:drop-shadow(0 12px 36px rgba(0,0,0,.7));margin-bottom:28px;"/>
         </div>
       </div>
@@ -997,14 +1020,8 @@
       <button class="banner-btn">Rédaction</button>
     </div>
     <div style="display:flex;justify-content:center;gap:12px;margin-top:18px;position:relative;z-index:8;flex-wrap:wrap;">
-      <button onclick="showActualites()" style="padding:10px 20px;border-radius:14px;border:1px solid rgba(217,164,65,.35);background:rgba(217,164,65,.12);color:var(--gold-soft);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">📰 Actualités</button>
-      <button id="homeLbBtn" onclick="showHomeLb()" style="
-        padding:12px 32px;border-radius:14px;border:1px solid rgba(245,215,161,.35);
-        background:rgba(0,0,0,.35);color:var(--gold-soft);font-size:16px;font-weight:700;
-        cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,.3);
-        transition:all .2s;letter-spacing:.3px;">
-        🏆 Classement en ligne
-      </button>
+      <button onclick="showActualites()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/zXmfpb3q/actualites.png" style="height:clamp(36px,5vh,48px);width:auto;" alt="Actualités"/></button>
+      <button <button id="homeLbBtn" onclick="showHomeLb()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/MKkGtMXZ/classement-en-ligne.png" style="height:clamp(40px,6vh,54px);width:auto;" alt="Classement"/></button>
     </div>
   </div>
 
@@ -1225,14 +1242,14 @@
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
     <div id="feedbackBox" class="feedback-box"></div>
-    <button id="nextBtn" class="primary-btn" style="display:none;margin-bottom:8px;width:100%;max-width:360px;"></button>
+    <button id="nextBtn" class="primary-btn" style="background:none;border:none;" style="display:none;margin-bottom:8px;width:100%;max-width:360px;"></button>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" class="abandon-btn" onclick="abandonMod()"><button onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
+    <button id="abandonBtn" onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
   </div>
   <!-- end quizCard -->
 
@@ -1566,9 +1583,9 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(255,100,100,.4);
              background:rgba(60,0,0,.55);color:rgba(255,160,160,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
+   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
     <!-- Player lives (Conjugus) -->
-    <div id="bossLivesDisplay" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:6px;">
+    <div id="bossLivesDisplay" style="position:absolute;top:14px;left:16px;z-index:15;display:flex;gap:6px;">
       <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
     </div>
     <!-- Audio elements -->
@@ -1625,7 +1642,7 @@
     </div>
     <!-- Grammar boss HP bar (bottom center) -->
     <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:10;width:min(360px,80vw);">
-      <div style="font-size:13px;color:#1e40af;font-weight:800;margin-bottom:6px;text-align:center;letter-spacing:.5px;text-shadow:0 1px 4px rgba(255,255,255,.8);">✍️ Grammairia</div>
+      <div style="font-size:13px;color:#1e40af;font-weight:800;margin-bottom:6px;text-align:center;letter-spacing:.5px;text-shadow:0 1px 4px rgba(255,255,255,.8);">✍️ Grammaria</div>
       <div style="height:22px;background:rgba(255,255,255,.4);border-radius:999px;border:2px solid rgba(30,64,175,.4);overflow:hidden;box-shadow:0 0 16px rgba(59,130,246,.35);">
         <div id="gramHpFill" style="height:100%;width:100%;background:linear-gradient(90deg,#3b82f6,#06b6d4,#a78bfa);border-radius:999px;transition:width .5s;"></div>
       </div>
@@ -1648,8 +1665,8 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(100,150,255,.35);
              background:rgba(0,10,50,.55);color:rgba(147,197,253,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
-    <!-- Player lives (Grammairia) -->
+   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
+    <!-- Player lives (Grammaria) -->
     <div id="gramLivesDisplay" style="position:absolute;top:12px;left:16px;z-index:15;display:flex;gap:6px;align-items:center;">
       <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
     </div>
@@ -1729,6 +1746,8 @@ const AVATARS=[
   "https://i.postimg.cc/pdVZkXJG/avatar-7.png",
   "https://i.postimg.cc/VN7FhQKx/avatar-8.png",
   "https://i.postimg.cc/sDZ6tqrJ/avatar-9.png"
+,
+  {src:"https://i.postimg.cc/SxXWBzkG/avatar-spe-teddynounet.png",unlock:k=>(S.badges&&(S.badges.has?S.badges.has("teddyboss"):[...S.badges].includes("teddyboss"))),label:"Teddynounet",special:true}
 ];
 const LOCKED_AV=[
   {src:"https://i.postimg.cc/qMNncGRZ/avatar-spe-1.png",  level:3,  label:"Niv. 3"},
@@ -1784,8 +1803,8 @@ const EXCLUSIVE_AV=[
    desc:"Vaincre Conjugus",
    check:()=>!!S.bossDefeated},
   {src:"https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png",
-   label:"Grammairia",
-   desc:"Vaincre Grammairia",
+   label:"Grammaria",
+   desc:"Vaincre Grammaria",
    check:()=>!!S.gramBossDefeated},
   {src:"https://i.postimg.cc/28NrNRdZ/avatar-spe-memelite.png",
    label:"Mémélité",
@@ -3290,7 +3309,7 @@ const MODULES={
 /* ══════════ STATE ══════════ */
 const S={
   name:"",avatar:AVATARS[0],score:0,
-  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,
+  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
@@ -3436,9 +3455,15 @@ function migrateToStars(){
   });
 }
 
-function earnPoints(){
+function earnPoints(qKey){
   S.correct++;
-  if(S.canEarnPoints){S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();}
+  if(S.canEarnPoints){
+    const _key=qKey||(S.mod+"_"+S.qIdx);
+    if(!S.scoredQIds.has(_key)){
+      S.scoredQIds.add(_key);
+      S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();
+    }
+  }
 }
 
 function setAllMusicVolume(val){
@@ -3477,7 +3502,7 @@ function renderInventaireFor(containerId){
      desc:"Cette clé prouve votre maîtrise de la Conjugaison. Elle vous permet de vous confronter au Conjugus.",
      check:()=>S.conjKeyShown||(["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")},
     {id:"gram",name:"Clé de la Langue",img:"https://i.postimg.cc/CxXNv67v/Cle-grammaire.png",
-     desc:"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Grammairia.",
+     desc:"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Grammaria.",
      check:()=>S.gramKeyShown||(["g1","g2","g3","g4","g5","g6","g7","g8"].every(k=>S.perfect&&S.perfect[k]))||(S.name===ADMIN_CODE||S.name==="Professeur Daudé")},
     {id:"lit",name:"Clé de la Librairie",img:"https://i.postimg.cc/xj4zjjfB/Cle-de-la-Librairie.png",
      desc:"Cette Clé semble regorger d'écrits anciens qui mènent à l'Omniscience. Qui sait vers quoi elle vous conduira ?",
@@ -3540,7 +3565,7 @@ function showKeyDetail(type){
   if(!unlocked){toast("🔒 Cette clé n'est pas encore débloquée !");return;}
   const keyImg=isConj?"https://i.postimg.cc/rmCC7Djh/cle-conjugaison.png":"https://i.postimg.cc/PJj1TZcB/Cle-grammaire.png";
   const keyName=isConj?"Clé du Temps":"Clé de la Langue";
-  const keyDesc=isConj?"Cette clé prouve votre maîtrise de la Conjugaison. Elle vous permet de vous confronter au Conjugus.":"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Grammairia.";
+  const keyDesc=isConj?"Cette clé prouve votre maîtrise de la Conjugaison. Elle vous permet de vous confronter au Conjugus.":"Cette étrange clé vous a été offerte en récompense de vos talents en grammaire. Elle vous permet de vous confronter à la Grammaria.";
   const col=isConj?"#a78bfa":"#60a5fa";
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
@@ -3916,7 +3941,7 @@ function openPlayerPopup(entry){
   const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
   const badgeCardsHtml=unlockedBadges.length
     ? unlockedBadges.map(b=>`
-      <div onclick="showBadgeDetail(BADGES_DEF.find(x=>x.id==='${b.id}'))"
+      <div onclick="showBadgePopup(BADGES_DEF.find(x=>x.id==='${b.id}'))"
         title="${b.name}" style="background:rgba(217,164,65,.12);border:1px solid rgba(217,164,65,.3);
         border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;
         cursor:pointer;transition:background .15s;"
@@ -3969,7 +3994,7 @@ function openDaudePopup(){
   ov.id="daudeRichPopup";
   ov.style.cssText="position:fixed;inset:0;background:rgba(10,4,1,.9);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s;padding:12px;";
   const badgeCardsHtml=BADGES_DEF.map(b=>`
-    <div onclick="showBadgeDetail(BADGES_DEF.find(x=>x.id==='${b.id}'))" title="${b.name}"
+    <div onclick="showBadgePopup(BADGES_DEF.find(x=>x.id==='${b.id}'))" title="${b.name}"
       style="background:rgba(217,164,65,.12);border:1px solid rgba(217,164,65,.3);border-radius:14px;
              padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;
              transition:background .15s;" onmouseover="this.style.background='rgba(217,164,65,.25)'"
@@ -4263,7 +4288,7 @@ function startMod(id, resumeFrom){
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
-  S.sessionScoreStart=S.score;S.canEarnPoints=true;saveToLB();
+  S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();saveToLB();
   S.sessionScoreStart=S.score;
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
   const ALLOW_REPEAT=['s2','s3','p2','p3'];
@@ -4484,7 +4509,7 @@ function checkQCMShuffled(sel,correctPos,q){
     if(i===correctPos)b.classList.add("correct");
     else if(i===sel&&!ok)b.classList.add("wrong");
   });
-  if(ok){earnPoints();}
+  if(ok){earnPoints(S.mod+"_"+S.qIdx);}
   showFeedback(ok,q.explanation);
 }
 
@@ -4536,7 +4561,7 @@ function renderTyped(q){
       hint.textContent="✓ "+rawAnswers[0];
       wrap.appendChild(hint);
     }
-    if(ok){earnPoints();}
+    if(ok){earnPoints(S.mod+"_"+S.qIdx);}
     btn.style.display="none";
     showFeedback(ok,q.explanation);
   };
@@ -4551,7 +4576,7 @@ function renderTyped(q){
 function renderOrderStep(q){
   const items=q.items;
   if(S.subIdx>=items.length){
-    const ok=S.subOk===items.length;if(ok){earnPoints();}
+    const ok=S.subOk===items.length;if(ok){earnPoints(S.mod+"_"+S.qIdx);}
     D.aWrap.innerHTML="";D.qBox.textContent=q.prompt;showFeedback(ok,q.explanation);return;
   }
   const item=items[S.subIdx];
@@ -4695,7 +4720,7 @@ function validateFill(){
 
   const exp=(correctCount<q.blanks.length
     ?`${correctCount} / ${q.blanks.length} trous corrects. `:"")+q.explanation;
-  if(ok){earnPoints();}
+  if(ok){earnPoints(S.mod+"_"+S.qIdx);}
   showFeedback(ok,exp);
 }
 
@@ -4781,7 +4806,7 @@ function validateDD(){
   });
   D.aWrap.querySelectorAll(".dd-validate-btn,.dd-count").forEach(el=>el.style.display="none");
   const exp=(correctCount<q.pairs.length?`${correctCount}/${q.pairs.length} associations correctes. `:"")+q.explanation;
-  if(ok){earnPoints();}
+  if(ok){earnPoints(S.mod+"_"+S.qIdx);}
   showFeedback(ok,exp);
 }
 
@@ -5583,7 +5608,7 @@ function showLockedBossMsg(title, text){
     <div style="font-size:44px;margin-bottom:12px;">🔒</div>
     <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:12px;">${title}</div>
     <div style="font-size:14px;color:#ead7ae;line-height:1.7;margin-bottom:20px;">${text}</div>
-    <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:11px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">D'accord</button>
+    <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:11px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/9F3f1RzM/d-accord.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
   </div>`;
   document.body.appendChild(ov);
 }
@@ -5858,6 +5883,7 @@ function bossDefeat(reason){
   ov.style.display="flex";
 }
 function bossVictory(){
+  awardBossXP("conjugus");
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
   const dead=document.getElementById("bossDead");
@@ -5886,7 +5912,7 @@ function abandonBoss(){
     <div style="font-size:19px;font-weight:900;color:#facc15;margin-bottom:10px;">Fuir le combat ?</div>
     <div style="font-size:14px;color:#ead7ae;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>Le boss sera de retour la prochaine fois…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,10vh,130px);width:auto;"/></button>
+      <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
       <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">⚔️ Continuer</button>
     </div>
   </div>`;
@@ -6055,7 +6081,39 @@ const GRAM_BOSS_QUESTIONS=[
 ];
 
 let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:[],darkPhase:false,lives:2,_losingLife:false};
-  setTimeout(()=>{const h=document.querySelectorAll(".gram-life-heart");h.forEach(x=>x.style.filter="");},50);
+  // FULL visual reset — undo any dark phase effects
+  setTimeout(()=>{
+    document.querySelectorAll(".gram-life-heart").forEach(x=>x.style.filter="");
+    // Reset sky
+    const _bg=document.getElementById("gramSkyBg");
+    if(_bg){_bg.style.transition="";_bg.style.background="linear-gradient(180deg,#87ceeb 0%,#b8e4f7 40%,#e8f4fd 100%)";}
+    // Reset forest
+    const _fo=document.getElementById("gramForestBg");
+    if(_fo){_fo.style.filter="";}
+    // Reset clouds to original
+    const _cloudOrig=["https://i.postimg.cc/G22wQmLV/nuage01.png","https://i.postimg.cc/B6mY0FG3/nuage02.png","https://i.postimg.cc/Wz1GMbtS/nuage03.png","https://i.postimg.cc/44jvWmFt/nuage04.png","https://i.postimg.cc/HxdGV0BG/nuage05.png"];
+    ["gc1","gc2","gc3","gc4","gc5"].forEach((id,i)=>{const el=document.getElementById(id);if(el&&_cloudOrig[i])el.src=_cloudOrig[i];});
+    // Reset birds
+    const _bi=document.getElementById("gramBirds")||document.getElementById("gramBirdsInner");
+    if(_bi){_bi.src="https://i.postimg.cc/K8g8xg2Q/oiseaux.png";_bi.style.animation="birdFly 18s linear infinite";_bi.id="gramBirds";}
+    // Hide rain
+    const _rain=document.getElementById("rainCanvas");if(_rain)_rain.style.opacity="0";
+    // Reset question box styles
+    const _qb=document.getElementById("gramQBox");
+    if(_qb){_qb.style.background="";_qb.style.color="";_qb.style.border="";}
+    const _qc=document.getElementById("gramQCounter");if(_qc)_qc.style.color="";
+    const _hp=document.getElementById("gramHpFill");
+    if(_hp)_hp.style.background="linear-gradient(90deg,#22c55e,#86efac)";
+    // Restore boss to normal skin and position
+    const _char=document.getElementById("gramBossChar");
+    if(_char){_char.src="https://i.postimg.cc/kGXmqh3p/deesse-grammaire.png";_char.style.filter="";}
+    const _wrap=document.getElementById("gramBossCharWrap");
+    if(_wrap){_wrap.style.position="";_wrap.style.left="20px";_wrap.style.bottom="80px";_wrap.style.width="min(280px,35vw)";_wrap.style.transform="";_wrap.style.zIndex="";}
+    // Switch back to normal music
+    const _gma=document.getElementById("gramMusicAngry");if(_gma)_gma.pause();
+    // Remove any cinematic overlay
+    const _co=document.getElementById("gramCineOv");if(_co)_co.remove();
+  },50);
 
 // Grammar boss: inject chapter card into gramMenu
 function injectGramBossChapter(){
@@ -6065,7 +6123,7 @@ function injectGramBossChapter(){
   card.className="chapter-card";card.id="gramBossChapterCard";
   card.style="border:2px solid rgba(96,165,250,.5);background:rgba(29,78,216,.08);";
   card.innerHTML=`<div class="chapter-header" onclick="tryOpenGramBoss()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
-    <div class="chapter-title" style="color:#60a5fa;">Grammairia</div>
+    <div class="chapter-title" style="color:#60a5fa;">Grammaria</div>
     <img id="gramBossLockIcon" src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png"
       style="width:140px;height:165px;object-fit:contain;filter:grayscale(1) brightness(.35);
       animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;margin-top:8px;" alt="Déesse"/>
@@ -6089,7 +6147,7 @@ function tryOpenGramBoss(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
   const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
   const unlocked=S.gramKeyShown||allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
-  if(!unlocked){showLockedBossMsg("🔒 Clé de la Langue requise","Termine toutes les séances de grammaire à 100% pour obtenir la Clé de la Langue et affronter Grammairia.");return;}
+  if(!unlocked){showLockedBossMsg("🔒 Clé de la Langue requise","Termine toutes les séances de grammaire à 100% pour obtenir la Clé de la Langue et affronter Grammaria.");return;}
   confirmGramBoss();
 }
 
@@ -6106,8 +6164,8 @@ function confirmGramBoss(){
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,10,30,.88);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#0c1f4a,#061028);border:2px solid rgba(96,165,250,.5);border-radius:24px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(59,130,246,.3);">
     <img src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png" style="width:120px;filter:drop-shadow(0 0 20px rgba(100,180,255,.7));animation:bossIdle 3s ease-in-out infinite;margin-bottom:16px;"/>
-    <div style="font-size:22px;font-weight:900;color:#93c5fd;margin-bottom:12px;">✍️ Défi de la Déesse</div>
-    <div style="font-size:15px;color:#bfdbfe;line-height:1.6;margin-bottom:20px;">Vous vous apprêtez à affronter la <strong style="color:#60a5fa;">Grammairia</strong>.<br>Une seule erreur sera <strong style="color:#ef4444;">fatale</strong>.<br>Voulez-vous vraiment l'affronter ?</div>
+    <div style="font-size:22px;font-weight:900;color:#93c5fd;margin-bottom:12px;">✍️ Défi de la Sage Grammaria</div>
+    <div style="font-size:15px;color:#bfdbfe;line-height:1.6;margin-bottom:20px;">Vous vous apprêtez à affronter la <strong style="color:#60a5fa;">Grammaria</strong>.<br>Une seule erreur sera <strong style="color:#ef4444;">fatale</strong>.<br>Voulez-vous vraiment l'affronter ?</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="gramYes" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;">✍️ OUI</button>
       <button id="gramNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;">← Non</button>
@@ -6205,9 +6263,8 @@ function renderGramBossQ(){
     gramBossState.timerVal=Math.max(0,gramBossState._timerBase-_ge);updateGramTimer();
     if(gramBossState.timerVal<=0){
       clearInterval(gramBossState.timerInt);
-      // Disable all inputs regardless of question type
       document.getElementById("gramAnswerWrap").querySelectorAll("input,button").forEach(el=>el.disabled=true);
-      gramBossDefeat();
+      gramBossLoseLife();
     }
   },1000);
   if(q.type==="typed") setTimeout(()=>{const inp2=document.querySelector("#gramAnswerWrap input");if(inp2)inp2.focus();},50);
@@ -6292,7 +6349,7 @@ function triggerDarkPhase(){
 
   // ── Message 1 : 0.5s ─────────────────────────────────────────────
   setTimeout(()=>{
-    cineMsg.textContent="Grammairia entre dans une colère noire…";
+    cineMsg.textContent="Grammaria entre dans une colère noire…";
     cineMsg.style.opacity="1";
   },500);
 
@@ -6448,7 +6505,7 @@ function startRainEffect(){
 
 
 function gramBossLoseLife(){
-  if(gramBossState._losingLife)return;
+  if(gramBossState._losingLife||gramBossState.hp<=0)return;
   gramBossState._losingLife=true;
   clearInterval(gramBossState.timerInt); // stop timer immediately
   gramBossState.lives--;
@@ -6472,11 +6529,12 @@ function gramBossDefeat(){
   document.getElementById("gramResultImg").src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";
   document.getElementById("gramResultTitle").textContent="💀 Défaite !";
   document.getElementById("gramResultTitle").style.color="#ef4444";
-  document.getElementById("gramResultMsg").innerHTML="La Grammairia vous a vaincu. Révisez et revenez plus fort !";
+  document.getElementById("gramResultMsg").innerHTML="La Grammaria vous a vaincu. Révisez et revenez plus fort !";
   ov.style.display="flex";
 }
 
 function gramBossVictory(){
+  awardBossXP("grammaria");
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
@@ -6495,10 +6553,10 @@ function gramBossVictory(){
   document.getElementById("gramResultImg").src="https://i.postimg.cc/XqkfWdmj/Deesse-grammaire-vaincue.png";
   document.getElementById("gramResultTitle").textContent="🏆 VICTOIRE !";
   document.getElementById("gramResultTitle").style.color="#60a5fa";
-  document.getElementById("gramResultMsg").innerHTML="Bravo ! Tu es parvenu(e) à terrasser la Grammairia. La langue française et toutes ses subtilités n'ont désormais plus aucun secret pour toi !";
+  document.getElementById("gramResultMsg").innerHTML="Bravo ! Tu es parvenu(e) à terrasser la Grammaria. La langue française et toutes ses subtilités n'ont désormais plus aucun secret pour toi !";
   ov.style.display="flex";
   try{const dv=document.getElementById("gramDefeated");if(dv){dv.currentTime=0;dv.volume=1;dv.play().catch(()=>{});}}catch(e){}
-  setTimeout(()=>showAvatarUnlocked("https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png","Grammairia","Avatar secret débloqué !"),1200);
+  setTimeout(()=>showAvatarUnlocked("https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png","Grammaria","Avatar secret débloqué !"),1200);
 }
 
 function abandonGramBoss(){
@@ -6509,7 +6567,7 @@ function abandonGramBoss(){
     <div style="font-size:19px;font-weight:900;color:#60a5fa;margin-bottom:10px;">Fuir le combat ?</div>
     <div style="font-size:14px;color:#bfdbfe;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>La Déesse t'attendra patiemment…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,10vh,130px);width:auto;"/></button>
+      <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
       <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">Continuer</button>
     </div>
   </div>`;
@@ -6527,7 +6585,7 @@ function abandonGramBoss(){
     const bg=document.getElementById("bgMusic");
     if(bg)bg.play().catch(()=>{});
     showGramMenu();
-    toast("Tu as fui… La Grammairia te surveille ! 📚");
+    toast("Tu as fui… La Grammaria te surveille ! 📚");
   };
   ov.querySelector("#agb_no").onclick=()=>ov.remove();
 }
@@ -6547,13 +6605,13 @@ function closeGramResult(){
 
 // Add deesse_gram badge and avatar to registry
 if(!BADGES_DEF.find(b=>b.id==="deesse_gram")){
-  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/fRTp4Fxw/deesse-de-la-grammaire.png",emoji:null,name:"Grammairia",desc:"Vaincre la Grammairia"});
+  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/fRTp4Fxw/deesse-de-la-grammaire.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
 }
-if(!EXCLUSIVE_AV.find(a=>a.label==="Grammairia")){
+if(!EXCLUSIVE_AV.find(a=>a.label==="Grammaria")){
   EXCLUSIVE_AV.push({
     src:"https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png",
-    label:"Grammairia",
-    desc:"Vaincre la Grammairia",
+    label:"Grammaria",
+    desc:"Vaincre la Grammaria",
     check:()=>!!S.gramBossDefeated
   });
 }
@@ -6627,7 +6685,7 @@ async function adminDeletePlayer(name){
     <div style="font-size:14px;color:#ead7ae;margin-bottom:16px;">Compte : <strong style="color:var(--gold);">${name}</strong></div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="adm_yes" style="padding:10px 20px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:900;cursor:pointer;">Supprimer</button>
-      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;">Annuler</button>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(cd);
@@ -6924,7 +6982,7 @@ function adminBanFromChat(name){
     </div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="ban_yes" style="padding:10px 20px;border-radius:10px;border:none;background:#dc2626;color:#fff;font-weight:900;cursor:pointer;">⛔ Bannir</button>
-      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Annuler</button>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(cd);
@@ -7229,6 +7287,7 @@ function triggerOrgDarkPhase(){
 }
 
 function orgVictory(){
+  awardBossXP("orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
   try{const ds=document.getElementById("orgDefeatedSound");if(ds){ds.currentTime=0;ds.play().catch(()=>{});}}catch(e){}
@@ -7277,7 +7336,7 @@ function abandonOrgografe(){
     <div style="font-size:18px;font-weight:900;color:#f97316;margin-bottom:8px;">Fuir ?</div>
     <div style="font-size:13px;color:#ead7ae;margin-bottom:14px;">La grande Orgografe va t'attendre...</div>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,10vh,130px);width:auto;"/></button>
+      <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
       <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Continuer</button>
     </div>
   </div>`;
@@ -7395,9 +7454,9 @@ function showOrgIntro(){
         ${slide>0?`<button id="org_prev" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">← Précédent</button>`:''}
         ${isLast
           ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ C'est parti !</button>`
-          :`<button id="org_next" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;cursor:pointer;">Suivant →</button>`
+          :`<button id="org_next" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>`
         }
-        <button id="org_cancel" style="padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;">Annuler</button>
+        <button id="org_cancel" style="padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
       </div>
     </div>`;
     const prev=ov.querySelector("#org_prev");if(prev)prev.onclick=()=>{slide--;renderSlide();};
@@ -7510,8 +7569,8 @@ function tryOpenMemelite(){
         <strong style="color:#86efac;">3 phases</strong> de plus en plus redoutables.
       </div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button id="mel_start" style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#dc2626,#b91c1c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ Affronter !</button>
-        <button id="mel_cancel" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Plus tard</button>
+        <button id="mel_start" style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#dc2626,#b91c1c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,50px);width:auto;" alt="Affronter"/></button>
+        <button id="mel_cancel" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/28p5Tb3b/plus-tard.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
       </div>
     </div>`;
     document.body.appendChild(ov);
@@ -7653,11 +7712,11 @@ function showActualites(){
     <!-- Update v2 — Système étoiles + boss -->
     <div style="margin-bottom:20px;border-left:3px solid #c084fc;padding-left:14px;">
       <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Mars 2026</div>
-      <div style="font-size:15px;font-weight:900;color:#c084fc;margin-bottom:8px;">⚔️ Conjugus & Grammairia</div>
+      <div style="font-size:15px;font-weight:900;color:#c084fc;margin-bottom:8px;">⚔️ Conjugus & Grammaria</div>
       <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
         Les boss principaux font leur apparition.<br>
         <strong style="color:#e9d5ff;">Conjugus</strong> — maîtrisez la conjugaison (Clé du Temps).<br>
-        <strong style="color:#93c5fd;">Grammairia</strong> — maîtrisez la grammaire (Clé de la Langue).<br>
+        <strong style="color:#93c5fd;">Grammaria</strong> — maîtrisez la grammaire (Clé de la Langue).<br>
         Nouveau système d'⭐ étoiles et de classement en ligne.
       </div>
     </div>
@@ -7681,7 +7740,7 @@ async function _openUnbanPanel(playerName){
     <div style="font-size:14px;color:#bbf7d0;margin-bottom:20px;">Voulez-vous lever le ban de <strong>${playerName}</strong> ?</div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button onclick="_executeUnban('${playerName}')" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#16a34a,#15803d);color:#fff;font-weight:900;cursor:pointer;">✅ Confirmer</button>
-      <button onclick="document.getElementById('unbanPanelOv').remove()" style="padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#ead7ae;font-weight:700;cursor:pointer;">Annuler</button>
+      <button onclick="document.getElementById('unbanPanelOv').remove()" style="padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
     </div>
     <div id="unbanStatus" style="text-align:center;font-size:12px;margin-top:12px;min-height:16px;"></div>
   </div>`;
@@ -7835,6 +7894,52 @@ function showBanMessage(ban){
     <div style="font-size:11px;color:rgba(252,165,165,.5);font-style:italic;">Si vous pensez qu'il s'agit d'une erreur, contactez l'administrateur.</div>
   </div>`;
   document.body.appendChild(ov);
+}
+
+
+
+function _getMelBgSrc(phase){
+  const mob=window.innerWidth<=640&&window.innerHeight>window.innerWidth;
+  if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
+  if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
+  return null;
+}
+function _applyMelBg(phase){
+  const src=_getMelBgSrc(phase);
+  if(!src)return;
+  const bg=document.getElementById("melBgImg");if(bg)bg.src=src;
+}
+
+function awardBossXP(boss){
+  const XP={conjugus:100,grammaria:120,orgografe:80,memelite:150};
+  const pts=XP[boss]||100;
+  S.score+=pts;
+  updateHUD();saveProgress();saveToLB();
+  // Show bonus message
+  const t=document.createElement("div");
+  t.style.cssText="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9000;"+
+    "background:linear-gradient(135deg,#facc15,#c87a10);color:#1a0a00;font-size:clamp(16px,3vw,24px);"+
+    "font-weight:900;padding:14px 28px;border-radius:16px;pointer-events:none;animation:popIn .3s;";
+  t.textContent="⭐ +"+pts+" XP Bonus Boss !";
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
+
+
+function showBadgePopup(b){
+  const existing=document.getElementById("badgeDetailPopup");if(existing)existing.remove();
+  const ov=document.createElement("div");
+  ov.id="badgeDetailPopup";ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;";
+  const imgH=b.img?`<img src="${b.img}" style="width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(217,164,65,.5));"/>`
+                   :`<span style="font-size:72px;line-height:1;">${b.emoji||"🏅"}</span>`;
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a00,#0a0500);border:2px solid rgba(217,164,65,.35);border-radius:22px;padding:28px;max-width:360px;width:100%;text-align:center;animation:popIn .3s;">
+    <div style="width:100px;height:100px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;">${imgH}</div>
+    <div style="font-size:18px;font-weight:900;color:var(--gold);margin-bottom:8px;">${b.name}</div>
+    ${b.desc?`<div style="font-size:13px;color:#ead7ae;line-height:1.6;margin-bottom:14px;">${b.desc}</div>`:""}
+    <button onclick="document.getElementById('badgeDetailPopup').remove()" style="padding:9px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
 
 function maybeShowUpdateMsg(){
@@ -8007,6 +8112,7 @@ function renderMelLives(){
 
 function renderMelQ(){
   if(melState.inCatPhase)return;
+  const _aw=document.getElementById("melAWrap");if(_aw)_aw.querySelectorAll("button").forEach(b=>{b.style.background="rgba(0,0,0,.4)";b.style.opacity="1";b.disabled=false;});
   // Always ensure question box is visible
   const _qwrap=document.getElementById("melQWrap");if(_qwrap)_qwrap.style.display="";
   const _timer=document.getElementById("melTimer");if(_timer)_timer.style.display="";
@@ -8307,6 +8413,7 @@ function melPhase2Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusicSafe(2);
+    _applyMelBg(2);
     melState.transitioning=false;
     renderMelQ();
   },5000);
@@ -8353,12 +8460,16 @@ function melPhase3Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusicSafe(3);
+    _applyMelBg(3);
     melState.transitioning=false;
     renderMelQ();
   },6000);
 }
 
 function melVictory(){
+  melState.transitioning=true;
+  melState.inCatPhase=false;
+  awardBossXP("memelite");
   melState.transitioning=true;
   melState.inCatPhase=false;
   const _ccv=document.getElementById("melCatContainer");if(_ccv){_ccv.innerHTML="";_ccv.style.pointerEvents="none";}
@@ -8506,8 +8617,8 @@ function abandonMemelite(){
       <div id="updDots" style="display:flex;gap:6px;justify-content:center;margin:12px 0;"></div>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button id="updPrev" onclick="_updSlideIdx--;_renderUpdateSlide()" style="padding:9px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">←</button>
-        <button id="updNext" onclick="_updSlideIdx++;_renderUpdateSlide()" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Suivant →</button>
-        <button id="updClose" onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v3','1');" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">C'est parti ! 🚀</button>
+        <button id="updNext" onclick="_updSlideIdx++;_renderUpdateSlide()" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
+        <button id="updClose" onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v3','1');" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
       </div>
 <!-- slider populated by initUpdateSlider() -->
     </div>
@@ -8550,7 +8661,7 @@ function abandonMemelite(){
     <!-- ── HUD: counter top-left, flee top-right ── -->
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
       <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button></button>
+      <button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button></button>
     </div>
 
     <!-- ── Bottom HUD: HP then lives ── -->
@@ -8651,7 +8762,7 @@ function abandonMemelite(){
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <!-- Flee -->
-        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/zDn8f8rY/fuir-button.png" style="height:clamp(44px,8vh,104px);width:auto;display:block;" alt="Fuir"/></button>
+        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
         <!-- Timer centred -->
         <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
         <!-- Spacer -->
