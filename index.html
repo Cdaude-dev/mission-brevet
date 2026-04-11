@@ -729,6 +729,18 @@
     #abandonBtn img{height:clamp(26px,5vh,36px) !important;}
   }
 
+  
+  .victory-wrap{display:flex;justify-content:center;align-items:center;margin:8px 0;}
+  .victory-img{
+    width:min(140px,35vw);height:auto;
+    animation:victoryFloat 2.5s ease-in-out infinite;
+    filter:drop-shadow(0 0 14px rgba(250,204,21,.8)) drop-shadow(0 0 28px rgba(250,204,21,.4));
+  }
+  @keyframes victoryFloat{
+    0%,100%{transform:translateY(0) scale(1);}
+    50%{transform:translateY(-12px) scale(1.05);}
+  }
+
   </style>
 </head>
 <body>
@@ -4749,6 +4761,7 @@ function renderTyped(q){
     }
     if(ok){earnPoints(S.mod+"_"+S.qIdx);}
     btn.style.display="none";
+    try{inp.blur();}catch(e){} // close mobile keyboard so nextBtn is visible
     showFeedback(ok,q.explanation);
   };
   btn.onclick=validate;
@@ -4761,17 +4774,59 @@ function renderTyped(q){
 /* ── Order (classify) ── */
 function renderOrderStep(q){
   const items=q.items;
+  if(!items||items.length===0){showFeedback(true,q.explanation||"");return;}
+  // Detect format: simple strings vs {text,bucket} objects
+  const isSimple=typeof items[0]==="string";
+  if(isSimple){
+    // Simple format: show items one by one, player picks correct position
+    // Show all items shuffled, player must click them in correct order
+    if(S.subIdx===0&&!q._orderShuffled){
+      const arr=[...items.keys()];
+      for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+      q._orderShuffled=arr; // shuffled display indices
+      q._orderPicks=[]; // player's picks in order
+    }
+    if(S.subIdx>=items.length){
+      // Check if picks match original order
+      const correct=q._orderPicks&&q._orderPicks.every((v,i)=>v===i);
+      if(correct)earnPoints(S.mod+"_"+S.qIdx);
+      q._orderShuffled=null;q._orderPicks=[];
+      D.aWrap.innerHTML="";D.qBox.textContent=q.prompt;
+      showFeedback(correct,q.explanation||"");return;
+    }
+    D.qBox.innerHTML='<span style="font-size:12px;opacity:.7;">'+q.prompt+'</span><br><span style="font-size:12px;color:#ead7ae;">Clique sur les éléments dans le bon ordre ('+S.subIdx+'/'+items.length+' placés)</span>';
+    D.aWrap.innerHTML="";
+    const remaining=(q._orderShuffled||[...items.keys()]).filter(i=>!(q._orderPicks||[]).includes(i));
+    remaining.forEach(origIdx=>{
+      const b=document.createElement("button");b.className="ans-btn";
+      b.style.cssText="text-align:left;font-size:13px;padding:10px 14px;";
+      b.textContent=items[origIdx];
+      b.onclick=()=>{
+        if(S.locked)return;
+        const expectedIdx=S.subIdx; // next correct index is S.subIdx
+        const correct=origIdx===expectedIdx;
+        if(correct)S.subOk++;
+        if(!q._orderPicks)q._orderPicks=[];
+        q._orderPicks.push(origIdx);
+        b.classList.add(correct?"correct":"wrong");
+        b.disabled=true;
+        setTimeout(()=>{S.subIdx++;renderOrderStep(q);},correct?400:800);
+      };
+      D.aWrap.appendChild(b);
+    });
+    return;
+  }
+  // Bucket format: classify items
   if(S.subIdx>=items.length){
     const ok=S.subOk===items.length;if(ok){earnPoints(S.mod+"_"+S.qIdx);}
     D.aWrap.innerHTML="";D.qBox.textContent=q.prompt;showFeedback(ok,q.explanation);return;
   }
   const item=items[S.subIdx];
   D.qBox.innerHTML='<span style="font-size:12px;opacity:.7;">'+q.prompt+'</span><br><br><span style="font-size:12px;color:#ead7ae;">Élément '+(S.subIdx+1)+'/'+items.length+' :</span>';
-  const d=document.createElement("div");d.className="order-disp";d.textContent='"'+item.text+'"';D.aWrap.appendChild(d);
+  const d=document.createElement("div");d.className="order-disp";d.textContent='"'+(item.text||item)+'"';D.aWrap.appendChild(d);
   const s=document.createElement("div");s.className="order-sub";s.textContent="👉 Dans quelle colonne classer cet élément ?";D.aWrap.appendChild(s);
-  // Keep bucket buttons in consistent order (no shuffle — avoids confusion)
-  const shuffledBuckets=[...q.buckets];
-  shuffledBuckets.forEach(bucket=>{
+  const buckets=q.buckets||[];
+  buckets.forEach(bucket=>{
     const b=document.createElement("button");b.className="ans-btn";b.textContent=bucket;
     b.onclick=()=>{
       const ok=bucket===item.bucket;if(ok)S.subOk++;
@@ -5091,7 +5146,7 @@ function showResults(){
   // Never downgrade: keep the best score
   S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
   const starCount=S.stars[S.mod];
-  let stars=p===100?'<span style="font-size:48px;">🏆</span>':starImgHtml(starCount),msg="Continue à réviser !";
+  let stars=p===100?'<div class="victory-wrap"><img src="https://i.postimg.cc/QNT5rT24/victoir.png" class="victory-img" alt="Victoire"/></div>':starImgHtml(starCount),msg="Continue à réviser !";
   if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉";}
   else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
   else if(p>=33){msg="Tu peux mieux faire ! (1 étoile)";}
