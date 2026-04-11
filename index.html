@@ -677,21 +677,9 @@
 
   
   @media(max-width:640px){
-    #melLives{
-      position:fixed !important;
-      bottom:12px !important;
-      top:auto !important;
-      left:50% !important;
-      transform:translateX(-50%) !important;
-      justify-content:center !important;
-      margin-top:0 !important;
-      z-index:15 !important;
-      background:rgba(0,0,0,.4);
-      border-radius:20px;
-      padding:4px 10px;
-    }
-    .mel-heart{width:24px !important;height:24px !important;}
-    #melQWrap{top:max(60px,9%) !important;}
+    #melLives{gap:5px !important;}
+    .mel-heart{width:26px !important;height:26px !important;}
+    #melQWrap{top:max(115px,14%) !important;}
   }
 
   
@@ -702,6 +690,15 @@
     #orgCharWrap{left:52% !important;width:min(46vw,260px) !important;bottom:-3% !important;}
     #orgBoardText{font-size:clamp(12px,2.5vw,18px) !important;}
     #orgPhrase{font-size:clamp(14px,3.5vw,22px) !important;}
+  }
+
+  
+  @media(max-width:640px){
+    /* On mobile: image buttons show at reduced size, keep images */
+    .img-btn img{height:clamp(26px,7vw,38px) !important;}
+    .fuir-btn img{height:clamp(28px,7vw,40px) !important;}
+    /* Consistent row of buttons */
+    .btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
   }
 
   </style>
@@ -1889,7 +1886,7 @@ const EXCLUSIVE_AV=[
   {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
    label:"Professeur Daudé",
    desc:"Être le créateur du jeu, le seul l'unique",
-   check:()=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé")}
+   check:()=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé"),exclusive:true}
 ];
 const PROF={point:"https://i.postimg.cc/V6gqrbp4/personnage-CD5.png",smile:"https://i.postimg.cc/9MCPQB8L/personnage-CD4.png",dub:"https://i.postimg.cc/4xqS8j8K/personnage-CD2.png"};
 const HINTS=["Lis bien chaque proposition avant de répondre !","Rappelle-toi du cours… Tu l'as !","Prends le temps de réfléchir.","Fais confiance à ta mémoire !","La bonne réponse est là, concentre-toi.","Souviens-toi des définitions vues en classe."];
@@ -3711,6 +3708,8 @@ function buildAvGrid(){
   _addAvLabel(D.avGrid,"Avatars exclusifs (100% catégorie)");
   EXCLUSIVE_AV.forEach(item=>{
     const ok=item.check();
+    // Skip avatars that require being someone specific (e.g. Daudé) for other users
+    if(item.exclusive && !ok) return;
     _addAvItem(D.avGrid,item.src,S.avatar===item.src,ok,item.label+" — "+item.desc,
       e=>{e.stopPropagation();if(ok){S.avatar=item.src;updateHUD();saveToLB();buildAvGrid();}else toast(item.label+" — "+item.desc+" 🔒");},false);
   });
@@ -4338,7 +4337,6 @@ function abandonMod(){
 }
 
 function startMod(id, resumeFrom){
-  // Hide chat during quiz
   const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
   if(!resumeFrom && S.savedMod===id && S.savedQIdx>0){
@@ -5596,7 +5594,7 @@ window.addEventListener("load",()=>{
         try{buildBigAvGrid();}catch(e){}
         // Ensure name shows in panel inputs
         const ni=document.getElementById("nameInput");if(ni)ni.value=S.name;
-        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="none"; // hidden during quiz
+        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="none";
         const bni=document.getElementById("bigNameInput");if(bni)bni.value=S.name;
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
@@ -5746,6 +5744,7 @@ function confirmBossBattle(){
   ov.querySelector("#bossNo").onclick=()=>{ov.remove();};
 }
 function startBoss(){
+  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Stop menu music, start boss music
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   const bm=document.getElementById("bossMusicAudio");if(bm){
@@ -5949,6 +5948,7 @@ function bossLoseLife(reason){
 }
 
 function bossDefeat(reason){
+  bossState._losingLife=false;
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
   document.getElementById("bossOv").style.display="none";
@@ -6255,6 +6255,7 @@ function confirmGramBoss(){
 }
 
 function startGramBoss(){
+  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   const gm=document.getElementById("gramMusicAudio");
   if(gm){
@@ -6583,7 +6584,7 @@ function startRainEffect(){
 
 
 function gramBossLoseLife(){
-  if(gramBossState._losingLife||gramBossState.hp<=0)return;
+  if(gramBossState._losingLife||gramBossState.lives<=0)return;
   gramBossState._losingLife=true;
   clearInterval(gramBossState.timerInt); // stop timer immediately
   gramBossState.lives--;
@@ -6597,6 +6598,7 @@ function gramBossLoseLife(){
 }
 
 function gramBossDefeat(){
+  gramBossState._losingLife=false;
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
@@ -7175,6 +7177,7 @@ const ORG_QUESTIONS = [
 let orgState={qIdx:0,lives:3,hp:15,selectedWord:null,noPerfect:false,darkPhase:false};
 
 function startOrgografe(){
+  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Stop background music
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   // Start org music
@@ -8047,14 +8050,7 @@ function _applyMobileBgs(){
       ?"https://i.postimg.cc/T1zRhSLN/responsive-orgografe.png"
       :"https://i.postimg.cc/13QMs4TW/fond-orgografe.png";
   }
-  // Grammaria bg — only change the bg color/gradient layer, not the forest/clouds
-  const gramBg=document.getElementById("gramSkyBg");
-  if(gramBg&&mob&&!gramBossState.darkPhase){
-    gramBg.style.backgroundImage='url("https://i.postimg.cc/3N4887Rq/responsive-grammaria.png")';
-    gramBg.style.backgroundSize="cover";gramBg.style.backgroundPosition="center";
-  } else if(gramBg&&!mob){
-    gramBg.style.backgroundImage="";
-  }
+  // Grammaria bg unchanged — same as desktop
 }
 window.addEventListener("resize",_applyMobileBgs);
 
@@ -8168,6 +8164,7 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
+  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Full reset
   clearInterval(melState&&melState.timerInt);
   const cc=document.getElementById("melCatContainer");if(cc){cc.innerHTML="";cc.style.pointerEvents="none";}
@@ -8767,7 +8764,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:54%;width:min(52vw,440px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:45%;width:min(70vw,600px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
@@ -8884,8 +8881,8 @@ function abandonMemelite(){
         <!-- Spacer -->
         <div style="width:52px;"></div>
       </div>
-      <!-- Lives centred below timer -->
-      <div id="melLives" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px;">
+      <!-- Lives directly under timer -->
+      <div id="melLives" style="display:flex;gap:6px;align-items:center;justify-content:center;margin-top:4px;flex-wrap:wrap;">
         <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
         <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
         <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
