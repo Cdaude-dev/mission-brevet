@@ -3480,6 +3480,7 @@ const D={
 /* ══════════ HELPERS ══════════ */
 function lv(s,name){
   if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;
+  s=parseInt(s)||0; // guard against null/undefined/NaN
   // Progressive XP curve
   const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,  // L1-10: 100/lvl
     1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,            // L11-20: 200/lvl
@@ -3489,17 +3490,18 @@ function lv(s,name){
   return lvl;
 }
 function lvThreshold(lvl){
+  lvl=parseInt(lvl)||1;
   const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,
     1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,
     3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];
-  return THRESHOLDS[lvl-1]||7000+(lvl-30)*400;
+  return THRESHOLDS[Math.max(0,Math.min(lvl-1,THRESHOLDS.length-1))];
 }
 function pct(s,name){
   const cl=lv(s,name);const next=cl+1;
   const cur=lvThreshold(cl);const nxt=lvThreshold(next);
-  return Math.min(Math.round(((s-cur)/(nxt-cur))*100),100);
+  if(nxt<=cur)return 100;
+  return Math.min(Math.max(0,Math.round(((s-cur)/(nxt-cur))*100)),100);
 }
-;
 
 function pctToStars(pct){
   if(pct>=100)return 3;
@@ -3679,7 +3681,7 @@ function showKeyDetail(type){
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
 function updateHUD(){
-  const level=lv(S.score,S.name),p=pct(S.score);
+  const level=lv(S.score,S.name),p=pct(S.score,S.name);
   D.chipAv.src=S.avatar;D.chipName.textContent=S.name;D.chipLv.textContent="Nv "+level;
   D.progFill.style.width=p+"%";D.progMeta.textContent="Score "+S.score+" • Niveau "+level;
   D.panLv.textContent="Niveau "+level;D.panSc.textContent="Score "+S.score;
