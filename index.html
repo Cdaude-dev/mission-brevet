@@ -367,9 +367,8 @@
     .quiz-card::-webkit-scrollbar{width:5px;}
     .quiz-card::-webkit-scrollbar-thumb{background:rgba(245,215,161,.4);border-radius:4px;}
     #nextBtn{
-      position:sticky;bottom:0;z-index:90;
-      width:100%;max-width:360px;margin:8px auto 0;
-      box-shadow:0 -4px 20px rgba(0,0,0,.5);
+      display:block;margin:8px auto 0;
+      background:none;border:none;padding:0;cursor:pointer;
     }
     /* Content blocks inside quiz get constrained width */
     .quiz-card .banner-large,.quiz-card .q-label,.quiz-card .quiz-prog-bar,
@@ -643,7 +642,6 @@
     background:none !important;border:none !important;cursor:pointer;padding:0;box-shadow:none !important;
     display:inline-flex;align-items:center;justify-content:center;
     transition:transform .12s, filter .12s;
-    border-radius:50%;
   }
   .img-btn:hover{filter:brightness(1.15) drop-shadow(0 0 8px rgba(217,164,65,.55));}
   .img-btn:active{transform:scale(.9);filter:brightness(.85);}
@@ -5014,13 +5012,15 @@ function showFeedback(ok,explanation){
       return;
     }
   }
-  D.nextBtn.style.display="inline-block";
-  D.nextBtn.style.background="none";D.nextBtn.style.border="none";
-  D.nextBtn.style.cursor="pointer";
-  D.nextBtn.innerHTML=isLast?
-      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>'
-      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>';
-  D.nextBtn.onclick=()=>{S.qIdx++;renderQ();};
+  // Show next button — clone to remove any stale listeners
+  const _newBtn=D.nextBtn.cloneNode(false);
+  _newBtn.innerHTML=isLast
+    ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
+    :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
+  _newBtn.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+  _newBtn.addEventListener('click',()=>{S.qIdx++;renderQ();},{ once:true });
+  D.nextBtn.parentNode.replaceChild(_newBtn,D.nextBtn);
+  D.nextBtn=_newBtn;
 }
 
 /* ══════════ RESULTS ══════════ */
