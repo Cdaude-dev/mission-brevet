@@ -367,8 +367,9 @@
     .quiz-card::-webkit-scrollbar{width:5px;}
     .quiz-card::-webkit-scrollbar-thumb{background:rgba(245,215,161,.4);border-radius:4px;}
     #nextBtn{
-      display:block;margin:8px auto 0;
-      background:none;border:none;padding:0;cursor:pointer;
+      position:sticky;bottom:0;z-index:90;
+      width:100%;max-width:360px;margin:8px auto 0;
+      box-shadow:0 -4px 20px rgba(0,0,0,.5);
     }
     /* Content blocks inside quiz get constrained width */
     .quiz-card .banner-large,.quiz-card .q-label,.quiz-card .quiz-prog-bar,
@@ -389,7 +390,7 @@
     .quiz-prog-fill{height:100%;width:0;
       background:linear-gradient(90deg,var(--gold),var(--gold-soft));
       border-radius:999px;transition:width .4s;}
-    .quiz-counter{font-size:12px;color:#ead7ae;width:100%;max-width:540px;text-align:center;margin-top:2px;}
+    .quiz-counter{font-size:12px;color:#ead7ae;width:100%;max-width:540px;text-align:right;margin-top:2px;}
     .hint-banner{width:100%;max-width:540px;
       background:rgba(74,37,16,.6);border:1px solid rgba(217,164,65,.22);
       border-radius:14px;display:flex;align-items:flex-end;overflow:hidden;}
@@ -515,7 +516,7 @@
     .res-pct{font-size:56px;font-weight:900;color:#facc15;line-height:1;}
     .res-sub{font-size:15px;color:#ead7ae;}
     .res-stars{font-size:32px;letter-spacing:4px;}
-    .res-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+    .res-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
     .badge-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
       background:linear-gradient(135deg,rgba(55,28,12,.97),rgba(90,45,12,.97));
       border:1px solid rgba(245,215,161,.35);border-radius:16px;
@@ -623,7 +624,9 @@
   .mel-answer-btn{font-size:14px !important;padding:10px !important;}
 }
 
-
+@media(max-width:640px) and (orientation:portrait){
+  #orgBg img[src*="fond-orgografe"]{content:url("https://i.postimg.cc/T1zRhSLN/responsive-orgografe.png") !important;}
+}
 
   
   .hint-banner{position:relative;overflow:visible !important;}
@@ -634,111 +637,6 @@
   @media(min-width:641px){
     .hero-char{position:relative;margin-right:auto;left:min(-20px,calc(50vw - 620px)) !important;}
     .hero-title-wrap{margin-left:-40px;}
-  }
-
-  
-  /* ── Image buttons ───────────────────────────────────── */
-  .img-btn{
-    background:none !important;border:none !important;cursor:pointer;padding:0;box-shadow:none !important;
-    display:inline-flex;align-items:center;justify-content:center;
-    transition:transform .12s, filter .12s;
-  }
-  .img-btn:hover{filter:brightness(1.15) drop-shadow(0 0 8px rgba(217,164,65,.55));}
-  .img-btn:active{transform:scale(.9);filter:brightness(.85);}
-  .img-btn img{display:block;height:var(--bh,clamp(34px,5.5vh,52px));width:auto;}
-
-  /* ── Ptab icons (no text, no background) ────────────── */
-  .ptab{
-    background:none !important;border:none !important;
-    padding:6px 8px !important;border-radius:12px !important;
-    transition:filter .15s,transform .15s !important;
-    flex:none !important;
-  }
-  .ptab:hover{filter:drop-shadow(0 0 6px rgba(217,164,65,.6));transform:scale(1.1);}
-  .ptab.active{filter:drop-shadow(0 0 10px rgba(217,164,65,.8));}
-  .ptab span{display:none !important;}
-  .ptab img{width:clamp(22px,3.5vw,28px);height:clamp(22px,3.5vw,28px);object-fit:contain;}
-
-  /* ── Fuir button ─────────────────────────────────────── */
-  .fuir-btn{
-    background:none;border:none;cursor:pointer;padding:0;
-    transition:transform .12s,filter .12s;
-  }
-  .fuir-btn:hover{filter:drop-shadow(0 0 8px rgba(239,68,68,.6));transform:scale(1.05);}
-  .fuir-btn:active{transform:scale(.88);}
-  .fuir-btn img{height:clamp(36px,5.5vh,54px);width:auto;display:block;}
-
-  @media(max-width:640px){
-    .fuir-btn img{height:clamp(30px,5vh,42px) !important;}
-    .img-btn img{height:var(--bh,clamp(28px,5vh,42px)) !important;}
-  }
-
-  
-  @media(max-width:640px){
-    #melLives{gap:5px !important;}
-    .mel-heart{width:26px !important;height:26px !important;}
-    #melQWrap{top:max(115px,14%) !important;}
-  }
-
-  
-  @media(max-width:640px) and (orientation:portrait){
-    #orgOv > div[style*="left:1%"], #orgOv > div[style*="left:18%"]{
-      left:2% !important;width:68% !important;top:3% !important;height:60% !important;
-    }
-    #orgCharWrap{left:44% !important;width:min(68vw,360px) !important;bottom:-4% !important;}
-    #orgBoardText{font-size:clamp(12px,2.5vw,18px) !important;}
-    #orgPhrase{font-size:clamp(14px,3.5vw,22px) !important;}
-  }
-
-  
-  @media(max-width:640px){
-    /* On mobile: image buttons show at reduced size, keep images */
-    .img-btn img{height:clamp(26px,7vw,38px) !important;}
-    .fuir-btn img{height:clamp(28px,7vw,40px) !important;}
-    /* Consistent row of buttons */
-    .btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-  }
-
-  
-  /* Normalize image button sizes globally */
-  .img-btn img{height:var(--bh,clamp(30px,4.5vh,46px));}
-  @media(max-width:640px){.img-btn img{height:var(--bh,clamp(26px,6vw,38px));}}
-  /* Remove any remaining backgrounds on buttons with image children */
-  button:has(> img:only-child){background:none !important;border:none !important;box-shadow:none !important;padding:0 !important;}
-
-  
-  @keyframes gramShake{
-    0%,100%{transform:translateX(0);}
-    15%{transform:translateX(-8px);}
-    30%{transform:translateX(8px);}
-    45%{transform:translateX(-6px);}
-    60%{transform:translateX(6px);}
-    75%{transform:translateX(-3px);}
-    90%{transform:translateX(3px);}
-  }
-
-    
-  @media(max-width:640px){
-    #abandonBtn{
-      position:fixed !important;
-      top:8px !important;
-      left:8px !important;
-      bottom:auto !important;
-      z-index:210 !important;
-    }
-    #abandonBtn img{height:clamp(26px,5vh,36px) !important;}
-  }
-
-  
-  .victory-wrap{display:flex;justify-content:center;align-items:center;margin:8px 0;}
-  .victory-img{
-    width:min(140px,35vw);height:auto;
-    animation:victoryFloat 2.5s ease-in-out infinite;
-    filter:drop-shadow(0 0 14px rgba(250,204,21,.8)) drop-shadow(0 0 28px rgba(250,204,21,.4));
-  }
-  @keyframes victoryFloat{
-    0%,100%{transform:translateY(0) scale(1);}
-    50%{transform:translateY(-12px) scale(1.05);}
   }
 
   </style>
@@ -1123,7 +1021,7 @@
     </div>
     <div style="display:flex;justify-content:center;gap:12px;margin-top:18px;position:relative;z-index:8;flex-wrap:wrap;">
       <button onclick="showActualites()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/zXmfpb3q/actualites.png" style="height:clamp(36px,5vh,48px);width:auto;" alt="Actualités"/></button>
-      <button <button id="homeLbBtn" onclick="showHomeLb()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/MKkGtMXZ/classement-en-ligne.png" style="height:clamp(48px,7vh,72px);width:auto;" alt="Classement"/></button>
+      <button <button id="homeLbBtn" onclick="showHomeLb()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/MKkGtMXZ/classement-en-ligne.png" style="height:clamp(40px,6vh,54px);width:auto;" alt="Classement"/></button>
     </div>
   </div>
 
@@ -1137,7 +1035,7 @@
 
   <!-- LIT MENU: fixed overlay, outside any screen so display:none on parent doesn't hide it -->
   <div id="litMenu" class="lit-menu" style="display:none;">
-    <button class="menu-back-btn" onclick="goTransition('home')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(28px,4vh,40px);width:auto;" alt=""/></button>
+    <button class="menu-back-btn" onclick="goTransition('home')">← Accueil</button>
     <div class="banner-large"><span class="banner-large-text">Littérature</span></div>
     <div class="lit-subtitle">Choisis un chapitre</div>
       <div class="chapter-card">
@@ -1318,7 +1216,7 @@
   </div><!-- end litMenu -->
 
   <!-- FAILURE OVERLAY -->
-  <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;
+  <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:95;
        flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;">
     <img src="https://i.postimg.cc/Y9rMpwZr/echec.png" alt="échec"
          style="width:min(220px,60vw);filter:drop-shadow(0 8px 24px rgba(255,50,50,.4));animation:bob 3s ease-in-out infinite;"/>
@@ -1344,14 +1242,14 @@
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
     <div id="feedbackBox" class="feedback-box"></div>
-    <button id="nextBtn" class="img-btn primary-btn" onclick="nextQuestion()" style="display:none;margin-bottom:8px;max-width:360px;"></button>
+    <button id="nextBtn" class="primary-btn" style="background:none;border:none;" style="display:none;margin-bottom:8px;width:100%;max-width:360px;"></button>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" onclick="abandonMod()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+    <button id="abandonBtn" onclick="abandonMod()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
   </div>
   <!-- end quizCard -->
 
@@ -1365,7 +1263,7 @@
 
   <!-- GRAM MENU: fixed overlay, outside grammaireScreen -->
   <div id="gramMenu" class="lit-menu" style="display:none;">
-    <button class="menu-back-btn" onclick="goTransition('home')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(28px,4vh,40px);width:auto;" alt=""/></button>
+    <button class="menu-back-btn" onclick="goTransition('home')">← Accueil</button>
     <div class="banner-large"><span class="banner-large-text">Grammaire</span></div>
     <div class="lit-subtitle">Choisis une séance</div>
 
@@ -1470,7 +1368,7 @@
 
   <!-- CONJ MENU -->
   <div id="conjMenu" class="lit-menu" style="display:none;">
-    <button class="menu-back-btn" onclick="goTransition('home')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(28px,4vh,40px);width:auto;" alt=""/></button>
+    <button class="menu-back-btn" onclick="goTransition('home')">← Accueil</button>
     <div class="banner-large"><span class="banner-large-text">Conjugaison</span></div>
     <div class="lit-subtitle">Choisis une séance</div>
 
@@ -1637,7 +1535,7 @@
            id="bossKeyAnimImg"/>
     </div>
     <div id="bossKeyMsg" style="font-size:22px;font-weight:900;color:#facc15;opacity:0;transition:opacity 1s ease;max-width:500px;line-height:1.4;"></div>
-    <button id="bossKeyClose" onclick="closeBossKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#facc15,#d97706);color:#1a0a00;font-size:16px;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
+    <button id="bossKeyClose" onclick="closeBossKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#facc15,#d97706);color:#1a0a00;font-size:16px;font-weight:900;cursor:pointer;">⚔️ Entrer dans l'arène !</button>
   </div>
 
   <!-- BOSS BATTLE OVERLAY -->
@@ -1666,14 +1564,14 @@
       <div style="height:22px;background:rgba(0,0,0,.6);border-radius:999px;border:2px solid rgba(255,100,0,.5);overflow:hidden;box-shadow:0 0 16px rgba(255,80,0,.35);">
         <div id="bossHpFill" style="height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#f97316,#facc15);border-radius:999px;transition:width .5s;"></div>
       </div>
-      <div id="bossHpText" style="font-size:12px;color:#fca5a5;text-align:center;margin-top:3px;font-weight:700;">40 / 40</div>
+      <div id="bossHpText" style="font-size:12px;color:#fca5a5;text-align:center;margin-top:3px;font-weight:700;">30 / 30</div>
     </div>
     <!-- Timer -->
     <div id="bossTimer" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10;
          font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.6);">30</div>
     <!-- Question area -->
     <div style="position:absolute;top:50%;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:0 16px 180px;gap:12px;transform:translateY(-50%);max-height:80vh;overflow-y:auto;">
-      <div id="bossQCounter" style="font-size:13px;color:#93c5fd;font-weight:800;letter-spacing:.5px;">Question 1 / 40</div>
+      <div id="bossQCounter" style="font-size:13px;color:#93c5fd;font-weight:800;letter-spacing:.5px;">Question 1 / 30</div>
       <div id="bossQBox" style="background:rgba(5,15,40,.9);border:2px solid rgba(100,150,255,.4);border-radius:20px;
            padding:22px 28px;max-width:640px;width:100%;font-size:19px;color:#e0e7ff;line-height:1.6;text-align:center;
            box-shadow:0 0 40px rgba(50,100,255,.25),inset 0 0 30px rgba(0,0,40,.3);font-weight:600;"></div>
@@ -1685,10 +1583,9 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(255,100,100,.4);
              background:rgba(60,0,0,.55);color:rgba(255,160,160,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonBoss()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+   <button onclick="abandonBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
     <!-- Player lives (Conjugus) -->
-    <div id="bossLivesDisplay" style="position:absolute;top:54px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:8px;justify-content:center;">
-      <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
+    <div id="bossLivesDisplay" style="position:absolute;top:14px;left:16px;z-index:15;display:flex;gap:6px;">
       <img class="boss-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
     </div>
     <!-- Audio elements -->
@@ -1705,7 +1602,7 @@
     <img id="bossResultImg" src="" alt="" style="width:min(240px,60vw);"/>
     <div id="bossResultTitle" style="font-size:28px;font-weight:900;"></div>
     <div id="bossResultMsg" style="font-size:16px;color:#e0e7ff;max-width:420px;line-height:1.6;"></div>
-    <button onclick="closeBossResult()" class="primary-btn"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
+    <button onclick="closeBossResult()" class="primary-btn">← Retour au menu</button>
   </div>
 
   <!-- GRAMMAR BOSS KEY OVERLAY -->
@@ -1714,7 +1611,7 @@
     <img id="gramKeyImg" src="https://i.postimg.cc/CxXNv67v/Cle-grammaire.png" alt="Clé de la Langue"
          style="width:0;transition:width 1.5s ease,opacity 1.5s ease;opacity:0;" id="gramKeyAnimImg"/>
     <div id="gramKeyMsg" style="font-size:22px;font-weight:900;color:#60a5fa;opacity:0;transition:opacity 1s ease;max-width:500px;line-height:1.4;"></div>
-    <button id="gramKeyClose" onclick="closeGramKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
+    <button id="gramKeyClose" onclick="closeGramKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;">✍️ Entrer dans l'arène !</button>
   </div>
 
   <!-- GRAMMAR BOSS BATTLE OVERLAY -->
@@ -1757,7 +1654,7 @@
     <!-- Question area -->
     <div style="position:absolute;top:50%;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:0 16px 180px;gap:12px;transform:translateY(-50%);max-height:80vh;overflow-y:auto;">
       <div id="gramQCounter" style="font-size:13px;color:#1e40af;font-weight:800;letter-spacing:.5px;text-shadow:0 1px 3px rgba(255,255,255,.8);">Question 1 / 50</div>
-      <div id="gramQBox" style="background:rgba(30,60,120,.85);color:#e8f0ff;border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.88);border:2px solid rgba(59,130,246,.4);border-radius:20px;
+      <div id="gramQBox" style="background:rgba(255,255,255,.88);border:2px solid rgba(59,130,246,.4);border-radius:20px;
            padding:22px 28px;max-width:640px;width:100%;font-size:18px;color:#1e3a8a;line-height:1.6;text-align:center;
            box-shadow:0 4px 30px rgba(59,130,246,.2);font-weight:600;"></div>
       <div id="gramAnswerWrap" style="max-width:580px;width:100%;display:grid;gap:10px;"></div>
@@ -1768,10 +1665,9 @@
              padding:9px 18px;border-radius:12px;border:1px solid rgba(100,150,255,.35);
              background:rgba(0,10,50,.55);color:rgba(147,197,253,.85);font-size:13px;
              font-weight:700;cursor:pointer;backdrop-filter:blur(4px);
-   <button onclick="abandonGramBoss()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+   <button onclick="abandonGramBoss()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
     <!-- Player lives (Grammaria) -->
-    <div id="gramLivesDisplay" style="position:absolute;top:54px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:8px;justify-content:center;align-items:center;">
-      <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
+    <div id="gramLivesDisplay" style="position:absolute;top:12px;left:16px;z-index:15;display:flex;gap:6px;align-items:center;">
       <img class="gram-life-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:30px;height:30px;"/>
     </div>
     <!-- Audio -->
@@ -1791,7 +1687,7 @@
     <img id="gramResultImg" src="" alt="" style="width:min(220px,60vw);"/>
     <div id="gramResultTitle" style="font-size:28px;font-weight:900;"></div>
     <div id="gramResultMsg" style="font-size:16px;color:#e0e7ff;max-width:420px;line-height:1.6;"></div>
-    <button onclick="closeGramResult()" class="primary-btn"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
+    <button onclick="closeGramResult()" class="primary-btn">← Retour au menu</button>
   </div>
 
 <script>
@@ -1850,6 +1746,8 @@ const AVATARS=[
   "https://i.postimg.cc/pdVZkXJG/avatar-7.png",
   "https://i.postimg.cc/VN7FhQKx/avatar-8.png",
   "https://i.postimg.cc/sDZ6tqrJ/avatar-9.png"
+,
+  {src:"https://i.postimg.cc/SxXWBzkG/avatar-spe-teddynounet.png",unlock:k=>(S.badges&&(S.badges.has?S.badges.has("teddyboss"):[...S.badges].includes("teddyboss"))),label:"Teddynounet",special:true}
 ];
 const LOCKED_AV=[
   {src:"https://i.postimg.cc/qMNncGRZ/avatar-spe-1.png",  level:3,  label:"Niv. 3"},
@@ -1916,15 +1814,6 @@ const EXCLUSIVE_AV=[
    label:"Chaperlipopette",
    desc:"Vaincre Mémélité sans perdre de vie",
    check:()=>!!S.memeliteFlawless}
-,
-  {src:"https://i.postimg.cc/SxXWBzkG/avatar-spe-teddynounet.png",
-   label:"Teddynounet",
-   desc:"Vaincre le mini-boss Teddynounet",
-   check:()=>S.badges&&(S.badges.has?S.badges.has("teddyboss"):[...S.badges].includes("teddyboss"))},
-  {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
-   label:"Professeur Daudé",
-   desc:"Être le créateur du jeu, le seul l'unique",
-   check:()=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé"),exclusive:true}
 ];
 const PROF={point:"https://i.postimg.cc/V6gqrbp4/personnage-CD5.png",smile:"https://i.postimg.cc/9MCPQB8L/personnage-CD4.png",dub:"https://i.postimg.cc/4xqS8j8K/personnage-CD2.png"};
 const HINTS=["Lis bien chaque proposition avant de répondre !","Rappelle-toi du cours… Tu l'as !","Prends le temps de réfléchir.","Fais confiance à ta mémoire !","La bonne réponse est là, concentre-toi.","Souviens-toi des définitions vues en classe."];
@@ -1960,76 +1849,44 @@ const BADGES_DEF=[
   {id:"perfectionniste",img:"https://i.postimg.cc/5yS9sczq/perfectionniste.png", emoji:null, name:"Perfectionniste",    desc:"100% sur 10 séances différentes"},
   {id:"veloce",      img:"https://i.postimg.cc/wMpT5x12/eclair.png", emoji:null, name:"Éclair",             desc:"Terminer une séance sans aucune erreur du premier coup"},
   {id:"polymathe",   img:"https://i.postimg.cc/6qf6MsZf/polymathe.png", emoji:null, name:"Polymathe",           desc:"Terminer au moins une séance dans chaque catégorie"},
-  {id:"invaincu",    img:"https://i.postimg.cc/sx4fTFWJ/invaincu.png", emoji:null, name:"Invaincu",            desc:"Réaliser 20 séances sans abandonner"},
-  {id:"moussiou",        img:"https://i.postimg.cc/cLs68FxK/Oh-Moussiou.png",       emoji:null, name:"Oh Moussiou !",     desc:"Faites crier Teddynounet en cliquant sur lui"},
-  {id:"stratospherique", img:"https://i.postimg.cc/7L2xtLkP/stratospherique.png",    emoji:null, name:"Stratosphérique",  desc:"Vaincre Conjugus sans perdre de vie en moins de 4 minutes"},
-  {id:"biblioclaste",    img:"https://i.postimg.cc/BnySCKd9/Bibliocaste.png",        emoji:null, name:"Biblioclaste",     desc:"100% à toutes les séances de Littérature"},
-  {id:"speedrunner",     img:"https://i.postimg.cc/9f7Wgfh2/speedrunner.png",        emoji:null, name:"Speedrunner",      desc:"Terminer une séance en moins d'1 minute 30"},
-  {id:"grammaricide",    img:"https://i.postimg.cc/jj7s3jrG/Grammaricide.png",       emoji:null, name:"Grammaricide",     desc:"100% à toutes les séances de Grammaire"},
-  {id:"conj_expert",     img:"https://i.postimg.cc/rpr8ZpkX/Conjugueur-expert.png",  emoji:null, name:"Conjugueur expert",desc:"100% à toutes les séances de Conjugaison"},
-  {id:"septieme_ciel",   img:"https://i.postimg.cc/0j3W49xy/Septieme-Ciel.png",      emoji:null, name:"Septième ciel",    desc:"Vaincre Grammaria sans perdre de vie en moins de 3 minutes 30"}
+  {id:"invaincu",    img:"https://i.postimg.cc/sx4fTFWJ/invaincu.png", emoji:null, name:"Invaincu",            desc:"Atteindre le niveau 25 sans jamais abandonner"}
 ];
 
 /* ══════════ MODULES DATA ══════════ */
 const MODULES={
   s1:{title:"Séance 1 — Définitions & pacte autobiographique",questions:[
-    {type:"qcm",
-     prompt:"Qu'est-ce qu'une autobiographie ?",
-     options:["Un roman dont le héros ressemble à l'auteur.","Un récit rétrospectif en prose où l'auteur, le narrateur et le personnage principal sont la même personne.","Un journal intime publié après la mort de l'auteur.","Un texte qui raconte la vie d'un personnage fictif."],
-     correctIndex:1,
-     explanation:"L'autobiographie (Lejeune, 1975) = récit rétrospectif en prose où auteur = narrateur = personnage. Triple identité obligatoire."},
-
-    {type:"truefalse",
-     prompt:"Vrai ou faux ? Dans le pacte autobiographique, l'auteur s'engage à raconter la vérité sur sa propre vie.",
-     correct:true,
-     explanation:"VRAI. Le pacte autobiographique (Philippe Lejeune) est l'engagement de sincérité de l'auteur envers le lecteur : auteur, narrateur et personnage sont identiques, et le récit se veut véridique."},
-
-    {type:"qcm",
-     prompt:"Qui a théorisé le concept de « pacte autobiographique » ?",
-     options:["Jean-Paul Sartre","Victor Hugo","Philippe Lejeune","Jean-Jacques Rousseau"],
-     correctIndex:2,
-     explanation:"Philippe Lejeune (1975) a défini le pacte autobiographique dans son essai du même nom : l'auteur, le narrateur et le personnage principal ont le même nom et la même identité."},
-
-    {type:"qcm",
-     prompt:"Quelle est la différence entre une autobiographie et un roman autobiographique ?",
-     options:["Il n'y en a aucune, ce sont des synonymes.","Dans le roman autobiographique, l'auteur ne s'engage PAS à dire la vérité — il transforme ou invente des éléments.","Le roman autobiographique est toujours écrit à la 3e personne.","L'autobiographie est plus courte que le roman autobiographique."],
-     correctIndex:1,
-     explanation:"Dans un roman autobiographique (ex : L'Enfant de Jules Vallès), l'auteur ne signe pas de pacte de vérité. Il transpose sa vie en fiction. Dans une autobiographie, l'auteur s'engage à dire la vérité."},
-
-    {type:"qcm",
-     prompt:"Quel livre est considéré comme la première grande autobiographie moderne française ?",
-     options:["Les Misérables de Victor Hugo","Les Confessions de Jean-Jacques Rousseau","Madame Bovary de Flaubert","Le Rouge et le Noir de Stendhal"],
-     correctIndex:1,
-     explanation:"Les Confessions de Rousseau (écrites vers 1765-1770) inaugure l'autobiographie moderne en France. Rousseau s'engage à se montrer tel qu'il est, avec ses défauts."},
-
-    {type:"fill",
-     prompt:"Complète la définition : Une autobiographie est un récit rétrospectif en [?] qu'une personne réelle fait de sa propre [?], en mettant l'accent sur sa vie [?].",
-     sentence:"Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle].",
-     blanks:["prose","existence","individuelle"],
-     wordBank:["prose","existence","individuelle","poésie","histoire","collective","vers"],
-     explanation:"Définition de Lejeune (1975) : prose / existence / individuelle. Ces trois mots-clés sont à connaître par cœur."},
-
-    {type:"truefalse",
-     prompt:"Vrai ou faux ? Une autobiographie est toujours écrite à la première personne du singulier (je).",
-     correct:true,
-     explanation:"VRAI. L'autobiographie est écrite à la 1re personne car l'auteur = narrateur = personnage. C'est le « je » autobiographique qui garantit cette triple identité."},
-
-    {type:"qcm",
-     prompt:"Dans les Mots de Jean-Paul Sartre, Sartre raconte son enfance. Pourquoi est-ce une autobiographie ?",
-     options:["Parce que c'est un roman policier.","Parce que Sartre (auteur) raconte sa propre enfance à la première personne (auteur = narrateur = personnage).","Parce que c'est un texte philosophique.","Parce qu'il invente des souvenirs d'enfance."],
-     correctIndex:1,
-     explanation:"Dans Les Mots (1964), Sartre respecte le triple pacte : il est à la fois l'auteur, le narrateur et le personnage principal enfant. Il s'engage à la sincérité."},
-
-    {type:"qcm",
-     prompt:"Quel est le temps le plus souvent utilisé dans le récit autobiographique ?",
-     options:["Le présent de narration uniquement.","Le futur simple.","Le passé composé et l'imparfait, car le récit regarde vers le passé (rétrospectif).","Le conditionnel passé."],
-     correctIndex:2,
-     explanation:"L'autobiographie est un récit rétrospectif : on regarde en arrière. On utilise donc le passé composé (actions ponctuelles) et l'imparfait (descriptions, habitudes)."},
-
-    {type:"truefalse",
-     prompt:"Vrai ou faux ? Des mémoires comme ceux de Chateaubriand (Mémoires d'outre-tombe) sont exactement la même chose qu'une autobiographie.",
-     correct:false,
-     explanation:"FAUX. Les mémoires mettent davantage l'accent sur les événements historiques et le contexte collectif, tandis que l'autobiographie se centre sur la vie intérieure et personnelle de l'auteur."}
+    {type:"qcm",prompt:"Qu'est-ce qu'une autobiographie ?",
+     options:["Un genre où l'auteur raconte la vie d'un autre.","Un genre littéraire où l'auteur est le narrateur et raconte sa propre vie.","Un récit imaginaire à la 3e personne.","Un texte poétique sur l'enfance."],
+     correctIndex:1,explanation:"L'autobiographie = genre littéraire où l'auteur EST le narrateur ET raconte sa propre vie. Les trois instances (auteur, narrateur, personnage) coïncident."},
+    {type:"fill",prompt:"Complète l'étymologie grecque du mot autobiographie.",
+     sentence:"Le préfixe [soi-même] vient de « auto », la racine [la vie] de « bio » et la terminaison [écrire] de « graphie ».",
+     blanks:["soi-même","la vie","écrire"],
+     wordBank:["soi-même","la vie","écrire","les autres","la mort","lire","le temps"],
+     explanation:"Auto (αὐτός) = soi-même ; bio (βίος) = la vie ; graphie (γράφειν) = écrire."},
+    {type:"truefalse",prompt:"Vrai ou faux ? L'incipit désigne la fin d'une œuvre littéraire.",
+     options:["Vrai","Faux"],correctIndex:1,
+     explanation:"FAUX ! L'incipit est le DÉBUT d'un texte. La fin s'appelle l'excipit."},
+    {type:"qcm",prompt:"Qui a théorisé le « pacte autobiographique » en 1975 ?",
+     options:["Jean-Jacques Rousseau","Philippe Lejeune","Michel de Montaigne","Roland Barthes"],
+     correctIndex:1,explanation:"Philippe Lejeune, spécialiste de l'autobiographie : Le pacte autobiographique, 1975, éd. Seuil."},
+    {type:"fill",prompt:"Complète la description du pacte autobiographique.",
+     sentence:"Dans le pacte autobiographique, l'[auteur] s'engage à dire la [vérité]. En contrepartie, le [lecteur] lui accorde sa [confiance].",
+     blanks:["auteur","vérité","lecteur","confiance"],
+     wordBank:["auteur","vérité","lecteur","confiance","éditeur","mensonge","doute","personnage"],
+     explanation:"L'auteur s'engage à dire la vérité. Le lecteur s'engage à lui accorder sa confiance. C'est un pacte mutuel."},
+    {type:"qcm",prompt:"Dans une autobiographie, l'auteur, le narrateur et le personnage principal sont…",
+     options:["Trois personnes différentes.","Deux personnes distinctes.","Une seule et même personne.","Au moins deux personnes."],
+     correctIndex:2,explanation:"Règle fondamentale : auteur = narrateur = personnage. Une seule identité se raconte elle-même."},
+    {type:"order",prompt:"Classe ces engagements dans le pacte autobiographique.",
+     buckets:["Auteur","Lecteur"],
+     items:[{text:"Être honnête sur sa vie",bucket:"Auteur"},{text:"Accorder sa confiance",bucket:"Lecteur"},{text:"Croire le récit proposé",bucket:"Lecteur"},{text:"Dire la vérité",bucket:"Auteur"}],
+     explanation:"Auteur → dire la vérité, être honnête. Lecteur → accorder sa confiance, croire le récit."},
+    {type:"truefalse",prompt:"Vrai ou faux ? Insérer des faits biographiques vrais suffit à faire d'un texte une autobiographie.",
+     options:["Vrai","Faux"],correctIndex:1,
+     explanation:"FAUX ! Les faits vrais ne suffisent pas. Il faut aussi : auteur = narrateur = personnage, ET un pacte passé avec le lecteur."},
+    {type:"qcm",prompt:"Quel est le terme qui désigne la coïncidence d'identité entre l'auteur, le narrateur et le personnage dans l'autobiographie ?",
+     options:["L'omniscience narrative","Le pacte autobiographique","L'identité romanesque","La focalisation interne"],
+     correctIndex:1,explanation:"Le PACTE AUTOBIOGRAPHIQUE (Philippe Lejeune, 1975) désigne précisément cette coïncidence : auteur = narrateur = personnage. C'est ce contrat implicite passé avec le lecteur qui définit l'autobiographie."}
   ]},
 
   s2:{title:"Séance 2 — Narratologie",questions:[
@@ -2407,7 +2264,7 @@ const MODULES={
        {left:"Rimes embrassées",right:"ABBA"}
      ],
      explanation:"Rimes PLATES (suivies) : AABB — faciles, naturelles. Rimes CROISÉES (alternées) : ABAB — les plus fréquentes. Rimes EMBRASSÉES : ABBA — effect d'encadrement. La poésie classique alterne aussi rimes masculines (finale non -e) et féminines (finale -e muet)."},
-    {type:"qcm",prompt:"Quel est le schéma de rimes de ce quatrain de Victor Hugo ?\n\n\u00ab\u00a0Demain, d\u00e8s l'aube, \u00e0 l'heure o\u00f9 blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m'attends.\nJ'irai par la for\u00eat, j'irai par la montagne.\nJe ne puis demeurer loin de toi plus longtemps.\u00a0\u00bb",
+    {type:"qcm",prompt:"Quel est le schéma de rimes de ce quatrain de Victor Hugo ?\n\n\u00ab\u00a0Demain, d\u00e8s l'aube, \u00e0 l'heure o\u00f9 blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m'attends.\nJ'irai par la for\u00eat, j'irai par la montagne.\nJe ne puis demeurer plus longtemps loin de toi.\u00a0\u00bb",
      options:["Rimes plates AABB","Rimes croisées ABAB","Rimes embrassées ABBA","Rimes libres sans schéma"],
      correctIndex:1,explanation:"RIMES CROISÉES ou ALTERNÉES : ABAB. La rime de vers 1 (A : campagne) répond à celle du vers 3 (A : montagne), et la rime du vers 2 (B : attends) répond à celle du vers 4 (B : toi) — attention : Hugo utilise ici une rime pauvre sur -oi/-oi (attendS / toI approximatif), mais le schéma ABAB reste reconnaissable. C'est le schéma le plus courant dans la poésie française."},
     {type:"qcm",prompt:"Quelle est la différence entre une rime riche et une rime pauvre ?",
@@ -3517,30 +3374,33 @@ const D={
 };
 
 /* ══════════ HELPERS ══════════ */
-function lv(s,name){
-  if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;
-  s=parseInt(s)||0; // guard against null/undefined/NaN
-  // Progressive XP curve
-  const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,  // L1-10: 100/lvl
-    1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,            // L11-20: 200/lvl
-    3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];            // L21-30: 400/lvl
-  let lvl=1;
-  for(let i=1;i<THRESHOLDS.length;i++){if(s>=THRESHOLDS[i])lvl=i+1;else break;}
-  return lvl;
-}
-function lvThreshold(lvl){
-  lvl=parseInt(lvl)||1;
-  const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,
-    1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,
-    3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];
-  return THRESHOLDS[Math.max(0,Math.min(lvl-1,THRESHOLDS.length-1))];
-}
-function pct(s,name){
-  const cl=lv(s,name);const next=cl+1;
-  const cur=lvThreshold(cl);const nxt=lvThreshold(next);
-  if(nxt<=cur)return 100;
-  return Math.min(Math.max(0,Math.round(((s-cur)/(nxt-cur))*100)),100);
-}
+function lv(s,name){if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;return Math.floor(s/50)+1;}
+function pct(s){return Math.min((s%50)*2,100);}
+function toast(m){D.popup.textContent=m;D.popup.classList.add("show");setTimeout(()=>D.popup.classList.remove("show"),2400);}
+function flashScore(){D.flash.style.display="block";D.flash.style.animation="none";void D.flash.offsetWidth;D.flash.style.animation="scoreAnim .75s ease-out forwards";setTimeout(()=>D.flash.style.display="none",800);}
+function doBurst(){D.burst.classList.add("show");setTimeout(()=>D.burst.classList.remove("show"),880);flashScore();}
+
+/* ══════════ STAR SYSTEM ══════════ */
+const STAR_IMG = "https://i.postimg.cc/yY0GDKvR/etoile.png";
+
+// Module unlock requirements (in total stars needed)
+const MOD_UNLOCK = {
+  // Grammar: sequential unlock based on stars
+  g1:0, g2:3,          // g2 needs 3 stars (finish g1 with ≥2 stars)
+  g3:4,                 // need 4 stars (2 from g1 + 2 from g2 min)
+  g4:7,                 // need 7 stars
+  g5:10,
+  g6:13,
+  g7:16,
+  g8:19,
+  // Conjugaison
+  c1:0,c2:3,c3:5,c4:8,c5:11,c6:14,c7:17,c8:20,
+  c9:23,c10:26,c11:29,c12:32,c13:35,c14:38,
+  // Autobio (mostly open since it's intro)
+  s1:0,s2:2,s3:4,s4:6,s5:8,s6:10,sf:12,
+  // Poésie
+  p1:0,p2:2,p3:4,p4:6,p5:8,p6:10,p7:12,p8:14,p9:16,
+};
 
 function pctToStars(pct){
   if(pct>=100)return 3;
@@ -3595,41 +3455,15 @@ function migrateToStars(){
   });
 }
 
-function doBurst(){
-  const burst=document.getElementById("burst");
-  if(!burst)return;
-  burst.classList.add("active");
-  setTimeout(()=>burst.classList.remove("active"),600);
-}
-
-function toast(msg,iconSrc){
-  try{
-    const el=document.getElementById("badgeToast");
-    const nm=document.getElementById("btName");
-    const ic=document.getElementById("btImg");
-    if(!el)return;
-    if(nm)nm.textContent=msg||"";
-    if(ic)ic.src=iconSrc||"";
-    el.style.display="flex";el.style.opacity="1";
-    clearTimeout(el._toastTimer);
-    el._toastTimer=setTimeout(()=>{el.style.opacity="0";setTimeout(()=>{el.style.display="none";},400);},2800);
-  }catch(e){}
-}
-
 function earnPoints(qKey){
   S.correct++;
-  if(!S.canEarnPoints)return;
-  try{
+  if(S.canEarnPoints){
     const _key=qKey||(S.mod+"_"+S.qIdx);
-    if(S.scoredQIds&&!S.scoredQIds.has(_key)){
+    if(!S.scoredQIds.has(_key)){
       S.scoredQIds.add(_key);
-      S.score+=10;
-      try{doBurst();}catch(e){}
-      try{updateHUD();}catch(e){}
-      try{saveToLB();}catch(e){}
-      try{saveProgress();}catch(e){}
+      S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();
     }
-  }catch(e){}
+  }
 }
 
 function setAllMusicVolume(val){
@@ -3746,7 +3580,7 @@ function showKeyDetail(type){
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
 function updateHUD(){
-  const level=lv(S.score,S.name),p=pct(S.score,S.name);
+  const level=lv(S.score,S.name),p=pct(S.score);
   D.chipAv.src=S.avatar;D.chipName.textContent=S.name;D.chipLv.textContent="Nv "+level;
   D.progFill.style.width=p+"%";D.progMeta.textContent="Score "+S.score+" • Niveau "+level;
   D.panLv.textContent="Niveau "+level;D.panSc.textContent="Score "+S.score;
@@ -3801,8 +3635,6 @@ function buildAvGrid(){
   _addAvLabel(D.avGrid,"Avatars exclusifs (100% catégorie)");
   EXCLUSIVE_AV.forEach(item=>{
     const ok=item.check();
-    // Skip avatars that require being someone specific (e.g. Daudé) for other users
-    if(item.exclusive && !ok) return;
     _addAvItem(D.avGrid,item.src,S.avatar===item.src,ok,item.label+" — "+item.desc,
       e=>{e.stopPropagation();if(ok){S.avatar=item.src;updateHUD();saveToLB();buildAvGrid();}else toast(item.label+" — "+item.desc+" 🔒");},false);
   });
@@ -3836,9 +3668,7 @@ function updateSeanceBadges(){
       const pct=parseInt((S.seancePct&&S.seancePct[id])||"0");
       const stars=pctToStars(pct);
       if(S.done[id]||pct>0){
-        cb.innerHTML=pct>=100
-          ?'<span style="font-size:18px;" title="100% — Séance maîtrisée !">🏆</span>'
-          :starImgHtml(stars);
+        cb.innerHTML=starImgHtml(stars);
       } else cb.textContent="";
     }
     if(sc)sc.classList.toggle("done",!!S.done[id]);
@@ -3881,13 +3711,9 @@ function goTransition(t){D.transition.classList.add("show");setTimeout(()=>{D.tr
 function toggleChapter(id){const b=document.getElementById("body-"+id),a=document.getElementById("arrow-"+id);const o=b.classList.toggle("open");a.classList.toggle("open",o);}
 function showGramMenu(){
   S.mod=null;D.quizCard.style.display="none";
-  if(D.gramScr)D.gramScr.style.display="flex";
-  if(D.homeScr)D.homeScr.style.display="none";
-  if(D.litScr)D.litScr.style.display="none";
-  if(D.conjScr)D.conjScr.style.display="none";
-  if(D.gramMenu)D.gramMenu.style.display="flex";
-  S.currentScreen="grammaire";
   const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  if(D.gramMenu)D.gramMenu.style.display="flex";
+  // Ensure boss chapters are injected
   try{injectGramBossChapter();}catch(e){}
   try{injectOrgografeChapter();}catch(e){}
   try{updateGramBossChapter();}catch(e){}
@@ -3895,26 +3721,19 @@ function showGramMenu(){
 }
 function showConjMenu(){
   S.mod=null;D.quizCard.style.display="none";
-  if(D.conjScr)D.conjScr.style.display="flex";
-  if(D.homeScr)D.homeScr.style.display="none";
-  if(D.litScr)D.litScr.style.display="none";
-  if(D.gramScr)D.gramScr.style.display="none";
-  if(D.conjMenu)D.conjMenu.style.display="flex";
-  S.currentScreen="conjugaison";
   const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  if(D.conjMenu)D.conjMenu.style.display="flex";
 }
 function showLitMenu(){
   S.mod=null;
   D.quizCard.style.display="none";
-  // Show lit screen and menu
-  if(D.litScr)D.litScr.style.display="flex";
-  if(D.homeScr)D.homeScr.style.display="none";
-  if(D.gramScr)D.gramScr.style.display="none";
-  if(D.conjScr)D.conjScr.style.display="none";
-  if(D.litMenu)D.litMenu.style.display="flex";
-  S.currentScreen="literature";
-  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
-  try{updateSeanceBadges();}catch(e){}
+  // Hide all menus first
+  [D.litMenu, D.gramMenu, D.conjMenu].forEach(m=>{if(m)m.style.display="none";});
+  // Show the right one
+  const menuMap={literature:D.litMenu,grammaire:D.gramMenu,conjugaison:D.conjMenu};
+  const m=menuMap[S.currentScreen];
+  if(m) m.style.display="flex";
+  updateSeanceBadges();
 }
 /* startModFrom: called from grammar screen (needs to know which menu to return to) */
 function startModFrom(id,screen){
@@ -3999,7 +3818,6 @@ async function saveToLB(){
   const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
   if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&!_adminNames.includes(S.name)){
     try{
-      // Only update if score improved (never decrease)
       const lbPayload={
         player_name:S.name,
         score:S.score||0,
@@ -4012,17 +3830,21 @@ async function saveToLB(){
         "apikey":SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+SUPABASE_ANON_KEY
       };
-      // UPSERT: insert or update, but ONLY increase score (never decrease)
-      await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
-        method:"POST",
-        headers:{...headers,"Prefer":"return=minimal,resolution=merge-duplicates"},
-        body:JSON.stringify(lbPayload)
-      });
-      // Also PATCH but only if current score > existing (prevent score decrease)
-      await fetch(
-        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name)+"&score=lt."+lbPayload.score,
-        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal"},body:JSON.stringify(lbPayload)}
+      // Try PATCH first (update existing row)
+      const patchRes=await fetch(
+        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
+        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal,count=exact"},body:JSON.stringify(lbPayload)}
       );
+      // If no row was updated (new player), INSERT
+      const contentRange=patchRes.headers.get("Content-Range")||patchRes.headers.get("content-range")||"";
+      const rowsUpdated=contentRange?parseInt(contentRange.split("/")[0]||"0",10):0;
+      if(rowsUpdated===0){
+        await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
+          method:"POST",
+          headers:{...headers,"Prefer":"return=minimal"},
+          body:JSON.stringify(lbPayload)
+        });
+      }
     }catch(e){}
   }
 }
@@ -4038,7 +3860,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,scoredQIds:[...S.scoredQIds]
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{}
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -4057,12 +3879,7 @@ function loadProgress(name){
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
-      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.litKeyShown=d.litKeyShown||false;S.memeliteDefeated=d.memeliteDefeated||false;S.memeliteFlawless=d.memeliteFlawless||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;
-      {const _rs=d.savedQIdx||0;
-       if(S.savedMod&&MODULES[S.savedMod]&&_rs>0&&_rs<MODULES[S.savedMod].questions.length)
-         S.savedQIdx=_rs;
-       else{S.savedMod=null;S.savedQIdx=0;}}
-      S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.scoredQIds)S.scoredQIds=new Set(d.scoredQIds);if(d.stars)S.stars=d.stars;
+      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.litKeyShown=d.litKeyShown||false;S.memeliteDefeated=d.memeliteDefeated||false;S.memeliteFlawless=d.memeliteFlawless||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -4072,19 +3889,6 @@ function loadProgress(name){
       try{updateOrgChapter();}catch(e){}
       try{updateMemeliteChapter();}catch(e){}
       renderInventaire();
-      // Retroactive XP for boss defeats (one-time)
-      if(!S._bossXpGranted)S._bossXpGranted={};
-      [{flag:"bossDefeated",key:"conj",pts:140},{flag:"gramBossDefeated",key:"gram",pts:140},{flag:"orgBossDefeated",key:"org",pts:140},{flag:"memeliteDefeated",key:"mel",pts:140}]
-        .forEach(g=>{if(S[g.flag]&&!S._bossXpGranted[g.key]){S._bossXpGranted[g.key]=true;S.score+=g.pts;}});
-      // Retroactive badges
-      const _lm=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-      const _gm=["g1","g2","g3","g4","g5","g6","g7","g8"];
-      const _cm=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-      setTimeout(()=>{
-        if(_lm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
-        if(_gm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
-        if(_cm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
-      },600);
       saveToLB(); // push latest score to Supabase
     }
   }catch(e){}
@@ -4132,7 +3936,7 @@ function openPlayerPopup(entry){
       badgesList=[...new Set([...badgesList,...localBadges])];
     }
   }catch(_){}
-  const lvl=lv(entry.score||0,entry.name);
+  const lvl=Math.floor(Math.sqrt((entry.score||0)/50))+1;
   // Only show unlocked badges, clickable for detail
   const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
   const badgeCardsHtml=unlockedBadges.length
@@ -4159,7 +3963,7 @@ function openPlayerPopup(entry){
         <div style="font-size:19px;font-weight:900;color:var(--gold);">${entry.name}</div>
         ${entry.desc?`<div style="font-size:12px;color:#ead7ae;font-style:italic;margin-top:3px;">"${entry.desc}"</div>`:''}
         <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
-          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div><div style="font-size:10px;color:#ead7ae;margin-top:3px;">XP${entry.score||0} / ${lvThreshold(lvl+1)}</div>
+          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div>
           <div class="pill" style="font-size:11px;">${entry.score||0} pts</div>
           <div class="pill" style="font-size:11px;">${unlockedBadges.length} badge${unlockedBadges.length!==1?'s':''}</div>
         </div>
@@ -4437,8 +4241,6 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
-  const _roA=document.getElementById("resultsOv");if(_roA)_roA.remove();
-  S._seancesCompleted=0;
   // Save progress (no rollback — keep points earned so far)
   if(S.mod){
     S.savedMod=S.mod;
@@ -4460,13 +4262,8 @@ function abandonMod(){
 }
 
 function startMod(id, resumeFrom){
-  // Always remove resultsOv overlay first (covers everything z-index:999)
-  const _ro0=document.getElementById("resultsOv");if(_ro0)_ro0.remove();
-  const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
-  document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(el.style.zIndex==="9999")el.remove();});
-  const _fov=document.getElementById("failureOv");if(_fov)_fov.style.display="none";
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
-  if(!resumeFrom && S.savedMod===id && S.savedQIdx>0 && MODULES[id] && S.savedQIdx<MODULES[id].questions.length){
+  if(!resumeFrom && S.savedMod===id && S.savedQIdx>0){
     const qs=MODULES[id]?MODULES[id].questions:[];
     const pct=qs.length?Math.round((S.savedQIdx/qs.length)*100):0;
     const cd=document.createElement("div");
@@ -4486,21 +4283,17 @@ function startMod(id, resumeFrom){
     cd.querySelector("#res_no").onclick=()=>{cd.remove();S.savedMod=null;S.savedQIdx=0;startMod(id,null);};
     return;
   }
-  const _allQs=MODULES[id]?MODULES[id].questions:[];
-  const _rawIdx=resumeFrom?resumeFrom.qIdx:0;
-  // Cap to valid range — if savedQIdx >= questions.length, restart from 0
-  const resumeQIdx=(_rawIdx>0&&_rawIdx<_allQs.length)?_rawIdx:0;
-  const resumeCorrect = (resumeQIdx>0&&resumeFrom)?resumeFrom.correct:0;
+  const resumeQIdx = resumeFrom?resumeFrom.qIdx:0;
+  const resumeCorrect = resumeFrom?resumeFrom.correct:0;
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
-  S.sessionScoreStart=S.score;S._seanceStartTime=Date.now();
-  // Reset session scoring (per-session dedup only)
-  S.scoredQIds=new Set();
-  // canEarnPoints: false if module already perfect
-  S.canEarnPoints=!(S.perfect&&S.perfect[id]);
-  saveToLB();
-  if(D.litMenu)D.litMenu.style.display="none";
+  S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();saveToLB();
+  S.sessionScoreStart=S.score;
+  // Allow repeat scoring for practice modules (s2, s3, p2, p3)
+  const ALLOW_REPEAT=['s2','s3','p2','p3'];
+  S.canEarnPoints = !S.done[id] || !S.perfect[id] || ALLOW_REPEAT.includes(id);
+  D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
   D.modLabel.textContent=MODULES[id].title;
@@ -4517,7 +4310,7 @@ function startMod(id, resumeFrom){
   }
   if(starEl) starEl.textContent=(isPoetry||isGram||isConj)?"★★":"★";
   // Show "already mastered" hint if no points to earn
-
+  if(!S.canEarnPoints) toast("✨ Séance déjà maîtrisée — entraînement libre, aucun point gagnable.");
   renderQ();
 }
 
@@ -4526,42 +4319,23 @@ function rndHint(){return HINTS[Math.floor(Math.random()*HINTS.length)];}
 function resetHint(){D.hintImg.src=PROF.point;D.hintText.textContent=rndHint();}
 
 function renderQ(){
-  // Safety: clear any stale popups
-  document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(parseInt(el.style.zIndex||0)>=9999)el.remove();});
-  // Safety: reset out-of-bounds qIdx
-  const _all=MODULES[S.mod]?MODULES[S.mod].questions:[];
-  if(!S.mod||_all.length===0){showResults();return;}
-  if(S.qIdx<0){S.qIdx=0;}
-  if(S.qIdx>=_all.length){showResults();return;}
-  const q=_all[S.qIdx],total=_all.length;
-  if(!q){showResults();return;}
-  // Reset UI
-  if(D.feedback){D.feedback.style.display="none";D.feedback.className="feedback-box";}
-  D.nextBtn=document.getElementById("nextBtn")||D.nextBtn;
-  if(D.nextBtn)D.nextBtn.style.display="none";
-  if(D.aWrap)D.aWrap.innerHTML="";
-  if(D.qBox)D.qBox.textContent="";
+  const all=qs(),q=all[S.qIdx],total=all.length;
+  D.feedback.style.display="none";D.feedback.className="feedback-box";
+  D.nextBtn.style.display="none";D.aWrap.innerHTML="";D.qBox.textContent="";
   S.locked=false;S.subIdx=0;S.subOk=0;
   S.fillQ=null;S.fillBank=[];S.fillBlanks=[];S.fillPendingWord=null;
   S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
-  try{resetHint();}catch(e){}
-  if(D.quizProgFill)D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
-  if(D.quizCounter)D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
-  // Set question text
-  if(D.qBox)D.qBox.textContent=q.prompt||"";
-  try{renderIllustrations(S.mod,S.qIdx);}catch(e){}
-  // Render answers
-  try{
-    if(q.type==="qcm"||q.type==="truefalse")renderQCM(q);
-    else if(q.type==="order")renderOrderStep(q);
-    else if(q.type==="fill")renderFill(q);
-    else if(q.type==="dragdrop")renderDragDrop(q);
-    else if(q.type==="typed")renderTyped(q);
-  }catch(e){
-    console.error("answer render error:",e.message,e.stack);
-    // Show error + emergency fuir in UI
-    if(D.aWrap)D.aWrap.innerHTML='<div style="color:#fca5a5;padding:12px;font-size:13px;">Erreur : '+e.message+'<br>Appuie sur Fuir.</div>';
-  }
+  resetHint();
+  D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
+  D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
+  if(!q){showResults();return;}
+  D.qBox.textContent=q.prompt;
+  renderIllustrations(S.mod,S.qIdx);
+  if(q.type==="qcm"||q.type==="truefalse")renderQCM(q);
+  else if(q.type==="order")renderOrderStep(q);
+  else if(q.type==="fill")renderFill(q);
+  else if(q.type==="dragdrop")renderDragDrop(q);
+  else if(q.type==="typed")renderTyped(q);
 }
 
 /* ── Illustrations per module/question ── */
@@ -4715,16 +4489,11 @@ function showAvatarUnlocked(src,name,msg){
 
 /* ── QCM with shuffled options each session ── */
 function renderQCM(q){
-  // Handle legacy truefalse format (correct:bool, no options array)
-  if(q.type==="truefalse"&&!q.options){
-    q.options=["Vrai","Faux"];
-    q.correctIndex=q.correct===true?0:1;
-  }
-  // Build shuffled index map once per question per session
+  // Build shuffled index map once per question per session (stable within a session)
   if(!q._shuffled){
     const idx=[...q.options.keys()];
     for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
-    q._shuffled=idx;
+    q._shuffled=idx; // [0,3,1,2] = display order of original indices
   }
   const shuffled=q._shuffled;
   const newCorrect=shuffled.indexOf(q.correctIndex);
@@ -4734,14 +4503,13 @@ function renderQCM(q){
   });
 }
 function checkQCMShuffled(sel,correctPos,q){
-  if(S.locked)return; // ignore double-click
-  S.locked=true;const ok=sel===correctPos;
+  if(S.locked)return;S.locked=true;const ok=sel===correctPos;
   D.aWrap.querySelectorAll(".ans-btn").forEach((b,i)=>{
     b.disabled=true;
     if(i===correctPos)b.classList.add("correct");
     else if(i===sel&&!ok)b.classList.add("wrong");
   });
-  try{if(ok)earnPoints(S.mod+"_"+S.qIdx);}catch(e){if(ok)S.correct++;}
+  if(ok){earnPoints(S.mod+"_"+S.qIdx);}
   showFeedback(ok,q.explanation);
 }
 
@@ -4795,7 +4563,6 @@ function renderTyped(q){
     }
     if(ok){earnPoints(S.mod+"_"+S.qIdx);}
     btn.style.display="none";
-    try{inp.blur();}catch(e){} // close mobile keyboard so nextBtn is visible
     showFeedback(ok,q.explanation);
   };
   btn.onclick=validate;
@@ -4808,59 +4575,17 @@ function renderTyped(q){
 /* ── Order (classify) ── */
 function renderOrderStep(q){
   const items=q.items;
-  if(!items||items.length===0){showFeedback(true,q.explanation||"");return;}
-  // Detect format: simple strings vs {text,bucket} objects
-  const isSimple=typeof items[0]==="string";
-  if(isSimple){
-    // Simple format: show items one by one, player picks correct position
-    // Show all items shuffled, player must click them in correct order
-    if(S.subIdx===0&&!q._orderShuffled){
-      const arr=[...items.keys()];
-      for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-      q._orderShuffled=arr; // shuffled display indices
-      q._orderPicks=[]; // player's picks in order
-    }
-    if(S.subIdx>=items.length){
-      // Check if picks match original order
-      const correct=q._orderPicks&&q._orderPicks.every((v,i)=>v===i);
-      if(correct)earnPoints(S.mod+"_"+S.qIdx);
-      q._orderShuffled=null;q._orderPicks=[];
-      D.aWrap.innerHTML="";D.qBox.textContent=q.prompt;
-      showFeedback(correct,q.explanation||"");return;
-    }
-    D.qBox.innerHTML='<span style="font-size:12px;opacity:.7;">'+q.prompt+'</span><br><span style="font-size:12px;color:#ead7ae;">Clique sur les éléments dans le bon ordre ('+S.subIdx+'/'+items.length+' placés)</span>';
-    D.aWrap.innerHTML="";
-    const remaining=(q._orderShuffled||[...items.keys()]).filter(i=>!(q._orderPicks||[]).includes(i));
-    remaining.forEach(origIdx=>{
-      const b=document.createElement("button");b.className="ans-btn";
-      b.style.cssText="text-align:left;font-size:13px;padding:10px 14px;";
-      b.textContent=items[origIdx];
-      b.onclick=()=>{
-        if(S.locked)return;
-        const expectedIdx=S.subIdx; // next correct index is S.subIdx
-        const correct=origIdx===expectedIdx;
-        if(correct)S.subOk++;
-        if(!q._orderPicks)q._orderPicks=[];
-        q._orderPicks.push(origIdx);
-        b.classList.add(correct?"correct":"wrong");
-        b.disabled=true;
-        setTimeout(()=>{S.subIdx++;renderOrderStep(q);},correct?400:800);
-      };
-      D.aWrap.appendChild(b);
-    });
-    return;
-  }
-  // Bucket format: classify items
   if(S.subIdx>=items.length){
     const ok=S.subOk===items.length;if(ok){earnPoints(S.mod+"_"+S.qIdx);}
     D.aWrap.innerHTML="";D.qBox.textContent=q.prompt;showFeedback(ok,q.explanation);return;
   }
   const item=items[S.subIdx];
   D.qBox.innerHTML='<span style="font-size:12px;opacity:.7;">'+q.prompt+'</span><br><br><span style="font-size:12px;color:#ead7ae;">Élément '+(S.subIdx+1)+'/'+items.length+' :</span>';
-  const d=document.createElement("div");d.className="order-disp";d.textContent='"'+(item.text||item)+'"';D.aWrap.appendChild(d);
+  const d=document.createElement("div");d.className="order-disp";d.textContent='"'+item.text+'"';D.aWrap.appendChild(d);
   const s=document.createElement("div");s.className="order-sub";s.textContent="👉 Dans quelle colonne classer cet élément ?";D.aWrap.appendChild(s);
-  const buckets=q.buckets||[];
-  buckets.forEach(bucket=>{
+  // Keep bucket buttons in consistent order (no shuffle — avoids confusion)
+  const shuffledBuckets=[...q.buckets];
+  shuffledBuckets.forEach(bucket=>{
     const b=document.createElement("button");b.className="ans-btn";b.textContent=bucket;
     b.onclick=()=>{
       const ok=bucket===item.bucket;if(ok)S.subOk++;
@@ -4929,7 +4654,7 @@ function renderFillUI(){
 
   // ── Validate ──
   const allFilled=!S.fillBlanks.includes(null);
-  html+=`<button class="fill-validate-btn" onclick="validateFill()"${!allFilled?' style="opacity:.5;cursor:default;"':''}><img src="https://i.postimg.cc/FstKGd1L/valider.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>`;
+  html+=`<button class="fill-validate-btn" onclick="validateFill()"${!allFilled?' style="opacity:.5;cursor:default;"':''}>Valider ✓</button>`;
 
   D.aWrap.innerHTML=html;
 }
@@ -5033,7 +4758,7 @@ function renderDDUI(){
   });
   html+='</div>';
   html+='</div>';
-  html+=`<div class="dd-validate-wrap"><span class="dd-count">${connCount}/${q.pairs.length} reliés</span><button class="dd-validate-btn" onclick="validateDD()"${connCount<q.pairs.length?' style="opacity:.55;"':''}><img src="https://i.postimg.cc/FstKGd1L/valider.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button></div>`;
+  html+=`<div class="dd-validate-wrap"><span class="dd-count">${connCount}/${q.pairs.length} reliés</span><button class="dd-validate-btn" onclick="validateDD()"${connCount<q.pairs.length?' style="opacity:.55;"':''}>Valider ✓</button></div>`;
   D.aWrap.innerHTML=html;
 }
 
@@ -5087,110 +4812,95 @@ function validateDD(){
 
 /* ══════════ SHARED FEEDBACK DISPLAY ══════════ */
 function showFeedback(ok,explanation){
-  if(D.hintImg)D.hintImg.src=ok?PROF.smile:PROF.dub;
-  if(D.hintText)D.hintText.textContent=ok?"Excellent ! Tu as bien retenu le cours 👏":"Ce n'est pas grave ! Lis bien la correction pour retenir.";
+  D.hintImg.src=ok?PROF.smile:PROF.dub;
+  D.hintText.textContent=ok?"Excellent ! Tu as bien retenu le cours 👏":"Ce n'est pas grave ! Lis bien la correction pour retenir.";
   D.feedback.style.display="block";
   D.feedback.className="feedback-box "+(ok?"good":"bad");
   D.feedback.innerHTML=`<div class="fb-inner"><img class="fb-prof" src="${ok?PROF.smile:PROF.dub}" alt=""/><div class="fb-text"><div class="fb-title">${ok?"✅ Correct !":"❌ Incorrect"}</div><div>${explanation}</div></div></div>`;
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
-  // Failure check (only for first play, skip on 100% replay)
-  if(!ok && !isLast && S.canEarnPoints){
+  // Only check failure if NOT the last question (avoid blocking final results)
+  if(!ok && !isLast){
     const remaining=total-(S.qIdx+1);
     const maxPossible=S.correct+remaining;
-    if(total>0 && Math.round((maxPossible/total)*100)<50 && S.qIdx>=2){
-      setTimeout(()=>{try{showFailure(Math.round((S.correct/total)*100),total);}catch(e){}},800);
-      // Don't return — still show nextBtn so player can continue
+    const maxPct=total>0?Math.round((maxPossible/total)*100):100;
+    if(maxPct<50&&S.qIdx>0){
+      setTimeout(()=>{
+        const curP=total>0?Math.round((S.correct/total)*100):0;
+        showFailure(curP,total);
+      },1200);
+      return;
     }
   }
-  // Show next button — bulletproof via D.nextBtn
-  if(D.nextBtn){
-    D.nextBtn.style.cssText="background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
-    D.nextBtn.style.display="block";
-    D.nextBtn.innerHTML=isLast
-      ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>'
-      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>';
-    D.nextBtn.onclick=function(){nextQuestion();};
-    setTimeout(()=>{try{D.nextBtn.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}},80);
-  }
+  D.nextBtn.style.display="inline-block";
+  D.nextBtn.textContent=isLast?"Voir mes résultats →":"Question suivante →";
+  D.nextBtn.onclick=()=>{S.qIdx++;renderQ();};
 }
-
-
-function _goBackFromResults(modId){
-  S.mod=null;
-  try{const vm=document.getElementById("victoryMusic");if(vm){vm.pause();vm.currentTime=0;}}catch(e){}
-  if(!modId)return goTransition('home');
-  if(modId.startsWith('g'))showGramMenu();
-  else if(modId.startsWith('c'))showConjMenu();
-  else showLitMenu();
-}
-
-function nextQuestion(){
-  S.locked=false;
-  if(!S.mod){const ro=document.getElementById("resultsOv");if(!ro)showResults();return;}
-  S.qIdx++;
-  renderQ();
-}
-
 
 /* ══════════ RESULTS ══════════ */
 function showResults(){
-  // Remove any stale overlay
-  const _old=document.getElementById("resultsOv");if(_old)_old.remove();
-  // Get mod BEFORE clearing
-  const _mod=S.mod;
-  const _qs=_mod&&MODULES[_mod]?MODULES[_mod].questions:[];
-  const total=_qs.length;
-  const p=total>0?Math.round((S.correct/total)*100):0;
-  // Badges
-  if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)unlockBadge("speedrunner");
-  if(!S._seancesCompleted)S._seancesCompleted=0; S._seancesCompleted++;
-  if(S._seancesCompleted>=20)unlockBadge("invaincu");
-  const _lm=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-  const _gm=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const _cm=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-  if(_lm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
-  if(_gm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
-  if(_cm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
-  // Update stats
-  if(_mod){
-    S.done[_mod]=true; if(p===100)S.perfect[_mod]=true;
-    if(!S.seancePct)S.seancePct={};
-    const prev=parseInt(S.seancePct[_mod])||0;
-    if(p>prev)S.seancePct[_mod]=p+"%";
-    if(prev===100)S.perfect[_mod]=true;
-    if(!S.stars)S.stars={};
-    S.stars[_mod]=Math.max(pctToStars(p),S.stars[_mod]||0);
-  }
-  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-  S.mod=null;
-  try{checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();}catch(e){}
-  setTimeout(()=>{try{
-    if(_cm.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();}
-    if(_gm.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();}
-    if(_lm.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();}
-  }catch(e){}},800);
-  // Hide quiz card
-  D.quizCard.style.display="none";
-  // Build overlay
-  const starsHtml=_mod&&S.stars&&S.stars[_mod]?starImgHtml(S.stars[_mod]):starImgHtml(0);
-  let msg="Continue a reviser !";
-  if(p===100)msg="Parfait ! Tu maitrises cette seance !";
-  else if(p>=66)msg="Bien joue ! Encore un effort !";
-  else if(p>=33)msg="Tu peux mieux faire !";
-  const ov=document.createElement("div");
-  ov.id="resultsOv";
-  ov.style.cssText="position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(circle at 30% 0%,#a05018 0%,#723a10 32%,#4a2207 65%,#271004 100%);overflow-y:auto;";
-  const topContent=p===100
-    ?'<div style="font-size:56px;line-height:1;filter:drop-shadow(0 0 16px rgba(250,204,21,.8));">\u{1F3C6}</div>'
-    :'<img src="'+(p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png":"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png")+'" style="width:min(80px,22vw);animation:bob2 4s ease-in-out infinite;" alt=""/>';
-  const card=document.createElement("div");
-  card.style.cssText="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 20px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);";
-  card.innerHTML='<div style="display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:12px;">'+topContent+'<div><div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;">Seance terminee !</div><div style="font-size:38px;font-weight:900;color:'+(p===100?"#facc15":"var(--ivory)")+';">'+p+'%</div><div style="font-size:13px;color:#ead7ae;">'+S.correct+' / '+total+' bonnes reponses</div></div></div><div style="font-size:26px;margin:6px 0;">'+starsHtml+'</div><div style="font-size:13px;color:#ead7ae;opacity:.8;margin-bottom:14px;">'+msg+'</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button id="_rr" style="padding:12px 16px;border-radius:14px;border:1px solid rgba(217,164,65,.4);background:rgba(217,164,65,.15);color:var(--gold);font-weight:800;font-size:14px;cursor:pointer;">\uD83D\uDD01 Recommencer</button><button id="_rc" style="padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:14px;cursor:pointer;">Continuer</button></div>';
-  ov.appendChild(card);
-  document.body.appendChild(ov);
-  card.querySelector("#_rr").onclick=function(){ov.remove();if(_mod)startMod(_mod);};
-  card.querySelector("#_rc").onclick=function(){ov.remove();_goBackFromResults(_mod);};
+  const total=qs().length,p=total>0?Math.round((S.correct/total)*100):0;
+  S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
+  // Store percentage for display (keep best)
+  if(!S.seancePct)S.seancePct={};
+  const prevPct=parseInt(S.seancePct[S.mod])||0;
+  if(p>prevPct) S.seancePct[S.mod]=p+"%";
+  const displayPct=Math.max(p,prevPct);
+  // Keep perfect if was already perfect
+  if(prevPct===100) S.perfect[S.mod]=true;
+  checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();
+  // Check boss unlock conditions after séance completion
+  setTimeout(()=>{
+    const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+    const conjDone=allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
+    let _keyUnlocked=false;
+    if(conjDone&&!S.conjKeyShown){S.conjKeyShown=true;_keyUnlocked=true;showKeyUnlock("conjugaison");}
+    const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
+    const gramDone=allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
+    if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;_keyUnlocked=true;showKeyUnlock("grammaire");}
+    const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+    const litDone=allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
+    if(litDone&&!S.litKeyShown){S.litKeyShown=true;_keyUnlocked=true;showKeyUnlock("litterature");}
+    if(_keyUnlocked)saveProgress(); // persist key flags immediately
+  },800);
+  D.quizProgFill.style.width="100%";
+  D.quizCounter.textContent="Terminé ! "+S.correct+"/"+total+" bonnes réponses";
+  D.hintImg.src=PROF.smile;D.hintText.textContent=p>=66?"Bravo ! Tu es prêt(e) pour le brevet 🎓":"Continue à réviser, tu vas y arriver !";
+  if(!S.stars)S.stars={};
+  const newStars=pctToStars(p);
+  // Never downgrade: keep the best score
+  S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
+  const starCount=S.stars[S.mod];
+  let stars=starImgHtml(starCount),msg="Continue à réviser !";
+  if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉 (3 étoiles)";}
+  else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
+  else if(p>=33){msg="Tu peux mieux faire ! (1 étoile)";}
+  // Student character: smiling if ≥66%, thinking if below
+  const eleveImg=p>=66
+    ?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
+    :"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
+  D.qBox.innerHTML="";D.aWrap.className="answers";
+  // Scroll quiz card to top so results are visible
+  const qc=document.getElementById("quizCard");
+  if(qc){qc.scrollTo({top:0,behavior:"smooth"});}
+  D.aWrap.innerHTML=`
+    <div class="results-wrap">
+      <div style="display:flex;align-items:flex-end;gap:16px;justify-content:center;">
+        <img src="${eleveImg}" alt="" class="deco-eleve-results"/>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div class="res-title">Séance terminée !</div>
+          <div class="res-stars">${stars}</div>
+          <div class="res-pct">${p}%</div>
+          <div class="res-sub">${S.correct} / ${total} bonnes réponses</div>
+          <div class="res-sub">${msg}</div>
+        </div>
+      </div>
+      <div class="res-btns">
+        <button class="primary-btn" onclick="startMod('${S.mod}')">🔁 Recommencer</button>
+        <button class="primary-btn green" onclick="showLitMenu()">📚 Séances</button>
+      </div>
+    </div>`;
+  D.feedback.style.display="none";D.nextBtn.style.display="none";
 }
 
 /* ══════════ WELCOME ══════════ */
@@ -5538,7 +5248,8 @@ function showDescriptionPopup(name, avatar, hashedPwd){
     <div id="descErrMsg" style="font-size:12px;color:#fca5a5;min-height:16px;margin-bottom:10px;"></div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="descOkBtn" style="flex:1;padding:12px;border-radius:12px;border:none;
-        background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:point<img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(30px,4.5vh,44px);width:auto;display:block;" alt=""/>
+        background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
+        C'est parti ! 🚀
       </button>
       <button id="descSkipBtn"
         style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
@@ -5689,8 +5400,7 @@ function renderBigBadgesGrid(){
   });
 }
 document.getElementById("bigNameInput")?.addEventListener("input",()=>{
-  const _oNB=S.name;S.name=document.getElementById("bigNameInput").value||"Élève";
-  if(_oNB&&_oNB!==S.name){try{fetch(SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(_oNB),{method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}).catch(()=>{});}catch(e){}}
+  S.name=document.getElementById("bigNameInput").value||"Élève";
   D.chipName.textContent=S.name; saveToLB();
 });
 
@@ -5808,7 +5518,7 @@ window.addEventListener("load",()=>{
         try{buildBigAvGrid();}catch(e){}
         // Ensure name shows in panel inputs
         const ni=document.getElementById("nameInput");if(ni)ni.value=S.name;
-        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="none";
+        const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="inline-flex";
         const bni=document.getElementById("bigNameInput");if(bni)bni.value=S.name;
         try{updateBossChapter();}catch(e){}
         try{updateGramBossChapter();}catch(e){}
@@ -5838,7 +5548,7 @@ window.addEventListener("load",()=>{
 D.chip.addEventListener("click",e=>{e.stopPropagation();S.panelOpen=!S.panelOpen;D.acctPanel.classList.toggle("open",S.panelOpen);});
 document.addEventListener("click",()=>{if(S.panelOpen){S.panelOpen=false;D.acctPanel.classList.remove("open");}});
 D.acctPanel.addEventListener("click",e=>e.stopPropagation());
-D.nameInput.addEventListener("input",()=>{const _oNS=S.name;S.name=D.nameInput.value||"Élève";if(_oNS&&_oNS!==S.name){try{fetch(SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(_oNS),{method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}).catch(()=>{});}catch(e){}}D.chipName.textContent=S.name;saveToLB();});
+D.nameInput.addEventListener("input",()=>{S.name=D.nameInput.value||"Élève";D.chipName.textContent=S.name;saveToLB();});
 // Enter key advances to next question
 document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&document.getElementById("quizCard")&&document.getElementById("quizCard").style.display==="flex"){
@@ -5885,22 +5595,18 @@ const BOSS_QUESTIONS=[
   {prompt:"Conjugue 'avoir' au subjonctif passé, 3e pers. plur.",answer:["aient eu","qu'ils aient eu","ils aient eu"],explanation:"AVOIR subjonctif passé : qu'ils AIENT EU"}
 ];
 
-let bossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
-  // Reset boss hearts (scoped to bossOv)
-  bossState.askedQIds=new Set();
-  setTimeout(()=>{
-    const ov=document.getElementById("bossOv");
-    if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
-  },50);
+let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
+  // Reset hearts
+  setTimeout(()=>{const h=document.querySelectorAll(".boss-life-heart");h.forEach(x=>x.style.filter="");},50);
 
 
-function showLockedBossMsg(title, text, bossImg, bossName){
+function showLockedBossMsg(title, text){
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a00,#0a0500);border:2px solid rgba(217,164,65,.3);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .3s;">
-    ${bossImg?`<img src="${bossImg}" style="width:80px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(217,164,65,.5));animation:bossIdle 4s ease-in-out infinite;margin-bottom:8px;"/>`:`<div style="font-size:44px;margin-bottom:12px;">🔒</div>`}
-    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;">${bossName||title}</div>
+    <div style="font-size:44px;margin-bottom:12px;">🔒</div>
+    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:12px;">${title}</div>
     <div style="font-size:14px;color:#ead7ae;line-height:1.7;margin-bottom:20px;">${text}</div>
     <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:11px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/9F3f1RzM/d-accord.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
   </div>`;
@@ -5912,7 +5618,7 @@ function tryOpenBoss(){
   const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
   const allDone=S.conjKeyShown||allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
   if(!allDone){
-    showLockedBossMsg("Clé du Temps requise","🔐 <strong>Module verrouillé</strong><br>Il vous faut la <strong>Clé du Temps</strong> pour affronter Conjugus.<br><span style='font-size:12px;opacity:.7;'>Obtenez 100% à toutes les séances de conjugaison.</span>","https://i.postimg.cc/j5NdKHYq/dieu-conjugaison.png","Conjugus");
+    showLockedBossMsg("🔒 Clé du Temps requise","Termine toutes les séances de conjugaison à 100% pour obtenir la Clé du Temps et affronter Conjugus.");
     return;
   }
   // Check if just unlocked for first time
@@ -5953,8 +5659,8 @@ function confirmBossBattle(){
     <div style="font-size:22px;font-weight:900;color:#facc15;margin-bottom:12px;">⚔️ Défi du Boss</div>
     <div style="font-size:15px;color:#f0dbb5;line-height:1.6;margin-bottom:20px;">Vous vous apprêtez à affronter le <strong style="color:#facc15;">Conjugus</strong>.<br>Une seule erreur sera <strong style="color:#ef4444;">fatale</strong>.<br>Êtes-vous prêt(e) ?</div>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="bossYes" class="img-btn" style="--bh:clamp(32px,5vh,46px);"><img src="https://i.postimg.cc/vHRmXgD1/oui.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
-      <button id="bossNo" class="img-btn" style="--bh:clamp(32px,5vh,46px);"><img src="https://i.postimg.cc/tC0gDZ7s/non.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
+      <button id="bossYes" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,#facc15,#d97706);color:#1a0a00;font-size:16px;font-weight:900;cursor:pointer;">⚔️ OUI</button>
+      <button id="bossNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;">← Non</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -5962,7 +5668,6 @@ function confirmBossBattle(){
   ov.querySelector("#bossNo").onclick=()=>{ov.remove();};
 }
 function startBoss(){
-  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Stop menu music, start boss music
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   const bm=document.getElementById("bossMusicAudio");if(bm){
@@ -5971,12 +5676,7 @@ function startBoss(){
     bm.volume=_volNow*0.6;
     bm.play().catch(()=>{});
   }
-  bossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,lives:2,_losingLife:false,askedQIds:new Set()};
-  bossState.askedQIds=new Set();
-  setTimeout(()=>{
-    const ov=document.getElementById("bossOv");
-    if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
-  },50);
+  bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0};
   document.getElementById("bossOv").style.display="block";
   renderBossQ();
   startAsteroidSpawner();
@@ -6058,7 +5758,7 @@ function stopAsteroidSpawner(){
 function shuffleBossQuestions(){
   const arr=[...BOSS_QUESTIONS];
   for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-  return arr.slice(0,40); // Return 40 from available pool
+  return arr;
 }
 function renderBossQ(){
   if(!bossState.shuffledQs||!bossState.shuffledQs.length){
@@ -6067,7 +5767,7 @@ function renderBossQ(){
   if(bossState.qIdx>=bossState.shuffledQs.length){bossVictory();return;}
   const q=bossState.shuffledQs[bossState.qIdx];
   if(!q){bossVictory();return;}
-  document.getElementById("bossQCounter").textContent=`Question ${bossState.qIdx+1} / 40`;
+  document.getElementById("bossQCounter").textContent=`Question ${bossState.qIdx+1} / 30`;
   document.getElementById("bossQBox").textContent=q.prompt;
   const wrap=document.getElementById("bossAnswerWrap");
   wrap.innerHTML="";
@@ -6128,11 +5828,11 @@ function bossHit(){
   bossState.hp--;
   bossState.qIdx++;
   // Update HP bar
-  const pct=(bossState.hp/40)*100;
+  const pct=(bossState.hp/30)*100;
   const fill=document.getElementById("bossHpFill");
   const txt=document.getElementById("bossHpText");
   if(fill)fill.style.width=pct+"%";
-  if(txt)txt.textContent=bossState.hp+" / 40";
+  if(txt)txt.textContent=bossState.hp+" / 30";
   // Hit animation — blink + slide
   const char=document.getElementById("bossChar");
   const wrap=document.getElementById("bossCharWrap");
@@ -6156,20 +5856,21 @@ function bossHit(){
 function bossLoseLife(reason){
   if(bossState._losingLife)return; // prevent re-entry
   bossState._losingLife=true;
-  clearInterval(bossState.timerInt);
+  clearInterval(bossState.timerInt); // stop timer immediately
   bossState.lives--;
-  const _bov=document.getElementById("bossOv");
-  const hearts=_bov?_bov.querySelectorAll(".boss-life-heart"):document.querySelectorAll(".boss-life-heart");
+  const hearts=document.querySelectorAll(".boss-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<bossState.lives?"":"grayscale(1) brightness(.3)";});
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
   document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
-  if(bossState.lives<=0){setTimeout(()=>bossDefeat(reason),600);}
-  else{setTimeout(()=>{bossState._losingLife=false;renderBossQ();},1000);}
+  if(bossState.lives<=0){
+    setTimeout(()=>bossDefeat(reason),600);
+  } else {
+    setTimeout(()=>{bossState._losingLife=false;renderBossQ();},1000);
+  }
 }
 
 function bossDefeat(reason){
-  bossState._losingLife=false;
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
   document.getElementById("bossOv").style.display="none";
@@ -6212,7 +5913,7 @@ function abandonBoss(){
     <div style="font-size:14px;color:#ead7ae;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>Le boss sera de retour la prochaine fois…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
+      <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">⚔️ Continuer</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -6232,9 +5933,7 @@ function abandonBoss(){
   ov.querySelector("#abb_no").onclick=()=>ov.remove();
 }
 
-function _stopVictoryMusic(){try{const vm=document.getElementById("victoryMusic");if(vm){vm.pause();vm.currentTime=0;}}catch(e){}}
 function closeBossResult(){
-  _stopVictoryMusic();
   stopAsteroidSpawner();
   document.getElementById("bossResultOv").style.display="none";
   const bg=document.getElementById("bgMusic");
@@ -6392,11 +6091,11 @@ let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs
     const _fo=document.getElementById("gramForestBg");
     if(_fo){_fo.style.filter="";}
     // Reset clouds to original
-    const _cloudOrig=["https://i.postimg.cc/cHgcGq1j/nuage1.png","https://i.postimg.cc/d1bjqWDn/nuage2.png","https://i.postimg.cc/NM9xvhGZ/nuage3.png","https://i.postimg.cc/mDzSWxZ0/nuage4.png","https://i.postimg.cc/gJXKb9cC/nuage5.png"];
+    const _cloudOrig=["https://i.postimg.cc/G22wQmLV/nuage01.png","https://i.postimg.cc/B6mY0FG3/nuage02.png","https://i.postimg.cc/Wz1GMbtS/nuage03.png","https://i.postimg.cc/44jvWmFt/nuage04.png","https://i.postimg.cc/HxdGV0BG/nuage05.png"];
     ["gc1","gc2","gc3","gc4","gc5"].forEach((id,i)=>{const el=document.getElementById(id);if(el&&_cloudOrig[i])el.src=_cloudOrig[i];});
     // Reset birds
     const _bi=document.getElementById("gramBirds")||document.getElementById("gramBirdsInner");
-    if(_bi){_bi.src="https://i.postimg.cc/zBsFJd34/oiseaux.png";_bi.style.animation="birdFly 18s linear infinite";_bi.id="gramBirds";}
+    if(_bi){_bi.src="https://i.postimg.cc/K8g8xg2Q/oiseaux.png";_bi.style.animation="birdFly 18s linear infinite";_bi.id="gramBirds";}
     // Hide rain
     const _rain=document.getElementById("rainCanvas");if(_rain)_rain.style.opacity="0";
     // Reset question box styles
@@ -6407,7 +6106,7 @@ let gramBossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs
     if(_hp)_hp.style.background="linear-gradient(90deg,#22c55e,#86efac)";
     // Restore boss to normal skin and position
     const _char=document.getElementById("gramBossChar");
-    if(_char){_char.src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";_char.style.filter="";}
+    if(_char){_char.src="https://i.postimg.cc/kGXmqh3p/deesse-grammaire.png";_char.style.filter="";}
     const _wrap=document.getElementById("gramBossCharWrap");
     if(_wrap){_wrap.style.position="";_wrap.style.left="20px";_wrap.style.bottom="80px";_wrap.style.width="min(280px,35vw)";_wrap.style.transform="";_wrap.style.zIndex="";}
     // Switch back to normal music
@@ -6448,7 +6147,7 @@ function tryOpenGramBoss(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
   const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
   const unlocked=S.gramKeyShown||allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
-  if(!unlocked){showLockedBossMsg("Clé de la Langue requise","🔐 <strong>Module verrouillé</strong><br>Il vous faut la <strong>Clé de la Langue</strong> pour affronter Grammaria.<br><span style='font-size:12px;opacity:.7;'>Obtenez 100% à toutes les séances de grammaire.</span>","https://i.postimg.cc/8533WQzh/deesse-grammaire.png","Grammaria");return;}
+  if(!unlocked){showLockedBossMsg("🔒 Clé de la Langue requise","Termine toutes les séances de grammaire à 100% pour obtenir la Clé de la Langue et affronter Grammaria.");return;}
   confirmGramBoss();
 }
 
@@ -6468,8 +6167,8 @@ function confirmGramBoss(){
     <div style="font-size:22px;font-weight:900;color:#93c5fd;margin-bottom:12px;">✍️ Défi de la Sage Grammaria</div>
     <div style="font-size:15px;color:#bfdbfe;line-height:1.6;margin-bottom:20px;">Vous vous apprêtez à affronter la <strong style="color:#60a5fa;">Grammaria</strong>.<br>Une seule erreur sera <strong style="color:#ef4444;">fatale</strong>.<br>Voulez-vous vraiment l'affronter ?</div>
     <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="gramYes" class="img-btn" style="--bh:clamp(32px,5vh,46px);"><img src="https://i.postimg.cc/vHRmXgD1/oui.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
-      <button id="gramNo" class="img-btn" style="--bh:clamp(32px,5vh,46px);"><img src="https://i.postimg.cc/tC0gDZ7s/non.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
+      <button id="gramYes" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;">✍️ OUI</button>
+      <button id="gramNo" style="padding:12px 28px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:var(--ivory);font-size:16px;font-weight:700;cursor:pointer;">← Non</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -6478,7 +6177,6 @@ function confirmGramBoss(){
 }
 
 function startGramBoss(){
-  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   const gm=document.getElementById("gramMusicAudio");
   if(gm){
@@ -6490,39 +6188,17 @@ function startGramBoss(){
   // Shuffle questions
   const shuffled=[...GRAM_BOSS_QUESTIONS];
   for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
-  gramBossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffled,darkPhase:false,locked:false,lives:2,_losingLife:false};
-  // Always reset char to bottom-left
-  const _cw=document.getElementById("gramBossCharWrap");
-  if(_cw){_cw.style.cssText="position:absolute;bottom:80px;left:20px;z-index:5;pointer-events:none;width:min(280px,35vw);";}
-  // Reset hearts
-  setTimeout(()=>{
-    const ov=document.getElementById("gramBossOv");
-    if(ov)ov.querySelectorAll(".gram-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
-  },50);
+  gramBossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffled,darkPhase:false,locked:false};
   document.getElementById("gramBossOv").style.display="block";
   renderGramBossQ();
   startRainEffect();
 }
 
 function renderGramBossQ(){
-  // Always ensure boss is at correct bottom position
-  const _charWrap=document.getElementById("gramBossCharWrap");
-  if(_charWrap&&(_charWrap.style.position==="fixed"||_charWrap.style.top==="50%")){
-    _charWrap.style.cssText="position:absolute;bottom:80px;left:20px;z-index:5;pointer-events:none;width:min(280px,35vw);";
-  }
   const q=gramBossState.shuffledQs[gramBossState.qIdx];
   if(!q||gramBossState.qIdx>=gramBossState.shuffledQs.length){gramBossVictory();return;}
   document.getElementById("gramQCounter").textContent=`Question ${gramBossState.qIdx+1} / 40`;
-  const _qbx=document.getElementById("gramQBox");
-  if(_qbx){
-    _qbx.textContent=q.prompt;
-    if(!gramBossState.darkPhase){
-      _qbx.style.background="rgba(20,50,120,.88)";
-      _qbx.style.color="#e8f0ff";
-      _qbx.style.borderRadius="12px";
-      _qbx.style.padding="12px 16px";
-    }
-  }
+  document.getElementById("gramQBox").textContent=q.prompt;
   const wrap=document.getElementById("gramAnswerWrap");wrap.innerHTML="";
 
   if(q.type==="typed"){
@@ -6602,8 +6278,6 @@ function updateGramTimer(){
 }
 
 function gramBossHit(){
-  const _gwrap=document.getElementById("gramBossCharWrap");
-  if(_gwrap){_gwrap.style.animation="gramShake .5s ease-out";setTimeout(()=>{_gwrap.style.animation="";},520);}
   gramBossState.hp--;gramBossState.qIdx++;
   const pct=(gramBossState.hp/40)*100;
   const fill=document.getElementById("gramHpFill");
@@ -6831,12 +6505,11 @@ function startRainEffect(){
 
 
 function gramBossLoseLife(){
-  if(gramBossState._losingLife)return;
+  if(gramBossState._losingLife||gramBossState.hp<=0)return;
   gramBossState._losingLife=true;
-  clearInterval(gramBossState.timerInt);
+  clearInterval(gramBossState.timerInt); // stop timer immediately
   gramBossState.lives--;
-  const _gov=document.getElementById("gramBossOv");
-  const hearts=_gov?_gov.querySelectorAll(".gram-life-heart"):document.querySelectorAll(".gram-life-heart");
+  const hearts=document.querySelectorAll(".gram-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<gramBossState.lives?"":"grayscale(1) brightness(.3)";});
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
@@ -6846,7 +6519,6 @@ function gramBossLoseLife(){
 }
 
 function gramBossDefeat(){
-  gramBossState._losingLife=false;
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
@@ -6862,10 +6534,6 @@ function gramBossDefeat(){
 }
 
 function gramBossVictory(){
-  // Stop boss music, resume bg music
-  try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
-  try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
-
   awardBossXP("grammaria");
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
@@ -6900,7 +6568,7 @@ function abandonGramBoss(){
     <div style="font-size:14px;color:#bfdbfe;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>La Déesse t'attendra patiemment…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>
+      <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">Continuer</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -6923,7 +6591,7 @@ function abandonGramBoss(){
 }
 
 function closeGramResult(){
-  _stopVictoryMusic();
+  stopVictoryMusic();
   stopGameOverMusic();
   document.getElementById("gramResultOv").style.display="none";
   gramBossState.darkPhase=false;
@@ -6937,7 +6605,7 @@ function closeGramResult(){
 
 // Add deesse_gram badge and avatar to registry
 if(!BADGES_DEF.find(b=>b.id==="deesse_gram")){
-  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/L4gYPm7T/deesse-de-la-grammaire.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
+  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/fRTp4Fxw/deesse-de-la-grammaire.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
 }
 if(!EXCLUSIVE_AV.find(a=>a.label==="Grammaria")){
   EXCLUSIVE_AV.push({
@@ -7429,7 +7097,6 @@ const ORG_QUESTIONS = [
 let orgState={qIdx:0,lives:3,hp:15,selectedWord:null,noPerfect:false,darkPhase:false};
 
 function startOrgografe(){
-  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Stop background music
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   // Start org music
@@ -7444,7 +7111,6 @@ function startOrgografe(){
   const orgBg=document.getElementById("orgBg");
   if(orgBg)orgBg.style.filter="";
   document.getElementById("orgOv").style.display="block";
-  _applyMobileBgs();
   startOrgDust();
   renderOrgLives();
   renderOrgQuestion();
@@ -7621,10 +7287,6 @@ function triggerOrgDarkPhase(){
 }
 
 function orgVictory(){
-  // Stop boss music, resume bg music
-  try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
-  try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
-
   awardBossXP("orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
@@ -7675,7 +7337,7 @@ function abandonOrgografe(){
     <div style="font-size:13px;color:#ead7ae;margin-bottom:14px;">La grande Orgografe va t'attendre...</div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>
+      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">Continuer</button>
     </div>
   </div>`;
   document.body.appendChild(cd);
@@ -7789,9 +7451,9 @@ function showOrgIntro(){
         ${SLIDES.map((_,i)=>`<div style="width:8px;height:8px;border-radius:50%;background:${i===slide?'#f97316':'rgba(249,115,22,.3)'};transition:background .2s;"></div>`).join('')}
       </div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        ${slide>0?`<button id="org_prev" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/QCpZfqdT/precedent.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>`:''}
+        ${slide>0?`<button id="org_prev" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">← Précédent</button>`:''}
         ${isLast
-          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(30px,4.5vh,44px);width:auto;display:block;" alt=""/></button>`
+          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ C'est parti !</button>`
           :`<button id="org_next" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>`
         }
         <button id="org_cancel" style="padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
@@ -7907,8 +7569,8 @@ function tryOpenMemelite(){
         <strong style="color:#86efac;">3 phases</strong> de plus en plus redoutables.
       </div>
       <div style="display:flex;gap:10px;justify-content:center;">
-        <button id="mel_start" class="img-btn" style="--bh:clamp(38px,6vh,54px);"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,50px);width:auto;" alt="Affronter"/></button>
-        <button id="mel_cancel" class="img-btn" style="--bh:clamp(34px,5vh,48px);"><img src="https://i.postimg.cc/28p5Tb3b/plus-tard.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
+        <button id="mel_start" style="padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#dc2626,#b91c1c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,50px);width:auto;" alt="Affronter"/></button>
+        <button id="mel_cancel" style="padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/28p5Tb3b/plus-tard.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
       </div>
     </div>`;
     document.body.appendChild(ov);
@@ -7937,7 +7599,6 @@ function tryOpenMemelite(){
 
 
 function playTeddySound(){
-  if(S&&S.name)unlockBadge("moussiou");
   try{
     const ts=document.getElementById("teddySnd");
     if(!ts)return;
@@ -8238,7 +7899,7 @@ function showBanMessage(ban){
 
 
 function _getMelBgSrc(phase){
-  const mob=(window.innerWidth<=640||document.documentElement.clientWidth<=640);
+  const mob=window.innerWidth<=640&&window.innerHeight>window.innerWidth;
   if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
   if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   return null;
@@ -8246,15 +7907,11 @@ function _getMelBgSrc(phase){
 function _applyMelBg(phase){
   const src=_getMelBgSrc(phase);
   if(!src)return;
-  const bg=document.getElementById("melBgImg");
-  if(bg){bg.src=src;bg.style.objectFit="cover";}
-  // Also handle the melOv background
-  const melOv=document.getElementById("melOv")||document.getElementById("memeliteOv");
-  if(melOv&&src){melOv.style.backgroundImage="url('"+src+"')";melOv.style.backgroundSize="cover";melOv.style.backgroundPosition="center";}
+  const bg=document.getElementById("melBgImg");if(bg)bg.src=src;
 }
 
 function awardBossXP(boss){
-  const XP={conjugus:140,grammaria:140,orgografe:140,memelite:140};
+  const XP={conjugus:100,grammaria:120,orgografe:80,memelite:150};
   const pts=XP[boss]||100;
   S.score+=pts;
   updateHUD();saveProgress();saveToLB();
@@ -8284,36 +7941,6 @@ function showBadgePopup(b){
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
-
-
-// Resume boss timers when tab becomes visible again
-document.addEventListener("visibilitychange",()=>{
-  if(!document.hidden){
-    // Re-anchor timer start to account for tab-hidden time
-    if(bossState.timerInt&&bossState._timerStart){
-      // Already handled by Date.now() math — no adjustment needed
-      // Force an immediate tick to update display
-      if(bossState.timerVal>0) updateBossTimer();
-    }
-    if(gramBossState.timerInt&&gramBossState._timerStart){
-      if(gramBossState.timerVal>0) updateGramTimer();
-    }
-  }
-});
-
-
-function _applyMobileBgs(){
-  const mob=window.innerWidth<=640&&window.innerHeight>window.innerWidth;
-  // Orgografe bg
-  const orgImg=document.querySelector("#orgBg img");
-  if(orgImg){
-    orgImg.src=mob
-      ?"https://i.postimg.cc/T1zRhSLN/responsive-orgografe.png"
-      :"https://i.postimg.cc/13QMs4TW/fond-orgografe.png";
-  }
-  // Grammaria bg unchanged — same as desktop
-}
-window.addEventListener("resize",_applyMobileBgs);
 
 function maybeShowUpdateMsg(){
   if(localStorage.getItem('mb_update_seen_v3'))return;
@@ -8425,12 +8052,6 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
-  // Direct mobile background set (phase 1)
-  const _melMob=(window.innerWidth<=640||document.documentElement.clientWidth<=640);
-  const _melBg=document.getElementById("melBgImg");
-  if(_melBg&&_melMob)_melBg.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
-  _applyMelBg(1);
-  const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Full reset
   clearInterval(melState&&melState.timerInt);
   const cc=document.getElementById("melCatContainer");if(cc){cc.innerHTML="";cc.style.pointerEvents="none";}
@@ -8439,13 +8060,7 @@ function startMemelit(){
   const warn=document.getElementById("melCatWarning");if(warn)warn.style.display="none";
   const cineOv=document.getElementById("melCineOv");if(cineOv)cineOv.style.display="none";
   const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#dc2626,#f87171)";}
-  const bgImg=document.getElementById("melBgImg");
-  if(bgImg){
-    const _mob=(window.innerWidth<=640||document.documentElement.clientWidth<=640);
-    bgImg.src=_mob
-      ?"https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png"
-      :"https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
-  }
+  const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
   const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
@@ -8650,7 +8265,7 @@ function launchCats(count){
         object-fit:contain;cursor:pointer;left:-180px;
         top:${10+Math.random()*55}%;z-index:12;
         transform:scaleX(-1);
-        animation:melCatFly ${(window.innerWidth<=640?3:4)+Math.random()*1.2}s linear forwards;`;
+        animation:melCatFly ${4+Math.random()*1.5}s linear forwards;`;
       cat.style.padding="20px";
       cat.onclick=()=>{
         _flushDeferredMelMusic();
@@ -8673,7 +8288,7 @@ function launchCats(count){
         // Phase transition check
         if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),800);
         else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),800);
-        else if(melState.phase===3&&melState.catsRepelled>=60)setTimeout(melVictory,800);
+        else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,800);
         setTimeout(()=>{cat.remove();check();},650);
       };
       cat.addEventListener("animationend",()=>{
@@ -8721,7 +8336,7 @@ function launchMeteors(count){
         // Phase transition check
         if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),800);
         else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),800);
-        else if(melState.phase===3&&melState.catsRepelled>=60)setTimeout(melVictory,800);
+        else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,800);
         done++;
         setTimeout(()=>{m.remove();check();},520);
       };
@@ -8798,9 +8413,6 @@ function melPhase2Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusicSafe(2);
-    const _mb2=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
-    const _melBg2=document.getElementById("melBgImg");
-    if(_melBg2&&_mb2)_melBg2.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
     _applyMelBg(2);
     melState.transitioning=false;
     renderMelQ();
@@ -8848,9 +8460,6 @@ function melPhase3Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusicSafe(3);
-    const _mb3=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
-    const _melBg3=document.getElementById("melBgImg");
-    if(_melBg3&&_mb3)_melBg3.src="https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
     _applyMelBg(3);
     melState.transitioning=false;
     renderMelQ();
@@ -8858,11 +8467,6 @@ function melPhase3Cinematic(){
 }
 
 function melVictory(){
-  playVictoryMusic();
-  // Stop boss music
-  try{const _bm=document.getElementById("bossMusicAudio");if(_bm){_bm.pause();_bm.currentTime=0;}}catch(e){}
-  try{const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(()=>{});}catch(e){}
-
   melState.transitioning=true;
   melState.inCatPhase=false;
   awardBossXP("memelite");
@@ -9013,7 +8617,7 @@ function abandonMemelite(){
       <div id="updDots" style="display:flex;gap:6px;justify-content:center;margin:12px 0;"></div>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button id="updPrev" onclick="_updSlideIdx--;_renderUpdateSlide()" style="padding:9px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">←</button>
-        <button id="updNext" onclick="_updSlideIdx++;_renderUpdateSlide()" style="--bh:clamp(28px,4vh,40px);" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
+        <button id="updNext" onclick="_updSlideIdx++;_renderUpdateSlide()" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
         <button id="updClose" onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v3','1');" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
       </div>
 <!-- slider populated by initUpdateSlider() -->
@@ -9047,7 +8651,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:62%;width:min(56vw,490px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:54%;width:min(52vw,440px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
@@ -9057,7 +8661,7 @@ function abandonMemelite(){
     <!-- ── HUD: counter top-left, flee top-right ── -->
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent);">
       <div id="orgCounter" style="font-size:13px;color:#fff;font-weight:700;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px;">Q 1/15</div>
-      <button onclick="abandonOrgografe()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button></button>
+      <button onclick="abandonOrgografe()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button></button>
     </div>
 
     <!-- ── Bottom HUD: HP then lives ── -->
@@ -9078,8 +8682,8 @@ function abandonMemelite(){
 
 
     <!-- ── Correction input ── -->
-    <div id="orgCorrArea" style="display:none;position:absolute;bottom:16%;left:4%;width:50%;max-width:340px;z-index:10;
-         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;padding:10px 14px;text-align:center;backdrop-filter:blur(4px);">
+    <div id="orgCorrArea" style="display:none;position:absolute;bottom:22%;left:3%;width:58%;z-index:10;
+         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;padding:12px 16px;text-align:center;backdrop-filter:blur(4px);">
       <div id="orgCorrPrompt" style="font-size:13px;color:#93c5fd;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;">
         <input id="orgCorrInput" type="text" placeholder="Écris la correction…"
@@ -9158,14 +8762,14 @@ function abandonMemelite(){
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <!-- Flee -->
-        <button onclick="abandonMemelite()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+        <button onclick="abandonMemelite()" title="Fuir" style="background:none;border:none;cursor:pointer;padding:0;transition:transform .15s,filter .15s;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(44px,8vh,80px);width:auto;display:block;" alt="Fuir"/></button>
         <!-- Timer centred -->
         <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
         <!-- Spacer -->
         <div style="width:52px;"></div>
       </div>
-      <!-- Lives directly under timer -->
-      <div id="melLives" style="display:flex;gap:6px;align-items:center;justify-content:center;margin-top:4px;flex-wrap:wrap;">
+      <!-- Lives centred below timer -->
+      <div id="melLives" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px;">
         <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
         <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
         <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
