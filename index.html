@@ -3800,7 +3800,9 @@ function updateSeanceBadges(){
       const pct=parseInt((S.seancePct&&S.seancePct[id])||"0");
       const stars=pctToStars(pct);
       if(S.done[id]||pct>0){
-        cb.innerHTML=starImgHtml(stars);
+        cb.innerHTML=pct>=100
+          ?'<span style="font-size:18px;" title="100% — Séance maîtrisée !">🏆</span>'
+          :starImgHtml(stars);
       } else cb.textContent="";
     }
     if(sc)sc.classList.toggle("done",!!S.done[id]);
@@ -5014,8 +5016,8 @@ function showFeedback(ok,explanation){
   D.nextBtn.style.background="none";D.nextBtn.style.border="none";
   D.nextBtn.style.cursor="pointer";
   D.nextBtn.innerHTML=isLast?
-      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;pointer-events:none;" alt=""/>'
-      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;pointer-events:none;" alt=""/>';
+      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>'
+      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;pointer-events:none;" alt=""/>';
   D.nextBtn.onclick=()=>{S.qIdx++;renderQ();};
 }
 
@@ -5070,8 +5072,8 @@ function showResults(){
   // Never downgrade: keep the best score
   S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
   const starCount=S.stars[S.mod];
-  let stars=starImgHtml(starCount),msg="Continue à réviser !";
-  if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉 (3 étoiles)";}
+  let stars=p===100?'<span style="font-size:48px;">🏆</span>':starImgHtml(starCount),msg="Continue à réviser !";
+  if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉";}
   else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
   else if(p>=33){msg="Tu peux mieux faire ! (1 étoile)";}
   // Student character: smiling if ≥66%, thinking if below
