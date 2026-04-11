@@ -3441,7 +3441,7 @@ const MODULES={
 /* ══════════ STATE ══════════ */
 const S={
   name:"",avatar:AVATARS[0],score:0,
-  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,canEarnPoints:true,scoredQIds:new Set(),
+  panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,
   subIdx:0,subOk:0,locked:false,
   done:{},perfect:{},seancePct:{},badges:new Set(),
@@ -3585,14 +3585,7 @@ function migrateToStars(){
 }
 
 function earnPoints(qKey){
-  S.correct++;
-  if(S.canEarnPoints){
-    const _key=qKey||(S.mod+"_"+S.qIdx);
-    if(!S.scoredQIds.has(_key)){
-      S.scoredQIds.add(_key);
-      S.score+=10;doBurst();updateHUD();saveToLB();saveProgress();
-    }
-  }
+  S.correct++; // comptage uniquement — points attribués en fin de séance
 }
 
 function setAllMusicVolume(val){
@@ -4444,11 +4437,9 @@ function startMod(id, resumeFrom){
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
-  S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
+  S.sessionScoreStart=S.score;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
   S.sessionScoreStart=S.score;
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
-  const ALLOW_REPEAT=['s2','s3','p2','p3'];
-  S.canEarnPoints = !S.done[id] || !S.perfect[id] || ALLOW_REPEAT.includes(id);
   D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
@@ -4465,8 +4456,6 @@ function startMod(id, resumeFrom){
     else bannerEl.textContent="Qui suis-je ?";
   }
   if(starEl) starEl.textContent=(isPoetry||isGram||isConj)?"★★":"★";
-  // Show "already mastered" hint if no points to earn
-  if(!S.canEarnPoints) toast("✨ Séance déjà maîtrisée — entraînement libre, aucun point gagnable.");
   renderQ();
 }
 
@@ -5011,77 +5000,91 @@ function showFeedback(ok,explanation){
 
 /* ══════════ RESULTS ══════════ */
 function showResults(){
-  // Clear saved position so next entry starts fresh
-  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-  const total=qs().length,p=total>0?Math.round((S.correct/total)*100):0;
-  // Speedrunner badge: finish in < 90 seconds
-  if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)unlockBadge("speedrunner");
-  // Invaincu: count completed séances without abandoning
-  if(!S._seancesCompleted)S._seancesCompleted=0;
-  S._seancesCompleted++;
-  if(S._seancesCompleted>=20)unlockBadge("invaincu");
-  // Category 100% badges
-  const _litMods=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-  const _gramMods=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const _conjMods=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-  if(_litMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
-  if(_gramMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
-  if(_conjMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
-  S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
-  // Clear saved position so next entry starts fresh
-  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-  // Store percentage for display (keep best)
-  if(!S.seancePct)S.seancePct={};
-  const prevPct=parseInt(S.seancePct[S.mod])||0;
-  if(p>prevPct) S.seancePct[S.mod]=p+"%";
-  const displayPct=Math.max(p,prevPct);
-  // Keep perfect if was already perfect
-  if(prevPct===100) S.perfect[S.mod]=true;
-  checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();
-  // Check boss unlock conditions after séance completion
-  setTimeout(()=>{
-    const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-    const conjDone=allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    let _keyUnlocked=false;
-    if(conjDone&&!S.conjKeyShown){S.conjKeyShown=true;_keyUnlocked=true;showKeyUnlock("conjugaison");}
-    const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-    const gramDone=allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;_keyUnlocked=true;showKeyUnlock("grammaire");}
-    const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-    const litDone=allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(litDone&&!S.litKeyShown){S.litKeyShown=true;_keyUnlocked=true;showKeyUnlock("litterature");}
-    if(_keyUnlocked)saveProgress(); // persist key flags immediately
-  },800);
-  D.quizProgFill.style.width="100%";
-  D.quizCounter.textContent="Terminé ! "+S.correct+"/"+total+" bonnes réponses";
-  D.hintImg.src=PROF.smile;D.hintText.textContent=p>=66?"Bravo ! Tu es prêt(e) pour le brevet 🎓":"Continue à réviser, tu vas y arriver !";
-  if(!S.stars)S.stars={};
-  const newStars=pctToStars(p);
-  // Never downgrade: keep the best score
-  S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
-  const starCount=S.stars[S.mod];
-  let stars=starImgHtml(starCount),msg="Continue à réviser !";
-  if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉 (3 étoiles)";}
-  else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
-  else if(p>=33){msg="Tu peux mieux faire ! (1 étoile)";}
-  // Student character: smiling if ≥66%, thinking if below
-  const eleveImg=p>=66
-    ?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
-    :"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
-  D.qBox.innerHTML="";D.aWrap.className="answers";
-  // Scroll quiz card to top so results are visible
-  const qc=document.getElementById("quizCard");
-  if(qc){qc.scrollTo({top:0,behavior:"smooth"});}
-  // Masquer quizCard et restes
-  D.quizCard.style.display="none";
-  D.feedback.style.display="none";
-  D.nextBtn.style.display="none";
+  const _modId=S.mod;
+  const _qs=MODULES[_modId]?MODULES[_modId].questions:[];
+  const total=_qs.length;
+  const p=total>0?Math.round((S.correct/total)*100):0;
 
-  // Supprimer overlay précédent
+  // === Mise à jour stats & badges (try/catch pour robustesse) ===
+  try{
+    S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
+    // Speedrunner
+    if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)
+      try{unlockBadge("speedrunner");}catch(e){}
+    if(!S._seancesCompleted)S._seancesCompleted=0;
+    S._seancesCompleted++;
+    if(S._seancesCompleted>=20)try{unlockBadge("invaincu");}catch(e){}
+    // Category 100% badges
+    const _litM=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+    const _grM=["g1","g2","g3","g4","g5","g6","g7","g8"];
+    const _cjM=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+    if(_litM.every(k=>S.perfect&&S.perfect[k]))try{unlockBadge("biblioclaste");}catch(e){}
+    if(_grM.every(k=>S.perfect&&S.perfect[k]))try{unlockBadge("grammaricide");}catch(e){}
+    if(_cjM.every(k=>S.perfect&&S.perfect[k]))try{unlockBadge("conj_expert");}catch(e){}
+    // Stats
+    S.done[_modId]=true;
+    if(!S.seancePct)S.seancePct={};
+    const prevPct=parseInt(S.seancePct[_modId])||0;
+    if(p>prevPct)S.seancePct[_modId]=p+"%";
+    if(prevPct===100||p===100)S.perfect[_modId]=true;
+    if(!S.stars)S.stars={};
+    S.stars[_modId]=Math.max(pctToStars(p),S.stars[_modId]||0);
+    try{checkBadges();}catch(e){}
+    try{updateSeanceBadges();}catch(e){}
+  }catch(statsErr){}
+
+  // === Points proportionnels au %, uniquement si pas déjà 100% ===
+  const _wasAlreadyPerfect=(S.seancePct&&parseInt(S.seancePct[_modId])||0)===100
+    &&S.correct<total; // was already done at 100% before this attempt
+  const _alreadyPerfect=S.perfect&&S.perfect[_modId]&&_wasAlreadyPerfect;
+  if(!_alreadyPerfect){
+    // correct * 10 pts (proportionnel : 50% → moitié, 100% → tout)
+    const _pts=S.correct*10;
+    S.score+=_pts;
+  }
+  S.perfect[_modId]=(p===100)||!!(S.perfect&&S.perfect[_modId]);
+  try{updateHUD();}catch(e){}
+  try{saveToLB();}catch(e){}
+  try{saveProgress();}catch(e){}
+
+  // === Check boss unlock ===
+  setTimeout(()=>{
+    try{
+      const _ac=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+      const _ag=["g1","g2","g3","g4","g5","g6","g7","g8"];
+      const _al=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+      if(_ac.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.conjKeyShown){
+        S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();
+      }
+      if(_ag.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.gramKeyShown){
+        S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();
+      }
+      if(_al.every(k=>(S.perfect&&S.perfect[k])||(parseInt(S.seancePct&&S.seancePct[k])||0)>=100)&&!S.litKeyShown){
+        S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();
+      }
+    }catch(e){}
+  },800);
+
+  // === Affichage résultats : overlay z-index:9999 TOUJOURS visible ===
+  try{if(D.quizCard)D.quizCard.style.display="none";}catch(e){}
+  try{if(D.feedback)D.feedback.style.display="none";}catch(e){}
+  try{if(D.nextBtn)D.nextBtn.style.display="none";}catch(e){}
+
+  // Supprimer overlay précédent si existant
   const _ro=document.getElementById("resultsOv");
   if(_ro)_ro.remove();
 
-  // Overlay fixe z-index:9999 — toujours visible
+  // Calcul visuel
+  const starCount=(S.stars&&S.stars[_modId])||0;
+  let starsHtml="";try{starsHtml=p===100?"🏆":starImgHtml(starCount);}catch(e){}
+  let msg="Continue à réviser !";
+  if(p===100)msg="Parfait ! Tu maîtrises cette séance 🎉";
+  else if(p>=66)msg="Bien joué ! Encore un effort !";
+  else if(p>=33)msg="Tu peux mieux faire !";
+  const eleveImg2=p>=66
+    ?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
+    :"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
+
   const _ov=document.createElement("div");
   _ov.id="resultsOv";
   _ov.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;background:radial-gradient(circle at 30% 0%,#a05018,#4a2207 60%,#1a0a02);";
@@ -5089,11 +5092,11 @@ function showResults(){
   _card.style.cssText="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 20px;max-width:420px;width:100%;text-align:center;";
   _card.innerHTML=
     '<div style="display:flex;align-items:flex-end;gap:14px;justify-content:center;margin-bottom:10px;">'
-    +'<img src="'+eleveImg+'" style="width:90px;flex-shrink:0;" alt=""/>'
+    +'<img src="'+eleveImg2+'" style="width:90px;flex-shrink:0;" alt=""/>'
     +'<div><div style="font-size:18px;font-weight:900;color:#d9a441;margin-bottom:4px;">Séance terminée !</div>'
     +'<div style="font-size:42px;font-weight:900;color:'+(p===100?"#facc15":"#f5e6c8")+';">'+p+'%</div>'
     +'<div style="font-size:13px;color:#ead7ae;">'+S.correct+' / '+total+' bonnes réponses</div></div></div>'
-    +'<div style="font-size:24px;margin:6px 0 4px;">'+stars+'</div>'
+    +'<div style="font-size:28px;margin:6px 0 4px;">'+starsHtml+'</div>'
     +'<div style="font-size:13px;color:#ead7ae;opacity:.8;margin-bottom:18px;">'+msg+'</div>'
     +'<div style="display:flex;gap:10px;justify-content:center;">'
     +'<button id="_res_r" style="padding:12px 16px;border-radius:14px;border:1px solid rgba(217,164,65,.4);background:rgba(217,164,65,.15);color:#d9a441;font-weight:800;font-size:14px;cursor:pointer;">🔁 Recommencer</button>'
@@ -5101,15 +5104,20 @@ function showResults(){
     +'</div>';
   _ov.appendChild(_card);
   document.body.appendChild(_ov);
-  const _mid=S.mod;
-  document.getElementById("_res_r").onclick=function(){_ov.remove();if(_mid)startMod(_mid);else showLitMenu();};
+
+  document.getElementById("_res_r").onclick=function(){
+    _ov.remove();
+    if(_modId)startMod(_modId);else showLitMenu();
+  };
   document.getElementById("_res_b").onclick=function(){
     _ov.remove();
-    if(!_mid||!_mid.startsWith("g")&&!_mid.startsWith("c"))showLitMenu();
-    else if(_mid.startsWith("g"))showGramMenu();
-    else showConjMenu();
+    if(!_modId)return showLitMenu();
+    if(_modId.startsWith("g"))showGramMenu();
+    else if(_modId.startsWith("c"))showConjMenu();
+    else showLitMenu();
   };
 }
+
 
 /* ══════════ WELCOME ══════════ */
 function buildWelcomeAvGrid(){
