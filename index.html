@@ -1656,14 +1656,14 @@
       <div style="height:22px;background:rgba(0,0,0,.6);border-radius:999px;border:2px solid rgba(255,100,0,.5);overflow:hidden;box-shadow:0 0 16px rgba(255,80,0,.35);">
         <div id="bossHpFill" style="height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#f97316,#facc15);border-radius:999px;transition:width .5s;"></div>
       </div>
-      <div id="bossHpText" style="font-size:12px;color:#fca5a5;text-align:center;margin-top:3px;font-weight:700;">30 / 30</div>
+      <div id="bossHpText" style="font-size:12px;color:#fca5a5;text-align:center;margin-top:3px;font-weight:700;">40 / 40</div>
     </div>
     <!-- Timer -->
     <div id="bossTimer" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:10;
          font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.6);">30</div>
     <!-- Question area -->
     <div style="position:absolute;top:50%;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:0 16px 180px;gap:12px;transform:translateY(-50%);max-height:80vh;overflow-y:auto;">
-      <div id="bossQCounter" style="font-size:13px;color:#93c5fd;font-weight:800;letter-spacing:.5px;">Question 1 / 30</div>
+      <div id="bossQCounter" style="font-size:13px;color:#93c5fd;font-weight:800;letter-spacing:.5px;">Question 1 / 40</div>
       <div id="bossQBox" style="background:rgba(5,15,40,.9);border:2px solid rgba(100,150,255,.4);border-radius:20px;
            padding:22px 28px;max-width:640px;width:100%;font-size:19px;color:#e0e7ff;line-height:1.6;text-align:center;
            box-shadow:0 0 40px rgba(50,100,255,.25),inset 0 0 30px rgba(0,0,40,.3);font-weight:600;"></div>
@@ -4446,11 +4446,10 @@ function startMod(id, resumeFrom){
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
   S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
-  S.sessionScoreStart=S.score;
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
   const ALLOW_REPEAT=['s2','s3','p2','p3'];
   S.canEarnPoints = !S.done[id] || !S.perfect[id] || ALLOW_REPEAT.includes(id);
-  D.litMenu.style.display="none";
+  if(D.litMenu)D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
   D.modLabel.textContent=MODULES[id].title;
@@ -4505,7 +4504,11 @@ function renderQ(){
     else if(q.type==="fill")renderFill(q);
     else if(q.type==="dragdrop")renderDragDrop(q);
     else if(q.type==="typed")renderTyped(q);
-  }catch(e){console.error("answer render error:",e.message);}
+  }catch(e){
+    console.error("answer render error:",e.message,e.stack);
+    // Show error + emergency fuir in UI
+    if(D.aWrap)D.aWrap.innerHTML='<div style="color:#fca5a5;padding:12px;font-size:13px;">Erreur : '+e.message+'<br>Appuie sur Fuir.</div>';
+  }
 }
 
 /* ── Illustrations per module/question ── */
@@ -5971,7 +5974,7 @@ function renderBossQ(){
   if(bossState.qIdx>=bossState.shuffledQs.length){bossVictory();return;}
   const q=bossState.shuffledQs[bossState.qIdx];
   if(!q){bossVictory();return;}
-  document.getElementById("bossQCounter").textContent=`Question ${bossState.qIdx+1} / 30`;
+  document.getElementById("bossQCounter").textContent=`Question ${bossState.qIdx+1} / 40`;
   document.getElementById("bossQBox").textContent=q.prompt;
   const wrap=document.getElementById("bossAnswerWrap");
   wrap.innerHTML="";
@@ -8333,7 +8336,13 @@ function startMemelit(){
   const warn=document.getElementById("melCatWarning");if(warn)warn.style.display="none";
   const cineOv=document.getElementById("melCineOv");if(cineOv)cineOv.style.display="none";
   const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#dc2626,#f87171)";}
-  const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
+  const bgImg=document.getElementById("melBgImg");
+  if(bgImg){
+    const _mob=(window.innerWidth<=640||document.documentElement.clientWidth<=640);
+    bgImg.src=_mob
+      ?"https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png"
+      :"https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
+  }
   const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
