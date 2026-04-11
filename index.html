@@ -5059,16 +5059,7 @@ function showFeedback(ok,explanation){
   D.feedback.innerHTML=`<div class="fb-inner"><img class="fb-prof" src="${ok?PROF.smile:PROF.dub}" alt=""/><div class="fb-text"><div class="fb-title">${ok?"✅ Correct !":"❌ Incorrect"}</div><div>${explanation}</div></div></div>`;
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
-  // Failure check: only if not already mastered and risk of failing
-  if(!ok && !isLast && !(S.perfect&&S.perfect[S.mod])){
-    const remaining=total-(S.qIdx+1);
-    const maxPossible=S.correct+remaining;
-    const maxPct=total>0?Math.round((maxPossible/total)*100):100;
-    if(maxPct<50&&S.qIdx>2){
-      setTimeout(()=>showFailure(Math.round((S.correct/total)*100),total),1200);
-      return;
-    }
-  }
+  // No failure blocking — players always continue
   // Show next button — always works
   const nb=document.getElementById("nextBtn");
   if(nb){
@@ -8646,7 +8637,7 @@ function launchCats(count){
         // Phase transition check
         if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),800);
         else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),800);
-        else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,800);
+        else if(melState.phase===3&&melState.catsRepelled>=60)setTimeout(melVictory,800);
         setTimeout(()=>{cat.remove();check();},650);
       };
       cat.addEventListener("animationend",()=>{
@@ -8694,7 +8685,7 @@ function launchMeteors(count){
         // Phase transition check
         if(melState.phase===1&&melState.catsRepelled>=15)setTimeout(()=>melPhase2Cinematic(),800);
         else if(melState.phase===2&&melState.catsRepelled>=39)setTimeout(()=>melPhase3Cinematic(),800);
-        else if(melState.phase===3&&melState.catsRepelled>=66)setTimeout(melVictory,800);
+        else if(melState.phase===3&&melState.catsRepelled>=60)setTimeout(melVictory,800);
         done++;
         setTimeout(()=>{m.remove();check();},520);
       };
