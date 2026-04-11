@@ -1115,7 +1115,7 @@
 
   <!-- LIT MENU: fixed overlay, outside any screen so display:none on parent doesn't hide it -->
   <div id="litMenu" class="lit-menu" style="display:none;">
-    <button class="menu-back-btn" onclick="goTransition('home')">← Accueil</button>
+    <button class="menu-back-btn" onclick="goTransition('home')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(28px,4vh,40px);width:auto;" alt=""/></button>
     <div class="banner-large"><span class="banner-large-text">Littérature</span></div>
     <div class="lit-subtitle">Choisis un chapitre</div>
       <div class="chapter-card">
@@ -1329,7 +1329,7 @@
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" onclick="abandonMod()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+    <button id="abandonBtn" onclick="abandonMod()" class="fuir-btn" style="position:sticky;bottom:8px;z-index:91;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
   </div>
   <!-- end quizCard -->
 
@@ -1343,7 +1343,7 @@
 
   <!-- GRAM MENU: fixed overlay, outside grammaireScreen -->
   <div id="gramMenu" class="lit-menu" style="display:none;">
-    <button class="menu-back-btn" onclick="goTransition('home')">← Accueil</button>
+    <button class="menu-back-btn" onclick="goTransition('home')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(28px,4vh,40px);width:auto;" alt=""/></button>
     <div class="banner-large"><span class="banner-large-text">Grammaire</span></div>
     <div class="lit-subtitle">Choisis une séance</div>
 
@@ -1448,7 +1448,7 @@
 
   <!-- CONJ MENU -->
   <div id="conjMenu" class="lit-menu" style="display:none;">
-    <button class="menu-back-btn" onclick="goTransition('home')">← Accueil</button>
+    <button class="menu-back-btn" onclick="goTransition('home')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(28px,4vh,40px);width:auto;" alt=""/></button>
     <div class="banner-large"><span class="banner-large-text">Conjugaison</span></div>
     <div class="lit-subtitle">Choisis une séance</div>
 
@@ -1938,7 +1938,14 @@ const BADGES_DEF=[
   {id:"perfectionniste",img:"https://i.postimg.cc/5yS9sczq/perfectionniste.png", emoji:null, name:"Perfectionniste",    desc:"100% sur 10 séances différentes"},
   {id:"veloce",      img:"https://i.postimg.cc/wMpT5x12/eclair.png", emoji:null, name:"Éclair",             desc:"Terminer une séance sans aucune erreur du premier coup"},
   {id:"polymathe",   img:"https://i.postimg.cc/6qf6MsZf/polymathe.png", emoji:null, name:"Polymathe",           desc:"Terminer au moins une séance dans chaque catégorie"},
-  {id:"invaincu",    img:"https://i.postimg.cc/sx4fTFWJ/invaincu.png", emoji:null, name:"Invaincu",            desc:"Atteindre le niveau 25 sans jamais abandonner"}
+  {id:"invaincu",    img:"https://i.postimg.cc/sx4fTFWJ/invaincu.png", emoji:null, name:"Invaincu",            desc:"Réaliser 20 séances sans abandonner"},
+  {id:"moussiou",        img:"https://i.postimg.cc/cLs68FxK/Oh-Moussiou.png",       emoji:null, name:"Oh Moussiou !",     desc:"Faites crier Teddynounet en cliquant sur lui"},
+  {id:"stratospherique", img:"https://i.postimg.cc/7L2xtLkP/stratospherique.png",    emoji:null, name:"Stratosphérique",  desc:"Vaincre Conjugus sans perdre de vie en moins de 4 minutes"},
+  {id:"biblioclaste",    img:"https://i.postimg.cc/BnySCKd9/Bibliocaste.png",        emoji:null, name:"Biblioclaste",     desc:"100% à toutes les séances de Littérature"},
+  {id:"speedrunner",     img:"https://i.postimg.cc/9f7Wgfh2/speedrunner.png",        emoji:null, name:"Speedrunner",      desc:"Terminer une séance en moins d'1 minute 30"},
+  {id:"grammaricide",    img:"https://i.postimg.cc/jj7s3jrG/Grammaricide.png",       emoji:null, name:"Grammaricide",     desc:"100% à toutes les séances de Grammaire"},
+  {id:"conj_expert",     img:"https://i.postimg.cc/rpr8ZpkX/Conjugueur-expert.png",  emoji:null, name:"Conjugueur expert",desc:"100% à toutes les séances de Conjugaison"},
+  {id:"septieme_ciel",   img:"https://i.postimg.cc/0j3W49xy/Septieme-Ciel.png",      emoji:null, name:"Septième ciel",    desc:"Vaincre Grammaria sans perdre de vie en moins de 3 minutes 30"}
 ];
 
 /* ══════════ MODULES DATA ══════════ */
@@ -3948,7 +3955,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{}
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -3977,6 +3984,19 @@ function loadProgress(name){
       try{updateOrgChapter();}catch(e){}
       try{updateMemeliteChapter();}catch(e){}
       renderInventaire();
+      // Retroactive XP for boss defeats (one-time)
+      if(!S._bossXpGranted)S._bossXpGranted={};
+      [{flag:"bossDefeated",key:"conj",pts:140},{flag:"gramBossDefeated",key:"gram",pts:140},{flag:"orgBossDefeated",key:"org",pts:140},{flag:"memeliteDefeated",key:"mel",pts:140}]
+        .forEach(g=>{if(S[g.flag]&&!S._bossXpGranted[g.key]){S._bossXpGranted[g.key]=true;S.score+=g.pts;}});
+      // Retroactive badges
+      const _lm=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+      const _gm=["g1","g2","g3","g4","g5","g6","g7","g8"];
+      const _cm=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+      setTimeout(()=>{
+        if(_lm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
+        if(_gm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
+        if(_cm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
+      },600);
       saveToLB(); // push latest score to Supabase
     }
   }catch(e){}
@@ -4329,6 +4349,7 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
+  S._seancesCompleted=0; // Reset no-abandon streak
   // Save progress (no rollback — keep points earned so far)
   if(S.mod){
     S.savedMod=S.mod;
@@ -4382,7 +4403,7 @@ function startMod(id, resumeFrom){
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
-  S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();saveToLB();
+  S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
   S.sessionScoreStart=S.score;
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
   const ALLOW_REPEAT=['s2','s3','p2','p3'];
@@ -4413,23 +4434,31 @@ function rndHint(){return HINTS[Math.floor(Math.random()*HINTS.length)];}
 function resetHint(){D.hintImg.src=PROF.point;D.hintText.textContent=rndHint();}
 
 function renderQ(){
-  const all=qs(),q=all[S.qIdx],total=all.length;
-  D.feedback.style.display="none";D.feedback.className="feedback-box";
-  D.nextBtn.style.display="none";D.aWrap.innerHTML="";D.qBox.textContent="";
-  S.locked=false;S.subIdx=0;S.subOk=0;
-  S.fillQ=null;S.fillBank=[];S.fillBlanks=[];S.fillPendingWord=null;
-  S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
-  resetHint();
-  D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
-  D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
-  if(!q){showResults();return;}
-  D.qBox.textContent=q.prompt;
-  renderIllustrations(S.mod,S.qIdx);
-  if(q.type==="qcm"||q.type==="truefalse")renderQCM(q);
-  else if(q.type==="order")renderOrderStep(q);
-  else if(q.type==="fill")renderFill(q);
-  else if(q.type==="dragdrop")renderDragDrop(q);
-  else if(q.type==="typed")renderTyped(q);
+  try{
+    // Safety: reset out-of-bounds qIdx
+    const _all=qs();
+    if(S.qIdx<0||S.qIdx>=_all.length){
+      if(_all.length>0){S.qIdx=0;}
+      else{showResults();return;}
+    }
+    const all=_all,q=all[S.qIdx],total=all.length;
+    D.feedback.style.display="none";D.feedback.className="feedback-box";
+    D.nextBtn.style.display="none";D.aWrap.innerHTML="";D.qBox.textContent="";
+    S.locked=false;S.subIdx=0;S.subOk=0;
+    S.fillQ=null;S.fillBank=[];S.fillBlanks=[];S.fillPendingWord=null;
+    S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
+    resetHint();
+    D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
+    D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
+    if(!q){showResults();return;}
+    D.qBox.textContent=q.prompt;
+    renderIllustrations(S.mod,S.qIdx);
+    if(q.type==="qcm"||q.type==="truefalse")renderQCM(q);
+    else if(q.type==="order")renderOrderStep(q);
+    else if(q.type==="fill")renderFill(q);
+    else if(q.type==="dragdrop")renderDragDrop(q);
+    else if(q.type==="typed")renderTyped(q);
+  }catch(e){console.error("renderQ error:",e.message,e.stack);}
 }
 
 /* ── Illustrations per module/question ── */
@@ -4936,7 +4965,22 @@ function showFeedback(ok,explanation){
 
 /* ══════════ RESULTS ══════════ */
 function showResults(){
+  // Clear saved position so next entry starts fresh
+  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
   const total=qs().length,p=total>0?Math.round((S.correct/total)*100):0;
+  // Speedrunner badge: finish in < 90 seconds
+  if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)unlockBadge("speedrunner");
+  // Invaincu: count completed séances without abandoning
+  if(!S._seancesCompleted)S._seancesCompleted=0;
+  S._seancesCompleted++;
+  if(S._seancesCompleted>=20)unlockBadge("invaincu");
+  // Category 100% badges
+  const _litMods=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+  const _gramMods=["g1","g2","g3","g4","g5","g6","g7","g8"];
+  const _conjMods=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+  if(_litMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
+  if(_gramMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
+  if(_conjMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
   S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
   // Clear saved position so next entry starts fresh
   S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
@@ -5693,7 +5737,7 @@ const BOSS_QUESTIONS=[
   {prompt:"Conjugue 'avoir' au subjonctif passé, 3e pers. plur.",answer:["aient eu","qu'ils aient eu","ils aient eu"],explanation:"AVOIR subjonctif passé : qu'ils AIENT EU"}
 ];
 
-let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
+let bossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
   // Reset boss hearts (scoped to bossOv)
   setTimeout(()=>{
     const ov=document.getElementById("bossOv");
@@ -5778,7 +5822,7 @@ function startBoss(){
     bm.volume=_volNow*0.6;
     bm.play().catch(()=>{});
   }
-  bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,lives:2,_losingLife:false};
+  bossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,lives:2,_losingLife:false};
   setTimeout(()=>{
     const ov=document.getElementById("bossOv");
     if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
@@ -5864,7 +5908,7 @@ function stopAsteroidSpawner(){
 function shuffleBossQuestions(){
   const arr=[...BOSS_QUESTIONS];
   for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-  return arr;
+  return arr.slice(0,50); // Return up to 50 of available questions
 }
 function renderBossQ(){
   if(!bossState.shuffledQs||!bossState.shuffledQs.length){
@@ -7733,6 +7777,7 @@ function tryOpenMemelite(){
 
 
 function playTeddySound(){
+  if(S&&S.name)unlockBadge("moussiou");
   try{
     const ts=document.getElementById("teddySnd");
     if(!ts)return;
@@ -8033,7 +8078,7 @@ function showBanMessage(ban){
 
 
 function _getMelBgSrc(phase){
-  const mob=window.innerWidth<=640||(window.screen&&window.screen.width<=640);
+  const mob=(window.innerWidth<=640||window.outerWidth<=640)&&(window.innerHeight>window.innerWidth);
   if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
   if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   return null;
@@ -8041,11 +8086,15 @@ function _getMelBgSrc(phase){
 function _applyMelBg(phase){
   const src=_getMelBgSrc(phase);
   if(!src)return;
-  const bg=document.getElementById("melBgImg");if(bg)bg.src=src;
+  const bg=document.getElementById("melBgImg");
+  if(bg){bg.src=src;bg.style.objectFit="cover";}
+  // Also handle the melOv background
+  const melOv=document.getElementById("melOv")||document.getElementById("memeliteOv");
+  if(melOv&&src){melOv.style.backgroundImage="url('"+src+"')";melOv.style.backgroundSize="cover";melOv.style.backgroundPosition="center";}
 }
 
 function awardBossXP(boss){
-  const XP={conjugus:100,grammaria:120,orgografe:80,memelite:150};
+  const XP={conjugus:140,grammaria:140,orgografe:140,memelite:140};
   const pts=XP[boss]||100;
   S.score+=pts;
   updateHUD();saveProgress();saveToLB();
@@ -8817,7 +8866,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:58%;width:min(50vw,420px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:62%;width:min(56vw,490px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
@@ -8984,3 +9033,5 @@ function abandonMemelite(){
   </div>
 </body>
 </html>
+  }catch(e){console.error("renderQ error:",e);}
+}
