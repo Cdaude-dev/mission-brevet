@@ -719,7 +719,19 @@
     90%{transform:translateX(3px);}
   }
 
-    </style>
+    
+  @media(max-width:640px){
+    #abandonBtn{
+      position:fixed !important;
+      top:8px !important;
+      left:8px !important;
+      bottom:auto !important;
+      z-index:85 !important;
+    }
+    #abandonBtn img{height:clamp(26px,5vh,36px) !important;}
+  }
+
+  </style>
 </head>
 <body>
 <div id="app">
@@ -1329,7 +1341,7 @@
       <span class="burst-star" style="bottom:28px;left:64px;">★</span>
       <span class="burst-star" style="bottom:36px;right:60px;">★</span>
     </div>
-    <button id="abandonBtn" onclick="abandonMod()" class="fuir-btn" style="position:sticky;bottom:8px;z-index:91;" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+    <button id="abandonBtn" onclick="abandonMod()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
   </div>
   <!-- end quizCard -->
 
@@ -1951,38 +1963,62 @@ const BADGES_DEF=[
 /* ══════════ MODULES DATA ══════════ */
 const MODULES={
   s1:{title:"Séance 1 — Définitions & pacte autobiographique",questions:[
-    {type:"qcm",prompt:"Qu'est-ce qu'une autobiographie ?",
-     options:["Un genre où l'auteur raconte la vie d'un autre.","Un genre littéraire où l'auteur est le narrateur et raconte sa propre vie.","Un récit imaginaire à la 3e personne.","Un texte poétique sur l'enfance."],
-     correctIndex:1,explanation:"L'autobiographie = genre littéraire où l'auteur EST le narrateur ET raconte sa propre vie. Les trois instances (auteur, narrateur, personnage) coïncident."},
-    {type:"fill",prompt:"Complète l'étymologie grecque du mot autobiographie.",
-     sentence:"Le préfixe [soi-même] vient de « auto », la racine [la vie] de « bio » et la terminaison [écrire] de « graphie ».",
-     blanks:["soi-même","la vie","écrire"],
-     wordBank:["soi-même","la vie","écrire","les autres","la mort","lire","le temps"],
-     explanation:"Auto (αὐτός) = soi-même ; bio (βίος) = la vie ; graphie (γράφειν) = écrire."},
-    {type:"truefalse",prompt:"Vrai ou faux ? L'incipit désigne la fin d'une œuvre littéraire.",
-     options:["Vrai","Faux"],correctIndex:1,
-     explanation:"FAUX ! L'incipit est le DÉBUT d'un texte. La fin s'appelle l'excipit."},
-    {type:"qcm",prompt:"Qui a théorisé le « pacte autobiographique » en 1975 ?",
-     options:["Jean-Jacques Rousseau","Philippe Lejeune","Michel de Montaigne","Roland Barthes"],
-     correctIndex:1,explanation:"Philippe Lejeune, spécialiste de l'autobiographie : Le pacte autobiographique, 1975, éd. Seuil."},
-    {type:"fill",prompt:"Complète la description du pacte autobiographique.",
-     sentence:"Dans le pacte autobiographique, l'[auteur] s'engage à dire la [vérité]. En contrepartie, le [lecteur] lui accorde sa [confiance].",
-     blanks:["auteur","vérité","lecteur","confiance"],
-     wordBank:["auteur","vérité","lecteur","confiance","éditeur","mensonge","doute","personnage"],
-     explanation:"L'auteur s'engage à dire la vérité. Le lecteur s'engage à lui accorder sa confiance. C'est un pacte mutuel."},
-    {type:"qcm",prompt:"Dans une autobiographie, l'auteur, le narrateur et le personnage principal sont…",
-     options:["Trois personnes différentes.","Deux personnes distinctes.","Une seule et même personne.","Au moins deux personnes."],
-     correctIndex:2,explanation:"Règle fondamentale : auteur = narrateur = personnage. Une seule identité se raconte elle-même."},
-    {type:"order",prompt:"Classe ces engagements dans le pacte autobiographique.",
-     buckets:["Auteur","Lecteur"],
-     items:[{text:"Être honnête sur sa vie",bucket:"Auteur"},{text:"Accorder sa confiance",bucket:"Lecteur"},{text:"Croire le récit proposé",bucket:"Lecteur"},{text:"Dire la vérité",bucket:"Auteur"}],
-     explanation:"Auteur → dire la vérité, être honnête. Lecteur → accorder sa confiance, croire le récit."},
-    {type:"truefalse",prompt:"Vrai ou faux ? Insérer des faits biographiques vrais suffit à faire d'un texte une autobiographie.",
-     options:["Vrai","Faux"],correctIndex:1,
-     explanation:"FAUX ! Les faits vrais ne suffisent pas. Il faut aussi : auteur = narrateur = personnage, ET un pacte passé avec le lecteur."},
-    {type:"qcm",prompt:"Quel est le terme qui désigne la coïncidence d'identité entre l'auteur, le narrateur et le personnage dans l'autobiographie ?",
-     options:["L'omniscience narrative","Le pacte autobiographique","L'identité romanesque","La focalisation interne"],
-     correctIndex:1,explanation:"Le PACTE AUTOBIOGRAPHIQUE (Philippe Lejeune, 1975) désigne précisément cette coïncidence : auteur = narrateur = personnage. C'est ce contrat implicite passé avec le lecteur qui définit l'autobiographie."}
+    {type:"qcm",
+     prompt:"Qu'est-ce qu'une autobiographie ?",
+     options:["Un récit imaginaire écrit à la 3e personne.","Un texte où l'auteur, le narrateur et le personnage principal sont la même personne et raconte sa propre vie.","Un journal intime publié après la mort de l'auteur.","Un roman où le héros ressemble à l'auteur."],
+     correctIndex:1,
+     explanation:"L'autobiographie est définie par la triple identité : auteur = narrateur = personnage. C'est Philippe Lejeune qui a théorisé cette définition."},
+
+    {type:"qcm",
+     prompt:"Qu'appelle-t-on le « pacte autobiographique » selon Philippe Lejeune ?",
+     options:["L'accord entre un auteur et son éditeur pour publier ses mémoires.","L'engagement implicite ou explicite de l'auteur envers le lecteur que le récit est véridique et que auteur, narrateur et personnage sont identiques.","La promesse du lecteur de croire tout ce que raconte l'auteur.","Le contrat de vente d'une autobiographie en librairie."],
+     correctIndex:1,
+     explanation:"Le pacte autobiographique (Philippe Lejeune, 1975) est l'engagement de l'auteur : il affirme que tout ce qu'il raconte est vrai et que lui, le narrateur et le personnage principal ne font qu'un."},
+
+    {type:"truefalse",
+     prompt:"Vrai ou faux ? Dans une autobiographie, l'auteur peut inventer des événements pour rendre le récit plus intéressant.",
+     correct:false,
+     explanation:"FAUX. L'autobiographie implique un pacte de sincérité : l'auteur s'engage à raconter la vérité telle qu'il la perçoit. Inventer des événements relèverait plutôt du roman autobiographique."},
+
+    {type:"qcm",
+     prompt:"Quelle est la personne grammaticale la plus souvent utilisée dans une autobiographie ?",
+     options:["La 3e personne du singulier (il/elle).","La 2e personne du singulier (tu).","La 1re personne du singulier (je).","La 1re personne du pluriel (nous)."],
+     correctIndex:2,
+     explanation:"L'autobiographie est presque toujours rédigée à la 1re personne (je), car l'auteur raconte sa propre vie de son point de vue."},
+
+    {type:"qcm",
+     prompt:"Quelle différence y a-t-il entre une autobiographie et des mémoires ?",
+     options:["Il n'y en a aucune, ce sont des synonymes exacts.","Les mémoires portent davantage sur les événements historiques et le contexte collectif, tandis que l'autobiographie se centre sur la vie intérieure et personnelle de l'auteur.","Les mémoires sont toujours plus courts que les autobiographies.","Une autobiographie est forcément publiée après la mort de l'auteur."],
+     correctIndex:1,
+     explanation:"Les mémoires (ex : Mémoires d'outre-tombe de Chateaubriand) mêlent vie personnelle et Histoire avec un grand H. L'autobiographie (ex : Les Confessions de Rousseau) se centre sur la vie intérieure de l'auteur."},
+
+    {type:"fill",
+     prompt:"Complète la définition : Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
+     sentence:"Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
+     blanks:["prose","existence","individuelle","personnalité"],
+     explanation:"C'est la définition exacte de Philippe Lejeune (1975). Retiens ces quatre mots-clés : prose, existence, individuelle, personnalité."},
+
+    {type:"qcm",
+     prompt:"Lequel de ces textes est considéré comme le premier grand exemple d'autobiographie moderne en France ?",
+     options:["Les Misérables de Victor Hugo.","Les Confessions de Jean-Jacques Rousseau.","Madame Bovary de Gustave Flaubert.","Le Rouge et le Noir de Stendhal."],
+     correctIndex:1,
+     explanation:"Les Confessions de Rousseau (écrites entre 1765 et 1770) sont le premier exemple moderne d'autobiographie française. Rousseau affirme dès l'ouverture son projet de se montrer tel qu'il est."},
+
+    {type:"truefalse",
+     prompt:"Vrai ou faux ? Le roman autobiographique respecte le pacte autobiographique car il est inspiré de la vie de l'auteur.",
+     correct:false,
+     explanation:"FAUX. Dans un roman autobiographique, l'auteur ne s'engage PAS à dire la vérité : il transforme et invente des éléments. Le pacte est donc fictif, pas autobiographique. L'auteur et le personnage principal ont des noms différents."},
+
+    {type:"order",
+     prompt:"Remets dans l'ordre les caractéristiques du pacte autobiographique selon Lejeune :",
+     items:["L'auteur, le narrateur et le personnage sont la même personne","Le récit est rétrospectif (on regarde le passé)","L'auteur s'engage à dire la vérité","Le récit est en prose"],
+     explanation:"Voilà les 4 piliers du pacte autobiographique : identité triple auteur/narrateur/personnage, rétrospection, sincérité (vérité), forme en prose."},
+
+    {type:"qcm",
+     prompt:"Dans « Les Mots » de Jean-Paul Sartre, pourquoi ce texte est-il une autobiographie ?",
+     options:["Parce qu'il raconte la vie d'un personnage fictif nommé Sartre.","Parce que Sartre (auteur) raconte sa propre enfance (personnage) à la première personne (narrateur).","Parce que c'est un roman publié sous un pseudonyme.","Parce qu'il décrit des événements historiques que Sartre a vécus."],
+     correctIndex:1,
+     explanation:"Dans Les Mots (1964), Sartre raconte son enfance en tant qu'auteur = narrateur = personnage. La triple identité est respectée, ainsi que l'engagement de sincérité : c'est bien une autobiographie."}
   ]},
 
   s2:{title:"Séance 2 — Narratologie",questions:[
@@ -5749,6 +5785,7 @@ const BOSS_QUESTIONS=[
 
 let bossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
   // Reset boss hearts (scoped to bossOv)
+  bossState.askedQIds=new Set();
   setTimeout(()=>{
     const ov=document.getElementById("bossOv");
     if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
@@ -5832,7 +5869,8 @@ function startBoss(){
     bm.volume=_volNow*0.6;
     bm.play().catch(()=>{});
   }
-  bossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,lives:2,_losingLife:false};
+  bossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,lives:2,_losingLife:false,askedQIds:new Set()};
+  bossState.askedQIds=new Set();
   setTimeout(()=>{
     const ov=document.getElementById("bossOv");
     if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
@@ -5918,7 +5956,7 @@ function stopAsteroidSpawner(){
 function shuffleBossQuestions(){
   const arr=[...BOSS_QUESTIONS];
   for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-  return arr.slice(0,50); // Return up to 50 of available questions
+  return arr.slice(0,40); // Return 40 from available pool
 }
 function renderBossQ(){
   if(!bossState.shuffledQs||!bossState.shuffledQs.length){
@@ -8088,7 +8126,7 @@ function showBanMessage(ban){
 
 
 function _getMelBgSrc(phase){
-  const mob=(window.innerWidth<=640||window.outerWidth<=640)&&(window.innerHeight>window.innerWidth);
+  const mob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
   if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
   if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   return null;
@@ -8275,6 +8313,10 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
+  // Direct mobile background set (phase 1)
+  const _melMob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+  const _melBg=document.getElementById("melBgImg");
+  if(_melBg&&_melMob)_melBg.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   _applyMelBg(1);
   const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Full reset
@@ -8638,6 +8680,9 @@ function melPhase2Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusicSafe(2);
+    const _mb2=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+    const _melBg2=document.getElementById("melBgImg");
+    if(_melBg2&&_mb2)_melBg2.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
     _applyMelBg(2);
     melState.transitioning=false;
     renderMelQ();
@@ -8685,6 +8730,9 @@ function melPhase3Cinematic(){
     if(charWrap){charWrap.style.transition="left 1s";charWrap.style.left="0";charWrap.style.transform="";}
     cineOv.style.display="none";
     playMelMusicSafe(3);
+    const _mb3=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+    const _melBg3=document.getElementById("melBgImg");
+    if(_melBg3&&_mb3)_melBg3.src="https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
     _applyMelBg(3);
     melState.transitioning=false;
     renderMelQ();
@@ -8907,8 +8955,8 @@ function abandonMemelite(){
 
 
     <!-- ── Correction input ── -->
-    <div id="orgCorrArea" style="display:none;position:absolute;bottom:22%;left:3%;width:58%;z-index:10;
-         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;padding:12px 16px;text-align:center;backdrop-filter:blur(4px);">
+    <div id="orgCorrArea" style="display:none;position:absolute;bottom:16%;left:4%;width:50%;max-width:340px;z-index:10;
+         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;padding:10px 14px;text-align:center;backdrop-filter:blur(4px);">
       <div id="orgCorrPrompt" style="font-size:13px;color:#93c5fd;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;">
         <input id="orgCorrInput" type="text" placeholder="Écris la correction…"
