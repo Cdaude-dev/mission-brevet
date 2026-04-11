@@ -1993,9 +1993,10 @@ const MODULES={
      explanation:"Les mémoires (ex : Mémoires d'outre-tombe de Chateaubriand) mêlent vie personnelle et Histoire avec un grand H. L'autobiographie (ex : Les Confessions de Rousseau) se centre sur la vie intérieure de l'auteur."},
 
     {type:"fill",
-     prompt:"Complète la définition : Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
+     prompt:"Complète la définition de Lejeune : Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
      sentence:"Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
      blanks:["prose","existence","individuelle","personnalité"],
+     wordBank:["prose","existence","individuelle","personnalité","poésie","histoire","collective","caractère"],
      explanation:"C'est la définition exacte de Philippe Lejeune (1975). Retiens ces quatre mots-clés : prose, existence, individuelle, personnalité."},
 
     {type:"qcm",
@@ -4658,11 +4659,16 @@ function showAvatarUnlocked(src,name,msg){
 
 /* ── QCM with shuffled options each session ── */
 function renderQCM(q){
-  // Build shuffled index map once per question per session (stable within a session)
+  // Handle legacy truefalse format (correct:bool, no options array)
+  if(q.type==="truefalse"&&!q.options){
+    q.options=["Vrai","Faux"];
+    q.correctIndex=q.correct===true?0:1;
+  }
+  // Build shuffled index map once per question per session
   if(!q._shuffled){
     const idx=[...q.options.keys()];
     for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
-    q._shuffled=idx; // [0,3,1,2] = display order of original indices
+    q._shuffled=idx;
   }
   const shuffled=q._shuffled;
   const newCorrect=shuffled.indexOf(q.correctIndex);
@@ -5783,7 +5789,7 @@ const BOSS_QUESTIONS=[
   {prompt:"Conjugue 'avoir' au subjonctif passé, 3e pers. plur.",answer:["aient eu","qu'ils aient eu","ils aient eu"],explanation:"AVOIR subjonctif passé : qu'ils AIENT EU"}
 ];
 
-let bossState={qIdx:0,hp:50,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
+let bossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
   // Reset boss hearts (scoped to bossOv)
   bossState.askedQIds=new Set();
   setTimeout(()=>{
@@ -6026,11 +6032,11 @@ function bossHit(){
   bossState.hp--;
   bossState.qIdx++;
   // Update HP bar
-  const pct=(bossState.hp/30)*100;
+  const pct=(bossState.hp/40)*100;
   const fill=document.getElementById("bossHpFill");
   const txt=document.getElementById("bossHpText");
   if(fill)fill.style.width=pct+"%";
-  if(txt)txt.textContent=bossState.hp+" / 30";
+  if(txt)txt.textContent=bossState.hp+" / 40";
   // Hit animation — blink + slide
   const char=document.getElementById("bossChar");
   const wrap=document.getElementById("bossCharWrap");
@@ -8126,7 +8132,7 @@ function showBanMessage(ban){
 
 
 function _getMelBgSrc(phase){
-  const mob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+  const mob=(window.innerWidth<=640||document.documentElement.clientWidth<=640);
   if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
   if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   return null;
@@ -8314,7 +8320,7 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
 
 function startMemelit(){
   // Direct mobile background set (phase 1)
-  const _melMob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+  const _melMob=(window.innerWidth<=640||document.documentElement.clientWidth<=640);
   const _melBg=document.getElementById("melBgImg");
   if(_melBg&&_melMob)_melBg.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   _applyMelBg(1);
