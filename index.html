@@ -5093,23 +5093,23 @@ function nextQuestion(){
 
 /* ══════════ RESULTS ══════════ */
 function showResults(){
-  // Clear saved position so next entry starts fresh
-  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
-  const total=qs().length,p=total>0?Math.round((S.correct/total)*100):0;
-  // Speedrunner badge: finish in < 90 seconds
+  const total=qs().length;
+  const p=total>0?Math.round((S.correct/total)*100):0;
+  // Speedrunner badge
   if(S._seanceStartTime&&(Date.now()-S._seanceStartTime)<90000)unlockBadge("speedrunner");
-  // Invaincu: count completed séances without abandoning
+  // Invaincu
   if(!S._seancesCompleted)S._seancesCompleted=0;
   S._seancesCompleted++;
   if(S._seancesCompleted>=20)unlockBadge("invaincu");
   // Category 100% badges
-  const _litMods=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-  const _gramMods=["g1","g2","g3","g4","g5","g6","g7","g8"];
-  const _conjMods=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-  if(_litMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
-  if(_gramMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
-  if(_conjMods.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
-  S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
+  const _lm=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+  const _gm=["g1","g2","g3","g4","g5","g6","g7","g8"];
+  const _cm=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+  if(_lm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("biblioclaste");
+  if(_gm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("grammaricide");
+  if(_cm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
+  // Update stats
+  S.done[S.mod]=true; if(p===100)S.perfect[S.mod]=true;
   S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
   if(!S.seancePct)S.seancePct={};
   const prevPct=parseInt(S.seancePct[S.mod])||0;
@@ -5117,61 +5117,60 @@ function showResults(){
   const displayPct=Math.max(p,prevPct);
   if(prevPct===100) S.perfect[S.mod]=true;
   checkBadges();updateSeanceBadges();updateHUD();saveToLB();saveProgress();
-  // Check boss unlock conditions after séance completion
+  // Boss key unlocks
   setTimeout(()=>{
     const allConj=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
-    const conjDone=allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    let _keyUnlocked=false;
-    if(conjDone&&!S.conjKeyShown){S.conjKeyShown=true;_keyUnlocked=true;showKeyUnlock("conjugaison");}
+    if(allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.conjKeyShown){S.conjKeyShown=true;showKeyUnlock("conjugaison");saveProgress();}
     const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
-    const gramDone=allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(gramDone&&!S.gramKeyShown){S.gramKeyShown=true;_keyUnlocked=true;showKeyUnlock("grammaire");}
+    if(allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.gramKeyShown){S.gramKeyShown=true;showKeyUnlock("grammaire");saveProgress();}
     const allLit=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
-    const litDone=allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100));
-    if(litDone&&!S.litKeyShown){S.litKeyShown=true;_keyUnlocked=true;showKeyUnlock("litterature");}
-    if(_keyUnlocked)saveProgress(); // persist key flags immediately
+    if(allLit.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))&&!S.litKeyShown){S.litKeyShown=true;showKeyUnlock("litterature");saveProgress();}
   },800);
-  D.quizProgFill.style.width="100%";
-  D.quizCounter.textContent="Terminé ! "+S.correct+"/"+total+" bonnes réponses";
-  D.hintImg.src=PROF.smile;D.hintText.textContent=p>=66?"Bravo ! Tu es prêt(e) pour le brevet 🎓":"Continue à réviser, tu vas y arriver !";
+  // Stars
   if(!S.stars)S.stars={};
   const newStars=pctToStars(p);
-  // Never downgrade: keep the best score
-  S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
+  S.stars[S.mod]=Math.max(newStars,S.stars[S.mod]||0);
   const starCount=S.stars[S.mod];
-  let stars=starImgHtml(starCount),msg="Continue à réviser !";
+  let msg="Continue à réviser !";
   if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉";}
-  else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
-  else if(p>=33){msg="Tu peux mieux faire ! (1 étoile)";}
-  // Student character: smiling if ≥66%, thinking if below
-  const eleveImg=p>=66
-    ?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
-    :"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
-  D.qBox.innerHTML="";D.aWrap.className="answers";
-  // Scroll quiz card to top so results are visible
-  const qc=document.getElementById("quizCard");
-  if(qc){qc.scrollTo({top:0,behavior:"smooth"});}
-  // Victory image swap for 100%
-  if(p===100){setTimeout(()=>{const ri=document.getElementById("_resImg");if(ri){ri.src="https://i.postimg.cc/QNT5rT24/victoir.png";ri.className="victory-img";ri.style.cssText="width:min(130px,32vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));";}},50);}
-  D.aWrap.innerHTML=`
-    <div class="results-wrap">
-      <div style="display:flex;align-items:flex-end;gap:16px;justify-content:center;">
-        <img src="${p===100?'https://i.postimg.cc/QNT5rT24/victoir.png':eleveImg}" alt="" class="${p===100?'victory-img':'deco-eleve-results'}" style="${p===100?'width:min(130px,32vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));':''}}"/>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;">
-          <div class="res-title">Séance terminée !</div>
-          <div class="res-stars">${stars}</div>
-          <div class="res-pct">${p}%</div>
-          <div class="res-sub">${S.correct} / ${total} bonnes réponses</div>
-          <div class="res-sub">${msg}</div>
-        </div>
+  else if(p>=66){msg="Bien joué ! Encore un effort !";}
+  else if(p>=33){msg="Tu peux mieux faire !";}
+  const eleveImg=p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png":"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
+  const modId=S.mod;
+  S.mod=null; // clear mod AFTER saving modId
+
+  // ── SHOW RESULTS IN FULL-SCREEN OVERLAY ──
+  const existing=document.getElementById("resultsOv");if(existing)existing.remove();
+  const ov=document.createElement("div");
+  ov.id="resultsOv";
+  ov.style.cssText="position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(circle at 30% 0%,#a05018 0%,#723a10 32%,#4a2207 65%,#271004 100%);";
+  const starsHtml=p===100
+    ?'<img src="https://i.postimg.cc/QNT5rT24/victoir.png" style="width:min(120px,30vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));" alt=""/>'
+    :starImgHtml(starCount);
+  const imgHtml=p===100
+    ?'<img src="https://i.postimg.cc/QNT5rT24/victoir.png" style="width:min(110px,28vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));" alt=""/>'
+    :`<img src="${eleveImg}" style="width:min(100px,25vw);animation:bob2 4s ease-in-out infinite;" alt=""/>`;
+  ov.innerHTML=`<div style="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 24px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);">
+    <div style="display:flex;align-items:flex-end;gap:16px;justify-content:center;margin-bottom:16px;">
+      ${imgHtml}
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="font-size:22px;font-weight:900;color:var(--gold);">Séance terminée !</div>
+        <div style="font-size:32px;">${starsHtml}</div>
+        <div style="font-size:36px;font-weight:900;color:${p===100?"#facc15":"var(--ivory)"};">${p}%</div>
+        <div style="font-size:14px;color:#ead7ae;">${S.correct} / ${total} bonnes réponses</div>
+        <div style="font-size:13px;color:#ead7ae;opacity:.8;">${msg}</div>
       </div>
-      <div class="res-btns">
-        <button class="primary-btn" onclick="startMod('${S.mod}')">🔁 Recommencer</button>
-        <button class="primary-btn green" onclick="_goBackFromResults('${S.mod}')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:28px;width:auto;vertical-align:middle;" alt=""/> Continuer</button>
-      </div>
-    </div>`;
-  D.feedback.style.display="none";D.nextBtn.style.display="none";
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+      <button onclick="document.getElementById('resultsOv').remove();startMod('${modId}')" style="padding:12px 20px;border-radius:14px;border:none;background:rgba(217,164,65,.2);color:var(--gold);font-weight:800;font-size:15px;cursor:pointer;border:1px solid rgba(217,164,65,.4);">🔁 Recommencer</button>
+      <button onclick="document.getElementById('resultsOv').remove();_goBackFromResults('${modId}')" style="padding:12px 24px;border-radius:14px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:22px;width:auto;vertical-align:middle;margin-right:4px;" alt=""/>Continuer</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  // Hide quiz card
+  D.quizCard.style.display="none";
 }
+
 
 /* ══════════ WELCOME ══════════ */
 function buildWelcomeAvGrid(){
