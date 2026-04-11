@@ -515,7 +515,7 @@
     .res-pct{font-size:56px;font-weight:900;color:#facc15;line-height:1;}
     .res-sub{font-size:15px;color:#ead7ae;}
     .res-stars{font-size:32px;letter-spacing:4px;}
-    .res-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+    .res-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
     .badge-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
       background:linear-gradient(135deg,rgba(55,28,12,.97),rgba(90,45,12,.97));
       border:1px solid rgba(245,215,161,.35);border-radius:16px;
@@ -3985,12 +3985,13 @@ async function saveToLB(){
         {method:"PATCH",headers:{...headers,"Prefer":"return=minimal,count=exact"},body:JSON.stringify(lbPayload)}
       );
       // If no row was updated (new player), INSERT
+      // Check if update worked - use status 204 + Content-Range
       const contentRange=patchRes.headers.get("Content-Range")||patchRes.headers.get("content-range")||"";
-      const rowsUpdated=contentRange?parseInt(contentRange.split("/")[0]||"0",10):0;
+      const rowsUpdated=contentRange?parseInt(contentRange.split("/")[0]||"0",10):(patchRes.status===204?1:0);
       if(rowsUpdated===0){
         await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
           method:"POST",
-          headers:{...headers,"Prefer":"return=minimal"},
+          headers:{...headers,"Prefer":"return=minimal,resolution=merge-duplicates"},
           body:JSON.stringify(lbPayload)
         });
       }
@@ -4700,7 +4701,8 @@ function renderQCM(q){
   });
 }
 function checkQCMShuffled(sel,correctPos,q){
-  if(S.locked)return;S.locked=true;const ok=sel===correctPos;
+  if(S.locked){nextQuestion();return;} // if locked, advance instead of ignoring
+  S.locked=true;const ok=sel===correctPos;
   D.aWrap.querySelectorAll(".ans-btn").forEach((b,i)=>{
     b.disabled=true;
     if(i===correctPos)b.classList.add("correct");
@@ -5083,6 +5085,7 @@ function _goBackFromResults(modId){
 
 function nextQuestion(){
   if(!S.mod)return;
+  S.locked=false; // always unlock before advancing
   S.qIdx++;
   renderQ();
 }
@@ -5136,7 +5139,7 @@ function showResults(){
   // Never downgrade: keep the best score
   S.stars[S.mod]=Math.max(newStars, S.stars[S.mod]||0);
   const starCount=S.stars[S.mod];
-  let stars=p===100?'<div class="victory-wrap"><img src="https://i.postimg.cc/QNT5rT24/victoir.png" class="victory-img" alt="Victoire"/></div>':starImgHtml(starCount),msg="Continue à réviser !";
+  let stars=starImgHtml(starCount),msg="Continue à réviser !";
   if(p===100){msg="Parfait ! Tu maîtrises cette séance 🎉";}
   else if(p>=66){msg="Bien joué ! Encore un effort ! (2 étoiles)";}
   else if(p>=33){msg="Tu peux mieux faire ! (1 étoile)";}
@@ -5148,10 +5151,12 @@ function showResults(){
   // Scroll quiz card to top so results are visible
   const qc=document.getElementById("quizCard");
   if(qc){qc.scrollTo({top:0,behavior:"smooth"});}
+  // Victory image swap for 100%
+  if(p===100){setTimeout(()=>{const ri=document.getElementById("_resImg");if(ri){ri.src="https://i.postimg.cc/QNT5rT24/victoir.png";ri.className="victory-img";ri.style.cssText="width:min(130px,32vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));";}},50);}
   D.aWrap.innerHTML=`
     <div class="results-wrap">
       <div style="display:flex;align-items:flex-end;gap:16px;justify-content:center;">
-        <img src="${eleveImg}" alt="" class="deco-eleve-results"/>
+        <img src="${p===100?'https://i.postimg.cc/QNT5rT24/victoir.png':eleveImg}" alt="" class="${p===100?'victory-img':'deco-eleve-results'}" style="${p===100?'width:min(130px,32vw);animation:victoryFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(250,204,21,.8));':''}}"/>
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;">
           <div class="res-title">Séance terminée !</div>
           <div class="res-stars">${stars}</div>
@@ -5664,7 +5669,8 @@ function renderBigBadgesGrid(){
   });
 }
 document.getElementById("bigNameInput")?.addEventListener("input",()=>{
-  S.name=document.getElementById("bigNameInput").value||"Élève";
+  const _oNB=S.name;S.name=document.getElementById("bigNameInput").value||"Élève";
+  if(_oNB&&_oNB!==S.name){try{fetch(SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(_oNB),{method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}).catch(()=>{});}catch(e){}}
   D.chipName.textContent=S.name; saveToLB();
 });
 
@@ -5812,7 +5818,7 @@ window.addEventListener("load",()=>{
 D.chip.addEventListener("click",e=>{e.stopPropagation();S.panelOpen=!S.panelOpen;D.acctPanel.classList.toggle("open",S.panelOpen);});
 document.addEventListener("click",()=>{if(S.panelOpen){S.panelOpen=false;D.acctPanel.classList.remove("open");}});
 D.acctPanel.addEventListener("click",e=>e.stopPropagation());
-D.nameInput.addEventListener("input",()=>{S.name=D.nameInput.value||"Élève";D.chipName.textContent=S.name;saveToLB();});
+D.nameInput.addEventListener("input",()=>{const _oNS=S.name;S.name=D.nameInput.value||"Élève";if(_oNS&&_oNS!==S.name){try{fetch(SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(_oNS),{method:"DELETE",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}}).catch(()=>{});}catch(e){}}D.chipName.textContent=S.name;saveToLB();});
 // Enter key advances to next question
 document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&document.getElementById("quizCard")&&document.getElementById("quizCard").style.display==="flex"){
