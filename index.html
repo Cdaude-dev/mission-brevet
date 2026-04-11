@@ -1966,61 +1966,56 @@ const BADGES_DEF=[
 const MODULES={
   s1:{title:"Séance 1 — Définitions & pacte autobiographique",questions:[
     {type:"qcm",
-     prompt:"Qu'est-ce qu'une autobiographie ?",
-     options:["Un récit imaginaire écrit à la 3e personne.","Un texte où l'auteur, le narrateur et le personnage principal sont la même personne et raconte sa propre vie.","Un journal intime publié après la mort de l'auteur.","Un roman où le héros ressemble à l'auteur."],
-     correctIndex:1,
-     explanation:"L'autobiographie est définie par la triple identité : auteur = narrateur = personnage. C'est Philippe Lejeune qui a théorisé cette définition."},
-
+     prompt:"Quelle est la définition étymologique d'autobiographie ?",
+     options:["Écrire sa propre vie.","Raconter l'histoire d'une autre personne.","Rédiger un journal intime.","Inventer sa propre vie."],
+     correctIndex:0,
+     explanation:"Auto (soi-même) + bio (vie) + graphie (écriture) = écrire sa propre vie. Une autobiographie, c'est littéralement cela."},
     {type:"qcm",
-     prompt:"Qu'appelle-t-on le « pacte autobiographique » selon Philippe Lejeune ?",
-     options:["L'accord entre un auteur et son éditeur pour publier ses mémoires.","L'engagement implicite ou explicite de l'auteur envers le lecteur que le récit est véridique et que auteur, narrateur et personnage sont identiques.","La promesse du lecteur de croire tout ce que raconte l'auteur.","Le contrat de vente d'une autobiographie en librairie."],
+     prompt:"Le personnage principal d'une autobiographie est aussi...",
+     options:["Uniquement le personnage principal.","Le narrateur et l'auteur.","Un personnage fictif créé par l'auteur.","Le lecteur du récit."],
      correctIndex:1,
-     explanation:"Le pacte autobiographique (Philippe Lejeune, 1975) est l'engagement de l'auteur : il affirme que tout ce qu'il raconte est vrai et que lui, le narrateur et le personnage principal ne font qu'un."},
-
-    {type:"truefalse",
-     prompt:"Vrai ou faux ? Dans une autobiographie, l'auteur peut inventer des événements pour rendre le récit plus intéressant.",
-     correct:false,
-     explanation:"FAUX. L'autobiographie implique un pacte de sincérité : l'auteur s'engage à raconter la vérité telle qu'il la perçoit. Inventer des événements relèverait plutôt du roman autobiographique."},
-
+     explanation:"Dans une autobiographie, auteur, narrateur et personnage principal sont une seule et même personne. C'est ce qu'on appelle l'identité autobiographique."},
     {type:"qcm",
-     prompt:"Quelle est la personne grammaticale la plus souvent utilisée dans une autobiographie ?",
-     options:["La 3e personne du singulier (il/elle).","La 2e personne du singulier (tu).","La 1re personne du singulier (je).","La 1re personne du pluriel (nous)."],
+     prompt:"Qui a théorisé le « Pacte autobiographique » ?",
+     options:["Jean-Paul Sartre","Marcel Proust","Philippe Lejeune","Simone de Beauvoir"],
      correctIndex:2,
-     explanation:"L'autobiographie est presque toujours rédigée à la 1re personne (je), car l'auteur raconte sa propre vie de son point de vue."},
-
+     explanation:"Philippe Lejeune, critique littéraire français, a théorisé ce concept en 1975 dans son ouvrage « Le Pacte autobiographique »."},
     {type:"qcm",
-     prompt:"Quelle différence y a-t-il entre une autobiographie et des mémoires ?",
-     options:["Il n'y en a aucune, ce sont des synonymes exacts.","Les mémoires portent davantage sur les événements historiques et le contexte collectif, tandis que l'autobiographie se centre sur la vie intérieure et personnelle de l'auteur.","Les mémoires sont toujours plus courts que les autobiographies.","Une autobiographie est forcément publiée après la mort de l'auteur."],
+     prompt:"Qu'est-ce que le Pacte autobiographique selon Lejeune ?",
+     options:["Un contrat signé entre l'éditeur et l'auteur.","Un accord implicite entre l'auteur et le lecteur.","Une règle d'écriture imposée par les académies.","Le titre d'un roman célèbre du XIXe siècle."],
      correctIndex:1,
-     explanation:"Les mémoires (ex : Mémoires d'outre-tombe de Chateaubriand) mêlent vie personnelle et Histoire avec un grand H. L'autobiographie (ex : Les Confessions de Rousseau) se centre sur la vie intérieure de l'auteur."},
-
+     explanation:"C'est un accord implicite par lequel l'auteur s'engage à raconter sa vraie vie, et le lecteur accepte de lire le texte comme un récit véridique."},
+    {type:"qcm",
+     prompt:"Laquelle de ces informations sur l'autobiographie est FAUSSE ?",
+     options:["Elle est écrite à la première personne.","Elle traite de la vie réelle de l'auteur.","L'auteur peut inventer et ajouter de la fiction.","Elle repose sur la mémoire de l'auteur."],
+     correctIndex:2,
+     explanation:"FAUX. L'autobiographie repose sur le pacte de vérité : l'auteur s'engage à raconter sa vraie vie. Il ne peut pas inventer — sinon c'est un roman autobiographique."},
+    {type:"qcm",
+     prompt:"Quelle est la faculté principale dont doit faire preuve l'auteur d'une autobiographie ?",
+     options:["L'imagination","La mémoire / le souvenir","La logique abstraite","La créativité fictive"],
+     correctIndex:1,
+     explanation:"La mémoire est au cœur de l'autobiographie. L'auteur raconte des événements passés de sa vie, ce qui nécessite de se souvenir avec précision et honnêteté."},
+    {type:"qcm",
+     prompt:"L'autobiographie peut aussi être considérée comme...",
+     options:["Une fiction romanesque.","Un récit rétrospectif.","Un essai philosophique.","La biographie d'une autre personne."],
+     correctIndex:1,
+     explanation:"L'autobiographie est un récit rétrospectif : l'auteur revient en arrière sur sa propre vie, depuis son présent d'écriture vers son passé."},
+    {type:"qcm",
+     prompt:"De quelle langue est issue étymologiquement le mot « autobiographie » ?",
+     options:["Du Latin","De l'Arabe","Du Grec ancien","De l'Anglais"],
+     correctIndex:2,
+     explanation:"Le mot vient du grec : autos (soi-même), bios (vie) et graphein (écrire). La grande majorité des termes littéraires et scientifiques viennent du grec ou du latin."},
     {type:"fill",
-     prompt:"Complète la définition : Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
-     sentence:"Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
-     blanks:["prose","existence","individuelle","personnalité"],
-     explanation:"C'est la définition exacte de Philippe Lejeune (1975). Retiens ces quatre mots-clés : prose, existence, individuelle, personnalité."},
-
+     prompt:"Question 9/10 — Complétez le texte suivant en plaçant les bons mots.",
+     sentence:"Si [Rousseau] est considéré comme le pionnier du genre [autobiographique] au [XVIIIe siècle], [Montaigne] fut également l'un des premiers à s'y essayer avec son ouvrage : [Les Essais], au [XVIe siècle].",
+     blanks:["Rousseau","autobiographique","XVIIIe siècle","Montaigne","Les Essais","XVIe siècle"],
+     wordBank:["Rousseau","autobiographique","XVIIIe siècle","Montaigne","Les Essais","XVIe siècle","Descartes","XXe siècle"],
+     explanation:"Rousseau (Les Confessions, XVIIIe s.) est le pionnier de l'autobiographie moderne ; Montaigne (Les Essais, XVIe s.) en fut un précurseur."},
     {type:"qcm",
-     prompt:"Lequel de ces textes est considéré comme le premier grand exemple d'autobiographie moderne en France ?",
-     options:["Les Misérables de Victor Hugo.","Les Confessions de Jean-Jacques Rousseau.","Madame Bovary de Gustave Flaubert.","Le Rouge et le Noir de Stendhal."],
+     prompt:"Chateaubriand se servit de l'autobiographie pour témoigner de son époque. Comment s'appelle ce genre proche de l'autobiographie ?",
+     options:["Le roman historique","Les Mémoires","La confession","Le journal intime"],
      correctIndex:1,
-     explanation:"Les Confessions de Rousseau (écrites entre 1765 et 1770) sont le premier exemple moderne d'autobiographie française. Rousseau affirme dès l'ouverture son projet de se montrer tel qu'il est."},
-
-    {type:"truefalse",
-     prompt:"Vrai ou faux ? Le roman autobiographique respecte le pacte autobiographique car il est inspiré de la vie de l'auteur.",
-     correct:false,
-     explanation:"FAUX. Dans un roman autobiographique, l'auteur ne s'engage PAS à dire la vérité : il transforme et invente des éléments. Le pacte est donc fictif, pas autobiographique. L'auteur et le personnage principal ont des noms différents."},
-
-    {type:"order",
-     prompt:"Remets dans l'ordre les caractéristiques du pacte autobiographique selon Lejeune :",
-     items:["L'auteur, le narrateur et le personnage sont la même personne","Le récit est rétrospectif (on regarde le passé)","L'auteur s'engage à dire la vérité","Le récit est en prose"],
-     explanation:"Voilà les 4 piliers du pacte autobiographique : identité triple auteur/narrateur/personnage, rétrospection, sincérité (vérité), forme en prose."},
-
-    {type:"qcm",
-     prompt:"Dans « Les Mots » de Jean-Paul Sartre, pourquoi ce texte est-il une autobiographie ?",
-     options:["Parce qu'il raconte la vie d'un personnage fictif nommé Sartre.","Parce que Sartre (auteur) raconte sa propre enfance (personnage) à la première personne (narrateur).","Parce que c'est un roman publié sous un pseudonyme.","Parce qu'il décrit des événements historiques que Sartre a vécus."],
-     correctIndex:1,
-     explanation:"Dans Les Mots (1964), Sartre raconte son enfance en tant qu'auteur = narrateur = personnage. La triple identité est respectée, ainsi que l'engagement de sincérité : c'est bien une autobiographie."}
+     explanation:"Les Mémoires racontent la vie d'une personnalité en insistant sur les événements historiques de son époque. Chateaubriand a écrit les célèbres « Mémoires d'outre-tombe »."}
   ]},
 
   s2:{title:"Séance 2 — Narratologie",questions:[
@@ -3535,8 +3530,8 @@ function pct(s,name){
 
 function pctToStars(pct){
   if(pct>=100)return 3;
-  if(pct>=66)return 2;
-  if(pct>=33)return 1;
+  if(pct>=75)return 2;
+  if(pct>=50)return 1;
   return 0;
 }
 
@@ -3846,7 +3841,20 @@ function updateSeanceBadges(){
       const pct=parseInt((S.seancePct&&S.seancePct[id])||"0");
       const stars=pctToStars(pct);
       if(S.done[id]||pct>0){
-        if(pct>=100&&cb.parentElement){cb.parentElement.style.cssText+=";outline:2px solid #4ade80;outline-offset:2px;border-radius:inherit;";}
+        // 100% : fond vert + trophée
+        const _card=document.getElementById("sc-"+id);
+        if(pct>=100&&_card){
+          _card.style.background="linear-gradient(135deg,rgba(10,60,20,.75),rgba(5,35,12,.9))";
+          _card.style.border="2px solid #4ade80";
+          _card.style.boxShadow="0 0 12px rgba(74,222,128,.25)";
+          // Trophée sur le bouton ▶
+          const _btn=_card.querySelector(".seance-start-btn");
+          if(_btn&&!_btn.dataset.trophy){_btn.dataset.trophy="1";_btn.innerHTML="🏆 ▶";}
+        } else if(_card&&pct<100){
+          _card.style.background="";_card.style.border="";_card.style.boxShadow="";
+          const _btn=_card.querySelector(".seance-start-btn");
+          if(_btn&&_btn.dataset.trophy){delete _btn.dataset.trophy;_btn.innerHTML="▶";}
+        }
         cb.innerHTML=starImgHtml(stars);
       } else cb.textContent="";
     }
@@ -5006,6 +5014,8 @@ function renderDDUI(){
 function ddLeftClick(li){
   S.ddSelected=(S.ddSelected===li?null:li);
   renderDDUI();
+  // Ré-injecter les images (auteurs, illustrations) après rebuild
+  setTimeout(()=>{try{renderIllustrations(S.mod,S.qIdx);}catch(e){}},10);
 }
 
 function ddRightClick(ri){
@@ -5019,6 +5029,7 @@ function ddRightClick(ri){
   S.ddConnections[li]=ri;S.ddColorMap[li]=li%5;S.ddRightTaken[ri]=li;
   S.ddSelected=null;
   renderDDUI();
+  setTimeout(()=>{try{renderIllustrations(S.mod,S.qIdx);}catch(e){}},10);
 }
 
 function validateDD(){
@@ -5187,6 +5198,13 @@ function showResults(){
     +'<button id="_res_b" style="padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(180deg,#d9a441,#c87a10);color:#1a0a00;font-weight:900;font-size:14px;cursor:pointer;">📚 Séances</button>'
     +'</div>';
   _ov.appendChild(_c);document.body.appendChild(_ov);
+  // Feux d'artifice multiples sur l'overlay de résultats
+  try{
+    doBurst();
+    setTimeout(doBurst,400);
+    setTimeout(doBurst,800);
+    if(p===100){setTimeout(doBurst,1200);setTimeout(doBurst,1600);}
+  }catch(e){}
   document.getElementById("_res_r").onclick=function(){_ov.remove();try{stopVictoryMusic();}catch(e){}if(_modId)startMod(_modId);else showLitMenu();};
   document.getElementById("_res_b").onclick=function(){
     _ov.remove();try{stopVictoryMusic();}catch(e){}
@@ -7779,16 +7797,16 @@ function startOrgDust(){
 }
 
 function tryOpenOrgografe(){
-  // Recompute stars from seancePct in case migrateToStars wasn't called
   migrateToStars();
-  const stars=totalStars();
-  const req=6;
+  // Compter les étoiles des séances de GRAMMAIRE (g1-g8)
+  const gramMods=["g1","g2","g3","g4","g5","g6","g7","g8"];
+  const gramStars=gramMods.reduce((acc,id)=>acc+computeModStars(id),0);
+  const req=8;
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
-  if(!isAdmin&&stars<req){
-    showLockedBossMsg("🔒 "+req+" étoiles requises","Il te faut "+req+" ⭐ pour affronter la grande Orgografe. Tu en as actuellement "+stars+".");
+  if(!isAdmin&&gramStars<req){
+    showLockedBossMsg("🔒 "+req+" étoiles de grammaire requises","Il te faut "+req+" ⭐ en grammaire pour affronter l'Orgografe. Tu en as actuellement "+gramStars+" / 24.");
     return;
   }
-  // Intro animation
   showOrgIntro();
 }
 
@@ -8682,13 +8700,18 @@ function launchCats(count){
         const sound=document.getElementById(Math.random()>.5?"catHurt1Snd":"catHurt2Snd");
         if(sound){sound.currentTime=0;sound.play().catch(()=>{});}
         cat.src=MEL_CAT_HIT;
+        cat.style.animation="none"; // Stopper l'animation vol
+        cat.style.pointerEvents="none";
         // Random deflect direction
         const dir=Math.random()>.5?"top":"bottom";
         const rot=(Math.random()-.5)*720;
-        cat.style.transition="transform 0.6s, top 0.6s, opacity 0.6s";
-        cat.style.transform=`rotate(${rot}deg)`;
-        cat.style.top=dir==="top"?"-20%":"120%";
-        cat.style.opacity="0";
+        cat.style.transition="transform 0.65s ease-out, top 0.65s ease-out, opacity 0.65s ease-out";
+        requestAnimationFrame(()=>{
+          cat.style.transform=`scale(1.3) rotate(${rot}deg)`;
+          cat.style.top=dir==="top"?"-25%":"125%";
+          cat.style.opacity="0";
+        });
+        setTimeout(()=>cat.remove(),700);
         hit++;
         // Boss takes damage
         melState.catsRepelled++;
