@@ -719,8 +719,7 @@
     90%{transform:translateX(3px);}
   }
 
-  @keyframes moussiouShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-12deg);}40%{transform:rotate(12deg);}60%{transform:rotate(-8deg);}80%{transform:rotate(8deg);}}
-  </style>
+    </style>
 </head>
 <body>
 <div id="app">
@@ -1323,7 +1322,7 @@
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
     <div id="feedbackBox" class="feedback-box"></div>
-    <button id="nextBtn" class="img-btn primary-btn" style="--bh:clamp(34px,5.5vh,50px);display:none;margin-bottom:8px;" style="display:none;margin-bottom:8px;width:100%;max-width:360px;"></button>
+    <button id="nextBtn" class="img-btn primary-btn" style="display:none;margin-bottom:8px;max-width:360px;"></button>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
@@ -1616,7 +1615,7 @@
            id="bossKeyAnimImg"/>
     </div>
     <div id="bossKeyMsg" style="font-size:22px;font-weight:900;color:#facc15;opacity:0;transition:opacity 1s ease;max-width:500px;line-height:1.4;"></div>
-    <button id="bossKeyClose" onclick="closeBossKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#facc15,#d97706);color:#1a0a00;font-size:16px;font-weight:900;cursor:pointer;">⚔️ Entrer dans l'arène !</button>
+    <button id="bossKeyClose" onclick="closeBossKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#facc15,#d97706);color:#1a0a00;font-size:16px;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
   </div>
 
   <!-- BOSS BATTLE OVERLAY -->
@@ -1693,7 +1692,7 @@
     <img id="gramKeyImg" src="https://i.postimg.cc/CxXNv67v/Cle-grammaire.png" alt="Clé de la Langue"
          style="width:0;transition:width 1.5s ease,opacity 1.5s ease;opacity:0;" id="gramKeyAnimImg"/>
     <div id="gramKeyMsg" style="font-size:22px;font-weight:900;color:#60a5fa;opacity:0;transition:opacity 1s ease;max-width:500px;line-height:1.4;"></div>
-    <button id="gramKeyClose" onclick="closeGramKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;">✍️ Entrer dans l'arène !</button>
+    <button id="gramKeyClose" onclick="closeGramKey()" style="display:none;padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#60a5fa,#2563eb);color:#fff;font-size:16px;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
   </div>
 
   <!-- GRAMMAR BOSS BATTLE OVERLAY -->
@@ -1939,19 +1938,6 @@ const BADGES_DEF=[
   {id:"perfectionniste",img:"https://i.postimg.cc/5yS9sczq/perfectionniste.png", emoji:null, name:"Perfectionniste",    desc:"100% sur 10 séances différentes"},
   {id:"veloce",      img:"https://i.postimg.cc/wMpT5x12/eclair.png", emoji:null, name:"Éclair",             desc:"Terminer une séance sans aucune erreur du premier coup"},
   {id:"polymathe",   img:"https://i.postimg.cc/6qf6MsZf/polymathe.png", emoji:null, name:"Polymathe",           desc:"Terminer au moins une séance dans chaque catégorie"},
-  {id:"moussiou",name:"Moussiou !",emoji:"🎙️",
-   img:"https://i.postimg.cc/cLs68FxK/Oh-Moussiou.png",
-   desc:"Faire crier 'Moussiou' à Teddynounet en cliquant sur lui"},
-  {id:"boss_orgografe",img:null,emoji:"🐉",name:"Dompteuse d'Ogre",desc:"Vaincre la Grande Orgografe"},
-  {id:"boss_memelite",img:null,emoji:"📚",name:"Biblioclaste",desc:"Vaincre Mémélité"},
-  {id:"boss_conjugus",img:null,emoji:"⚡",name:"Maître du Temps",desc:"Vaincre Conjugus"},
-  {id:"boss_grammaria",img:null,emoji:"🌩️",name:"Grammairicide",desc:"Vaincre Grammaria"},
-  {id:"no_lose_conj",img:null,emoji:"🛡️",name:"Invulnérable",desc:"Vaincre Conjugus sans perdre de vie"},
-  {id:"no_lose_gram",img:null,emoji:"⚜️",name:"Intouchable",desc:"Vaincre Grammaria sans perdre de vie"},
-  {id:"speedrun",img:null,emoji:"💨",name:"Speedrunner",desc:"Terminer une séance en moins de 90 secondes"},
-  {id:"lit_perfect",img:null,emoji:"🎭",name:"Littéraire accompli",desc:"100% dans toutes les séances de littérature"},
-  {id:"conj_perfect",img:null,emoji:"🕰️",name:"Conjugueur expert",desc:"100% dans toutes les séances de conjugaison"},
-  {id:"gram_perfect",img:null,emoji:"📐",name:"Grammairien parfait",desc:"100% dans toutes les séances de grammaire"},
   {id:"invaincu",    img:"https://i.postimg.cc/sx4fTFWJ/invaincu.png", emoji:null, name:"Invaincu",            desc:"Atteindre le niveau 25 sans jamais abandonner"}
 ];
 
@@ -5996,8 +5982,6 @@ function bossDefeat(reason){
 }
 function bossVictory(){
   awardBossXP("conjugus");
-  unlockBadge("boss_conjugus");
-  if(bossState.lives===2)unlockBadge("no_lose_conj");
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
   const dead=document.getElementById("bossDead");
@@ -6027,7 +6011,7 @@ function abandonBoss(){
     <div style="font-size:14px;color:#ead7ae;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>Le boss sera de retour la prochaine fois…</div>
     <div style="display:flex;gap:12px;justify-content:center;">
       <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;">⚔️ Continuer</button>
+      <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -6676,8 +6660,6 @@ function gramBossDefeat(){
 
 function gramBossVictory(){
   awardBossXP("grammaria");
-  unlockBadge("boss_grammaria");
-  if(gramBossState.lives===2)unlockBadge("no_lose_gram");
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
@@ -7433,7 +7415,6 @@ function triggerOrgDarkPhase(){
 
 function orgVictory(){
   awardBossXP("orgografe");
-  unlockBadge("boss_orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
   try{const ds=document.getElementById("orgDefeatedSound");if(ds){ds.currentTime=0;ds.play().catch(()=>{});}}catch(e){}
@@ -7599,7 +7580,7 @@ function showOrgIntro(){
       <div style="display:flex;gap:10px;justify-content:center;">
         ${slide>0?`<button id="org_prev" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/QCpZfqdT/precedent.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>`:''}
         ${isLast
-          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ <img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(30px,4.5vh,44px);width:auto;display:block;" alt=""/></button>`
+          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(30px,4.5vh,44px);width:auto;display:block;" alt=""/></button>`
           :`<button id="org_next" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>`
         }
         <button id="org_cancel" style="padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
@@ -7745,7 +7726,6 @@ function tryOpenMemelite(){
 
 
 function playTeddySound(){
-  if(S.name)unlockBadge("moussiou");
   try{
     const ts=document.getElementById("teddySnd");
     if(!ts)return;
@@ -8649,7 +8629,6 @@ function melVictory(){
   melState.transitioning=true;
   melState.inCatPhase=false;
   awardBossXP("memelite");
-  unlockBadge("boss_memelite");
   melState.transitioning=true;
   melState.inCatPhase=false;
   const _ccv=document.getElementById("melCatContainer");if(_ccv){_ccv.innerHTML="";_ccv.style.pointerEvents="none";}
@@ -8831,7 +8810,7 @@ function abandonMemelite(){
     </div>
 
     <!-- ── ORGOGRAFE — right side, large, cropped at bottom ── -->
-    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:45%;width:min(70vw,600px);z-index:6;">
+    <div id="orgCharWrap" style="position:absolute;bottom:-7%;left:58%;width:min(50vw,420px);z-index:6;">
       <!-- HP bar moved to top-center -->
 
       <img id="orgChar" src="https://i.postimg.cc/N04Cp0Rt/Gadou.png"
