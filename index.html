@@ -687,7 +687,7 @@
     #orgOv > div[style*="left:1%"], #orgOv > div[style*="left:18%"]{
       left:2% !important;width:68% !important;top:3% !important;height:60% !important;
     }
-    #orgCharWrap{left:46% !important;width:min(80vw,420px) !important;bottom:-5% !important;}
+    #orgCharWrap{left:44% !important;width:min(68vw,360px) !important;bottom:-4% !important;}
     #orgBoardText{font-size:clamp(12px,2.5vw,18px) !important;}
     #orgPhrase{font-size:clamp(14px,3.5vw,22px) !important;}
   }
@@ -708,6 +708,18 @@
   /* Remove any remaining backgrounds on buttons with image children */
   button:has(> img:only-child){background:none !important;border:none !important;box-shadow:none !important;padding:0 !important;}
 
+  
+  @keyframes gramShake{
+    0%,100%{transform:translateX(0);}
+    15%{transform:translateX(-8px);}
+    30%{transform:translateX(8px);}
+    45%{transform:translateX(-6px);}
+    60%{transform:translateX(6px);}
+    75%{transform:translateX(-3px);}
+    90%{transform:translateX(3px);}
+  }
+
+  @keyframes moussiouShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-12deg);}40%{transform:rotate(12deg);}60%{transform:rotate(-8deg);}80%{transform:rotate(8deg);}}
   </style>
 </head>
 <body>
@@ -1724,7 +1736,7 @@
     <!-- Question area -->
     <div style="position:absolute;top:50%;left:0;right:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:0 16px 180px;gap:12px;transform:translateY(-50%);max-height:80vh;overflow-y:auto;">
       <div id="gramQCounter" style="font-size:13px;color:#1e40af;font-weight:800;letter-spacing:.5px;text-shadow:0 1px 3px rgba(255,255,255,.8);">Question 1 / 50</div>
-      <div id="gramQBox" style="background:rgba(255,255,255,.88);border:2px solid rgba(59,130,246,.4);border-radius:20px;
+      <div id="gramQBox" style="background:rgba(30,60,120,.85);color:#e8f0ff;border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.88);border:2px solid rgba(59,130,246,.4);border-radius:20px;
            padding:22px 28px;max-width:640px;width:100%;font-size:18px;color:#1e3a8a;line-height:1.6;text-align:center;
            box-shadow:0 4px 30px rgba(59,130,246,.2);font-weight:600;"></div>
       <div id="gramAnswerWrap" style="max-width:580px;width:100%;display:grid;gap:10px;"></div>
@@ -1930,6 +1942,17 @@ const BADGES_DEF=[
   {id:"moussiou",name:"Moussiou !",emoji:"🎙️",
    img:"https://i.postimg.cc/cLs68FxK/Oh-Moussiou.png",
    desc:"Faire crier 'Moussiou' à Teddynounet en cliquant sur lui"},
+,
+  {id:"boss_orgografe",img:null,emoji:"🐉",name:"Dompteuse d'Ogre",desc:"Vaincre la Grande Orgografe"},
+  {id:"boss_memelite",img:null,emoji:"📚",name:"Biblioclaste",desc:"Vaincre Mémélité"},
+  {id:"boss_conjugus",img:null,emoji:"⚡",name:"Maître du Temps",desc:"Vaincre Conjugus"},
+  {id:"boss_grammaria",img:null,emoji:"🌩️",name:"Grammairicide",desc:"Vaincre Grammaria"},
+  {id:"no_lose_conj",img:null,emoji:"🛡️",name:"Invulnérable",desc:"Vaincre Conjugus sans perdre de vie"},
+  {id:"no_lose_gram",img:null,emoji:"⚜️",name:"Intouchable",desc:"Vaincre Grammaria sans perdre de vie"},
+  {id:"speedrun",img:null,emoji:"💨",name:"Speedrunner",desc:"Terminer une séance en moins de 90 secondes"},
+  {id:"lit_perfect",img:null,emoji:"🎭",name:"Littéraire accompli",desc:"100% dans toutes les séances de littérature"},
+  {id:"conj_perfect",img:null,emoji:"🕰️",name:"Conjugueur expert",desc:"100% dans toutes les séances de conjugaison"},
+  {id:"gram_perfect",img:null,emoji:"📐",name:"Grammairien parfait",desc:"100% dans toutes les séances de grammaire"},
   {id:"invaincu",    img:"https://i.postimg.cc/sx4fTFWJ/invaincu.png", emoji:null, name:"Invaincu",            desc:"Atteindre le niveau 25 sans jamais abandonner"}
 ];
 
@@ -3455,33 +3478,28 @@ const D={
 };
 
 /* ══════════ HELPERS ══════════ */
-function lv(s,name){if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;return Math.floor(s/50)+1;}
-function pct(s){return Math.min((s%50)*2,100);}
-function toast(m){D.popup.textContent=m;D.popup.classList.add("show");setTimeout(()=>D.popup.classList.remove("show"),2400);}
-function flashScore(){D.flash.style.display="block";D.flash.style.animation="none";void D.flash.offsetWidth;D.flash.style.animation="scoreAnim .75s ease-out forwards";setTimeout(()=>D.flash.style.display="none",800);}
-function doBurst(){D.burst.classList.add("show");setTimeout(()=>D.burst.classList.remove("show"),880);flashScore();}
-
-/* ══════════ STAR SYSTEM ══════════ */
-const STAR_IMG = "https://i.postimg.cc/yY0GDKvR/etoile.png";
-
-// Module unlock requirements (in total stars needed)
-const MOD_UNLOCK = {
-  // Grammar: sequential unlock based on stars
-  g1:0, g2:3,          // g2 needs 3 stars (finish g1 with ≥2 stars)
-  g3:4,                 // need 4 stars (2 from g1 + 2 from g2 min)
-  g4:7,                 // need 7 stars
-  g5:10,
-  g6:13,
-  g7:16,
-  g8:19,
-  // Conjugaison
-  c1:0,c2:3,c3:5,c4:8,c5:11,c6:14,c7:17,c8:20,
-  c9:23,c10:26,c11:29,c12:32,c13:35,c14:38,
-  // Autobio (mostly open since it's intro)
-  s1:0,s2:2,s3:4,s4:6,s5:8,s6:10,sf:12,
-  // Poésie
-  p1:0,p2:2,p3:4,p4:6,p5:8,p6:10,p7:12,p8:14,p9:16,
-};
+function lv(s,name){
+  if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;
+  // Progressive XP curve
+  const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,  // L1-10: 100/lvl
+    1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,            // L11-20: 200/lvl
+    3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];            // L21-30: 400/lvl
+  let lvl=1;
+  for(let i=1;i<THRESHOLDS.length;i++){if(s>=THRESHOLDS[i])lvl=i+1;else break;}
+  return lvl;
+}
+function lvThreshold(lvl){
+  const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,
+    1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,
+    3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];
+  return THRESHOLDS[lvl-1]||7000+(lvl-30)*400;
+}
+function pct(s,name){
+  const cl=lv(s,name);const next=cl+1;
+  const cur=lvThreshold(cl);const nxt=lvThreshold(next);
+  return Math.min(Math.round(((s-cur)/(nxt-cur))*100),100);
+}
+;
 
 function pctToStars(pct){
   if(pct>=100)return 3;
@@ -4019,7 +4037,7 @@ function openPlayerPopup(entry){
       badgesList=[...new Set([...badgesList,...localBadges])];
     }
   }catch(_){}
-  const lvl=Math.floor((entry.score||0)/50)+1;
+  const lvl=lv(entry.score||0,entry.name);
   // Only show unlocked badges, clickable for detail
   const unlockedBadges=BADGES_DEF.filter(b=>badgesList.includes(b.id));
   const badgeCardsHtml=unlockedBadges.length
@@ -4046,7 +4064,7 @@ function openPlayerPopup(entry){
         <div style="font-size:19px;font-weight:900;color:var(--gold);">${entry.name}</div>
         ${entry.desc?`<div style="font-size:12px;color:#ead7ae;font-style:italic;margin-top:3px;">"${entry.desc}"</div>`:''}
         <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
-          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div>
+          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div><div style="font-size:10px;color:#ead7ae;margin-top:3px;">XP${entry.score||0} / ${lvThreshold(lvl+1)}</div>
           <div class="pill" style="font-size:11px;">${entry.score||0} pts</div>
           <div class="pill" style="font-size:11px;">${unlockedBadges.length} badge${unlockedBadges.length!==1?'s':''}</div>
         </div>
@@ -4917,7 +4935,10 @@ function showFeedback(ok,explanation){
     }
   }
   D.nextBtn.style.display="inline-block";
-  D.nextBtn.textContent=isLast?"Voir mes résultats →":"Question suivante →";
+  D.nextBtn.innerHTML=isLast?
+      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;" alt=""/>'
+      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;" alt=""/>';
+    D.nextBtn.style.background="none";D.nextBtn.style.border="none";
   D.nextBtn.onclick=()=>{S.qIdx++;renderQ();};
 }
 
@@ -5332,8 +5353,7 @@ function showDescriptionPopup(name, avatar, hashedPwd){
     <div id="descErrMsg" style="font-size:12px;color:#fca5a5;min-height:16px;margin-bottom:10px;"></div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button id="descOkBtn" style="flex:1;padding:12px;border-radius:12px;border:none;
-        background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
-        C'est parti ! 🚀
+        background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:point<img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(30px,4.5vh,44px);width:auto;display:block;" alt=""/>
       </button>
       <button id="descSkipBtn"
         style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
@@ -5680,17 +5700,20 @@ const BOSS_QUESTIONS=[
 ];
 
 let bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffleBossQuestions(),lives:2,_losingLife:false};
-  // Reset hearts
-  setTimeout(()=>{const h=document.querySelectorAll(".boss-life-heart");h.forEach(x=>x.style.filter="");},50);
+  // Reset boss hearts (scoped to bossOv)
+  setTimeout(()=>{
+    const ov=document.getElementById("bossOv");
+    if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
+  },50);
 
 
-function showLockedBossMsg(title, text){
+function showLockedBossMsg(title, text, bossImg, bossName){
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a00,#0a0500);border:2px solid rgba(217,164,65,.3);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .3s;">
-    <div style="font-size:44px;margin-bottom:12px;">🔒</div>
-    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:12px;">${title}</div>
+    ${bossImg?`<img src="${bossImg}" style="width:80px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(217,164,65,.5));animation:bossIdle 4s ease-in-out infinite;margin-bottom:8px;"/>`:`<div style="font-size:44px;margin-bottom:12px;">🔒</div>`}
+    <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:4px;">${bossName||title}</div>
     <div style="font-size:14px;color:#ead7ae;line-height:1.7;margin-bottom:20px;">${text}</div>
     <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:11px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;"><img src="https://i.postimg.cc/9F3f1RzM/d-accord.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
   </div>`;
@@ -5702,7 +5725,7 @@ function tryOpenBoss(){
   const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
   const allDone=S.conjKeyShown||allConj.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
   if(!allDone){
-    showLockedBossMsg("🔒 Clé du Temps requise","Termine toutes les séances de conjugaison à 100% pour obtenir la Clé du Temps et affronter Conjugus.");
+    showLockedBossMsg("Clé du Temps requise","🔐 <strong>Module verrouillé</strong><br>Il vous faut la <strong>Clé du Temps</strong> pour affronter Conjugus.<br><span style='font-size:12px;opacity:.7;'>Obtenez 100% à toutes les séances de conjugaison.</span>","https://i.postimg.cc/j5NdKHYq/dieu-conjugaison.png","Conjugus");
     return;
   }
   // Check if just unlocked for first time
@@ -5943,7 +5966,8 @@ function bossLoseLife(reason){
   bossState._losingLife=true;
   clearInterval(bossState.timerInt);
   bossState.lives=0; // lives:1 → instant defeat
-  const hearts=document.querySelectorAll(".boss-life-heart");
+  const _bov=document.getElementById("bossOv");
+  const hearts=_bov?_bov.querySelectorAll(".boss-life-heart"):document.querySelectorAll(".boss-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<bossState.lives?"":"grayscale(1) brightness(.3)";});
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
@@ -5967,6 +5991,8 @@ function bossDefeat(reason){
 }
 function bossVictory(){
   awardBossXP("conjugus");
+  unlockBadge("boss_conjugus");
+  if(bossState.lives===2)unlockBadge("no_lose_conj");
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
   const dead=document.getElementById("bossDead");
@@ -6230,7 +6256,7 @@ function tryOpenGramBoss(){
   const allGram=["g1","g2","g3","g4","g5","g6","g7","g8"];
   const isAdmin=S.name===ADMIN_CODE||S.name==="Daude96"||S.name==="Professeur Daudé";
   const unlocked=S.gramKeyShown||allGram.every(k=>(S.perfect&&S.perfect[k])||(S.seancePct&&parseInt(S.seancePct[k])>=100))||isAdmin;
-  if(!unlocked){showLockedBossMsg("🔒 Clé de la Langue requise","Termine toutes les séances de grammaire à 100% pour obtenir la Clé de la Langue et affronter Grammaria.");return;}
+  if(!unlocked){showLockedBossMsg("Clé de la Langue requise","🔐 <strong>Module verrouillé</strong><br>Il vous faut la <strong>Clé de la Langue</strong> pour affronter Grammaria.<br><span style='font-size:12px;opacity:.7;'>Obtenez 100% à toutes les séances de grammaire.</span>","https://i.postimg.cc/8533WQzh/deesse-grammaire.png","Grammaria");return;}
   confirmGramBoss();
 }
 
@@ -6370,6 +6396,8 @@ function updateGramTimer(){
 }
 
 function gramBossHit(){
+  const _gwrap=document.getElementById("gramBossCharWrap");
+  if(_gwrap){_gwrap.style.animation="gramShake .5s ease-out";setTimeout(()=>{_gwrap.style.animation="";},520);}
   gramBossState.hp--;gramBossState.qIdx++;
   const pct=(gramBossState.hp/40)*100;
   const fill=document.getElementById("gramHpFill");
@@ -6601,7 +6629,8 @@ function gramBossLoseLife(){
   gramBossState._losingLife=true;
   clearInterval(gramBossState.timerInt);
   gramBossState.lives=0; // lives:1 → instant defeat
-  const hearts=document.querySelectorAll(".gram-life-heart");
+  const _gov=document.getElementById("gramBossOv");
+  const hearts=_gov?_gov.querySelectorAll(".gram-life-heart"):document.querySelectorAll(".gram-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<gramBossState.lives?"":"grayscale(1) brightness(.3)";});
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
@@ -6628,6 +6657,8 @@ function gramBossDefeat(){
 
 function gramBossVictory(){
   awardBossXP("grammaria");
+  unlockBadge("boss_grammaria");
+  if(gramBossState.lives===2)unlockBadge("no_lose_gram");
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
@@ -7383,6 +7414,7 @@ function triggerOrgDarkPhase(){
 
 function orgVictory(){
   awardBossXP("orgografe");
+  unlockBadge("boss_orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
   try{const ds=document.getElementById("orgDefeatedSound");if(ds){ds.currentTime=0;ds.play().catch(()=>{});}}catch(e){}
@@ -7548,7 +7580,7 @@ function showOrgIntro(){
       <div style="display:flex;gap:10px;justify-content:center;">
         ${slide>0?`<button id="org_prev" style="padding:10px 18px;border-radius:11px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/QCpZfqdT/precedent.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>`:''}
         ${isLast
-          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ C'est parti !</button>`
+          ?`<button id="org_start" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">⚔️ <img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(30px,4.5vh,44px);width:auto;display:block;" alt=""/></button>`
           :`<button id="org_next" style="padding:10px 22px;border-radius:11px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);color:#fff;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>`
         }
         <button id="org_cancel" style="padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.3);color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;"><img src="https://i.postimg.cc/qMf7Qhgk/annuler.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
@@ -7995,7 +8027,7 @@ function showBanMessage(ban){
 
 
 function _getMelBgSrc(phase){
-  const mob=window.innerWidth<=640&&window.innerHeight>window.innerWidth;
+  const mob=window.innerWidth<=640||(window.screen&&window.screen.width<=640);
   if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
   if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   return null;
@@ -8393,7 +8425,7 @@ function launchCats(count){
         object-fit:contain;cursor:pointer;left:-180px;
         top:${10+Math.random()*55}%;z-index:12;
         transform:scaleX(-1);
-        animation:melCatFly ${4+Math.random()*1.5}s linear forwards;`;
+        animation:melCatFly ${(window.innerWidth<=640?3:4)+Math.random()*1.2}s linear forwards;`;
       cat.style.padding="20px";
       cat.onclick=()=>{
         _flushDeferredMelMusic();
@@ -8598,6 +8630,7 @@ function melVictory(){
   melState.transitioning=true;
   melState.inCatPhase=false;
   awardBossXP("memelite");
+  unlockBadge("boss_memelite");
   melState.transitioning=true;
   melState.inCatPhase=false;
   const _ccv=document.getElementById("melCatContainer");if(_ccv){_ccv.innerHTML="";_ccv.style.pointerEvents="none";}
