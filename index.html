@@ -3974,7 +3974,12 @@ function loadProgress(name){
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
-      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.litKeyShown=d.litKeyShown||false;S.memeliteDefeated=d.memeliteDefeated||false;S.memeliteFlawless=d.memeliteFlawless||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;S.savedQIdx=d.savedQIdx||0;S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
+      S.conjKeyShown=d.conjKeyShown||false;S.gramKeyShown=d.gramKeyShown||false;S.litKeyShown=d.litKeyShown||false;S.memeliteDefeated=d.memeliteDefeated||false;S.memeliteFlawless=d.memeliteFlawless||false;S.desc=d.desc||"";S.pwd=d.pwd||"";S.savedMod=d.savedMod||null;
+      {const _rs=d.savedQIdx||0;
+       if(S.savedMod&&MODULES[S.savedMod]&&_rs>0&&_rs<MODULES[S.savedMod].questions.length)
+         S.savedQIdx=_rs;
+       else{S.savedMod=null;S.savedQIdx=0;}}
+      S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -4434,31 +4439,36 @@ function rndHint(){return HINTS[Math.floor(Math.random()*HINTS.length)];}
 function resetHint(){D.hintImg.src=PROF.point;D.hintText.textContent=rndHint();}
 
 function renderQ(){
+  // Safety: clear any stale popups
+  document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(parseInt(el.style.zIndex||0)>=9999)el.remove();});
+  // Safety: reset out-of-bounds qIdx
+  const _all=MODULES[S.mod]?MODULES[S.mod].questions:[];
+  if(!S.mod||_all.length===0){showResults();return;}
+  if(S.qIdx<0||S.qIdx>=_all.length){S.qIdx=0;}
+  const q=_all[S.qIdx],total=_all.length;
+  if(!q){showResults();return;}
+  // Reset UI
+  if(D.feedback){D.feedback.style.display="none";D.feedback.className="feedback-box";}
+  if(D.nextBtn)D.nextBtn.style.display="none";
+  if(D.aWrap)D.aWrap.innerHTML="";
+  if(D.qBox)D.qBox.textContent="";
+  S.locked=false;S.subIdx=0;S.subOk=0;
+  S.fillQ=null;S.fillBank=[];S.fillBlanks=[];S.fillPendingWord=null;
+  S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
+  try{resetHint();}catch(e){}
+  if(D.quizProgFill)D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
+  if(D.quizCounter)D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
+  // Set question text
+  if(D.qBox)D.qBox.textContent=q.prompt||"";
+  try{renderIllustrations(S.mod,S.qIdx);}catch(e){}
+  // Render answers
   try{
-    // Safety: reset out-of-bounds qIdx
-    const _all=qs();
-    if(S.qIdx<0||S.qIdx>=_all.length){
-      if(_all.length>0){S.qIdx=0;}
-      else{showResults();return;}
-    }
-    const all=_all,q=all[S.qIdx],total=all.length;
-    D.feedback.style.display="none";D.feedback.className="feedback-box";
-    D.nextBtn.style.display="none";D.aWrap.innerHTML="";D.qBox.textContent="";
-    S.locked=false;S.subIdx=0;S.subOk=0;
-    S.fillQ=null;S.fillBank=[];S.fillBlanks=[];S.fillPendingWord=null;
-    S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
-    resetHint();
-    D.quizProgFill.style.width=(total>0?(S.qIdx/total)*100:0)+"%";
-    D.quizCounter.textContent="Question "+Math.min(S.qIdx+1,total)+" / "+total;
-    if(!q){showResults();return;}
-    D.qBox.textContent=q.prompt;
-    renderIllustrations(S.mod,S.qIdx);
     if(q.type==="qcm"||q.type==="truefalse")renderQCM(q);
     else if(q.type==="order")renderOrderStep(q);
     else if(q.type==="fill")renderFill(q);
     else if(q.type==="dragdrop")renderDragDrop(q);
     else if(q.type==="typed")renderTyped(q);
-  }catch(e){console.error("renderQ error:",e.message,e.stack);}
+  }catch(e){console.error("answer render error:",e.message);}
 }
 
 /* ── Illustrations per module/question ── */
@@ -6781,7 +6791,7 @@ function closeGramResult(){
 
 // Add deesse_gram badge and avatar to registry
 if(!BADGES_DEF.find(b=>b.id==="deesse_gram")){
-  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/SNnHfGXT/deesse-grammaire-enervee.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
+  BADGES_DEF.push({id:"deesse_gram",img:"https://i.postimg.cc/L4gYPm7T/deesse-de-la-grammaire.png",emoji:null,name:"Grammaria",desc:"Vaincre la Grammaria"});
 }
 if(!EXCLUSIVE_AV.find(a=>a.label==="Grammaria")){
   EXCLUSIVE_AV.push({
