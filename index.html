@@ -731,7 +731,9 @@
     #abandonBtn img{height:clamp(26px,5vh,36px) !important;}
   }
 
-  </style>
+  
+@keyframes resultFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+</style>
 </head>
 <body>
 <div id="app">
@@ -3444,7 +3446,7 @@ const S={
   panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,wrongCount:0,
   subIdx:0,subOk:0,locked:false,
-  done:{},perfect:{},seancePct:{},badges:new Set(),
+  done:{},perfect:{},seancePct:{},seancePts:{},badges:new Set(),
   unlockedSecrets:new Set(),bossDefeated:false,gramBossDefeated:false,gramBossUnlockShown:false,conjKeyShown:false,gramKeyShown:false,litKeyShown:false,memeliteDefeated:false,memeliteFlawless:false,desc:"",pwd:"",savedMod:null,savedQIdx:0,savedCorrect:0,orgBossDefeated:false,stars:{},
   welcomeAv:AVATARS[0],
   // fill state
@@ -3584,6 +3586,39 @@ function migrateToStars(){
   });
 }
 
+
+function doBurst(){
+  // Feux d'artifice sur bonne réponse
+  try{
+    const colors=["#facc15","#d9a441","#fff","#ff9800","#4ade80"];
+    for(let i=0;i<14;i++){
+      const p=document.createElement("div");
+      const angle=Math.random()*360;
+      const dist=60+Math.random()*80;
+      const size=5+Math.random()*7;
+      const color=colors[Math.floor(Math.random()*colors.length)];
+      p.style.cssText="position:fixed;z-index:9998;border-radius:50%;pointer-events:none;"+
+        "width:"+size+"px;height:"+size+"px;background:"+color+";"+
+        "top:"+(-size)+"px;left:"+(-size)+"px;";
+      // Position de départ : centre de D.aWrap
+      const rect=D.aWrap?D.aWrap.getBoundingClientRect():{left:window.innerWidth/2,top:window.innerHeight/2};
+      const sx=rect.left+(rect.width||0)/2;
+      const sy=rect.top+(rect.height||0)/2;
+      p.style.left=(sx-size/2)+"px";
+      p.style.top=(sy-size/2)+"px";
+      document.body.appendChild(p);
+      const rad=angle*(Math.PI/180);
+      const tx=Math.cos(rad)*dist;
+      const ty=Math.sin(rad)*dist;
+      p.animate([
+        {transform:"translate(0,0)",opacity:1},
+        {transform:"translate("+tx+"px,"+ty+"px)",opacity:0}
+      ],{duration:600+Math.random()*300,easing:"ease-out",fill:"forwards"})
+        .onfinish=()=>p.remove();
+    }
+  }catch(e){}
+}
+
 function earnPoints(qKey){
   S.correct++; // comptage uniquement — points à la fin de la séance
 }
@@ -3593,11 +3628,17 @@ function toast(msg){
     let el=document.getElementById("_simpleToast");
     if(!el){
       el=document.createElement("div");el.id="_simpleToast";
-      el.style.cssText="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(20,10,2,.96);border:1px solid rgba(217,164,65,.5);border-radius:14px;padding:10px 22px;color:#f5e6c8;font-size:14px;font-weight:700;z-index:10000;pointer-events:none;transition:opacity .3s;text-align:center;max-width:88vw;";
+      el.style.cssText="position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(0);"
+        +"background:linear-gradient(135deg,#1a0a02,#2d1106);border:1.5px solid rgba(217,164,65,.6);"
+        +"border-radius:16px;padding:12px 22px 12px 16px;color:#f5e6c8;font-size:14px;font-weight:700;"
+        +"z-index:10000;pointer-events:none;transition:opacity .35s,transform .35s;box-shadow:0 6px 24px rgba(0,0,0,.7);"
+        +"display:flex;align-items:center;gap:10px;max-width:88vw;white-space:nowrap;";
       document.body.appendChild(el);
     }
-    el.textContent=msg||"";el.style.opacity="1";
-    clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity="0";},2600);
+    el.innerHTML='<span style="font-size:20px;flex-shrink:0;">💬</span><span>'+msg+'</span>';
+    el.style.opacity="1";el.style.transform="translateX(-50%) translateY(0)";
+    clearTimeout(el._t);
+    el._t=setTimeout(()=>{el.style.opacity="0";el.style.transform="translateX(-50%) translateY(8px)";},2800);
   }catch(e){}
 }
 
@@ -3805,6 +3846,7 @@ function updateSeanceBadges(){
       const pct=parseInt((S.seancePct&&S.seancePct[id])||"0");
       const stars=pctToStars(pct);
       if(S.done[id]||pct>0){
+        if(pct>=100&&cb.parentElement){cb.parentElement.style.cssText+=";outline:2px solid #4ade80;outline-offset:2px;border-radius:inherit;";}
         cb.innerHTML=starImgHtml(stars);
       } else cb.textContent="";
     }
@@ -3863,14 +3905,12 @@ function showConjMenu(){
 }
 function showLitMenu(){
   S.mod=null;
-  D.quizCard.style.display="none";
-  // Hide all menus first
-  [D.litMenu, D.gramMenu, D.conjMenu].forEach(m=>{if(m)m.style.display="none";});
-  // Show the right one
-  const menuMap={literature:D.litMenu,grammaire:D.gramMenu,conjugaison:D.conjMenu};
-  const m=menuMap[S.currentScreen];
-  if(m) m.style.display="flex";
-  updateSeanceBadges();
+  if(D.quizCard)D.quizCard.style.display="none";
+  if(D.gramMenu)D.gramMenu.style.display="none";
+  if(D.conjMenu)D.conjMenu.style.display="none";
+  if(D.litMenu)D.litMenu.style.display="flex";
+  S.currentScreen="literature";
+  try{updateSeanceBadges();}catch(e){}
 }
 /* startModFrom: called from grammar screen (needs to know which menu to return to) */
 function startModFrom(id,screen){
@@ -4000,7 +4040,7 @@ function saveProgress(){
   const key="mb_save_"+S.name.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);
   const data={
     name:S.name,avatar:S.avatar,score:S.score,
-    done:S.done,perfect:S.perfect,seancePct:S.seancePct,
+    done:S.done,perfect:S.perfect,seancePct:S.seancePct,seancePts:S.seancePts,
     badges:[...S.badges],
     unlockedSecrets:[...S.unlockedSecrets],
     bossDefeated:S.bossDefeated,
@@ -4679,11 +4719,21 @@ function showAvatarUnlocked(src,name,msg){
 
 /* ── QCM with shuffled options each session ── */
 function renderQCM(q){
-  // Build shuffled index map once per question per session (stable within a session)
+  // Truefalse : boutons Vrai / Faux (pas de q.options)
+  if(q.type==="truefalse"){
+    const opts=["Vrai","Faux"];
+    const correctIdx=q.correct?0:1;
+    opts.forEach((txt,i)=>{
+      const b=document.createElement("button");b.className="ans-btn";b.textContent=txt;
+      b.onclick=()=>checkQCMShuffled(i,correctIdx,q);D.aWrap.appendChild(b);
+    });
+    return;
+  }
+  // QCM classique — mélanger les options
   if(!q._shuffled){
     const idx=[...q.options.keys()];
     for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
-    q._shuffled=idx; // [0,3,1,2] = display order of original indices
+    q._shuffled=idx;
   }
   const shuffled=q._shuffled;
   const newCorrect=shuffled.indexOf(q.correctIndex);
@@ -4699,7 +4749,7 @@ function checkQCMShuffled(sel,correctPos,q){
     if(i===correctPos)b.classList.add("correct");
     else if(i===sel&&!ok)b.classList.add("wrong");
   });
-  if(ok){earnPoints(S.mod+"_"+S.qIdx);}
+  if(ok){earnPoints(S.mod+"_"+S.qIdx);doBurst();}
   showFeedback(ok,q.explanation);
 }
 
@@ -4891,6 +4941,7 @@ function validateFill(){
     if(S.fillBank[pos].word.toLowerCase()===q.blanks[i].toLowerCase()) correctCount++;
   });
   const ok=correctCount===q.blanks.length;
+  if(ok)doBurst();
 
   // Colour blanks green / red + show correction
   const slots=D.aWrap.querySelectorAll(".fill-slot");
@@ -4979,6 +5030,7 @@ function validateDD(){
     if(ri!==undefined&&S.ddRight[ri]===q.pairs[li].right)correctCount++;
   });
   const ok=correctCount===q.pairs.length;
+  if(ok)doBurst();
   // Show visual results
   const leftEls=D.aWrap.querySelectorAll(".dd-col:first-of-type .dd-item");
   const rightEls=D.aWrap.querySelectorAll(".dd-col:last-of-type .dd-item");
@@ -5034,9 +5086,10 @@ function showFeedback(ok,explanation){
   const nb=document.getElementById("nextBtn");
   if(nb){
     nb.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    nb.style.display="block";nb.style.textAlign="center";nb.style.margin="10px auto 0";
     nb.innerHTML=isLast
-      ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
-      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
+      ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(52px,7.5vh,70px);width:auto;display:block;margin:0 auto;" alt=""/>'
+      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(52px,7.5vh,70px);width:auto;display:block;margin:0 auto;" alt=""/>';
     // Onclick explicite : showResults pour la dernière, avancer sinon
     nb.onclick = isLast
       ? ()=>{ showResults(); }
@@ -5068,10 +5121,17 @@ function showResults(){
     try{updateSeanceBadges();}catch(e){}
   }catch(e){}
 
-  // Points proportionnels : correct*10, sauf si séance déjà 100%
-  const _prevWas100=(S.seancePct&&parseInt(S.seancePct[_modId])>=100)&&p<100;
-  const _alreadyPerfect=S.perfect&&S.perfect[_modId]&&_prevWas100;
-  if(!_alreadyPerfect){S.score+=S.correct*10;}
+  // Système incrémental non-cumulable :
+  // seancePts[id] = pts déjà gagnés sur cette séance
+  // On gagne seulement si on dépasse le score précédent
+  if(!S.seancePts)S.seancePts={};
+  const _ptsDeja=S.seancePts[_modId]||0;
+  const _ptsCetteFois=S.correct*10;
+  const _ptsAGagner=Math.max(0,_ptsCetteFois-_ptsDeja);
+  if(_ptsAGagner>0){
+    S.score+=_ptsAGagner;
+    S.seancePts[_modId]=_ptsCetteFois;
+  }
   if(p===100)S.perfect[_modId]=true;
 
   try{updateHUD();}catch(e){}
@@ -5092,6 +5152,8 @@ function showResults(){
   try{if(D.quizCard)D.quizCard.style.display="none";}catch(e){}
   try{if(D.feedback)D.feedback.style.display="none";}catch(e){}
   try{if(D.nextBtn)D.nextBtn.style.display="none";}catch(e){}
+  // Musique de victoire
+  try{playVictoryMusic();}catch(e){}
 
   const _ro=document.getElementById("resultsOv");if(_ro)_ro.remove();
 
@@ -5101,7 +5163,12 @@ function showResults(){
   if(p===100)msg="Parfait ! Tu maîtrises cette séance 🎉";
   else if(p>=66)msg="Bien joué ! Encore un effort !";
   else if(p>=33)msg="Tu peux mieux faire !";
-  const eImg=p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png":"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
+  const eImg=p===100?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
+    :p>=66?"https://i.postimg.cc/zByhBPwq/personnage-eleve2.png"
+    :"https://i.postimg.cc/j5cHwJmM/personnage-eleve1.png";
+  const eImgStyle=p===100
+    ?"width:100px;flex-shrink:0;animation:resultFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(217,164,65,.85));"
+    :"width:90px;flex-shrink:0;";
 
   const _ov=document.createElement("div");
   _ov.id="resultsOv";
@@ -5109,7 +5176,7 @@ function showResults(){
   const _c=document.createElement("div");
   _c.style.cssText="background:linear-gradient(160deg,#2a1204,#1a0a02);border:2px solid rgba(217,164,65,.4);border-radius:24px;padding:28px 20px;max-width:420px;width:100%;text-align:center;";
   _c.innerHTML='<div style="display:flex;align-items:flex-end;gap:14px;justify-content:center;margin-bottom:10px;">'
-    +'<img src="'+eImg+'" style="width:90px;flex-shrink:0;" alt=""/>'
+    +'<img src="'+eImg+'" style="'+eImgStyle+'" alt=""/>'
     +'<div><div style="font-size:18px;font-weight:900;color:#d9a441;margin-bottom:4px;">Séance terminée !</div>'
     +'<div style="font-size:42px;font-weight:900;color:'+(p===100?"#facc15":"#f5e6c8")+';">'+p+'%</div>'
     +'<div style="font-size:13px;color:#ead7ae;">'+S.correct+' / '+total+' bonnes réponses</div></div></div>'
@@ -5120,9 +5187,9 @@ function showResults(){
     +'<button id="_res_b" style="padding:12px 20px;border-radius:14px;border:none;background:linear-gradient(180deg,#d9a441,#c87a10);color:#1a0a00;font-weight:900;font-size:14px;cursor:pointer;">📚 Séances</button>'
     +'</div>';
   _ov.appendChild(_c);document.body.appendChild(_ov);
-  document.getElementById("_res_r").onclick=function(){_ov.remove();if(_modId)startMod(_modId);else showLitMenu();};
+  document.getElementById("_res_r").onclick=function(){_ov.remove();try{stopVictoryMusic();}catch(e){}if(_modId)startMod(_modId);else showLitMenu();};
   document.getElementById("_res_b").onclick=function(){
-    _ov.remove();
+    _ov.remove();try{stopVictoryMusic();}catch(e){}
     if(!_modId)return showLitMenu();
     if(_modId.startsWith("g"))showGramMenu();
     else if(_modId.startsWith("c"))showConjMenu();
@@ -5558,6 +5625,8 @@ function checkFailureCondition(p,total){
 }
 function showFailure(p,total){
   S.locked=true;
+  // Ne pas proposer de reprendre là où on a échoué
+  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
   playGameOverMusic();
   const ov=document.getElementById("failureOv");
   const msg=document.getElementById("failureMsg");
@@ -5572,8 +5641,14 @@ function retryFromFailure(){
 function closeFailure(){
   stopGameOverMusic();
   const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
-  S.score=S.sessionScoreStart;updateHUD();
-  showLitMenu();
+  if(D.quizCard)D.quizCard.style.display="none";
+  // S.mod est encore défini ici, utilise-le pour aller au bon menu
+  const _fm=S.mod;
+  if(_fm){
+    if(_fm.startsWith("g"))showGramMenu();
+    else if(_fm.startsWith("c"))showConjMenu();
+    else showLitMenu();
+  } else showLitMenu();
 }
 
 /* ══════════ BIG ACCOUNT MODAL ══════════ */
@@ -8209,17 +8284,16 @@ function _applyMelBg(phase){
 }
 
 function awardBossXP(boss){
-  const XP={conjugus:140,grammaria:140,orgografe:140,memelite:140};
-  const pts=XP[boss]||100;
+  const XP={conjugus:1000,grammaria:800,orgografe:300,memelite:1200};
+  const DEFEATED_KEY="bossDefeated_"+boss;
+  if(!S.bossXPAwarded)S.bossXPAwarded={};
+  if(S.bossXPAwarded[boss])return; // Une seule fois
+  S.bossXPAwarded[boss]=true;
+  const pts=XP[boss]||200;
   S.score+=pts;
   updateHUD();saveProgress();saveToLB();
-  // Show bonus message
-  const t=document.createElement("div");
-  t.style.cssText="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9000;"+
-    "background:linear-gradient(135deg,#facc15,#c87a10);color:#1a0a00;font-size:clamp(16px,3vw,24px);"+
-    "font-weight:900;padding:14px 28px;border-radius:16px;pointer-events:none;animation:popIn .3s;";
-  t.textContent="⭐ +"+pts+" XP Bonus Boss !";
-  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+  // Notification style badge
+  toast("⭐ +"+pts+" XP — "+boss.charAt(0).toUpperCase()+boss.slice(1)+" vaincu !");
 }
 
 
