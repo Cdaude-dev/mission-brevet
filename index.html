@@ -3583,6 +3583,13 @@ function migrateToStars(){
   });
 }
 
+function doBurst(){
+  const burst=document.getElementById("burst");
+  if(!burst)return;
+  burst.classList.add("active");
+  setTimeout(()=>burst.classList.remove("active"),600);
+}
+
 function earnPoints(qKey){
   S.correct++;
   const _key=qKey||(S.mod+"_"+S.qIdx);
@@ -4014,7 +4021,7 @@ function loadProgress(name){
        if(S.savedMod&&MODULES[S.savedMod]&&_rs>0&&_rs<MODULES[S.savedMod].questions.length)
          S.savedQIdx=_rs;
        else{S.savedMod=null;S.savedQIdx=0;}}
-      S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
+      S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.scoredQIds)S.scoredQIds=new Set(d.scoredQIds);if(d.stars)S.stars=d.stars;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
