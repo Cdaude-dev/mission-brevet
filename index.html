@@ -4351,8 +4351,10 @@ function abandonMod(){
 
 function startMod(id, resumeFrom){
   const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
+  // Remove any leftover resume dialog (z-index:9999 overlay)
+  document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(el.style.zIndex==="9999")el.remove();});
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
-  if(!resumeFrom && S.savedMod===id && S.savedQIdx>0){
+  if(!resumeFrom && S.savedMod===id && S.savedQIdx>0 && MODULES[id] && S.savedQIdx<MODULES[id].questions.length){
     const qs=MODULES[id]?MODULES[id].questions:[];
     const pct=qs.length?Math.round((S.savedQIdx/qs.length)*100):0;
     const cd=document.createElement("div");
@@ -4372,8 +4374,11 @@ function startMod(id, resumeFrom){
     cd.querySelector("#res_no").onclick=()=>{cd.remove();S.savedMod=null;S.savedQIdx=0;startMod(id,null);};
     return;
   }
-  const resumeQIdx = resumeFrom?resumeFrom.qIdx:0;
-  const resumeCorrect = resumeFrom?resumeFrom.correct:0;
+  const _allQs=MODULES[id]?MODULES[id].questions:[];
+  const _rawIdx=resumeFrom?resumeFrom.qIdx:0;
+  // Cap to valid range — if savedQIdx >= questions.length, restart from 0
+  const resumeQIdx=(_rawIdx>0&&_rawIdx<_allQs.length)?_rawIdx:0;
+  const resumeCorrect = (resumeQIdx>0&&resumeFrom)?resumeFrom.correct:0;
   S.mod=id;S.qIdx=resumeQIdx;S.correct=resumeCorrect;S.locked=false;
   if(!resumeFrom){S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;}
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
@@ -4933,6 +4938,8 @@ function showFeedback(ok,explanation){
 function showResults(){
   const total=qs().length,p=total>0?Math.round((S.correct/total)*100):0;
   S.done[S.mod]=true;if(p===100)S.perfect[S.mod]=true;
+  // Clear saved position so next entry starts fresh
+  S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
   // Store percentage for display (keep best)
   if(!S.seancePct)S.seancePct={};
   const prevPct=parseInt(S.seancePct[S.mod])||0;
