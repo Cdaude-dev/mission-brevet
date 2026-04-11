@@ -4447,8 +4447,8 @@ function startMod(id, resumeFrom){
   const mus=document.getElementById("bgMusic");if(mus)mus.pause();
   S.sessionScoreStart=S.score;S.canEarnPoints=true;S.scoredQIds=new Set();S._seanceStartTime=Date.now();saveToLB();
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
-  const ALLOW_REPEAT=['s2','s3','p2','p3'];
-  S.canEarnPoints = !S.done[id] || !S.perfect[id] || ALLOW_REPEAT.includes(id);
+  const ALLOW_REPEAT=['s1','s2','s3','s4','s5','s6','sf','p1','p2','p3','p4','p5','p6','p7','p8','p9','g1','g2','g3','g4','g5','g6','g7','g8','c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14'];
+  S.canEarnPoints = !(S.done&&S.done[id]) || !(S.perfect&&S.perfect[id]) || ALLOW_REPEAT.includes(id);
   if(D.litMenu)D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
@@ -4990,15 +4990,15 @@ function validateDD(){
 
 /* ══════════ SHARED FEEDBACK DISPLAY ══════════ */
 function showFeedback(ok,explanation){
-  D.hintImg.src=ok?PROF.smile:PROF.dub;
-  D.hintText.textContent=ok?"Excellent ! Tu as bien retenu le cours 👏":"Ce n'est pas grave ! Lis bien la correction pour retenir.";
+  if(D.hintImg)D.hintImg.src=ok?PROF.smile:PROF.dub;
+  if(D.hintText)D.hintText.textContent=ok?"Excellent ! Tu as bien retenu le cours 👏":"Ce n'est pas grave ! Lis bien la correction pour retenir.";
   D.feedback.style.display="block";
   D.feedback.className="feedback-box "+(ok?"good":"bad");
   D.feedback.innerHTML=`<div class="fb-inner"><img class="fb-prof" src="${ok?PROF.smile:PROF.dub}" alt=""/><div class="fb-text"><div class="fb-title">${ok?"✅ Correct !":"❌ Incorrect"}</div><div>${explanation}</div></div></div>`;
   const total=qs().length;
   const isLast=S.qIdx+1>=total;
   // Only check failure if NOT the last question (avoid blocking final results)
-  if(!ok && !isLast){
+  if(!ok && !isLast && S.canEarnPoints){
     const remaining=total-(S.qIdx+1);
     const maxPossible=S.correct+remaining;
     const maxPct=total>0?Math.round((maxPossible/total)*100):100;
@@ -5011,10 +5011,11 @@ function showFeedback(ok,explanation){
     }
   }
   D.nextBtn.style.display="inline-block";
+  D.nextBtn.style.background="none";D.nextBtn.style.border="none";
+  D.nextBtn.style.cursor="pointer";
   D.nextBtn.innerHTML=isLast?
-      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;" alt=""/>'
-      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;" alt=""/>';
-    D.nextBtn.style.background="none";D.nextBtn.style.border="none";
+      '<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;pointer-events:none;" alt=""/>'
+      :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(30px,4.5vh,46px);width:auto;display:block;pointer-events:none;" alt=""/>';
   D.nextBtn.onclick=()=>{S.qIdx++;renderQ();};
 }
 
