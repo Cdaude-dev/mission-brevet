@@ -5785,7 +5785,11 @@ function startBoss(){
     bm.volume=_volNow*0.6;
     bm.play().catch(()=>{});
   }
-  bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0};
+  bossState={qIdx:0,hp:30,timerVal:30,timerInt:null,hitSounds:0,lives:2,_losingLife:false};
+  setTimeout(()=>{
+    const ov=document.getElementById("bossOv");
+    if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
+  },50);
   document.getElementById("bossOv").style.display="block";
   renderBossQ();
   startAsteroidSpawner();
@@ -5966,7 +5970,7 @@ function bossLoseLife(reason){
   if(bossState._losingLife)return; // prevent re-entry
   bossState._losingLife=true;
   clearInterval(bossState.timerInt);
-  bossState.lives=0; // lives:1 → instant defeat
+  bossState.lives--;
   const _bov=document.getElementById("bossOv");
   const hearts=_bov?_bov.querySelectorAll(".boss-life-heart"):document.querySelectorAll(".boss-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<bossState.lives?"":"grayscale(1) brightness(.3)";});
@@ -6299,7 +6303,15 @@ function startGramBoss(){
   // Shuffle questions
   const shuffled=[...GRAM_BOSS_QUESTIONS];
   for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
-  gramBossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffled,darkPhase:false,locked:false};
+  gramBossState={qIdx:0,hp:40,timerVal:30,timerInt:null,hitSounds:0,shuffledQs:shuffled,darkPhase:false,locked:false,lives:2,_losingLife:false};
+  // Always reset char to bottom-left
+  const _cw=document.getElementById("gramBossCharWrap");
+  if(_cw){_cw.style.cssText="position:absolute;bottom:80px;left:20px;z-index:5;pointer-events:none;width:min(280px,35vw);";}
+  // Reset hearts
+  setTimeout(()=>{
+    const ov=document.getElementById("gramBossOv");
+    if(ov)ov.querySelectorAll(".gram-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
+  },50);
   document.getElementById("gramBossOv").style.display="block";
   renderGramBossQ();
   startRainEffect();
@@ -6308,16 +6320,22 @@ function startGramBoss(){
 function renderGramBossQ(){
   // Always ensure boss is at correct bottom position
   const _charWrap=document.getElementById("gramBossCharWrap");
-  if(_charWrap&&_charWrap.style.top==="50%"){
-    _charWrap.style.position="absolute";_charWrap.style.top="auto";
-    _charWrap.style.bottom="80px";_charWrap.style.left="20px";
-    _charWrap.style.transform="";_charWrap.style.zIndex="";
-    _charWrap.style.width="min(280px,35vw)";
+  if(_charWrap&&(_charWrap.style.position==="fixed"||_charWrap.style.top==="50%")){
+    _charWrap.style.cssText="position:absolute;bottom:80px;left:20px;z-index:5;pointer-events:none;width:min(280px,35vw);";
   }
   const q=gramBossState.shuffledQs[gramBossState.qIdx];
   if(!q||gramBossState.qIdx>=gramBossState.shuffledQs.length){gramBossVictory();return;}
   document.getElementById("gramQCounter").textContent=`Question ${gramBossState.qIdx+1} / 40`;
-  document.getElementById("gramQBox").textContent=q.prompt;
+  const _qbx=document.getElementById("gramQBox");
+  if(_qbx){
+    _qbx.textContent=q.prompt;
+    if(!gramBossState.darkPhase){
+      _qbx.style.background="rgba(20,50,120,.88)";
+      _qbx.style.color="#e8f0ff";
+      _qbx.style.borderRadius="12px";
+      _qbx.style.padding="12px 16px";
+    }
+  }
   const wrap=document.getElementById("gramAnswerWrap");wrap.innerHTML="";
 
   if(q.type==="typed"){
@@ -6629,7 +6647,7 @@ function gramBossLoseLife(){
   if(gramBossState._losingLife)return;
   gramBossState._losingLife=true;
   clearInterval(gramBossState.timerInt);
-  gramBossState.lives=0; // lives:1 → instant defeat
+  gramBossState.lives--;
   const _gov=document.getElementById("gramBossOv");
   const hearts=_gov?_gov.querySelectorAll(".gram-life-heart"):document.querySelectorAll(".gram-life-heart");
   hearts.forEach((h,i)=>{h.style.filter=i<gramBossState.lives?"":"grayscale(1) brightness(.3)";});
