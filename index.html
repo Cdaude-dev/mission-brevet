@@ -6700,6 +6700,7 @@ function gramBossHit(){
   const txt=document.getElementById("gramHpText");
   if(fill)fill.style.width=pct+"%";
   if(txt)txt.textContent=gramBossState.hp+" / "+gramBossState.shuffledQs.length;
+  if(gramBossState.hp<=0){setTimeout(gramBossVictory,300);return;}
   // Flash
   const char=document.getElementById("gramBossChar");
   const flash=document.getElementById("gramBossHitFlash");
@@ -7587,7 +7588,7 @@ function selectOrgWord(idx, word, span){
   document.getElementById("orgCorrPrompt").innerHTML=`Mot sélectionné : <strong style="color:#fbbf24">"${word}"</strong> → Quelle est la correction ?`;
   document.getElementById("orgCorrInput").value="";
   ca.style.display="block";
-  // hint reste visible après sélection du mot
+  const hint=document.getElementById("orgClickHint");if(hint)hint.style.display="none";
   setTimeout(()=>document.getElementById("orgCorrInput").focus(),100);
 }
 
@@ -7612,6 +7613,7 @@ function submitOrgCorrection(){
     // Correct — damage boss
     orgHit();
     document.getElementById("orgCorrArea").style.display="none";
+    const _h1=document.getElementById("orgClickHint");if(_h1)_h1.style.display="block";
     // Brief green flash on board
     const phrase=document.getElementById("orgPhrase");
     const orig=phrase.style.color;
@@ -7638,6 +7640,7 @@ function submitOrgCorrection(){
     toast(hint);
     input.value="";
     document.getElementById("orgCorrArea").style.display="none";
+    const _h2=document.getElementById("orgClickHint");if(_h2)_h2.style.display="block";
     document.querySelectorAll("#orgPhrase span").forEach(s=>{s.style.background="";s.style.color="#1a3a6a";s.style.textDecoration="";});
     orgState.selectedWord=null;
     document.getElementById("orgClickHint").style.display="block";
@@ -8844,6 +8847,8 @@ function melHit(){
   const phaseTotal=20;
   const pct=Math.max(0,((phaseTotal-repelledInPhase)/phaseTotal)*100);
   if(hpFill)hpFill.style.width=pct+"%";
+  // Victoire si HP=0 en phase finale
+  if(pct<=0&&melState.phase===3&&!melState.transitioning){setTimeout(melVictory,300);return;}
   // Blink + vibrate on damage
   const ch=document.getElementById("melChar");
   if(ch){
@@ -9137,7 +9142,7 @@ function abandonMemelite(){
       <div id="orgBoardText" style="position:absolute;inset:8% 6%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;z-index:4;">
         <div style="font-size:clamp(10px,1.2vw,15px);color:#1a5c8a;font-weight:700;margin-bottom:8px;opacity:.8;letter-spacing:.3px;">Trouvez et corrigez l'erreur :</div>
         <div id="orgPhrase" style="font-size:clamp(16px,2.8vw,30px);color:#1a3a6a;font-weight:800;text-align:center;line-height:2;letter-spacing:.5px;word-spacing:8px;cursor:default;"></div>
-        <div id="orgClickHint" style="font-size:clamp(11px,1.1vw,14px);color:#2a6a9a;font-style:italic;margin-top:6px;opacity:.8;">👆 Cliquez sur le mot erroné</div>
+        <div id="orgClickHint" style="font-size:clamp(13px,1.4vw,16px);color:#2a6a9a;font-style:italic;margin-top:10px;opacity:.9;text-align:center;width:100%;">👆 Cliquez sur le mot erroné</div>
       </div>
     </div>
 
@@ -9172,142 +9177,21 @@ function abandonMemelite(){
 
 
 
-    <!-- ── Correction input ── -->
-    <div id="orgCorrArea" style="display:none;position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:88%;max-width:420px;z-index:10;
-         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;padding:10px 14px;text-align:center;backdrop-filter:blur(4px);">
+    <div id="orgCorrArea" style="display:none;width:100%;max-width:440px;margin:8px auto 0;
+         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;
+         padding:10px 14px;text-align:center;backdrop-filter:blur(4px);">
       <div id="orgCorrPrompt" style="font-size:13px;color:#93c5fd;margin-bottom:8px;"></div>
-      <div style="display:flex;gap:8px;">
-        <input id="orgCorrInput" type="text" placeholder="Écris la correction…"
-          style="flex:1;padding:9px 13px;border-radius:10px;border:1.5px solid rgba(96,165,250,.4);
-                 background:rgba(0,0,0,.4);color:#fff;font-size:15px;font-family:inherit;outline:none;"
-          onfocus="this.style.borderColor='rgba(96,165,250,.8)'"
-          onblur="this.style.borderColor='rgba(96,165,250,.4)'"
-          onkeydown="if(event.key==='Enter')submitOrgCorrection()"/>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+        <input id="orgCorrInput" type="text" placeholder="Tape la correction…"
+          style="flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(26,92,138,.5);
+            background:rgba(255,255,255,.1);color:#fff;font-size:16px;font-weight:700;
+            text-align:center;outline:none;min-width:0;"
+          onkeydown="if(event.key==='Enter')submitOrgCorrection();"/>
         <button onclick="submitOrgCorrection()"
-          style="padding:9px 16px;border-radius:10px;border:none;background:linear-gradient(180deg,#f97316,#ea580c);
-                 color:#fff;font-weight:900;font-size:15px;cursor:pointer;">✓</button>
+          style="padding:10px 18px;border-radius:10px;border:none;
+            background:linear-gradient(180deg,#2563eb,#1e40af);color:#fff;
+            font-weight:900;font-size:14px;cursor:pointer;white-space:nowrap;">✓ Valider</button>
       </div>
     </div>
-
-    <!-- Audio -->
-    <audio id="orgMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Orgografe.mp3" type="audio/mpeg"/></audio>
-    <audio id="orgHurtSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_hurt.mp3" type="audio/mpeg"/></audio>
-    <audio id="orgLaughSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_laugh.mp3" type="audio/mpeg"/></audio>
-    <audio id="orgDefeatedSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_defeated.mp3" type="audio/mpeg"/></audio>
-  </div>
-
-  <!-- ORGOGRAFE RESULT OVERLAY -->
-  <div id="orgResultOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:600;
-       flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
-    <img id="orgResultImg" src="" alt="" style="width:min(180px,55vw);"/>
-    <div id="orgResultTitle" style="font-size:26px;font-weight:900;"></div>
-    <div id="orgResultMsg" style="font-size:14px;color:#ead7ae;max-width:400px;line-height:1.6;"></div>
-    <button onclick="closeOrgResult()" style="padding:12px 28px;border-radius:14px;border:none;
-      background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
-      Continuer →
-    </button>
-  </div>
-
-
-  <!-- ══════════ MÉMÉLITÉ BOSS OVERLAY ══════════ -->
-  <div id="memeliteOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;">
-    <!-- Background phase 1/2 -->
-    <div id="melBg" style="position:absolute;inset:0;background:#0a0508;overflow:hidden;transition:opacity .5s;">
-      <img id="melBgImg" src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png"
-           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1s;"/>
-      <!-- Fire particles container for phase 3 -->
-      <div id="melFireContainer" style="position:absolute;inset:0;pointer-events:none;display:none;"></div>
-      <!-- Lightning effects -->
-      <div id="melLightning" style="position:absolute;inset:0;pointer-events:none;display:none;background:rgba(255,240,50,.04);"></div>
-    </div>
-
-    <!-- Boss character - left side -->
-    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(38vw,300px);z-index:5;transition:width .5s;">
-      <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
-      <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
-           style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
-    </div>
-
-    <!-- Cat projectiles container -->
-    <div id="melCatContainer" style="position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;"></div>
-
-    <!-- Cat attack warning banner -->
-    <div id="melCatWarning" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;
-         background:rgba(0,0,0,.85);border:2px solid rgba(239,68,68,.6);border-radius:16px;
-         padding:20px 28px;text-align:center;max-width:360px;animation:popIn .3s;">
-      <div style="font-size:28px;margin-bottom:8px;">😾</div>
-      <div id="melCatWarnText" style="font-size:16px;font-weight:900;color:#fca5a5;line-height:1.5;"></div>
-      <div style="font-size:12px;color:#ead7ae;margin-top:6px;opacity:.7;">Prépare-toi !</div>
-    </div>
-
-    <!-- Question area - right side -->
-    <div id="melQWrap" style="position:absolute;top:max(85px,12%);left:50%;transform:translateX(-50%);
-         width:min(90vw,580px);max-height:60vh;overflow-y:auto;
-         background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
-         border:1.5px solid rgba(220,38,38,.3);border-radius:18px;padding:14px 18px;z-index:6;">
-      <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.6;margin-bottom:12px;text-align:center;min-height:48px;"></div>
-      <div id="melAWrap" style="display:flex;flex-direction:column;gap:7px;"></div>
-    </div>
-
-    <!-- HUD top bar: timer centred, flee left, nothing right -->
-    <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <!-- Flee -->
-        <button onclick="abandonMemelite()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
-        <!-- Timer centred -->
-        <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
-        <!-- Spacer -->
-        <div style="width:52px;"></div>
-      </div>
-      <!-- Lives directly under timer -->
-      <div id="melLives" style="display:flex;gap:6px;align-items:center;justify-content:center;margin-top:4px;flex-wrap:wrap;">
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
-        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
-      </div>
-    </div>
-
-    <!-- HP bar bottom -->
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 14px 8px;background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);">
-      <div style="font-size:12px;color:#fca5a5;font-weight:900;text-align:center;margin-bottom:3px;" id="melBossLabel">Mémélité</div>
-      <div style="width:min(300px,80vw);margin:0 auto;background:rgba(0,0,0,.5);border-radius:10px;height:12px;border:1px solid rgba(220,38,38,.4);">
-        <div id="melHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#dc2626,#f87171);transition:width .4s;width:100%;"></div>
-      </div>
-    </div>
-
-    <!-- Cinematic overlay -->
-    <div id="melCineOv" style="display:none;position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
-      <img id="melCineImg" src="" alt="" style="width:min(200px,45vw);filter:drop-shadow(0 0 30px rgba(250,204,21,.6));"/>
-      <div id="melCineMsg" style="font-size:clamp(14px,2.5vw,20px);font-weight:900;color:#fef3c7;max-width:440px;line-height:1.6;"></div>
-    </div>
-
-    <!-- Audios -->
-    <audio id="melMusicP1" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP1.mp3" type="audio/mpeg"/></audio>
-    <audio id="melMusicP2" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP2.mp3" type="audio/mpeg"/></audio>
-    <audio id="melMusicP3" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP3.mp3" type="audio/mpeg"/></audio>
-    <audio id="melHurtSnd1"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted1.mp3" type="audio/mpeg"/></audio>
-    <audio id="melHurtSnd2"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted2.mp3" type="audio/mpeg"/></audio>
-    <audio id="melVicSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_victory.mp3" type="audio/mpeg"/></audio>
-    <audio id="melDefSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_defeated.mp3" type="audio/mpeg"/></audio>
-    <audio id="catHurt1Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt.mp3" type="audio/mpeg"/></audio>
-    <audio id="catHurt2Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt2.mp3" type="audio/mpeg"/></audio>
-    <audio id="catMeteoreSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/chat-meteore_hurt.mp3" type="audio/mpeg"/></audio>
-  </div>
-
-  <!-- MÉMELITÉ RESULT -->
-  <div id="melResultOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:700;
-       flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
-    <img id="melResultImg" src="" alt="" style="width:min(200px,55vw);"/>
-    <div id="melResultTitle" style="font-size:28px;font-weight:900;"></div>
-    <div id="melResultMsg" style="font-size:15px;color:#ead7ae;max-width:420px;line-height:1.6;"></div>
-    <button onclick="closeMelResult()" style="padding:12px 28px;border-radius:14px;border:none;
-      background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
-      Continuer →
-    </button>
-  </div>
 </body>
 </html>
-  }catch(e){console.error("renderQ error:",e);}
-}
