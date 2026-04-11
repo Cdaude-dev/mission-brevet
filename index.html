@@ -389,7 +389,7 @@
     .quiz-prog-fill{height:100%;width:0;
       background:linear-gradient(90deg,var(--gold),var(--gold-soft));
       border-radius:999px;transition:width .4s;}
-    .quiz-counter{font-size:12px;color:#ead7ae;width:100%;max-width:540px;text-align:right;margin-top:2px;}
+    .quiz-counter{font-size:12px;color:#ead7ae;width:100%;max-width:540px;text-align:center;margin-top:2px;}
     .hint-banner{width:100%;max-width:540px;
       background:rgba(74,37,16,.6);border:1px solid rgba(217,164,65,.22);
       border-radius:14px;display:flex;align-items:flex-end;overflow:hidden;}
@@ -1991,11 +1991,11 @@ const MODULES={
      explanation:"Les mémoires (ex : Mémoires d'outre-tombe de Chateaubriand) mêlent vie personnelle et Histoire avec un grand H. L'autobiographie (ex : Les Confessions de Rousseau) se centre sur la vie intérieure de l'auteur."},
 
     {type:"fill",
-     prompt:"Complète la définition de Lejeune : Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
+     prompt:"Complète la définition de Lejeune : Une autobiographie est un récit rétrospectif en [?] qu'une personne réelle fait de sa propre [?], en mettant l'accent sur sa vie [?], et en particulier sur le développement de sa [?].",
      sentence:"Une autobiographie est un récit rétrospectif en [prose] qu'une personne réelle fait de sa propre [existence], en mettant l'accent sur sa vie [individuelle], et en particulier sur le développement de sa [personnalité].",
      blanks:["prose","existence","individuelle","personnalité"],
      wordBank:["prose","existence","individuelle","personnalité","poésie","histoire","collective","caractère"],
-     explanation:"C'est la définition exacte de Philippe Lejeune (1975). Retiens ces quatre mots-clés : prose, existence, individuelle, personnalité."},
+     explanation:"C'est la définition exacte de Philippe Lejeune (1975). Les quatre mots-clés : prose, existence, individuelle, personnalité."},
 
     {type:"qcm",
      prompt:"Lequel de ces textes est considéré comme le premier grand exemple d'autobiographie moderne en France ?",
@@ -4487,7 +4487,8 @@ function renderQ(){
   // Safety: reset out-of-bounds qIdx
   const _all=MODULES[S.mod]?MODULES[S.mod].questions:[];
   if(!S.mod||_all.length===0){showResults();return;}
-  if(S.qIdx<0||S.qIdx>=_all.length){S.qIdx=0;}
+  if(S.qIdx<0){S.qIdx=0;}
+  if(S.qIdx>=_all.length){showResults();return;}
   const q=_all[S.qIdx],total=_all.length;
   if(!q){showResults();return;}
   // Reset UI
@@ -5022,9 +5023,18 @@ function showFeedback(ok,explanation){
     nb.innerHTML=isLast
       ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>'
       :'<img src="https://i.postimg.cc/sgWLWCcJ/question-suivante.png" style="height:clamp(36px,5.5vh,54px);width:auto;display:block;" alt=""/>';
+    setTimeout(()=>{try{nb.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}},50);
   }
 }
 
+
+function _goBackFromResults(modId){
+  S.mod=null;
+  if(!modId)return goTransition('home');
+  if(modId.startsWith('g'))showGramMenu();
+  else if(modId.startsWith('c'))showConjMenu();
+  else showLitMenu();
+}
 
 function nextQuestion(){
   if(!S.mod)return;
@@ -5107,7 +5117,7 @@ function showResults(){
       </div>
       <div class="res-btns">
         <button class="primary-btn" onclick="startMod('${S.mod}')">🔁 Recommencer</button>
-        <button class="primary-btn green" onclick="showLitMenu()">📚 Séances</button>
+        <button class="primary-btn green" onclick="_goBackFromResults('${S.mod}')"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:28px;width:auto;vertical-align:middle;" alt=""/> Continuer</button>
       </div>
     </div>`;
   D.feedback.style.display="none";D.nextBtn.style.display="none";
@@ -9118,5 +9128,3 @@ function abandonMemelite(){
   </div>
 </body>
 </html>
-  }catch(e){console.error("renderQ error:",e);}
-}
