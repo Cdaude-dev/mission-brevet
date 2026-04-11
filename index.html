@@ -4466,8 +4466,7 @@ function startMod(id, resumeFrom){
   S.sessionScoreStart=S.score;S._seanceStartTime=Date.now();saveToLB();
   // Allow repeat scoring for practice modules (s2, s3, p2, p3)
   const ALLOW_REPEAT=['s2','s3','p2','p3']; // modules where re-earning points is allowed
-  // In practice mode (already 100%), never earn points but still play freely
-  S.canEarnPoints = !(S.perfect&&S.perfect[id]);
+  // Points tracked per question via scoredQIds (persisted)
   if(D.litMenu)D.litMenu.style.display="none";
   if(D.gramMenu) D.gramMenu.style.display="none";
   D.quizCard.style.display="flex";
