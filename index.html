@@ -3620,6 +3620,7 @@ function isModUnlocked(modId){
   return totalStars()>=req;
 }
 
+const STAR_IMG="https://i.postimg.cc/yY0GDKvR/etoile.png";
 function starImgHtml(count){
   if(count===0)return '<span style="opacity:.3;font-size:11px;">— — —</span>';
   let h='';
@@ -8411,11 +8412,9 @@ function _getMelBgSrc(phase){
 function _applyMelBg(phase){
   const src=_getMelBgSrc(phase);
   if(!src)return;
+  // Only set melBgImg.src - don't set backgroundImage on memeliteOv directly
   const bg=document.getElementById("melBgImg");
   if(bg){bg.src=src;bg.style.objectFit="cover";}
-  // Also handle the melOv background
-  const melOv=document.getElementById("melOv")||document.getElementById("memeliteOv");
-  if(melOv&&src){melOv.style.backgroundImage="url('"+src+"')";melOv.style.backgroundSize="cover";melOv.style.backgroundPosition="center";}
 }
 
 function awardBossXP(boss){
@@ -8589,7 +8588,8 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
-  // (responsive bg applied after show)
+  // Reset all overlays from previous session
+  const _rov=document.getElementById("melResultOv");if(_rov)_rov.style.display="none";
   const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Full reset
   clearInterval(melState&&melState.timerInt);
