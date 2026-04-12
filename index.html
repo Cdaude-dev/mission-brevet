@@ -10683,8 +10683,12 @@ window.TeddynounetBoss = (function() {
     _changeHP(-2);
     _floatText('-2', '#ef4444');
     _animTeddy('wrong');
-    _animBourg('laugh');
-    _play('B_LAUGH', false, 0.85);
+    /* Ne pas jouer BourgourLaugh si ce coup est fatal (hp=0) :
+       _triggerDefeat va jouer DEFEAT_SFX → évite la superposition */
+    if (_hp > 0) {
+      _animBourg('laugh');
+      _play('B_LAUGH', false, 0.85);
+    }
     _clearComboState();
     _updateComboDisplay();
   }
@@ -10697,8 +10701,11 @@ window.TeddynounetBoss = (function() {
     _changeHP(-2);
     _floatText('-2', '#ef4444');
     _animTeddy('miss');  // angry = aliment raté
-    _animBourg('laugh');
-    _play('B_LAUGH', false, 0.85);
+    /* Même logique que _onWrong : silence sur le coup fatal */
+    if (_hp > 0) {
+      _animBourg('laugh');
+      _play('B_LAUGH', false, 0.85);
+    }
     _clearComboState();
     _updateComboDisplay();
   }
