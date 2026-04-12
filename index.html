@@ -1371,9 +1371,9 @@
   <!-- FAILURE OVERLAY -->
   <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9500;
        flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;">
-    <img src="https://i.postimg.cc/Y9rMpwZr/echec.png" alt="échec"
+    <img id="failureImg" src="https://i.postimg.cc/Y9rMpwZr/echec.png" alt="échec"
          style="width:min(220px,60vw);filter:drop-shadow(0 8px 24px rgba(255,50,50,.4));animation:bob 3s ease-in-out infinite;"/>
-    <div style="font-size:26px;font-weight:900;color:#ff6060;text-shadow:0 0 20px rgba(255,50,50,.6);">Résultat insuffisant…</div>
+    <div id="failureTitle" style="font-size:26px;font-weight:900;color:#ff6060;text-shadow:0 0 20px rgba(255,50,50,.6);">Résultat insuffisant…</div>
     <div id="failureMsg" style="font-size:16px;color:#f0dbb5;max-width:380px;line-height:1.5;"></div>
     <div style="display:flex;gap:12px;margin-top:8px;">
       <button onclick="retryFromFailure()" class="primary-btn">🔁 Réessayer</button>
@@ -4535,19 +4535,15 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
-  // Fuir = défaite scénarisée : même logique qu'une perte classique
-  S._abandonModId=S.mod; // garder pour le retour menu
+  S._abandonModId=S.mod;
   S.savedMod=null; S.savedQIdx=0; S.savedCorrect=0;
   S.locked=true;
   if(D.quizCard)D.quizCard.style.display="none";
   const ro=document.getElementById("resultsOv");if(ro)ro.remove();
   try{stopVictoryMusic();}catch(e){}
   playGameOverMusic();
-  // Même overlay que showFailure, même sons, même animation
-  const ov=document.getElementById("failureOv");
-  const msg=document.getElementById("failureMsg");
-  if(msg)msg.innerHTML='<strong>Tu as fui… 🏃</strong><br><span style="font-size:14px;">Reviens quand tu seras plus fort(e) !</span>';
-  if(ov)ov.style.display="flex";
+  _showFleeFailure("mod","https://i.postimg.cc/Y9rMpwZr/echec.png","<strong>Tu as fui !</strong><br><span style=\"font-size:14px;\">Reviens quand tu seras plus fort(e) !</span>");
+  document.getElementById("failureOv").style.display="flex";
 }
 
 function startMod(id, resumeFrom){
@@ -5723,9 +5719,9 @@ function checkFailureCondition(p,total){
 }
 function showFailure(p,total){
   S.locked=true;
-  // Ne pas proposer de reprendre là où on a échoué
   S.savedMod=null;S.savedQIdx=0;S.savedCorrect=0;
   playGameOverMusic();
+  _showGameFailure();
   const ov=document.getElementById("failureOv");
   const msg=document.getElementById("failureMsg");
   if(msg) msg.innerHTML=`Score actuel : <strong>${S.correct}/${total}</strong> (${p}%)<br>Il n\'est plus possible d\'atteindre 50% de bonnes réponses. Courage — recommence pour progresser !`;
@@ -5752,6 +5748,23 @@ function closeFailure(){
   else if(_fm==="c_boss"||(_fm&&_fm[0]==="c")){showConjMenu();}
   else{showLitMenu();}
 }
+function _showFleeFailure(modId, bossImg, msgHtml){
+  const _fov=document.getElementById("failureOv");
+  const _ftitle=document.getElementById("failureTitle");
+  const _fimg=document.getElementById("failureImg");
+  const _fmsg=document.getElementById("failureMsg");
+  if(_ftitle)_ftitle.textContent="Tu as fui face \u00e0 l\u2019adversit\u00e9";
+  if(_fimg&&bossImg){_fimg.src=bossImg;_fimg.style.filter="drop-shadow(0 8px 24px rgba(255,50,50,.5))";}
+  if(_fmsg)_fmsg.innerHTML=msgHtml;
+  if(_fov)_fov.style.display="flex";
+}
+function _showGameFailure(){
+  const _ftitle=document.getElementById("failureTitle");
+  const _fimg=document.getElementById("failureImg");
+  if(_ftitle)_ftitle.textContent="R\u00e9sultat insuffisant\u2026";
+  if(_fimg)_fimg.src="https://i.postimg.cc/Y9rMpwZr/echec.png";
+}
+
 
 /* ══════════ BIG ACCOUNT MODAL ══════════ */
 function openBigModal(){
@@ -6353,10 +6366,7 @@ function abandonBoss(){
   document.getElementById("bossOv").style.display="none";
   S._abandonModId="c_boss";
   playGameOverMusic();
-  const _fov=document.getElementById("failureOv");
-  const _fmsg=document.getElementById("failureMsg");
-  if(_fmsg)_fmsg.textContent="Tu as fui devant le Conjugus... Reviens quand tu seras pret(e) !";
-  if(_fov)_fov.style.display="flex";
+  _showFleeFailure("boss", "https://i.postimg.cc/j5NdKHYq/dieu-conjugaison.png", "<strong>Tu as fui devant le Conjugus...</strong>");
 }
 
 function closeBossResult(){
@@ -7023,10 +7033,7 @@ function abandonGramBoss(){
   if(_bc)_bc.src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";
   S._abandonModId="g_boss";
   playGameOverMusic();
-  const _fov=document.getElementById("failureOv");
-  const _fmsg=document.getElementById("failureMsg");
-  if(_fmsg)_fmsg.textContent="Tu as fui devant la Grammaria... Reviens quand tu seras pret(e) !";
-  if(_fov)_fov.style.display="flex";
+  _showFleeFailure("gramboss", "https://i.postimg.cc/8533WQzh/deesse-grammaire.png", "<strong>Tu as fui devant la Grammaria...</strong>");
 }
 
 function closeGramResult(){
@@ -7788,10 +7795,7 @@ function abandonOrgografe(){
   try{const _ls=document.getElementById("orgLaughSound");if(_ls){_ls.currentTime=0;_ls.volume=1;_ls.play().catch(function(){});}}catch(_e){}
   S._abandonModId="g_org";
   playGameOverMusic();
-  const _fov=document.getElementById("failureOv");
-  const _fmsg=document.getElementById("failureMsg");
-  if(_fmsg)_fmsg.textContent="Tu as fui devant l'Orgografe... Reviens t'entrainer et reessaie !";
-  if(_fov)_fov.style.display="flex";
+  _showFleeFailure("orgografe", "https://i.postimg.cc/N04Cp0Rt/Gadou.png", "<strong>Tu as fui devant l'Orgografe...</strong>");
 }
 
 
@@ -9038,12 +9042,10 @@ function abandonMemelite(){
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   document.getElementById("memeliteOv").style.display="none";
   document.getElementById("memeliteOv").style.zIndex="200";
-  playGameOverMusic();
-  const ov=document.getElementById("failureOv");
-  const msg=document.getElementById("failureMsg");
-  if(msg)msg.innerHTML='<strong>Tu as fui devant Mémélité… 🏃</strong><br><span style="font-size:14px;">Reviens quand tu seras prêt(e) !</span>';
-  if(ov)ov.style.display="flex";
   S._abandonModId="memelite";
+  playGameOverMusic();
+  _showFleeFailure("memelite","https://i.postimg.cc/bwfcRt83/Memelite.png","<strong>Tu as fui devant Memelite !</strong><br><span style=\"font-size:14px;\">Reviens quand tu seras pret(e) !</span>");
+  document.getElementById("failureOv").style.display="flex";
 }
 
 </script>
@@ -9236,10 +9238,12 @@ function abandonMemelite(){
     </button>
   </div>
 
+</div><!-- end orgOv -->
+
   <!-- ══════════ MÉMÉLITÉ BOSS OVERLAY ══════════ -->
-  <div id="memeliteOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;">
+  <div id="memeliteOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;background:#0a0508;">
     <!-- Background phase 1/2 -->
-    <div id="melBg" style="position:absolute;inset:0;background:#0a0508;overflow:hidden;transition:opacity .5s;">
+    <div id="melBg" style="position:absolute;inset:0;background:#0a0508;overflow:hidden;opacity:1;">
       <img id="melBgImg" src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png"
            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1s;"/>
       <!-- Fire particles container for phase 3 -->
