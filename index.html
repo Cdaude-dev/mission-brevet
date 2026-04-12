@@ -812,11 +812,25 @@
   /* ── x2 jaune + giant popup + x2 shake ── */
   #teddyX2Overlay{position:absolute;inset:0;background:rgba(250,204,21,.15);pointer-events:none;z-index:2;opacity:0;transition:opacity .4s;}
   #teddyX2Overlay.active{opacity:1;}
-  #teddyComboGiant{pointer-events:none;position:absolute;left:50%;top:36%;transform:translateX(-50%) scale(0);z-index:17;font-size:clamp(72px,16vw,140px);font-weight:900;white-space:nowrap;}
+  /* Giant X2/X3 : opacity:0 par défaut, centré, scale neutre
+   L'animation contrôlée entièrement via JS style.animation */
+  #teddyComboGiant{
+    pointer-events:none;
+    position:absolute;
+    left:50%;top:38%;
+    transform:translateX(-50%);
+    opacity:0;
+    z-index:18;
+    font-size:clamp(72px,16vw,140px);
+    font-weight:900;
+    white-space:nowrap;
+    will-change:transform,opacity;
+  }
   #teddyComboGiant.x2{color:#facc15;text-shadow:0 0 40px rgba(250,204,21,.9),0 4px 20px rgba(0,0,0,.8);}
   #teddyComboGiant.x3{color:#fb923c;text-shadow:0 0 50px rgba(251,146,60,.9),0 4px 20px rgba(0,0,0,.8);}
   /* Surgissement X2/X3 : scale peak 1.6, durée 1.1s, impact fort */
-  @keyframes teddyGiantPop{0%{transform:translateX(-50%) scale(0) rotate(-3deg);opacity:0;}30%{transform:translateX(-50%) scale(1.6) rotate(2deg);opacity:1;}55%{transform:translateX(-50%) scale(1.1) rotate(0deg);opacity:1;}75%{transform:translateX(-50%) scale(1.2) rotate(0deg);opacity:1;}90%{transform:translateX(-50%) scale(1.15);opacity:.85;}100%{transform:translateX(-50%) scale(.8);opacity:0;}}
+  /* Keyframe X2/X3 : départ à scale(.05) pour éviter scale(0) absolu */
+  @keyframes teddyGiantPop{0%{transform:translateX(-50%) scale(.05) rotate(-3deg);opacity:0;}30%{transform:translateX(-50%) scale(1.6) rotate(2deg);opacity:1;}55%{transform:translateX(-50%) scale(1.1) rotate(0deg);opacity:1;}75%{transform:translateX(-50%) scale(1.2) rotate(0deg);opacity:1;}90%{transform:translateX(-50%) scale(1.15);opacity:.85;}100%{transform:translateX(-50%) scale(.8);opacity:0;}}
   /* Durée 1.1s, cubic-bezier for punchier impact */
   #teddyComboGiant.popping{animation:teddyGiantPop 1.1s cubic-bezier(.2,1.4,.4,1) forwards;}
   @keyframes teddyContinuousShakeLight{0%,100%{transform:translate(0,0);}25%{transform:translate(-1px,.5px);}50%{transform:translate(1px,-.5px);}75%{transform:translate(-.5px,1px);}}
@@ -10239,7 +10253,8 @@ window.TeddynounetBoss = (function() {
     ov.classList.remove('x3shaking'); ov.style.animation = '';
     _el('teddyX3Overlay').classList.remove('active');
     var _x2el=_el('teddyX2Overlay');if(_x2el)_x2el.classList.remove('active');
-    var _cgel=_el('teddyComboGiant');if(_cgel){_cgel.className='';_cgel.textContent='';}
+    var _cgel=_el('teddyComboGiant');
+    if(_cgel){_cgel.style.animation='none';_cgel.style.opacity='0';_cgel.className='';_cgel.textContent='';}
     _el('teddyComboFlash').style.cssText = '';
 
     _setBg(); _computeCrushY(); _initAudio(); _updateHPDisplay(); _updateComboDisplay();
@@ -10751,20 +10766,35 @@ window.TeddynounetBoss = (function() {
      - Se rejoue à chaque fois que le palier est (ré)atteint
      - pointer-events:none garanti (CSS ID rule)
      - setTimeout 50ms pour laisser le DOM se mettre à jour */
+  /* Surgissement X2/X3 : style.animation inline = spécificité max,
+     aucun conflit possible avec la CSS statique.
+     requestAnimationFrame garantit le reflow avant la nouvelle animation.
+     Se rejoue correctement si le palier est perdu puis réatteint. */
   function _showGiantCombo(text, isX3) {
     var cg = _el('teddyComboGiant'); if (!cg) return;
-    // Réinitialiser COMPLÈTEMENT avant de relancer (void offsetWidth force reflow)
-    cg.className = '';
+    // 1. Couper toute animation en cours + vider
+    cg.style.animation = 'none';
+    cg.style.opacity = '0';
     cg.textContent = '';
-    void cg.offsetWidth; // force reflow pour relancer l'animation CSS
-    setTimeout(function() {
-      cg.textContent = text;
-      // X2 : classe jaune + pop / X3 : classe orange + pop plus fort
-      cg.className = (isX3 ? 'x3' : 'x2') + ' popping';
-      setTimeout(function() {
-        if (cg.textContent === text) { cg.className = ''; cg.textContent = ''; }
-      }, 1200);
-    }, 50); // 50ms : délai minimal pour garantir le reflow
+    cg.className = isX3 ? 'x3' : 'x2'; // couleur prête
+    // 2. rAF = garanti après le reflow du frame courant
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { // double rAF = reflow complet
+        cg.textContent = text;
+        // 3. Animation inline : priorité max, jamais bloqué par CSS
+        cg.style.animation = 'teddyGiantPop 1.1s cubic-bezier(.2,1.4,.4,1) forwards';
+        cg.style.opacity = ''; // laisser l'animation gérer l'opacité
+        // 4. Nettoyage après la fin de l'animation
+        setTimeout(function() {
+          if (cg.textContent === text) {
+            cg.style.animation = 'none';
+            cg.style.opacity = '0';
+            cg.textContent = '';
+            cg.className = '';
+          }
+        }, 1150);
+      });
+    });
   }
 
   /* Effets x2 : overlay jaune léger + tremblement léger */
@@ -10790,7 +10820,8 @@ window.TeddynounetBoss = (function() {
     _el('teddyOv').classList.remove('x3shaking');
     _el('teddyX3Overlay').classList.remove('active');
     var _x2el=_el('teddyX2Overlay');if(_x2el)_x2el.classList.remove('active');
-    var _cgel=_el('teddyComboGiant');if(_cgel){_cgel.className='';_cgel.textContent='';}
+    var _cgel=_el('teddyComboGiant');
+    if(_cgel){_cgel.style.animation='none';_cgel.style.opacity='0';_cgel.className='';_cgel.textContent='';}
     _stopEmberLoop();
   }
   function _startEmberLoop() {
@@ -10923,8 +10954,15 @@ window.TeddynounetBoss = (function() {
     /* Fermer et neutraliser la dialog pour éviter toute continuation */
     var _dov = _el('teddyDialogOv');
     if (_dov) _dov.style.display = 'none';
+    /* Restauration du texte "Continuer ▶" :
+       cloneNode(true) = deep clone → conserve le texte enfant
+       onclick = null → neutralise le callback sans vider le label */
     var _dbtn = _el('teddyDialogBtn');
-    if (_dbtn) { var _nb2=_dbtn.cloneNode(false); _dbtn.parentNode&&_dbtn.parentNode.replaceChild(_nb2,_dbtn); }
+    if (_dbtn) {
+      var _nb2 = _dbtn.cloneNode(true); // deep = texte conservé
+      _nb2.onclick = null;              // neutraliser sans effacer le label
+      _dbtn.parentNode && _dbtn.parentNode.replaceChild(_nb2, _dbtn);
+    }
     _el('teddyOv').style.display = 'none';
     /* Arrêt immédiat de bgMusic pour éviter chevauchement avec séquence audio d'échec */
     try{var _abgm=document.getElementById('bgMusic');if(_abgm){_abgm.pause();_abgm.currentTime=0;}}catch(e){}
@@ -11065,7 +11103,8 @@ window.TeddynounetBoss = (function() {
     if(bc){bc.style.animation='';bc.style.right='2%';bc.style.transition='';bc.style.filter='';}
     _el('teddyX3Overlay').classList.remove('active');
     var _x2el=_el('teddyX2Overlay');if(_x2el)_x2el.classList.remove('active');
-    var _cgel=_el('teddyComboGiant');if(_cgel){_cgel.className='';_cgel.textContent='';}
+    var _cgel=_el('teddyComboGiant');
+    if(_cgel){_cgel.style.animation='none';_cgel.style.opacity='0';_cgel.className='';_cgel.textContent='';}
     _el('teddyDialogOv').style.display='none';
     _el('teddyTutoOv').style.display='none';
     _el('teddyEndOv').style.display='none';
