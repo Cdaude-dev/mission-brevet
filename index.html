@@ -1369,7 +1369,7 @@
   </div><!-- end litMenu -->
 
   <!-- FAILURE OVERLAY -->
-  <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:95;
+  <div id="failureOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9500;
        flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;">
     <img src="https://i.postimg.cc/Y9rMpwZr/echec.png" alt="échec"
          style="width:min(220px,60vw);filter:drop-shadow(0 8px 24px rgba(255,50,50,.4));animation:bob 3s ease-in-out infinite;"/>
@@ -5733,22 +5733,24 @@ function showFailure(p,total){
 }
 function retryFromFailure(){
   stopGameOverMusic();
-  const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
-  startMod(S.mod);
+  const _fov=document.getElementById("failureOv");if(_fov)_fov.style.display="none";
+  const _fm=S._abandonModId||S.mod;
+  if(_fm==="memelite"||_fm==="g_boss"||_fm==="g_org"||_fm==="c_boss"){closeFailure();return;}
+  S._abandonModId=null;
+  if(S.mod)startMod(S.mod);else closeFailure();
 }
 function closeFailure(){
   stopGameOverMusic();
-  const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
+  const _fov=document.getElementById("failureOv");if(_fov)_fov.style.display="none";
   if(D.quizCard)D.quizCard.style.display="none";
   S.locked=false;
-  // _abandonModId set by abandonMod(); S.mod might already be null
   const _fm=S._abandonModId||S.mod;
   S.mod=null; S._abandonModId=null;
-  if(_fm){
-    if(_fm.startsWith("g"))showGramMenu();
-    else if(_fm.startsWith("c"))showConjMenu();
-    else showLitMenu();
-  } else showLitMenu();
+  const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(function(){});
+  if(_fm==="memelite"){_restoreBgMusic();showLitMenu();}
+  else if(_fm==="g_org"||_fm==="g_boss"||(_fm&&_fm[0]==="g")){showGramMenu();}
+  else if(_fm==="c_boss"||(_fm&&_fm[0]==="c")){showConjMenu();}
+  else{showLitMenu();}
 }
 
 /* ══════════ BIG ACCOUNT MODAL ══════════ */
@@ -6345,32 +6347,16 @@ function bossVictory(){
 }
 
 function abandonBoss(){
-  const ov=document.createElement("div");
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9000;display:flex;align-items:center;justify-content:center;";
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0a00,#0a0500);border:2px solid rgba(255,100,0,.4);border-radius:20px;padding:28px 24px;max-width:380px;width:92%;text-align:center;animation:popIn .3s;">
-    <div style="font-size:32px;margin-bottom:8px;">🚪</div>
-    <div style="font-size:19px;font-weight:900;color:#facc15;margin-bottom:10px;">Fuir le combat ?</div>
-    <div style="font-size:14px;color:#ead7ae;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>Le boss sera de retour la prochaine fois…</div>
-    <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="abb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button id="abb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt=""/></button>
-    </div>
-  </div>`;
-  document.body.appendChild(ov);
-  ov.querySelector("#abb_yes").onclick=()=>{
-    ov.remove();
-    clearInterval(bossState.timerInt);
-    stopAsteroidSpawner();
-    const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
-    document.getElementById("bossOv").style.display="none";
-    const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
-    // Return to conj menu
-    const cm=document.getElementById("conjMenu");
-    if(cm)cm.style.display="flex";
-    else showLitMenu();
-    toast("Tu as fui… Le Conjugus t'attend ! 💪");
-  };
-  ov.querySelector("#abb_no").onclick=()=>ov.remove();
+  clearInterval(bossState.timerInt);
+  stopAsteroidSpawner();
+  const _bm=document.getElementById("bossMusicAudio");if(_bm)_bm.pause();
+  document.getElementById("bossOv").style.display="none";
+  S._abandonModId="c_boss";
+  playGameOverMusic();
+  const _fov=document.getElementById("failureOv");
+  const _fmsg=document.getElementById("failureMsg");
+  if(_fmsg)_fmsg.textContent="Tu as fui devant le Conjugus... Reviens quand tu seras pret(e) !";
+  if(_fov)_fov.style.display="flex";
 }
 
 function closeBossResult(){
@@ -7028,34 +7014,19 @@ function gramBossVictory(){
 }
 
 function abandonGramBoss(){
-  const ov=document.createElement("div");
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;display:flex;align-items:center;justify-content:center;";
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#061028,#020a1e);border:2px solid rgba(96,165,250,.35);border-radius:20px;padding:28px 24px;max-width:380px;width:92%;text-align:center;animation:popIn .3s;">
-    <div style="font-size:32px;margin-bottom:8px;">🚪</div>
-    <div style="font-size:19px;font-weight:900;color:#60a5fa;margin-bottom:10px;">Fuir le combat ?</div>
-    <div style="font-size:14px;color:#bfdbfe;line-height:1.5;margin-bottom:18px;">Ta progression dans ce combat sera perdue.<br>La Déesse t'attendra patiemment…</div>
-    <div style="display:flex;gap:12px;justify-content:center;">
-      <button id="agb_yes" style="padding:11px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-size:15px;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button id="agb_no"  style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);color:var(--ivory);font-size:15px;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>
-    </div>
-  </div>`;
-  document.body.appendChild(ov);
-  ov.querySelector("#agb_yes").onclick=()=>{
-    ov.remove();
-    clearInterval(gramBossState.timerInt);
-    gramBossState.darkPhase=false;
-    const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
-    const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
-    document.getElementById("gramBossOv").style.display="none";
-    // Reset gram boss char image
-    const bc=document.getElementById("gramBossChar");
-    if(bc)bc.src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";
-    const bg=document.getElementById("bgMusic");
-    if(bg)bg.play().catch(()=>{});
-    showGramMenu();
-    toast("Tu as fui… La Grammaria te surveille ! 📚");
-  };
-  ov.querySelector("#agb_no").onclick=()=>ov.remove();
+  clearInterval(gramBossState.timerInt);
+  gramBossState.darkPhase=false;
+  const _gm=document.getElementById("gramMusicAudio");if(_gm)_gm.pause();
+  const _ga=document.getElementById("gramMusicAngry");if(_ga)_ga.pause();
+  document.getElementById("gramBossOv").style.display="none";
+  const _bc=document.getElementById("gramBossChar");
+  if(_bc)_bc.src="https://i.postimg.cc/8533WQzh/deesse-grammaire.png";
+  S._abandonModId="g_boss";
+  playGameOverMusic();
+  const _fov=document.getElementById("failureOv");
+  const _fmsg=document.getElementById("failureMsg");
+  if(_fmsg)_fmsg.textContent="Tu as fui devant la Grammaria... Reviens quand tu seras pret(e) !";
+  if(_fov)_fov.style.display="flex";
 }
 
 function closeGramResult(){
@@ -7812,26 +7783,15 @@ function closeOrgResult(){
 }
 
 function abandonOrgografe(){
-  const cd=document.createElement("div");
-  cd.className="mb-popup-ov";
-  cd.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;display:flex;align-items:center;justify-content:center;";
-  cd.innerHTML=`<div style="background:#1a0a02;border:2px solid rgba(249,115,22,.4);border-radius:18px;padding:24px;max-width:340px;width:92%;text-align:center;">
-    <div style="font-size:18px;font-weight:900;color:#f97316;margin-bottom:8px;">Fuir ?</div>
-    <div style="font-size:13px;color:#ead7ae;margin-bottom:14px;">La grande Orgografe va t'attendre...</div>
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="org_yes" style="padding:9px 18px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-weight:900;cursor:pointer;background:none;border:none;padding:0;"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" style="height:clamp(40px,8vh,80px);width:auto;"/></button>
-      <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;"><img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(34px,5.5vh,50px);width:auto;display:block;" alt=""/></button>
-    </div>
-  </div>`;
-  document.body.appendChild(cd);
-  cd.querySelector("#org_yes").onclick=()=>{
-    cd.remove();
-    const om=document.getElementById("orgMusicAudio");if(om)om.pause();
-    document.getElementById("orgOv").style.display="none";
-    const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
-    showGramMenu();
-    toast("La grande Orgografe te surveille... 👁️");
-  };
+  const _om=document.getElementById("orgMusicAudio");if(_om){_om.pause();_om.currentTime=0;}
+  document.getElementById("orgOv").style.display="none";
+  try{const _ls=document.getElementById("orgLaughSound");if(_ls){_ls.currentTime=0;_ls.volume=1;_ls.play().catch(function(){});}}catch(_e){}
+  S._abandonModId="g_org";
+  playGameOverMusic();
+  const _fov=document.getElementById("failureOv");
+  const _fmsg=document.getElementById("failureMsg");
+  if(_fmsg)_fmsg.textContent="Tu as fui devant l'Orgografe... Reviens t'entrainer et reessaie !";
+  if(_fov)_fov.style.display="flex";
 }
 
 
