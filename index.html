@@ -4182,6 +4182,7 @@ function loadProgress(name){
         if(_cm.every(k=>S.perfect&&S.perfect[k]))unlockBadge("conj_expert");
       },600);
       saveToLB(); // push latest score to Supabase
+      setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },200);
     }
   }catch(e){}
 }
@@ -4533,14 +4534,18 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
-  // Fuir = défaite scénarisée
+  // Fuir = défaite scénarisée (même logique qu'une défaite classique)
+  const _modId=S.mod;
   S.savedMod=null; S.savedQIdx=0; S.savedCorrect=0;
   S.locked=true;
+  if(D.quizCard)D.quizCard.style.display="none";
+  const ro=document.getElementById("resultsOv");if(ro)ro.remove();
   playGameOverMusic();
   const ov=document.getElementById("failureOv");
   const msg=document.getElementById("failureMsg");
-  if(msg)msg.innerHTML="<strong>Vous avez fui… 🏃</strong><br>Revenez quand vous serez plus fort(e) !";
+  if(msg)msg.innerHTML='<strong>Vous avez fui… 🏃</strong><br>Revenez quand vous serez plus fort(e) !';
   if(ov)ov.style.display="flex";
+  // closeFailure sera appelé par les boutons de l'overlay
 }
 
 function startMod(id, resumeFrom){
@@ -5583,6 +5588,7 @@ function doLogin(){
     goScreen("home");updateHUD();
     loadProgress(v);
     saveToLB();
+    setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },300);
     try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
     setTimeout(maybeShowUpdateMsg,600);
   });
@@ -5906,6 +5912,7 @@ window.addEventListener("load",()=>{
         migrateToStars();
         try{buildAvGrid();}catch(e){}
         try{buildBigAvGrid();}catch(e){}
+        setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },400);
         // Ensure name shows in panel inputs
         const ni=document.getElementById("nameInput");if(ni)ni.value=S.name;
         const cBtn=document.getElementById("chatToggleBtn");if(cBtn)cBtn.style.display="none";
@@ -8582,11 +8589,7 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
-  // Direct mobile background set (phase 1)
-  const _melMob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
-  const _melBg=document.getElementById("melBgImg");
-  if(_melBg&&_melMob)_melBg.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
-  _applyMelBg(1);
+  // (responsive bg applied after show)
   const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Full reset
   clearInterval(melState&&melState.timerInt);
@@ -8599,6 +8602,12 @@ function startMemelit(){
   const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
   const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
+  // Apply responsive bg AFTER overlay is shown
+  setTimeout(()=>{
+    const _melMob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+    const _melBgEl=document.getElementById("melBgImg");
+    if(_melMob&&_melBgEl)_melBgEl.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
+  },50);
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   melState={phase:1,qIdx:0,hp:15,lives:5,timerVal:20,timerInt:null,
     catCount:0,catsMissed:0,noPerfect:false,catsToRepel:15,catsRepelled:0,
@@ -9356,9 +9365,5 @@ function abandonMemelite(){
       Continuer →
     </button>
   </div>
-</body>
-</html>
-  }catch(e){console.error("renderQ error:",e);}
-}
 </body>
 </html>
