@@ -152,7 +152,7 @@
     .home-hero{max-width:1120px;margin:44px auto 0;position:relative;z-index:5;}
     .home-inner{display:flex;align-items:flex-end;justify-content:center;min-height:280px;position:relative;}
     /* On desktop: character left, title right */
-    .hero-char{width:300px;margin-right:-18px;position:relative;z-index:3;
+    .hero-char{width:300px;margin-right:-30px;position:relative;z-index:3;
       filter:drop-shadow(0 24px 32px rgba(0,0,0,.32));
       animation:heroFloat 3.8s ease-in-out infinite;}
     .hero-title-wrap{display:flex;flex-direction:column;align-items:center;position:relative;z-index:4;}
@@ -518,12 +518,12 @@
     .res-sub{font-size:15px;color:#ead7ae;}
     .res-stars{font-size:32px;letter-spacing:4px;}
     .res-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-    .badge-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    .badge-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
       background:linear-gradient(135deg,rgba(55,28,12,.97),rgba(90,45,12,.97));
-      border:1px solid rgba(245,215,161,.35);border-radius:16px;
-      padding:12px 20px;display:flex;align-items:center;gap:12px;
-      box-shadow:0 12px 28px rgba(0,0,0,.4);z-index:400;
-      animation:slideUp .4s ease-out;display:none;}
+      border:2px solid rgba(245,215,161,.55);border-radius:20px;
+      padding:16px 26px;display:flex;align-items:center;gap:14px;
+      box-shadow:0 16px 40px rgba(0,0,0,.6);z-index:9800;
+      animation:slideUp .4s ease-out;display:none;min-width:260px;}
     .badge-toast.show{display:flex;}
     @keyframes slideUp{from{transform:translateX(-50%) translateY(30px);opacity:0;}to{transform:translateX(-50%) translateY(0);opacity:1;}}
     .bt-icon{font-size:28px;}
@@ -535,7 +535,7 @@
       .main-menu{padding-bottom:env(safe-area-inset-bottom,16px);flex-wrap:wrap;}
       .level-book{opacity:.12;}
       .deco-prof-lit{display:none;}
-      .home-inner{flex-direction:column;align-items:center;}
+      .home-inner{flex-direction:row;align-items:flex-end;justify-content:center;gap:0;}
       .hero-char{margin-right:0;}
       .welcome-wrap{width:calc(100% - 40px);}
     }
@@ -562,14 +562,14 @@
       /* HOME: stacked column, centered, character floats above title */
       .home-hero{margin:10px auto 0;}
       .home-inner{
-        flex-direction:column;align-items:center;justify-content:center;
-        min-height:auto;gap:0;
+        flex-direction:row;align-items:flex-end;justify-content:center;
+        min-height:auto;gap:0;flex-wrap:wrap;
       }
       .hero-char{
-        width:130px;margin-right:0;margin-bottom:-30px;
+        width:clamp(90px,22vw,130px);margin-right:0;margin-bottom:-20px;
         position:relative;z-index:5;
-        /* smaller float animation on mobile */
         animation:heroFloat 3.8s ease-in-out infinite;
+        align-self:flex-end;
       }
       .hero-title-wrap{width:100%;display:flex;justify-content:center;}
       .hero-title-wrap img{width:min(420px,92vw)!important;margin-bottom:0!important;}
@@ -634,7 +634,7 @@
 
   
   @media(min-width:641px){
-    .hero-char{position:relative;margin-right:auto;left:min(-20px,calc(50vw - 620px)) !important;}
+    .hero-char{position:relative;margin-right:-20px;}
     .hero-title-wrap{margin-left:-40px;}
   }
 
@@ -940,7 +940,7 @@
       </div>
       <div style="display:flex;justify-content:center;gap:24px;margin-bottom:14px;">
         <div style="text-align:center;"><div style="font-size:11px;color:#ead7ae;text-transform:uppercase;letter-spacing:.5px;">Niveau</div><div style="font-size:28px;font-weight:900;color:var(--gold);">99</div></div>
-        <div style="text-align:center;"><div style="font-size:11px;color:#ead7ae;text-transform:uppercase;letter-spacing:.5px;">Score</div><div style="font-size:28px;font-weight:900;color:var(--gold);">9999</div></div>
+        <div style="text-align:center;"><div style="font-size:11px;color:#ead7ae;text-transform:uppercase;letter-spacing:.5px;">Score</div><div style="font-size:28px;font-weight:900;color:var(--gold);">99999</div></div>
       </div>
       <div style="font-size:12px;color:#ead7ae;margin-bottom:8px;font-weight:700;">🏆 Tous les badges débloqués</div>
       <div id="daudeBadges" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-height:120px;overflow-y:auto;padding:4px;">
@@ -1158,7 +1158,7 @@
     <img class="fbook br" src="https://i.postimg.cc/T3GTQ7PB/livre2.png" alt=""/>
     <img class="fbook bb" src="https://i.postimg.cc/6pwBzjQD/livre3.png" alt=""/>
     <div class="home-hero">
-      <div class="home-inner" style="gap:0;align-items:flex-end;">
+      <div class="home-inner">
         <img class="hero-char" src="https://i.postimg.cc/ZRDYg7p8/personnage-CD.png" alt=""/>
         <div class="hero-title-wrap">
           <img src="https://i.postimg.cc/90DJfgyW/Logo.png" alt="Mission Brevet"
@@ -3947,6 +3947,7 @@ function switchTab(tab){
 
 function goScreen(name){
   S.currentScreen=name;
+  try{stopVictoryMusic();}catch(e){}
   // Show/hide chat button
   const chatBtn=document.getElementById("chatToggleBtn");
   if(chatBtn)chatBtn.style.display=(name!=="welcome"&&S.name)?"inline-flex":"none";
@@ -4010,6 +4011,14 @@ function startModFrom(id,screen){
 function unlockBadge(id){
   if(S.badges.has(id))return;S.badges.add(id);
   const b=BADGES_DEF.find(x=>x.id===id);if(!b)return;
+  // Badge unlock sound
+  try{
+    let _bsnd=document.getElementById("badgeUnlockSnd");
+    if(!_bsnd){_bsnd=document.createElement("audio");_bsnd.id="badgeUnlockSnd";
+      _bsnd.src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge-debloque.mp3";
+      _bsnd.preload="auto";document.body.appendChild(_bsnd);}
+    _bsnd.currentTime=0;_bsnd.volume=0.8;_bsnd.play().catch(()=>{});
+  }catch(e){}
   const btImg=document.getElementById("btImg");
   if(btImg){
     if(b.img){btImg.src=b.img;btImg.style.display="block";}
@@ -4188,7 +4197,7 @@ function loadProgress(name){
   }catch(e){}
 }
 const DAUDE={
-  name:"Professeur Daudé",score:9999,
+  name:"Professeur Daudé",score:99999,
   avatar:"https://i.postimg.cc/NfxnHpTz/avatar-professeur-cede.png"
 };
 
@@ -5753,16 +5762,21 @@ function _showFleeFailure(modId, bossImg, msgHtml){
   const _ftitle=document.getElementById("failureTitle");
   const _fimg=document.getElementById("failureImg");
   const _fmsg=document.getElementById("failureMsg");
-  if(_ftitle)_ftitle.textContent="Tu as fui face \u00e0 l\u2019adversit\u00e9";
+  const _retryBtn=document.querySelector("#failureOv button[onclick=\"retryFromFailure()\"]");
+  if(_ftitle)_ftitle.textContent="Tu as fui face \u00e0 l\u2019adversit\u00e9…";
   if(_fimg&&bossImg){_fimg.src=bossImg;_fimg.style.filter="drop-shadow(0 8px 24px rgba(255,50,50,.5))";}
   if(_fmsg)_fmsg.innerHTML=msgHtml;
+  // Hide retry for boss flee — only Menu button stays
+  if(_retryBtn)_retryBtn.style.display=(modId==="mod")?"":"none";
   if(_fov)_fov.style.display="flex";
 }
 function _showGameFailure(){
   const _ftitle=document.getElementById("failureTitle");
   const _fimg=document.getElementById("failureImg");
+  const _retryBtn=document.querySelector("#failureOv button[onclick=\"retryFromFailure()\"]");
   if(_ftitle)_ftitle.textContent="R\u00e9sultat insuffisant\u2026";
   if(_fimg)_fimg.src="https://i.postimg.cc/Y9rMpwZr/echec.png";
+  if(_retryBtn)_retryBtn.style.display="";
 }
 
 
@@ -6371,6 +6385,7 @@ function abandonBoss(){
 
 function closeBossResult(){
   stopAsteroidSpawner();
+  stopVictoryMusic();stopGameOverMusic();
   document.getElementById("bossResultOv").style.display="none";
   const bg=document.getElementById("bgMusic");
   if(bg&&(S.currentScreen==="home"||S.currentScreen==="conjugaison"))bg.play().catch(()=>{});
@@ -9043,8 +9058,9 @@ function abandonMemelite(){
   document.getElementById("memeliteOv").style.display="none";
   document.getElementById("memeliteOv").style.zIndex="200";
   S._abandonModId="memelite";
-  playGameOverMusic();
-  _showFleeFailure("memelite","https://i.postimg.cc/bwfcRt83/Memelite.png","<strong>Tu as fui devant Memelite !</strong><br><span style=\"font-size:14px;\">Reviens quand tu seras pret(e) !</span>");
+  try{const _vl=document.getElementById("melVicSnd");if(_vl){_vl.currentTime=0;_vl.volume=1;_vl.play().catch(()=>{});}}catch(e){}
+  setTimeout(()=>playGameOverMusic(),500);
+  _showFleeFailure("memelite","https://i.postimg.cc/bwfcRt83/Memelite.png","<strong>Tu as fui devant M&#233;m&#233;lit&#233;&nbsp;!</strong><br><span style=\"font-size:14px;\">Elle en rit encore...</span>");
   document.getElementById("failureOv").style.display="flex";
 }
 
