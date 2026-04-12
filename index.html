@@ -4145,7 +4145,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,bossXPAwarded:S.bossXPAwarded||{}
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -4170,6 +4170,7 @@ function loadProgress(name){
          S.savedQIdx=_rs;
        else{S.savedMod=null;S.savedQIdx=0;}}
       S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
+      if(d.bossXPAwarded)S.bossXPAwarded=d.bossXPAwarded;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -5648,9 +5649,7 @@ function showDescriptionPopup(name, avatar, hashedPwd){
              font-family:inherit;margin-bottom:4px;"></textarea>
     <div id="descErrMsg" style="font-size:12px;color:#fca5a5;min-height:16px;margin-bottom:10px;"></div>
     <div style="display:flex;gap:10px;justify-content:center;">
-      <button id="descOkBtn" style="flex:1;padding:12px;border-radius:12px;border:none;
-        background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:point<img src="https://i.postimg.cc/2j7wW8hh/c-est-parti.png" style="height:clamp(48px,7vh,66px);width:auto;display:block;" alt=""/>
-      </button>
+      <button id="descOkBtn" style="flex:1;padding:12px 20px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">C'est parti !</button>
       <button id="descSkipBtn"
         style="padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
                background:rgba(0,0,0,.3);color:var(--gold-soft);font-weight:700;font-size:13px;cursor:pointer;">
@@ -7760,24 +7759,21 @@ function triggerOrgDarkPhase(){
 }
 
 function orgVictory(){
-  document.getElementById("orgResultOv").style.display="flex";
   awardBossXP("orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
   try{const ds=document.getElementById("orgDefeatedSound");if(ds){ds.currentTime=0;ds.play().catch(()=>{});}}catch(e){}
-  playVictoryMusic();
   document.getElementById("orgOv").style.display="none";
-  // Badges
+  document.getElementById("orgResultImg").src="https://i.postimg.cc/brhW900M/Orgrografe-defeated.png";
+  document.getElementById("orgResultTitle").textContent="VICTOIRE !";
+  document.getElementById("orgResultTitle").style.color="#f97316";
+  document.getElementById("orgResultMsg").textContent="Bravo ! Tu as terrass\u00e9 la grande Orgografe et r\u00e9tabli la paix dans le monde de l'orthographe !";
+  document.getElementById("orgResultOv").style.display="flex";
+  playVictoryMusic();
   if(!S.badges.has("trancheur_ogre"))unlockBadge("trancheur_ogre");
   if(!orgState.noPerfect&&!S.badges.has("inkrevable"))unlockBadge("inkrevable");
   S.orgBossDefeated=true;
   saveProgress();
-  // Result screen
-  document.getElementById("orgResultImg").src="https://i.postimg.cc/brhW900M/Orgrografe-defeated.png";
-  document.getElementById("orgResultTitle").textContent="🏆 VICTOIRE !";
-  document.getElementById("orgResultTitle").style.color="#f97316";
-  document.getElementById("orgResultMsg").textContent="Bravo ! Tu as terrassé la grande Orgografe et rétabli la paix dans le monde de l'orthographe !";
-  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
 }
 
 function orgDefeat(){
@@ -9247,8 +9243,11 @@ function abandonMemelite(){
 
 
 
+
+</div><!-- end orgOv -->
+
   <!-- ── Orgografe result overlay ── -->
-  <div id="orgResultOv" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);
+  <div id="orgResultOv" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);
        flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
     <img id="orgResultImg" src="" alt="" style="width:min(180px,50vw);filter:drop-shadow(0 8px 24px rgba(249,115,22,.4));animation:bob 3s ease-in-out infinite;"/>
     <div id="orgResultTitle" style="font-size:28px;font-weight:900;color:#f97316;"></div>
@@ -9258,8 +9257,6 @@ function abandonMemelite(){
       Continuer →
     </button>
   </div>
-
-</div><!-- end orgOv -->
 
   <!-- ══════════ MÉMÉLITÉ BOSS OVERLAY ══════════ -->
   <div id="memeliteOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;background:#0a0508;">
