@@ -1106,15 +1106,22 @@
     #bourgourChar { width:440px; }
   }
   /* ── MOBILE portrait ── */
+    /* ─── MOBILE PORTRAIT : Personnages agrandis, fond recalé ─────────────
+     Teddynounet: légèrement plus grand pour lisibilité
+     Bourgour: nettement plus grand, plus menaçant, rapport de force marqué */
   @media(max-width:640px) and (orientation:portrait) {
-    #teddyChar    { width:min(130px,33vw); }
-    #bourgourChar { width:min(120px,30vw); }
+    /* Teddynounet légèrement agrandi */
+    #teddyChar    { width:min(155px,40vw); }
+    /* Bourgour nettement plus imposant — le boss doit dominer */
+    #bourgourChar { width:min(185px,48vw); }
     #teddyQuestionBox { top:44px; }
     .teddy-food-img { width:clamp(46px,12vw,68px);height:clamp(46px,12vw,68px); }
     .teddy-food-label { font-size:clamp(9px,2.6vw,12px);max-width:90px; }
     #teddyDialogBox { padding:12px 14px; gap:10px; }
     .teddy-dialog-avatar { width:52px;height:52px; }
     #teddyComboDisplay { top:auto;right:8px;bottom:70px; }
+    /* Fond mobile : zoom léger + cadrage bas pour mettre en valeur la scène */
+    #teddyBg { background-size:140% auto; background-position:center 65%; }
   }
 
 
@@ -8547,6 +8554,10 @@ function playTeddySound(){
   }catch(e){}
 }
 function tryOpenTeddynounet(){
+  /* Guard double-clic : si le boss est déjà actif, ne pas relancer */
+  if(window._teddyBossLaunching)return;
+  window._teddyBossLaunching=true;
+  setTimeout(function(){window._teddyBossLaunching=false;},3000);
   if(!("ontouchstart" in window))playTeddySound();
   var _conjMods=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
   var _stars=_conjMods.reduce(function(acc,id){return acc+computeModStars(id);},0);
@@ -10130,6 +10141,7 @@ window.TeddynounetBoss = (function() {
   /* ── ÉTAT PRIVÉ ──────────────────────────────────────────── */
   var _running     = false;
   var _phase       = 'idle'; // idle|intro|tutorial|combat|victory|defeat
+  var _introAborted = false;  /* Guard : empêche les callbacks de la cinématique de s'exécuter après abandon() */
   var _hp          = HP_START;
   var _combo       = 0;
   var _comboState  = 'none'; // 'none'|'x2'|'x3'
@@ -10216,6 +10228,7 @@ window.TeddynounetBoss = (function() {
     _running = true; _phase = 'intro';
     _hp = HP_START; _combo = 0; _comboState = 'none';
     _noPerfect = true; _neverCorrect = true; _wrongCount = 0;
+    _introAborted = false; // Reset guard pour nouvelle cinématique
     _qActive = false; _qResolved = false;
     _activeFoods = []; _foodsRemaining = 0;
     _pool = _shuffle(QB.slice()); _poolIdx = 0;
@@ -10250,10 +10263,13 @@ window.TeddynounetBoss = (function() {
   /* ── INTRO ───────────────────────────────────────────────── */
   function _startIntro() {
     _T(function() {
+      /* Guard : ne pas animer si abandon() a été appelé */
+      if (!_running || _introAborted) return;
       var tc = _el('teddyChar');
       tc.style.transition = 'left 1s ease-out'; tc.style.left = '2%';
     }, 200);
     _T(function() {
+      if (!_running || _introAborted) return;
       _showDialog(IMG.AV_TEDDY, 'Teddynounet',
         'Salut\u00a0! Aujourd\'hui, je vais me r\u00e9galer comme jamais\u00a0! Burgers, frites, tacos\u2026 je vais tout d\u00e9vorer\u00a0!',
         function() {
@@ -10268,7 +10284,7 @@ window.TeddynounetBoss = (function() {
             _el('teddyChar').src = IMG.TEDDY_IDLE;
             _showDialog(IMG.AV_BOURG, 'Cantinier Bourgour',
               'MOI AVOIR CUISIN\u00c9 POUR TOI\u00a0!! TU MANGER TOUT\u00a0!!',
-              function() { _showTutorial(); }
+              function() { if (_running && !_introAborted) _showTutorial(); }
             );
           }, 1600);
         }
@@ -10276,6 +10292,8 @@ window.TeddynounetBoss = (function() {
     }, 1900);
   }
 
+  /* _showDialog : le callback onClose est gardé par _running + _introAborted
+     pour éviter que la cinématique continue après une fuite */
   function _showDialog(avatar, name, text, onClose) {
     _el('teddyDialogAvatar').src = avatar;
     _el('teddyDialogName').textContent = name;
@@ -10283,7 +10301,12 @@ window.TeddynounetBoss = (function() {
     _el('teddyDialogOv').style.display = 'flex';
     var btn = _el('teddyDialogBtn');
     var nb = btn.cloneNode(true); btn.parentNode.replaceChild(nb, btn);
-    nb.onclick = function() { _el('teddyDialogOv').style.display = 'none'; if (onClose) onClose(); };
+    nb.onclick = function() {
+      _el('teddyDialogOv').style.display = 'none';
+      /* Guard : ne pas continuer si abandon() a déjà nettoyé l'état */
+      if (!_running || _introAborted) return;
+      if (onClose) onClose();
+    };
   }
 
   /* ── TUTORIAL ────────────────────────────────────────────── */
@@ -10893,7 +10916,15 @@ window.TeddynounetBoss = (function() {
     if (_phase === 'idle') return;
     _stop('COMBAT'); _stop('INTRO');
     _clearAllFoods(); _clearTimers(); _stopEmberLoop(); _clearX3Effects();
+    /* Annulation cinématique : _introAborted=true bloque tous les callbacks
+       de _showDialog même si le bouton est cliqué après abandon() */
+    _introAborted = true;
     _phase = 'idle'; _running = false;
+    /* Fermer et neutraliser la dialog pour éviter toute continuation */
+    var _dov = _el('teddyDialogOv');
+    if (_dov) _dov.style.display = 'none';
+    var _dbtn = _el('teddyDialogBtn');
+    if (_dbtn) { var _nb2=_dbtn.cloneNode(false); _dbtn.parentNode&&_dbtn.parentNode.replaceChild(_nb2,_dbtn); }
     _el('teddyOv').style.display = 'none';
     /* Arrêt immédiat de bgMusic pour éviter chevauchement avec séquence audio d'échec */
     try{var _abgm=document.getElementById('bgMusic');if(_abgm){_abgm.pause();_abgm.currentTime=0;}}catch(e){}
