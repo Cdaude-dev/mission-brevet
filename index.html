@@ -563,16 +563,17 @@
       .home-hero{margin:10px auto 0;}
       .home-inner{
         flex-direction:row;align-items:flex-end;justify-content:center;
-        min-height:auto;gap:0;flex-wrap:wrap;
+        min-height:auto;gap:0;flex-wrap:nowrap;
+        padding:0 8px;
       }
       .hero-char{
-        width:clamp(90px,22vw,130px);margin-right:0;margin-bottom:-20px;
-        position:relative;z-index:5;
+        width:clamp(85px,20vw,120px);margin-right:-8px;margin-bottom:0;
+        position:relative;z-index:5;flex-shrink:0;
         animation:heroFloat 3.8s ease-in-out infinite;
         align-self:flex-end;
       }
-      .hero-title-wrap{width:100%;display:flex;justify-content:center;}
-      .hero-title-wrap img{width:min(420px,92vw)!important;margin-bottom:0!important;}
+      .hero-title-wrap{flex:1;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;}
+      .hero-title-wrap img{width:min(380px,82vw)!important;margin-bottom:16px!important;}
       .main-menu{padding-bottom:env(safe-area-inset-bottom,16px);flex-wrap:wrap;gap:10px;padding-inline:12px;}
       .banner-btn{width:calc(50% - 6px);min-height:80px;font-size:17px;}
       /* Big modal */
@@ -587,7 +588,7 @@
       .banner-btn{width:100%;}
       .dd-columns{flex-direction:column;}
       .dd-col{width:100%;}
-      .hero-char{width:110px;margin-bottom:-24px;}
+      .hero-char{width:clamp(70px,18vw,100px);margin-right:-6px;margin-bottom:0;}
     }
   
     @keyframes melCatFly{0%{left:-160px;opacity:1;transform:scaleX(-1);}100%{left:110%;opacity:.8;transform:scaleX(-1);}}
@@ -634,8 +635,8 @@
 
   
   @media(min-width:641px){
-    .hero-char{position:relative;margin-right:-20px;}
-    .hero-title-wrap{margin-left:-40px;}
+    .hero-char{position:relative;margin-right:-30px;align-self:flex-end;}
+    .hero-title-wrap{margin-left:0;}
   }
 
   
@@ -4557,6 +4558,8 @@ function abandonMod(){
 
 function startMod(id, resumeFrom){
   const _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
+  // Close chat panel if open during gameplay
+  const _chatP=document.getElementById("chatPanel");if(_chatP&&_chatP.style.display!=="none"){_chatP.style.display="none";stopChatPolling();}
   // Remove any leftover resume dialog (z-index:9999 overlay)
   document.querySelectorAll(".mb-popup-ov").forEach(el=>{if(el.style.zIndex==="9999")el.remove();});
   // If there's a saved position for this module and no explicit resumeFrom, offer resume
@@ -6147,6 +6150,7 @@ function startBoss(){
     if(ov)ov.querySelectorAll(".boss-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
   },50);
   document.getElementById("bossOv").style.display="block";
+  const _cp=document.getElementById("chatPanel");if(_cp&&_cp.style.display!=="none"){_cp.style.display="none";stopChatPolling();}
   renderBossQ();
   startAsteroidSpawner();
 }
@@ -6358,19 +6362,17 @@ function bossVictory(){
   const dead=document.getElementById("bossDead");
   if(dead){dead.currentTime=0;dead.play().catch(()=>{});}
   document.getElementById("bossOv").style.display="none";
-  playVictoryMusic();
-  S.bossDefeated=true;
-  // Unlock avatar and badge
-  if(!S.badges.has("dieu_conj")){
-    unlockBadge("dieu_conj");
-  }
-  saveProgress();
+  // Show result FIRST — before badges/save which may delay
   const ov=document.getElementById("bossResultOv");
   document.getElementById("bossResultImg").src="https://i.postimg.cc/d0gtzWp1/dieu-conjugaison-vaincu.png";
   document.getElementById("bossResultTitle").textContent="🏆 VICTOIRE !";
   document.getElementById("bossResultTitle").style.color="#facc15";
   document.getElementById("bossResultMsg").innerHTML="Bravo ! Vous avez vaincu le Conjugus. Quel exploit !<br>La conjugaison française n'a plus aucun secret pour vous !";
   ov.style.display="flex";
+  playVictoryMusic();
+  S.bossDefeated=true;
+  if(!S.badges.has("dieu_conj")){unlockBadge("dieu_conj");}
+  saveProgress();
 }
 
 function abandonBoss(){
@@ -6650,6 +6652,7 @@ function startGramBoss(){
     if(ov)ov.querySelectorAll(".gram-life-heart").forEach(x=>{x.style.filter="";x.style.opacity="1";});
   },50);
   document.getElementById("gramBossOv").style.display="block";
+  const _cp=document.getElementById("chatPanel");if(_cp&&_cp.style.display!=="none"){_cp.style.display="none";stopChatPolling();}
   renderGramBossQ();
   startRainEffect();
 }
@@ -7018,22 +7021,21 @@ function gramBossVictory(){
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
   const ga=document.getElementById("gramMusicAngry");if(ga)ga.pause();
   document.getElementById("gramBossOv").style.display="none";
-  playVictoryMusic();
   gramBossState.darkPhase=false;
-  // Mark boss as defeated and persist
-  S.gramBossDefeated=true;
-  if(!S.badges)S.badges=new Set();
-  if(!S.badges.has("deesse_gram"))unlockBadge("deesse_gram");
-  // Rebuild avatar grids so unlocked avatar appears
-  try{buildAvGrid();}catch(e){}
-  try{buildBigAvGrid();}catch(e){}
-  saveProgress();
+  // Show result FIRST — before badges/save which may delay
   const ov=document.getElementById("gramResultOv");
   document.getElementById("gramResultImg").src="https://i.postimg.cc/XqkfWdmj/Deesse-grammaire-vaincue.png";
   document.getElementById("gramResultTitle").textContent="🏆 VICTOIRE !";
   document.getElementById("gramResultTitle").style.color="#60a5fa";
   document.getElementById("gramResultMsg").innerHTML="Bravo ! Tu es parvenu(e) à terrasser la Grammaria. La langue française et toutes ses subtilités n'ont désormais plus aucun secret pour toi !";
   ov.style.display="flex";
+  playVictoryMusic();
+  S.gramBossDefeated=true;
+  if(!S.badges)S.badges=new Set();
+  if(!S.badges.has("deesse_gram"))unlockBadge("deesse_gram");
+  try{buildAvGrid();}catch(e){}
+  try{buildBigAvGrid();}catch(e){}
+  saveProgress();
   try{const dv=document.getElementById("gramDefeated");if(dv){dv.currentTime=0;dv.volume=1;dv.play().catch(()=>{});}}catch(e){}
   setTimeout(()=>showAvatarUnlocked("https://i.postimg.cc/xCr6dFbW/avatar-spe-deessegrammaire.png","Grammaria","Avatar secret débloqué !"),1200);
 }
@@ -7574,6 +7576,7 @@ function startOrgografe(){
   const orgBg=document.getElementById("orgBg");
   if(orgBg)orgBg.style.filter="";
   document.getElementById("orgOv").style.display="block";
+  const _cp=document.getElementById("chatPanel");if(_cp&&_cp.style.display!=="none"){_cp.style.display="none";stopChatPolling();}
   _applyMobileBgs();
   startOrgDust();
   renderOrgLives();
@@ -7757,6 +7760,7 @@ function triggerOrgDarkPhase(){
 }
 
 function orgVictory(){
+  document.getElementById("orgResultOv").style.display="flex";
   awardBossXP("orgografe");
   clearInterval(orgState.timerInt);
   const om=document.getElementById("orgMusicAudio");if(om)om.pause();
@@ -7773,7 +7777,6 @@ function orgVictory(){
   document.getElementById("orgResultTitle").textContent="🏆 VICTOIRE !";
   document.getElementById("orgResultTitle").style.color="#f97316";
   document.getElementById("orgResultMsg").textContent="Bravo ! Tu as terrassé la grande Orgografe et rétabli la paix dans le monde de l'orthographe !";
-  document.getElementById("orgResultOv").style.display="flex";
   const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
 }
 
@@ -8588,6 +8591,7 @@ function startMemelit(){
   if(!_melMob){const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";}
   const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
+  const _cp=document.getElementById("chatPanel");if(_cp&&_cp.style.display!=="none"){_cp.style.display="none";stopChatPolling();}
   document.getElementById("memeliteOv").style.zIndex="9000";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   melState={phase:1,qIdx:0,hp:15,lives:5,timerVal:20,timerInt:null,
@@ -9004,6 +9008,7 @@ function melPhase3Cinematic(){
 }
 
 function melVictory(){
+  document.getElementById("melResultOv").style.display="flex";
   melState.transitioning=true;
   melState.inCatPhase=false;
   awardBossXP("memelite");
@@ -9024,7 +9029,6 @@ function melVictory(){
   document.getElementById("melResultTitle").textContent="🏆 VICTOIRE !";
   document.getElementById("melResultTitle").style.color="#facc15";
   document.getElementById("melResultMsg").textContent="Mémélité est vaincue ! La littérature est sauvée !";
-  document.getElementById("melResultOv").style.display="flex";
 }
 
 function melDefeat(){
@@ -9083,17 +9087,18 @@ function abandonMemelite(){
 
   <!-- CHAT BUTTON & PANEL -->
   <!-- CHAT TOGGLE BUTTON -->
-  <button id="chatToggleBtn" onclick="toggleChat()"
-    style="display:none;position:fixed;bottom:18px;right:18px;z-index:300;
-           padding:11px 18px 11px 14px;border-radius:999px;border:none;cursor:pointer;
-           background:linear-gradient(135deg,#c87a10,var(--gold));
-           color:#1a0a00;font-size:14px;font-weight:900;
-           box-shadow:0 4px 20px rgba(0,0,0,.55),0 0 0 2px rgba(217,164,65,.3);
-           align-items:center;gap:8px;letter-spacing:.3px;">
-    <span style="font-size:18px;">💬</span>
-    <span>Discussion en ligne</span>
-    <span id="chatUnread" style="display:none;background:#ef4444;color:#fff;font-size:10px;
-      font-weight:900;border-radius:999px;padding:1px 6px;min-width:18px;text-align:center;"></span>
+  <button id="chatToggleBtn" onclick="toggleChat()" title="Discussion en ligne"
+    style="display:none;position:fixed;bottom:20px;right:20px;z-index:300;
+           width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+           background:rgba(26,10,2,.75);backdrop-filter:blur(6px);
+           color:var(--gold);font-size:20px;
+           box-shadow:0 4px 16px rgba(0,0,0,.45),0 0 0 1.5px rgba(217,164,65,.35);
+           display:none;align-items:center;justify-content:center;line-height:1;">
+    💬
+    <span id="chatUnread" style="display:none;position:absolute;top:-3px;right:-3px;
+      background:#ef4444;color:#fff;font-size:9px;font-weight:900;
+      border-radius:999px;padding:1px 5px;min-width:16px;text-align:center;
+      border:1.5px solid rgba(26,10,2,.8);"></span>
   </button>
 
   <!-- CHAT PANEL -->
