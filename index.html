@@ -768,6 +768,30 @@
     }
   }
 
+
+@media (max-width: 600px) and (orientation: portrait) {
+  #hud { padding: 4px 10px !important; }
+  #chip { cursor: pointer; }
+  #chipName, #chipLv { display: none !important; }
+  .prog-box { display: none !important; }
+  #acctPanel { display: none !important; }
+  #chip.mobile-open #chipName,
+  #chip.mobile-open #chipLv { display: block !important; }
+  #chipAv { width: 40px !important; height: 40px !important; border-radius: 50%; border: 2px solid rgba(217,164,65,.6); }
+}
+
+
+@media (max-width: 600px) and (orientation: portrait) {
+  #nextBtn {
+    position: fixed !important;
+    bottom: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 100 !important;
+    margin: 0 !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -797,7 +821,7 @@
   <div class="hud" id="hud" style="display:none;">
     <div style="display:flex;align-items:center;gap:8px;">
       <div id="chip" class="chip">
-        <img id="chipAv" src="https://i.postimg.cc/BZV0H7TP/avatar-1.png" alt=""/>
+        <img id="chipAv" src="https://i.postimg.cc/BZV0H7TP/avatar-1.png" alt="" onclick="if(window.innerWidth<=600){document.getElementById('chip').classList.toggle('mobile-open');document.querySelector('.prog-box').style.display=document.getElementById('chip').classList.contains('mobile-open')?'block':'';}" style="cursor:pointer;"/>
         <div><div id="chipName" class="chip-name">Élève</div>
              <div id="chipLv" class="chip-lv">Nv 1</div></div>
       </div>
@@ -3890,10 +3914,13 @@ function updateSeanceBadges(){
             const _btn=_card.querySelector(".seance-start-btn");
             if(_btn&&_btn.dataset.trophy){delete _btn.dataset.trophy;_btn.innerHTML="▶";}
           }
-          // Score % affiché à côté du bouton
+          // Score % affiché avec code couleur
           let _pctSpan=_card.querySelector(".seance-pct-badge");
           if(!_pctSpan){_pctSpan=document.createElement("span");_pctSpan.className="seance-pct-badge";const _sr=_card.querySelector(".seance-right");if(_sr)_sr.insertBefore(_pctSpan,_sr.firstChild);}
-          _pctSpan.textContent=pct>0?(pct+"%"):"";
+          if(pct>0){
+            _pctSpan.textContent=pct+"%";
+            _pctSpan.style.color=pct>=100?"#4ade80":pct>=75?"#facc15":"#fb923c";
+          } else {_pctSpan.textContent="";}
         }
         cb.innerHTML=starImgHtml(stars);
       } else cb.textContent="";
@@ -4494,19 +4521,14 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
-  // Fuir : retour aux séances, réinitialisation complète (pas de reprise)
-  const wasModId=S.mod;
-  S.mod=null;
+  // Fuir = défaite scénarisée
   S.savedMod=null; S.savedQIdx=0; S.savedCorrect=0;
-  S.locked=false;
-  const ro=document.getElementById("resultsOv");if(ro)ro.remove();
-  if(D.quizCard)D.quizCard.style.display="none";
-  try{stopVictoryMusic();}catch(e){}
-  if(wasModId){
-    if(wasModId.startsWith("g"))showGramMenu();
-    else if(wasModId.startsWith("c"))showConjMenu();
-    else showLitMenu();
-  } else showLitMenu();
+  S.locked=true;
+  playGameOverMusic();
+  const ov=document.getElementById("failureOv");
+  const msg=document.getElementById("failureMsg");
+  if(msg)msg.innerHTML="<strong>Vous avez fui… 🏃</strong><br>Revenez quand vous serez plus fort(e) !";
+  if(ov)ov.style.display="flex";
 }
 
 function startMod(id, resumeFrom){
@@ -4650,21 +4672,24 @@ function renderIllustrations(mod,qIdx){
 
   // Special mode: inject author avatars beside dragdrop answer rows
   if(data.mode==="beside-answers"){
-    // Wait for DD to render, then inject
-    setTimeout(()=>{
+    // Store authors on the card to survive re-renders
+    card._illustrationAuthors=data.authors;
+    function _injectAuthorThumbs(){
       const ddItems=card.querySelectorAll(".dd-col:first-of-type .dd-item");
       if(!ddItems.length)return;
-      data.authors.forEach((author,i)=>{
+      (card._illustrationAuthors||[]).forEach((author,i)=>{
         const item=ddItems[i];if(!item)return;
         if(item.querySelector(".author-thumb"))return;
         const img=document.createElement("img");
         img.src=author.src; img.alt=author.name; img.className="author-thumb";
-        img.style.cssText="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;border:2px solid rgba(217,164,65,.4);flex-shrink:0;";
+        img.style.cssText="width:44px;height:44px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;border:2px solid rgba(217,164,65,.5);flex-shrink:0;";
         img.onerror=()=>img.remove();
         item.style.display="flex";item.style.alignItems="center";
         item.prepend(img);
       });
-    },120);
+    }
+    card._injectAuthorThumbs=_injectAuthorThumbs;
+    setTimeout(_injectAuthorThumbs, 80);
     return;
   }
 
@@ -4764,7 +4789,8 @@ function renderQCM(q){
   // Truefalse : boutons Vrai / Faux (pas de q.options)
   if(q.type==="truefalse"){
     const opts=["Vrai","Faux"];
-    const correctIdx=q.correct?0:1;
+    // Support both {correct:true/false} and {correctIndex:0/1}
+    const correctIdx=q.hasOwnProperty("correct")?(q.correct?0:1):(q.correctIndex||0);
     opts.forEach((txt,i)=>{
       const b=document.createElement("button");b.className="ans-btn";b.textContent=txt;
       b.onclick=()=>checkQCMShuffled(i,correctIdx,q);D.aWrap.appendChild(b);
@@ -5063,7 +5089,7 @@ function ddRightClick(ri){
   S.ddConnections[li]=ri;S.ddColorMap[li]=li%5;S.ddRightTaken[ri]=li;
   S.ddSelected=null;
   renderDDUI();
-  setTimeout(()=>{try{renderIllustrations(S.mod,S.qIdx);}catch(e){}},10);
+  setTimeout(()=>{const _c=document.getElementById("quizCard");if(_c&&_c._injectAuthorThumbs)_c._injectAuthorThumbs();},30);
 }
 
 function validateDD(){
@@ -5694,8 +5720,9 @@ function closeFailure(){
   stopGameOverMusic();
   const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
   if(D.quizCard)D.quizCard.style.display="none";
-  // S.mod est encore défini ici, utilise-le pour aller au bon menu
+  S.locked=false;
   const _fm=S.mod;
+  S.mod=null;
   if(_fm){
     if(_fm.startsWith("g"))showGramMenu();
     else if(_fm.startsWith("c"))showConjMenu();
@@ -7550,7 +7577,7 @@ function renderOrgQuestion(){
   document.getElementById("orgCounter").textContent="Q "+(orgState.qIdx+1)+"/15";
   document.getElementById("orgCorrArea").style.display="none";
   const hint=document.getElementById("orgClickHint");
-  if(hint)hint.style.display="block";
+  if(hint)hint.style.display="flex";
   orgState.selectedWord=null;
 
   // Render clickable words directly on the board
@@ -7587,7 +7614,7 @@ function selectOrgWord(idx, word, span){
   const ca=document.getElementById("orgCorrArea");
   document.getElementById("orgCorrPrompt").innerHTML=`Mot sélectionné : <strong style="color:#fbbf24">"${word}"</strong> → Quelle est la correction ?`;
   document.getElementById("orgCorrInput").value="";
-  ca.style.display="block";
+  ca.style.display="flex";ca.style.flexDirection="column";
   const hint=document.getElementById("orgClickHint");if(hint)hint.style.display="none";
   setTimeout(()=>document.getElementById("orgCorrInput").focus(),100);
 }
@@ -7613,7 +7640,7 @@ function submitOrgCorrection(){
     // Correct — damage boss
     orgHit();
     document.getElementById("orgCorrArea").style.display="none";
-    const _h1=document.getElementById("orgClickHint");if(_h1)_h1.style.display="block";
+    const _h1=document.getElementById("orgClickHint");if(_h1)_h1.style.display="flex";
     // Brief green flash on board
     const phrase=document.getElementById("orgPhrase");
     const orig=phrase.style.color;
@@ -7637,13 +7664,15 @@ function submitOrgCorrection(){
     // Show hint
     let hint=!rightWord?"Ce n'est pas ce mot…":"Presque ! Vérife ton orthographe.";
     if(!rightWord) hint+=" Réessaie en cliquant sur le bon mot.";
-    toast(hint);
+    // Afficher le message dans le board (pas toast)
+    const _hintDiv=document.getElementById("orgCorrPrompt");
+    if(_hintDiv){_hintDiv.textContent=hint;_hintDiv.style.color="#fca5a5";}
     input.value="";
     document.getElementById("orgCorrArea").style.display="none";
-    const _h2=document.getElementById("orgClickHint");if(_h2)_h2.style.display="block";
+    const _h2=document.getElementById("orgClickHint");if(_h2)_h2.style.display="flex";
     document.querySelectorAll("#orgPhrase span").forEach(s=>{s.style.background="";s.style.color="#1a3a6a";s.style.textDecoration="";});
     orgState.selectedWord=null;
-    document.getElementById("orgClickHint").style.display="block";
+    document.getElementById("orgClickHint").style.display="flex";
     // Red screen flash on life lost
     const lifeFlash=document.createElement("div");
     lifeFlash.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.35);z-index:999;pointer-events:none;animation:bossHitBlink .6s ease-out forwards;";
@@ -7734,16 +7763,22 @@ function orgVictory(){
 }
 
 function orgDefeat(){
-  const om=document.getElementById("orgMusicAudio");if(om)om.pause();
-  try{const ls=document.getElementById("orgLaughSound");if(ls){ls.currentTime=0;ls.play().catch(()=>{});}}catch(e){}
-  playGameOverMusic();
+  const om=document.getElementById("orgMusicAudio");if(om){om.pause();om.currentTime=0;}
+  // Rire de l'Orgografe
+  try{const ls=document.getElementById("orgLaughSound");if(ls){ls.currentTime=0;ls.volume=1;ls.play().catch(()=>{});}}catch(e){}
+  setTimeout(()=>playGameOverMusic(),600);
   document.getElementById("orgOv").style.display="none";
-  document.getElementById("orgResultImg").src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";
-  document.getElementById("orgResultTitle").textContent="💀 DÉFAITE...";
-  document.getElementById("orgResultTitle").style.color="#ef4444";
-  document.getElementById("orgResultMsg").textContent="La grande Orgografe t'a eu ! Reviens t'entraîner et réessaie !";
-  document.getElementById("orgResultOv").style.display="flex";
-  const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
+  // Réinitialiser + afficher overlay résultat
+  const _rov=document.getElementById("orgResultOv");
+  if(_rov){
+    _rov.style.display="none"; // reset
+    document.getElementById("orgResultImg").src="https://i.postimg.cc/N04Cp0Rt/Gadou.png";
+    document.getElementById("orgResultTitle").textContent="💀 DÉFAITE...";
+    document.getElementById("orgResultTitle").style.color="#ef4444";
+    document.getElementById("orgResultMsg").textContent="La grande Orgografe t'a eu ! Reviens t'entraîner et réessaie !";
+    void _rov.offsetWidth; // force reflow
+    _rov.style.display="flex";
+  }
 }
 
 function closeOrgResult(){
@@ -8344,9 +8379,10 @@ function showBanMessage(ban){
 
 function _getMelBgSrc(phase){
   const mob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
-  if(mob&&phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
-  if(mob)return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
-  return null;
+  if(!mob)return null; // Desktop: no responsive override
+  if(phase>=3)return "https://i.postimg.cc/ZnBbbZnh/responsive-memelite-P3.png";
+  // Phase 1 ET Phase 2 en mobile portrait : même image responsive
+  return "https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
 }
 function _applyMelBg(phase){
   const src=_getMelBgSrc(phase);
@@ -9139,10 +9175,25 @@ function abandonMemelite(){
       <!-- Tableau image as-is -->
       <img src="https://i.postimg.cc/15163182/tableau.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;"/>
       <!-- Board content over image -->
-      <div id="orgBoardText" style="position:absolute;inset:8% 6%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;z-index:4;">
+      <div id="orgBoardText" style="position:absolute;inset:8% 6%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;z-index:4;overflow:visible;">
         <div style="font-size:clamp(10px,1.2vw,15px);color:#1a5c8a;font-weight:700;margin-bottom:8px;opacity:.8;letter-spacing:.3px;">Trouvez et corrigez l'erreur :</div>
         <div id="orgPhrase" style="font-size:clamp(16px,2.8vw,30px);color:#1a3a6a;font-weight:800;text-align:center;line-height:2;letter-spacing:.5px;word-spacing:8px;cursor:default;"></div>
-        <div id="orgClickHint" style="font-size:clamp(13px,1.4vw,16px);color:#2a6a9a;font-style:italic;margin-top:10px;opacity:.9;text-align:center;width:100%;">👆 Cliquez sur le mot erroné</div>
+        <div id="orgClickHint" style="display:flex;align-items:center;justify-content:center;font-size:clamp(13px,1.4vw,16px);color:#2a6a9a;font-style:italic;opacity:.9;text-align:center;margin-top:10px;width:100%;">👆 Cliquez sur le mot erroné</div>
+        <div id="orgCorrArea" style="display:none;flex-direction:column;align-items:center;gap:6px;margin-top:10px;width:100%;">
+          <div id="orgCorrPrompt" style="font-size:11px;color:#93c5fd;text-align:center;width:100%;"></div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;width:100%;">
+            <input id="orgCorrInput" type="text" placeholder="Tape la correction…"
+              style="flex:1;min-width:0;padding:8px 12px;border-radius:10px;
+                border:1.5px solid rgba(26,92,138,.5);background:rgba(255,255,255,.15);
+                color:#1a3a6a;font-size:clamp(14px,1.8vw,18px);font-weight:800;
+                text-align:center;outline:none;"
+              onkeydown="if(event.key==='Enter')submitOrgCorrection();"/>
+            <button onclick="submitOrgCorrection()"
+              style="padding:8px 14px;border-radius:10px;border:none;flex-shrink:0;
+                background:linear-gradient(180deg,#2563eb,#1e40af);color:#fff;
+                font-weight:900;font-size:13px;cursor:pointer;white-space:nowrap;">✓ Valider</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -9177,21 +9228,15 @@ function abandonMemelite(){
 
 
 
-    <div id="orgCorrArea" style="display:none;width:100%;max-width:440px;margin:8px auto 0;
-         background:rgba(15,30,60,.92);border:1.5px solid rgba(26,92,138,.6);border-radius:14px;
-         padding:10px 14px;text-align:center;backdrop-filter:blur(4px);">
-      <div id="orgCorrPrompt" style="font-size:13px;color:#93c5fd;margin-bottom:8px;"></div>
-      <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
-        <input id="orgCorrInput" type="text" placeholder="Tape la correction…"
-          style="flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(26,92,138,.5);
-            background:rgba(255,255,255,.1);color:#fff;font-size:16px;font-weight:700;
-            text-align:center;outline:none;min-width:0;"
-          onkeydown="if(event.key==='Enter')submitOrgCorrection();"/>
-        <button onclick="submitOrgCorrection()"
-          style="padding:10px 18px;border-radius:10px;border:none;
-            background:linear-gradient(180deg,#2563eb,#1e40af);color:#fff;
-            font-weight:900;font-size:14px;cursor:pointer;white-space:nowrap;">✓ Valider</button>
-      </div>
-    </div>
-</body>
-</html>
+
+  <!-- ── Orgografe result overlay ── -->
+  <div id="orgResultOv" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);
+       flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
+    <img id="orgResultImg" src="" alt="" style="width:min(180px,50vw);filter:drop-shadow(0 8px 24px rgba(249,115,22,.4));animation:bob 3s ease-in-out infinite;"/>
+    <div id="orgResultTitle" style="font-size:28px;font-weight:900;color:#f97316;"></div>
+    <div id="orgResultMsg" style="font-size:15px;color:#f0dbb5;max-width:380px;line-height:1.6;"></div>
+    <button onclick="closeOrgResult()" style="margin-top:8px;padding:12px 28px;border-radius:14px;border:none;
+      background:linear-gradient(180deg,#d9a441,#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
+      Continuer →
+    </button>
+  </div>
