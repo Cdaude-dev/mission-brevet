@@ -1834,6 +1834,11 @@
     <audio id="gramHurt2"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/deessehurt2.mp3" type="audio/mpeg"/></audio>
     <audio id="gramHurt3"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/deessehurt3.mp3" type="audio/mpeg"/></audio>
     <audio id="thunderSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/eclair.mp3" type="audio/mpeg"/></audio>
+    <!-- Orgografe Audio -->
+    <audio id="orgMusicAudio" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Orgografe.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgHurtSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_hurt.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgLaughSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_laugh.mp3" type="audio/mpeg"/></audio>
+    <audio id="orgDefeatedSound"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/orgografe_defeated.mp3" type="audio/mpeg"/></audio>
   </div>
 
   <!-- GRAMMAR BOSS RESULT OVERLAY -->
@@ -3705,6 +3710,8 @@ function setAllMusicVolume(val){
   const bg=document.getElementById("bgMusic");if(bg)bg.volume=_mv;
   const bm=document.getElementById("bossMusicAudio");if(bm&&!bm.paused)bm.volume=_mv*0.6;
   const gm=document.getElementById("gramMusicAudio");if(gm&&!gm.paused)gm.volume=_mv*0.65;
+  const vm=document.getElementById("victoryMusic");if(vm&&!vm.paused)vm.volume=_mv;
+  const om=document.getElementById("orgMusicAudio");if(om&&!om.paused)om.volume=_mv*0.5;
   // Sync all sliders
   document.querySelectorAll("#musicVolumeSlider,#bigMusicVol").forEach(s=>s.value=val);
   document.querySelectorAll("#volLabel,#bigVolLabel").forEach(l=>l.textContent=val+"%");
@@ -3964,6 +3971,7 @@ function goScreen(name){
 function goTransition(t){D.transition.classList.add("show");setTimeout(()=>{D.transition.classList.remove("show");goScreen(t);},900);}
 function toggleChapter(id){const b=document.getElementById("body-"+id),a=document.getElementById("arrow-"+id);const o=b.classList.toggle("open");a.classList.toggle("open",o);}
 function showGramMenu(){
+  try{stopVictoryMusic();}catch(e){}
   S.mod=null;D.quizCard.style.display="none";
   const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
   if(D.gramMenu)D.gramMenu.style.display="flex";
@@ -3972,13 +3980,17 @@ function showGramMenu(){
   try{injectOrgografeChapter();}catch(e){}
   try{updateGramBossChapter();}catch(e){}
   try{updateOrgChapter();}catch(e){}
+  try{updateSeanceBadges();}catch(e){}
 }
 function showConjMenu(){
+  try{stopVictoryMusic();}catch(e){}
   S.mod=null;D.quizCard.style.display="none";
   const bg=document.getElementById("bgMusic");if(bg)bg.play().catch(()=>{});
   if(D.conjMenu)D.conjMenu.style.display="flex";
+  try{updateSeanceBadges();}catch(e){}
 }
 function showLitMenu(){
+  try{stopVictoryMusic();}catch(e){}
   S.mod=null;
   if(D.quizCard)D.quizCard.style.display="none";
   if(D.gramMenu)D.gramMenu.style.display="none";
@@ -7994,7 +8006,12 @@ function playVictoryMusic(){
   _pauseAllMusic();
   setTimeout(()=>{
     const vm=document.getElementById("victoryMusic");
-    if(vm){vm.currentTime=0;vm.volume=0.75;vm.play().catch(()=>{});}
+    if(vm){
+      // Respecter le volume global du slider
+      const slider=document.getElementById("musicVolumeSlider")||document.getElementById("bigMusicVol");
+      const vol=slider?parseInt(slider.value)/100:0.75;
+      vm.currentTime=0; vm.volume=vol; vm.play().catch(()=>{});
+    }
   },2500);
 }
 function stopVictoryMusic(){
@@ -9240,3 +9257,108 @@ function abandonMemelite(){
       Continuer →
     </button>
   </div>
+
+  <!-- ══════════ MÉMÉLITÉ BOSS OVERLAY ══════════ -->
+  <div id="memeliteOv" style="display:none;position:fixed;inset:0;z-index:200;overflow:hidden;">
+    <!-- Background phase 1/2 -->
+    <div id="melBg" style="position:absolute;inset:0;background:#0a0508;overflow:hidden;transition:opacity .5s;">
+      <img id="melBgImg" src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1s;"/>
+      <!-- Fire particles container for phase 3 -->
+      <div id="melFireContainer" style="position:absolute;inset:0;pointer-events:none;display:none;"></div>
+      <!-- Lightning effects -->
+      <div id="melLightning" style="position:absolute;inset:0;pointer-events:none;display:none;background:rgba(255,240,50,.04);"></div>
+    </div>
+
+    <!-- Boss character - left side -->
+    <div id="melCharWrap" style="position:absolute;bottom:0;left:0;width:min(38vw,300px);z-index:5;transition:width .5s;">
+      <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:80%;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,.45),transparent);border-radius:50%;"></div>
+      <img id="melChar" src="https://i.postimg.cc/bwfcRt83/Memelite.png"
+           style="width:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 0 20px rgba(220,38,38,.4));display:block;position:relative;z-index:1;"/>
+    </div>
+
+    <!-- Cat projectiles container -->
+    <div id="melCatContainer" style="position:absolute;inset:0;pointer-events:none;z-index:8;overflow:hidden;"></div>
+
+    <!-- Cat attack warning banner -->
+    <div id="melCatWarning" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;
+         background:rgba(0,0,0,.85);border:2px solid rgba(239,68,68,.6);border-radius:16px;
+         padding:20px 28px;text-align:center;max-width:360px;animation:popIn .3s;">
+      <div style="font-size:28px;margin-bottom:8px;">😾</div>
+      <div id="melCatWarnText" style="font-size:16px;font-weight:900;color:#fca5a5;line-height:1.5;"></div>
+      <div style="font-size:12px;color:#ead7ae;margin-top:6px;opacity:.7;">Prépare-toi !</div>
+    </div>
+
+    <!-- Question area - right side -->
+    <div id="melQWrap" style="position:absolute;top:max(85px,12%);left:50%;transform:translateX(-50%);
+         width:min(90vw,580px);max-height:60vh;overflow-y:auto;
+         background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+         border:1.5px solid rgba(220,38,38,.3);border-radius:18px;padding:14px 18px;z-index:6;">
+      <div id="melQBox" style="font-size:clamp(13px,2vw,17px);color:#fff;font-weight:700;line-height:1.6;margin-bottom:12px;text-align:center;min-height:48px;"></div>
+      <div id="melAWrap" style="display:flex;flex-direction:column;gap:7px;"></div>
+    </div>
+
+    <!-- HUD top bar: timer centred, flee left, nothing right -->
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent);padding:8px 14px 12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <!-- Flee -->
+        <button onclick="abandonMemelite()" class="fuir-btn" onmouseover="this.style.transform='scale(1.08)';this.style.filter='brightness(1.2)'" onmouseout="this.style.transform='';this.style.filter=''" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform='scale(1.08)'"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/></button>
+        <!-- Timer centred -->
+        <div id="melTimer" style="font-size:28px;font-weight:900;color:#facc15;text-shadow:0 0 14px rgba(250,204,21,.7);min-width:50px;text-align:center;"></div>
+        <!-- Spacer -->
+        <div style="width:52px;"></div>
+      </div>
+      <!-- Lives directly under timer -->
+      <div id="melLives" style="display:flex;gap:6px;align-items:center;justify-content:center;margin-top:4px;flex-wrap:wrap;">
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+        <img class="mel-heart" src="https://i.postimg.cc/BnDV10pc/coeur.png" style="width:36px;height:36px;"/>
+      </div>
+    </div>
+
+    <!-- HP bar bottom -->
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:6px 14px 8px;background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);">
+      <div style="font-size:12px;color:#fca5a5;font-weight:900;text-align:center;margin-bottom:3px;" id="melBossLabel">Mémélité</div>
+      <div style="width:min(300px,80vw);margin:0 auto;background:rgba(0,0,0,.5);border-radius:10px;height:12px;border:1px solid rgba(220,38,38,.4);">
+        <div id="melHpFill" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#dc2626,#f87171);transition:width .4s;width:100%;"></div>
+      </div>
+    </div>
+
+    <!-- Cinematic overlay -->
+    <div id="melCineOv" style="display:none;position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
+      <img id="melCineImg" src="" alt="" style="width:min(200px,45vw);filter:drop-shadow(0 0 30px rgba(250,204,21,.6));"/>
+      <div id="melCineMsg" style="font-size:clamp(14px,2.5vw,20px);font-weight:900;color:#fef3c7;max-width:440px;line-height:1.6;"></div>
+    </div>
+
+    <!-- Audios -->
+    <audio id="melMusicP1" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP1.mp3" type="audio/mpeg"/></audio>
+    <audio id="melMusicP2" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP2.mp3" type="audio/mpeg"/></audio>
+    <audio id="melMusicP3" loop><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/MemeliteP3.mp3" type="audio/mpeg"/></audio>
+    <audio id="melHurtSnd1"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted1.mp3" type="audio/mpeg"/></audio>
+    <audio id="melHurtSnd2"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_hurted2.mp3" type="audio/mpeg"/></audio>
+    <audio id="melVicSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Memelite_victory.mp3" type="audio/mpeg"/></audio>
+    <audio id="melDefSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_defeated.mp3" type="audio/mpeg"/></audio>
+    <audio id="catHurt1Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt.mp3" type="audio/mpeg"/></audio>
+    <audio id="catHurt2Snd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/cat_hurt2.mp3" type="audio/mpeg"/></audio>
+    <audio id="catMeteoreSnd"><source src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/chat-meteore_hurt.mp3" type="audio/mpeg"/></audio>
+  </div>
+
+  <!-- MÉMELITÉ RESULT -->
+  <div id="melResultOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:700;
+       flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
+    <img id="melResultImg" src="" alt="" style="width:min(200px,55vw);"/>
+    <div id="melResultTitle" style="font-size:28px;font-weight:900;"></div>
+    <div id="melResultMsg" style="font-size:15px;color:#ead7ae;max-width:420px;line-height:1.6;"></div>
+    <button onclick="closeMelResult()" style="padding:12px 28px;border-radius:14px;border:none;
+      background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">
+      Continuer →
+    </button>
+  </div>
+</body>
+</html>
+  }catch(e){console.error("renderQ error:",e);}
+}
+</body>
+</html>
