@@ -793,7 +793,332 @@
   }
 }
 
-</style>
+
+  
+
+  /* ═══════════════════════════════════════════════════
+     TEDDYNOUNET MINI-BOSS — CSS v3
+     ═══════════════════════════════════════════════════ */
+  #teddyOv {
+    position:fixed;inset:0;z-index:250;overflow:hidden;display:none;
+  }
+  #teddyBg {
+    position:absolute;inset:0;
+    background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;
+  }
+  #teddyBgOverlay {
+    position:absolute;inset:0;background:rgba(0,0,0,.18);pointer-events:none;z-index:1;
+  }
+  /* ── x2 jaune + giant popup + x2 shake ── */
+  #teddyX2Overlay{position:absolute;inset:0;background:rgba(250,204,21,.15);pointer-events:none;z-index:2;opacity:0;transition:opacity .4s;}
+  #teddyX2Overlay.active{opacity:1;}
+  #teddyComboGiant{pointer-events:none;position:absolute;left:50%;top:36%;transform:translateX(-50%) scale(0);z-index:17;font-size:clamp(72px,16vw,140px);font-weight:900;white-space:nowrap;}
+  #teddyComboGiant.x2{color:#facc15;text-shadow:0 0 40px rgba(250,204,21,.9),0 4px 20px rgba(0,0,0,.8);}
+  #teddyComboGiant.x3{color:#fb923c;text-shadow:0 0 50px rgba(251,146,60,.9),0 4px 20px rgba(0,0,0,.8);}
+  /* Surgissement X2/X3 : scale peak 1.6, durée 1.1s, impact fort */
+  @keyframes teddyGiantPop{0%{transform:translateX(-50%) scale(0) rotate(-3deg);opacity:0;}30%{transform:translateX(-50%) scale(1.6) rotate(2deg);opacity:1;}55%{transform:translateX(-50%) scale(1.1) rotate(0deg);opacity:1;}75%{transform:translateX(-50%) scale(1.2) rotate(0deg);opacity:1;}90%{transform:translateX(-50%) scale(1.15);opacity:.85;}100%{transform:translateX(-50%) scale(.8);opacity:0;}}
+  /* Durée 1.1s, cubic-bezier for punchier impact */
+  #teddyComboGiant.popping{animation:teddyGiantPop 1.1s cubic-bezier(.2,1.4,.4,1) forwards;}
+  @keyframes teddyContinuousShakeLight{0%,100%{transform:translate(0,0);}25%{transform:translate(-1px,.5px);}50%{transform:translate(1px,-.5px);}75%{transform:translate(-.5px,1px);}}
+  #teddyOv.x2shaking{animation:teddyContinuousShakeLight .7s ease-in-out infinite;}
+  /* ── Filtre orange combo x3 ── */
+  #teddyX3Overlay {
+    position:absolute;inset:0;background:rgba(251,146,60,.2);
+    pointer-events:none;z-index:2;opacity:0;transition:opacity .4s;
+  }
+  #teddyX3Overlay.active { opacity:1; }
+  /* ── DESKTOP : personnages agrandis ──────────────────
+     Correction 3 : Bourgour > Teddynounet sur desktop  */
+  #teddyChar {
+    position:absolute;bottom:0;left:1%;
+    width:min(240px,34vw);object-fit:contain;z-index:4;pointer-events:none;
+    filter:drop-shadow(0 4px 20px rgba(0,0,0,.5));
+    transition:left .8s ease-out;
+  }
+  #bourgourChar {
+    position:absolute;bottom:0;right:1%;
+    width:min(210px,32vw);object-fit:contain;z-index:4;pointer-events:none;
+    filter:drop-shadow(0 4px 20px rgba(0,0,0,.5));
+    transition:right .8s ease-out;
+  }
+  /* ── HUD ── */
+  #teddyHud {
+    position:absolute;top:0;left:0;right:0;z-index:10;
+    padding:8px 14px;
+    background:linear-gradient(180deg,rgba(0,0,0,.72),transparent);
+    display:flex;align-items:center;gap:10px;
+  }
+  /* RENOMMAGE 12 : label affiche "Teddynounet" (mis dans le HTML) */
+  #teddyHpLabel { font-size:12px;font-weight:900;color:#fb923c;white-space:nowrap;flex-shrink:0; }
+  #teddyHpBarWrap {
+    flex:1;height:20px;background:rgba(0,0,0,.55);
+    border-radius:999px;border:1.5px solid rgba(251,146,60,.5);overflow:hidden;
+    box-shadow:0 0 12px rgba(251,146,60,.25);
+  }
+  #teddyHpFill { height:100%;border-radius:999px;background:linear-gradient(90deg,#4ade80,#86efac);transition:width .35s,background .5s; }
+  #teddyHpVal { font-size:11px;color:#fed7aa;font-weight:700;flex-shrink:0;min-width:42px;text-align:right; }
+  /* ── COMBO : repositionné sous la jauge, pas sous la question ─
+     Correction 8 : combo display déplacé à droite, hors de la question */
+/* Combo : positionné SOUS la question (pas sur Teddynounet), centré
+   La question est à top:48px, hauteur ~70px → combo à top:125px
+   Centré horizontalement, jamais sur le personnage */
+  #teddyComboDisplay{
+    position:absolute;
+    top:125px;left:50%;transform:translateX(-50%);
+    z-index:11;
+    font-size:clamp(14px,2.5vw,18px);font-weight:900;color:#facc15;
+    text-shadow:0 0 14px rgba(250,204,21,.8);
+    background:rgba(0,0,0,.82);border-radius:14px;padding:5px 16px;
+    pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap;
+    border:1.5px solid rgba(250,204,21,.35);
+  }
+  #teddyComboDisplay.x2{border-color:rgba(250,204,21,.6);}
+  #teddyComboDisplay.x3{border-color:rgba(251,146,60,.7);color:#fb923c;}
+  
+  #teddyComboDisplay.visible{opacity:1;}
+  #teddyComboDisplay.x2{border-color:rgba(250,204,21,.6);}
+  #teddyComboDisplay.x3{border-color:rgba(251,146,60,.6);color:#fb923c;}
+  #teddyComboDisplay.visible { opacity:1; }
+  /* ── Question ── */
+  #teddyQuestionBox {
+    position:absolute;top:48px;left:50%;transform:translateX(-50%);z-index:10;
+    width:min(88vw,520px);
+    background:rgba(0,0,0,.82);backdrop-filter:blur(6px);
+    border:1.5px solid rgba(251,146,60,.4);border-radius:14px;
+    padding:8px 14px;text-align:center;
+    font-size:clamp(13px,2.4vw,16px);font-weight:700;color:#fff;line-height:1.45;
+  }
+  #teddyQuestionBox .teddy-q-label {
+    font-size:clamp(9px,1.6vw,11px);color:#fb923c;font-weight:900;
+    letter-spacing:.5px;margin-bottom:2px;
+  }
+  /* ── Crush line (invisible, référence JS) ── */
+  #teddyCrushLine { position:absolute;left:0;right:0;z-index:3;pointer-events:none;height:0; }
+  /* ── Food container ── */
+  #teddyFoodContainer {
+    position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden;
+  }
+  /* ── Aliments ── */
+  .teddy-food {
+    position:absolute;
+    display:flex;flex-direction:column;align-items:center;
+    pointer-events:all;cursor:pointer;touch-action:manipulation;user-select:none;
+    will-change:transform;
+  }
+  /* FIX ombre : drop-shadow uniquement, pas de box-shadow ni background */
+  .teddy-food-img {
+    display:block;background:transparent;
+    width:clamp(58px,10.5vw,82px);height:clamp(58px,10.5vw,82px);
+    object-fit:contain;
+    filter:drop-shadow(0 4px 7px rgba(0,0,0,.42));
+  }
+  .teddy-food:active .teddy-food-img { transform:scale(.9); }
+  /* ── Correction 10 : étiquette-réponse intégrée visuellement ──
+     Bandeau collé en bas du sprite, fond fondu, coins arrondis */
+  .teddy-food-label {
+    margin-top:-6px;  /* chevauchement léger pour coller au sprite */
+    background:linear-gradient(0deg,rgba(15,5,0,.95) 60%,rgba(15,5,0,.6));
+    color:#fff;font-size:clamp(10px,1.9vw,13px);font-weight:900;
+    padding:3px 8px 4px;
+    border-radius:0 0 10px 10px;
+    border:1px solid rgba(251,146,60,.45);
+    border-top:none;
+    max-width:clamp(80px,17vw,130px);
+    text-align:center;line-height:1.2;word-break:break-word;
+    width:100%;
+  }
+  /* Écrasement individuel avec squash effect */
+  @keyframes teddyCrushSquash {
+    0%   { transform:scaleY(1) scaleX(1); }
+    40%  { transform:scaleY(0.25) scaleX(1.5); }
+    60%  { transform:scaleY(0.2) scaleX(1.6); }
+    100% { transform:scaleY(0.2) scaleX(1.6); opacity:0.6; }
+  }
+  .teddy-food.crushed { pointer-events:none; }
+  .teddy-food.crushed .teddy-food-spin {
+    animation:teddyCrushSquash 0.3s ease-out forwards;
+    transform-origin:bottom center;
+  }
+  .teddy-food.crushed .teddy-food-img { filter:drop-shadow(0 1px 3px rgba(0,0,0,.3)); }
+  .teddy-food.crushed .teddy-food-label { display:none; }
+  /* ── Float text ── */
+  .teddy-float-text {
+    position:absolute;z-index:12;font-size:clamp(20px,4.5vw,30px);font-weight:900;
+    pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.7);
+    animation:teddyFloatUp 1.3s ease-out forwards;
+  }
+  @keyframes teddyFloatUp {
+    0%  { transform:translateY(0) scale(1); opacity:1; }
+    60% { transform:translateY(-54px) scale(1.25); opacity:1; }
+    100%{ transform:translateY(-95px) scale(.8); opacity:0; }
+  }
+  /* ── Flee btn ── */
+  #teddyFuirBtn { position:absolute;bottom:16px;left:16px;z-index:15; }
+  /* ── Dialog ── */
+  #teddyDialogOv {
+    position:absolute;inset:0;z-index:20;
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;pointer-events:none;
+    background:rgba(0,0,0,.38);
+  }
+  #teddyDialogBox {
+    background:linear-gradient(160deg,#1a0800,#0f0400);
+    border:2px solid rgba(251,146,60,.55);border-radius:20px;
+    padding:22px 26px;max-width:min(640px,92vw);width:100%;
+    display:flex;gap:18px;align-items:flex-start;
+    pointer-events:all;animation:popIn .3s;
+    box-shadow:0 10px 40px rgba(0,0,0,.7);
+  }
+  .teddy-dialog-avatar {
+    width:clamp(64px,10vw,92px);height:clamp(64px,10vw,92px);
+    border-radius:50%;object-fit:cover;flex-shrink:0;
+    border:2.5px solid rgba(251,146,60,.6);
+  }
+  .teddy-dialog-content { flex:1; }
+  .teddy-dialog-name { font-size:clamp(12px,2vw,15px);font-weight:900;color:#fb923c;margin-bottom:5px; }
+  .teddy-dialog-text { font-size:clamp(14px,2.5vw,17px);color:#fff;line-height:1.6; }
+  .teddy-dialog-next {
+    margin-top:14px;padding:9px 20px;border-radius:11px;
+    border:1px solid rgba(251,146,60,.45);background:rgba(251,146,60,.2);
+    color:#fb923c;font-weight:900;font-size:clamp(13px,2vw,15px);
+    cursor:pointer;display:block;width:100%;text-align:center;
+  }
+  .teddy-dialog-next:hover { background:rgba(251,146,60,.3); }
+  /* ── Tutorial ── */
+  #teddyTutoOv {
+    position:absolute;inset:0;z-index:25;background:rgba(0,0,0,.82);
+    display:flex;align-items:center;justify-content:center;padding:16px;
+  }
+  .teddy-tuto-box {
+    background:linear-gradient(160deg,#1a0800,#0a0400);
+    border:2px solid rgba(251,146,60,.45);border-radius:22px;
+    padding:24px;max-width:440px;width:100%;text-align:center;animation:popIn .35s;
+  }
+  .teddy-tuto-img{display:block;width:100%;max-height:min(140px,24vh);object-fit:contain;border-radius:10px;margin:0 auto 10px;flex-shrink:0;cursor:zoom-in;}
+  .teddy-tuto-title { font-size:18px;font-weight:900;color:#facc15;margin-bottom:10px; }
+  .teddy-tuto-text { font-size:14px;color:#fed7aa;line-height:1.6;margin-bottom:18px; }
+  .teddy-tuto-dots { display:flex;gap:7px;justify-content:center;margin-bottom:16px; }
+  .teddy-tuto-dot { width:9px;height:9px;border-radius:50%;background:rgba(251,146,60,.3);transition:background .2s; }
+  .teddy-tuto-dot.active { background:#fb923c; }
+  .teddy-tuto-btn { width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(180deg,#fb923c,#ea580c);color:#fff;font-weight:900;font-size:15px;cursor:pointer; }
+  /* ── End screen ── */
+  #teddyEndOv {
+    position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.92);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:16px;text-align:center;padding:24px;
+  }
+  #teddyEndOv img.teddy-end-img {
+    width:min(220px,55vw);filter:drop-shadow(0 8px 24px rgba(251,146,60,.5));
+    animation:bob 3s ease-in-out infinite;
+  }
+  #teddyEndTitle { font-size:clamp(22px,5vw,30px);font-weight:900; }
+  #teddyEndMsg { font-size:clamp(13px,2.5vw,15px);color:#fed7aa;max-width:420px;line-height:1.6; }
+  .teddy-end-btn { padding:12px 28px;border-radius:14px;border:none;cursor:pointer;font-weight:900;font-size:15px; }
+  .teddy-end-btn-primary { background:linear-gradient(180deg,#fb923c,#ea580c);color:#fff; }
+  .teddy-end-btn-secondary { background:rgba(255,255,255,.1);color:#fed7aa;border:1px solid rgba(255,255,255,.2); }
+  /* ── Particules / braises ── */
+  .teddy-particle {
+    position:absolute;border-radius:50%;pointer-events:none;z-index:11;
+    animation:teddyParticleBurst .9s ease-out forwards;
+  }
+  @keyframes teddyParticleBurst {
+    0%  { transform:translate(0,0) scale(1); opacity:1; }
+    100%{ transform:translate(var(--px),var(--py)) scale(0); opacity:0; }
+  }
+  .teddy-ember {
+    position:absolute;border-radius:50%;pointer-events:none;z-index:11;
+    animation:teddyEmberRise var(--ed,1.2s) ease-out var(--edel,0s) forwards;
+  }
+  @keyframes teddyEmberRise {
+    0%  { opacity:1;transform:translateY(0) translateX(0) scale(1); }
+    100%{ opacity:0;transform:translateY(-80px) translateX(var(--ex,0px)) scale(0); }
+  }
+  /* ── Epic msg ── */
+  #teddyEpicMsg {
+    position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:14;
+    background:rgba(251,146,60,.9);color:#fff;
+    font-size:clamp(11px,2vw,13px);font-weight:900;padding:8px 18px;border-radius:999px;
+    pointer-events:none;opacity:0;transition:opacity .4s;
+    max-width:92vw;text-align:center;white-space:normal;
+  }
+  #teddyEpicMsg.show { opacity:1; }
+  /* ── Flash de combo ── */
+  #teddyComboFlash {
+    position:absolute;inset:0;z-index:25;pointer-events:none;opacity:0;
+  }
+  /* ── x3 tremblement continu ── */
+  @keyframes teddyContinuousShake {
+    0%,100%{transform:translate(0,0);}10%{transform:translate(-3px,1px);}
+    20%{transform:translate(3px,-1px);}30%{transform:translate(-2px,2px);}
+    40%{transform:translate(2px,-2px);}50%{transform:translate(-3px,1px);}
+    60%{transform:translate(3px,0);}70%{transform:translate(-2px,-1px);}
+    80%{transform:translate(2px,1px);}90%{transform:translate(-1px,-2px);}
+  }
+  #teddyOv.x3shaking { animation:teddyContinuousShake .5s ease-in-out infinite; }
+  @keyframes teddyShakeOnce {
+    0%,100%{transform:translateX(0);}15%{transform:translateX(-6px);}
+    30%{transform:translateX(6px);}45%{transform:translateX(-4px);}
+    60%{transform:translateX(4px);}75%{transform:translateX(-2px);}90%{transform:translateX(2px);}
+  }
+  /* ── Bourgour animations ── */
+  @keyframes teddyBourgBounce {
+    0%,100%{transform:translateY(0) scaleX(1);}
+    25%{transform:translateY(-12px) scaleX(.95);}
+    50%{transform:translateY(0) scaleX(1.05);}
+    75%{transform:translateY(-6px) scaleX(.98);}
+  }
+  @keyframes teddyBourgFlash {
+    0%,100%{filter:drop-shadow(0 4px 20px rgba(0,0,0,.5));}
+    30%{filter:drop-shadow(0 0 24px rgba(239,68,68,.9)) brightness(.45);}
+    60%{filter:drop-shadow(0 0 24px rgba(239,68,68,.7)) brightness(1.5);}
+  }
+  /* ── Teddynounet animations ── */
+  @keyframes teddyBounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-16px);}70%{transform:translateY(-6px);}}
+  @keyframes teddyHitFlash{0%,100%{filter:drop-shadow(0 4px 20px rgba(0,0,0,.5));}30%{filter:drop-shadow(0 0 20px rgba(239,68,68,.9)) brightness(.5);}60%{filter:drop-shadow(0 0 20px rgba(239,68,68,.9)) brightness(1.5);}}
+  @keyframes teddyHealFlash{0%,100%{filter:drop-shadow(0 4px 20px rgba(0,0,0,.5));}40%{filter:drop-shadow(0 0 24px rgba(74,222,128,.9)) brightness(1.3);}}
+  /* ── Food : rotation pendant chute ── */
+  /* Séparation sprite/texte : teddyFoodFall sur le conteneur parent (vertical)
+     teddySpinCW/CCW sur .teddy-food-spin (sprite seul). Label reste stable. */
+    .teddy-combo-burst{position:absolute;border-radius:50%;pointer-events:none;z-index:18;animation:teddyComboBurst .7s ease-out forwards;}
+  @keyframes teddyComboBurst{0%{transform:translate(0,0) scale(1.2);opacity:1;}100%{transform:translate(var(--bx,0px),var(--by,-60px)) scale(.1);opacity:0;}}
+@keyframes teddyFoodFall {
+    from { transform:translateY(-120px); }
+    to   { transform:translateY(var(--teddy-fall-dist,110vh)); }
+  }
+  @keyframes teddySpinCW  { from{transform:rotate(0deg);}   to{transform:rotate(200deg);} }
+  @keyframes teddySpinCCW { from{transform:rotate(0deg);}   to{transform:rotate(-200deg);} }
+  .teddy-food-spin { display:flex;justify-content:center;align-items:center;flex-shrink:0; }
+  /* Éclats de sauce */
+  .teddy-sauce-blob { position:absolute;border-radius:50%;pointer-events:none;z-index:12;animation:teddySauceSplat .55s ease-out forwards; }
+  @keyframes teddySauceSplat {
+    0%  { transform:translate(0,0) scale(1.1); opacity:1; }
+    55% { opacity:.7; }
+    100%{ transform:translate(var(--sx,0px),var(--sy,0px)) scale(.25); opacity:0; }
+  }
+  /* ── DESKTOP uniquement : agrandissement ─────────────
+     Correction 3 : Bourgour nettement plus grand que Teddy  */
+  @media(min-width:768px) {
+    #teddyChar    { width:min(300px,28vw); }
+    #bourgourChar { width:min(380px,34vw); }
+  }
+  @media(min-width:1200px) {
+    #teddyChar    { width:350px; }
+    #bourgourChar { width:440px; }
+  }
+  /* ── MOBILE portrait ── */
+  @media(max-width:640px) and (orientation:portrait) {
+    #teddyChar    { width:min(130px,33vw); }
+    #bourgourChar { width:min(120px,30vw); }
+    #teddyQuestionBox { top:44px; }
+    .teddy-food-img { width:clamp(46px,12vw,68px);height:clamp(46px,12vw,68px); }
+    .teddy-food-label { font-size:clamp(9px,2.6vw,12px);max-width:90px; }
+    #teddyDialogBox { padding:12px 14px; gap:10px; }
+    .teddy-dialog-avatar { width:52px;height:52px; }
+    #teddyComboDisplay { top:auto;right:8px;bottom:70px; }
+  }
+
+
+  </style>
 </head>
 <body>
 <div id="app">
@@ -1974,14 +2299,23 @@ const EXCLUSIVE_AV=[
    desc:"Vaincre Mémélité sans perdre de vie",
    check:()=>!!S.memeliteFlawless}
 ,
-  {src:"https://i.postimg.cc/SxXWBzkG/avatar-spe-teddynounet.png",
+  {src:"https://i.postimg.cc/TYtyvF8j/avatar-spe-teddynounet-V2.png",
    label:"Teddynounet",
    desc:"Vaincre le mini-boss Teddynounet",
-   check:()=>S.badges&&(S.badges.has?S.badges.has("teddyboss"):[...S.badges].includes("teddyboss"))},
+   check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_victory"):[...S.badges].includes("teddy_victory"))},
+  {src:"https://i.postimg.cc/PrXLch7F/avatar-spe-bourgour.png",
+   label:"Bourgour",
+   desc:"Vaincre le Cantinier Bourgour en ne faisant pas consommer plus de 10 plats avariés à Teddynounet",
+   check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_flawless"):[...S.badges].includes("teddy_flawless"))},
   {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
    label:"Professeur Daudé",
    desc:"Être le créateur du jeu, le seul l'unique",
-   check:()=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé"),exclusive:true}
+   check:()=>(S.name===ADMIN_CODE||S.name==="Professeur Daudé"),exclusive:true},
+  /* Robot SIAM : beta avatar, unlock if login before 21/03/2026 */
+  {src:"https://i.postimg.cc/gJ9WBn8Z/avatar-spe-SIAM.png",
+   label:"Robot SIAM",
+   desc:"Récompense des premiers joueurs de la bêta",
+   check:()=>S.badges&&(S.badges.has?S.badges.has("siam_beta"):[...S.badges].includes("siam_beta"))}
 ];
 const PROF={point:"https://i.postimg.cc/V6gqrbp4/personnage-CD5.png",smile:"https://i.postimg.cc/9MCPQB8L/personnage-CD4.png",dub:"https://i.postimg.cc/4xqS8j8K/personnage-CD2.png"};
 const HINTS=["Lis bien chaque proposition avant de répondre !","Rappelle-toi du cours… Tu l'as !","Prends le temps de réfléchir.","Fais confiance à ta mémoire !","La bonne réponse est là, concentre-toi.","Souviens-toi des définitions vues en classe."];
@@ -2025,7 +2359,12 @@ const BADGES_DEF=[
   {id:"grammaricide",    img:"https://i.postimg.cc/jj7s3jrG/Grammaricide.png",       emoji:null, name:"Grammaricide",     desc:"100% à toutes les séances de Grammaire"},
   {id:"conj_expert",     img:"https://i.postimg.cc/rpr8ZpkX/Conjugueur-expert.png",  emoji:null, name:"Conjugueur expert",desc:"100% à toutes les séances de Conjugaison"},
   {id:"septieme_ciel",   img:"https://i.postimg.cc/0j3W49xy/Septieme-Ciel.png",      emoji:null, name:"Septième ciel",    desc:"Vaincre Grammaria sans perdre de vie en moins de 3 minutes 30"}
-];
+  
+
+  
+  ,{id:"teddy_victory",img:"https://i.postimg.cc/05HZ5Wqv/Tel-y-pris-qui-croyait-prendre.png",emoji:null,name:"Tel y pris qui croyait prendre",desc:"Vaincre le Cantinier Bourgour"}
+  ,{id:"teddy_flawless",img:"https://i.postimg.cc/D0DcCZcN/Cordon-bleu.png",emoji:null,name:"Cordon Bleu",desc:"Vaincre le Cantinier Bourgour en ne faisant pas consommer plus de 10 plats avariés à Teddynounet"}
+  ,{id:"teddy_doberman",img:"https://i.postimg.cc/90SBxMBs/Doberman.png",emoji:null,name:"Doberman",desc:"Ne faire manger que des aliments avariés à Teddynounet"}];
 
 /* ══════════ MODULES DATA ══════════ */
 const MODULES={
@@ -3568,22 +3907,41 @@ const D={
 };
 
 /* ══════════ HELPERS ══════════ */
+/* REFONTE NIVEAUX : 100 niveaux, courbe puissance 1.65, niveau 100 = ~8500 XP */
 function lv(s,name){
   if(name==="Professeur Daudé"||name===ADMIN_CODE)return 99;
-  s=parseInt(s)||0; // guard against null/undefined/NaN
-  // Progressive XP curve
-  const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,  // L1-10: 100/lvl
-    1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,            // L11-20: 200/lvl
-    3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];            // L21-30: 400/lvl
+  s=parseInt(s)||0;
+  /* XP v2 : Niveau 50 ≈ 10000 XP, Niveau 100 = 35000 XP */
+  const THRESHOLDS=[
+    0,10,34,69,116,172,238,313,398,490,
+    591,701,818,943,1076,1217,1365,1521,1684,1854,
+    2031,2215,2406,2604,2809,3021,3240,3465,3696,3935,
+    4179,4431,4688,4952,5222,5499,5782,6071,6366,6667,
+    6974,7288,7607,7933,8264,8601,8944,9293,9648,10009,
+    10375,10748,11126,11509,11899,12294,12694,13101,13513,13930,
+    14353,14782,15216,15655,16100,16551,17007,17468,17935,18407,
+    18885,19368,19856,20349,20848,21352,21862,22376,22896,23421,
+    23952,24487,25028,25574,26125,26681,27242,27809,28380,28957,
+    29539,30125,30717,31314,31916,32523,33134,33751,34373,35000
+  ];
   let lvl=1;
   for(let i=1;i<THRESHOLDS.length;i++){if(s>=THRESHOLDS[i])lvl=i+1;else break;}
   return lvl;
 }
 function lvThreshold(lvl){
   lvl=parseInt(lvl)||1;
-  const THRESHOLDS=[0,100,200,300,400,500,600,700,800,900,1000,
-    1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,
-    3400,3800,4200,4600,5000,5400,5800,6200,6600,7000];
+  const THRESHOLDS=[
+    0,10,34,69,116,172,238,313,398,490,
+    591,701,818,943,1076,1217,1365,1521,1684,1854,
+    2031,2215,2406,2604,2809,3021,3240,3465,3696,3935,
+    4179,4431,4688,4952,5222,5499,5782,6071,6366,6667,
+    6974,7288,7607,7933,8264,8601,8944,9293,9648,10009,
+    10375,10748,11126,11509,11899,12294,12694,13101,13513,13930,
+    14353,14782,15216,15655,16100,16551,17007,17468,17935,18407,
+    18885,19368,19856,20349,20848,21352,21862,22376,22896,23421,
+    23952,24487,25028,25574,26125,26681,27242,27809,28380,28957,
+    29539,30125,30717,31314,31916,32523,33134,33751,34373,35000
+  ];
   return THRESHOLDS[Math.max(0,Math.min(lvl-1,THRESHOLDS.length-1))];
 }
 function pct(s,name){
@@ -3965,7 +4323,12 @@ function goScreen(name){
   if(D.gramScr) D.gramScr.classList.toggle("active",name==="grammaire");
   if(D.conjScr) D.conjScr.classList.toggle("active",name==="conjugaison");
   D.hud.style.display=name==="welcome"?"none":"flex";
-  if(name==="home") maybeShowUpdateMsg();
+  if(name==="home"){
+    maybeShowUpdateMsg();
+    /* SIAM : appel systématique au retour sur l'accueil
+       pour détecter les comptes éligibles même s'ils rechargent */
+    setTimeout(function(){try{maybeSIAMUnlock();}catch(e){}},500);
+  }
   const menus={literature:D.litMenu,grammaire:D.gramMenu,conjugaison:D.conjMenu};
   Object.values(menus).forEach(m=>{if(m)m.style.display="none";});
   D.quizCard.style.display="none";
@@ -4145,7 +4508,7 @@ function saveProgress(){
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
-    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,bossXPAwarded:S.bossXPAwarded||{}
+    conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,bossXPAwarded:S.bossXPAwarded||{},firstSeenAt:S.firstSeenAt||null,siam_popup_shown:S.siam_popup_shown||false,siam_unlocked:!!(S.badges&&(S.badges.has?S.badges.has("siam_beta"):[...S.badges].includes("siam_beta")))
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
 }
@@ -4171,6 +4534,9 @@ function loadProgress(name){
        else{S.savedMod=null;S.savedQIdx=0;}}
       S.savedCorrect=d.savedCorrect||0;S.orgBossDefeated=d.orgBossDefeated||false;if(d.stars)S.stars=d.stars;
       if(d.bossXPAwarded)S.bossXPAwarded=d.bossXPAwarded;
+      if(d.siam_unlocked&&S.badges)S.badges.add("siam_beta");
+      if(d.firstSeenAt)S.firstSeenAt=d.firstSeenAt;
+      if(d.siam_popup_shown)S.siam_popup_shown=d.siam_popup_shown;
       if(d.avatar&&!(S.name==="Professeur Daudé"||S.name===ADMIN_CODE))S.avatar=d.avatar;
       updateHUD();renderBadgesGrid();updateSeanceBadges();
       if(typeof updateBossChapter==="function")updateBossChapter();
@@ -4268,8 +4634,15 @@ function openPlayerPopup(entry){
         <div style="font-size:19px;font-weight:900;color:var(--gold);">${entry.name}</div>
         ${entry.desc?`<div style="font-size:12px;color:#ead7ae;font-style:italic;margin-top:3px;">"${entry.desc}"</div>`:''}
         <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
-          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div><div style="font-size:10px;color:#ead7ae;margin-top:3px;">XP${entry.score||0} / ${lvThreshold(lvl+1)}</div>
-          <div class="pill" style="font-size:11px;">${entry.score||0} pts</div>
+          <div class="pill" style="font-size:11px;">Niveau ${lvl}</div>
+          <!-- Élargissement zone XP : label + valeur + cible bien espacés -->
+          <div style="font-size:11px;color:#ead7ae;margin-top:4px;min-width:160px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <span style="opacity:.6;letter-spacing:.4px;font-size:10px;">XP</span>
+            <strong style="color:#d9a441;font-size:12px;">${entry.score||0}</strong>
+            <span style="opacity:.5;">/</span>
+            <span>${lvThreshold(lvl+1)}</span>
+          </div>
+          <!-- points removed: doublon XP -->
           <div class="pill" style="font-size:11px;">${unlockedBadges.length} badge${unlockedBadges.length!==1?'s':''}</div>
         </div>
       </div>
@@ -4553,7 +4926,7 @@ function abandonMod(){
   const ro=document.getElementById("resultsOv");if(ro)ro.remove();
   try{stopVictoryMusic();}catch(e){}
   playGameOverMusic();
-  _showFleeFailure("mod","https://i.postimg.cc/Y9rMpwZr/echec.png","<strong>Tu as fui !</strong><br><span style=\"font-size:14px;\">Reviens quand tu seras plus fort(e) !</span>");
+  _showFleeFailure("flee_mod","https://i.postimg.cc/Y9rMpwZr/echec.png","<strong>Tu as fui !</strong><br><span style=\"font-size:14px;\">Reviens quand tu seras plus fort(e) !</span>");
   document.getElementById("failureOv").style.display="flex";
 }
 
@@ -4634,6 +5007,8 @@ function renderQ(){
   if(D.nextBtn)D.nextBtn.style.display="none";
   if(D.aWrap)D.aWrap.innerHTML="";
   if(D.qBox)D.qBox.textContent="";
+  /* Bug illus auteurs : nettoyer prop DOM entre séances */
+  try{var _qc=document.getElementById("quizCard");if(_qc){_qc._illustrationAuthors=null;_qc._injectAuthorThumbs=null;}}catch(_e){}
   S.locked=false;S.subIdx=0;S.subOk=0;
   S.fillQ=null;S.fillBank=[];S.fillBlanks=[];S.fillPendingWord=null;
   S.ddQ=null;S.ddLeft=[];S.ddRight=[];S.ddConnections={};S.ddColorMap={};S.ddRightTaken={};S.ddSelected=null;
@@ -4796,9 +5171,15 @@ function showKeyUnlock(type){
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
 }
+/* showAvatarUnlocked — correction bouton "Super ! ✨" :
+   L'ancien code utilisait this.closest('.mb-popup-ov') mais ov n'avait pas
+   cette classe → null → la fermeture ne fonctionnait pas.
+   Fix : l'ID unique permet au bouton de retrouver l'overlay. */
 function showAvatarUnlocked(src,name,msg){
-  // Reuse badge popup style
+  const ovId="av-unlock-ov-"+Date.now();
   const ov=document.createElement("div");
+  ov.id=ovId;
+  ov.className="mb-popup-ov"; // classe commune pour .remove() générique
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,#4a2208,#2a1203);border:2px solid rgba(217,164,65,.6);border-radius:24px;padding:32px 28px;max-width:340px;width:90%;text-align:center;animation:popIn .4s;">
     <div style="font-size:36px;margin-bottom:8px;">🎨</div>
@@ -4806,7 +5187,7 @@ function showAvatarUnlocked(src,name,msg){
     <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:6px;">Avatar débloqué !</div>
     <div style="font-size:17px;color:var(--gold-soft);font-weight:700;margin-bottom:6px;">${name}</div>
     <div style="font-size:14px;color:#ead7ae;">${msg}</div>
-    <button onclick="this.closest('.mb-popup-ov').remove()" style="margin-top:16px;padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">Super ! ✨</button>
+    <button onclick="document.getElementById('${ovId}').remove()" style="margin-top:16px;padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;font-size:15px;cursor:pointer;">Super ! ✨</button>
   </div>`;
   document.body.appendChild(ov);
   ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
@@ -4861,7 +5242,10 @@ function renderTyped(q){
   btn.style.cssText="margin-top:4px;";
 
   function normalise(s){
-    return s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ");
+    return s.trim().toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g,"")
+      .replace(/[’‘ʼ']/g,"'")
+      .replace(/\s+/g," ");
   }
   function stripPronoun(s){
     // Remove leading pronoun to accept both "chante" and "je chante"
@@ -4880,15 +5264,43 @@ function renderTyped(q){
     return set;
   }
 
+  /* Patch conjugaison : accepter avec ou sans pronom (ex: "je chante" ou "chante") */
+  /* Validation stricte : pronoms acceptés seulement si correct et bonne terminaison */
+  function getExpectedPronouns(prompt) {
+    if(!prompt) return null;
+    const p=prompt.toLowerCase();
+    if(/1r[e°]?\.? personne[\s\S]{0,25}singulier|singulier[\s\S]{0,25}1r[e°]?\.? personne/.test(p)) return ['je',"j'",'j’'];
+    if(/2[e°]?\.? personne[\s\S]{0,25}singulier/.test(p)) return ['tu'];
+    if(/3[e°]?\.? personne[\s\S]{0,25}singulier/.test(p)) return ['il','elle','on'];
+    if(/1r[e°]?\.? personne[\s\S]{0,25}pluriel/.test(p))  return ['nous'];
+    if(/2[e°]?\.? personne[\s\S]{0,25}pluriel/.test(p))   return ['vous'];
+    if(/3[e°]?\.? personne[\s\S]{0,25}pluriel/.test(p))   return ['ils','elles'];
+    return null;
+  }
   const validate=()=>{
     if(S.locked)return;
-    const val=normalise(inp.value);
+    const rawIn=inp.value.replace(/[’‘ʼ′]/g,"'");
+    const val=normalise(rawIn);
     const rawAnswers=Array.isArray(q.answer)?q.answer:[q.answer];
-    const answerSet=buildAnswerSet(rawAnswers);
-    const ok=answerSet.some(a=>val===a);
+    // Vérif 1 : correspondance exacte
+    let ok=rawAnswers.some(a=>val===normalise(a));
+    // Vérif 2 : bon pronom + bonne forme exacte (refus mauvais pronom ou terminaison)
+    if(!ok){
+      const pronouns=getExpectedPronouns(q.prompt);
+      if(pronouns){
+        ok=rawAnswers.some(ans=>
+          pronouns.some(pron=>{
+            const np=normalise(pron), na=normalise(ans);
+            return val===np+' '+na || val===np+na;
+          })
+        );
+      }
+    }
+    // STOP — ne pas accepter via stripPronoun seul (trop permissif)
     S.locked=true;
     inp.disabled=true;
-    btn.style.display="none"; // hide validate button after answering
+    inp.blur(); // retirer le focus pour éviter que Enter déclenche nextBtn
+    btn.style.display="none";
     inp.style.borderColor=ok?"#1f8a52":"#9c342b";
     inp.style.background=ok?"rgba(31,138,82,.25)":"rgba(156,52,43,.25)";
     if(!ok){
@@ -4902,7 +5314,15 @@ function renderTyped(q){
     showFeedback(ok,q.explanation);
   };
   btn.onclick=validate;
-  inp.addEventListener("keydown",e=>{if(e.key==="Enter")validate();});
+  /* Correction validation : preventDefault empêche Enter de déclencher
+     nextBtn si le focus bascule vers lui après disabled sur inp */
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      e.stopPropagation();
+      validate();
+    }
+  });
   wrap.appendChild(inp);wrap.appendChild(btn);
   D.aWrap.appendChild(wrap);
   setTimeout(()=>inp.focus(),80);
@@ -5753,11 +6173,20 @@ function closeFailure(){
   S.locked=false;
   const _fm=S._abandonModId||S.mod;
   S.mod=null; S._abandonModId=null;
-  const _bg=document.getElementById("bgMusic");if(_bg)_bg.play().catch(function(){});
-  if(_fm==="memelite"){_restoreBgMusic();showLitMenu();}
-  else if(_fm==="g_org"||_fm==="g_boss"||(_fm&&_fm[0]==="g")){showGramMenu();}
-  else if(_fm==="c_boss"||(_fm&&_fm[0]==="c")){showConjMenu();}
-  else{showLitMenu();}
+  const _bg=document.getElementById("bgMusic");
+  /* Arrêt musique menu pendant séquence audio Teddynounet :
+     Délai 2s pour laisser finir la musique d'échec avant de reprendre le menu */
+  if(_fm==="teddynounet"){
+    if(_bg){_bg.pause();}
+    setTimeout(function(){if(_bg)_bg.play().catch(function(){});},2000);
+    showConjMenu();
+  } else {
+    if(_bg)_bg.play().catch(function(){});
+    if(_fm==="memelite"){_restoreBgMusic();showLitMenu();}
+    else if(_fm==="g_org"||_fm==="g_boss"||(_fm&&_fm[0]==="g")){showGramMenu();}
+    else if(_fm==="c_boss"||(_fm&&_fm[0]==="c")){showConjMenu();}
+    else{showLitMenu();}
+  }
 }
 function _showFleeFailure(modId, bossImg, msgHtml){
   const _fov=document.getElementById("failureOv");
@@ -5769,7 +6198,8 @@ function _showFleeFailure(modId, bossImg, msgHtml){
   if(_fimg&&bossImg){_fimg.src=bossImg;_fimg.style.filter="drop-shadow(0 8px 24px rgba(255,50,50,.5))";}
   if(_fmsg)_fmsg.innerHTML=msgHtml;
   // Hide retry for boss flee — only Menu button stays
-  if(_retryBtn)_retryBtn.style.display=(modId==="mod")?"":"none";
+  /* Masquer Réessayer pour toutes les fuites */
+  if(_retryBtn)_retryBtn.style.display=(modId==="classic_fail")?"":"none";
   if(_fov)_fov.style.display="flex";
 }
 function _showGameFailure(){
@@ -6268,7 +6698,15 @@ function renderBossQ(){
     }
   };
   btn.onclick=validate;
-  inp.addEventListener("keydown",e=>{if(e.key==="Enter")validate();});
+  /* Correction validation : preventDefault empêche Enter de déclencher
+     nextBtn si le focus bascule vers lui après disabled sur inp */
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      e.stopPropagation();
+      validate();
+    }
+  });
   wrap.appendChild(inp);wrap.appendChild(btn);
   // Start timer
   clearInterval(bossState.timerInt);
@@ -6697,7 +7135,15 @@ function renderGramBossQ(){
       if(ok){gramBossHit();}else{gramBossLoseLife();}
     };
     btn.onclick=validate;
-    inp.addEventListener("keydown",e=>{if(e.key==="Enter")validate();});
+    /* Correction validation : preventDefault empêche Enter de déclencher
+     nextBtn si le focus bascule vers lui après disabled sur inp */
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      e.stopPropagation();
+      validate();
+    }
+  });
     wrap.appendChild(inp);wrap.appendChild(btn);
   } else {
     // QCM with 6 shuffled options
@@ -8101,24 +8547,58 @@ function playTeddySound(){
   }catch(e){}
 }
 function tryOpenTeddynounet(){
-  // Sound triggered by card click/touch directly
-  if(!("ontouchstart" in window))playTeddySound(); // desktop only (mobile uses touchstart)
-  const ov=document.createElement("div");
-  ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;";
-  ov.innerHTML=`<div style="background:linear-gradient(160deg,#1a0800,#0a0500);border:2px solid rgba(251,146,60,.4);border-radius:22px;padding:28px;max-width:400px;width:100%;text-align:center;animation:popIn .35s;">
-    <img src="https://i.postimg.cc/Kj9kyRgx/Teddynounet.png" onclick="playTeddySound()" ontouchstart="playTeddySound();event.stopPropagation();" style="width:110px;margin-bottom:12px;filter:drop-shadow(0 0 14px rgba(251,146,60,.5));animation:bossIdle 4s ease-in-out infinite;cursor:pointer;" title="Clique pour entendre Teddynounet !"/>
-    <div style="font-size:20px;font-weight:900;color:#fb923c;margin-bottom:10px;">Teddynounet</div>
-    <div style="font-size:14px;color:#fed7aa;line-height:1.7;margin-bottom:16px;">
-      🔨 <strong style="color:#fbbf24;">Module en cours de création</strong><br><br>
-      Ce boss arrive bientôt. Entraîne-toi en attendant !
-    </div>
-    <button onclick="this.closest('.mb-popup-ov').remove()"
-      style="padding:11px 24px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#fed7aa;font-weight:700;cursor:pointer;">
-      D'accord
-    </button>
-  </div>`;
-  document.body.appendChild(ov);
+  if(!("ontouchstart" in window))playTeddySound();
+  var _conjMods=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+  var _stars=_conjMods.reduce(function(acc,id){return acc+computeModStars(id);},0);
+  var _isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
+  if(!_isAdmin&&_stars<10){
+    showLockedBossMsg("10 \u2b50 de conjugaison requises",
+      "\uD83D\uDD10 Il te faut <strong>10 \u00e9toiles en conjugaison</strong> pour affronter Teddynounet.<br><span style='font-size:12px;opacity:.7;'>Tu en as actuellement "+_stars+" / 42.</span>",
+      "https://i.postimg.cc/Kj9kyRgx/Teddynounet.png","Teddynounet");
+    return;
+  }
+  var _bg=document.getElementById("bgMusic");if(_bg)_bg.pause();
+  var _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
+  var _chatP=document.getElementById("chatPanel");if(_chatP&&_chatP.style.display!=="none"){_chatP.style.display="none";stopChatPolling();}
+  var _li=document.getElementById("teddyLockIcon");
+  if(_li){_li.style.filter="drop-shadow(0 0 8px rgba(251,146,60,.7)) brightness(1.1)";_li.style.opacity="1";}
+
+  TeddynounetBoss.init(document.getElementById("teddyOv"),{
+    onVictory:function(data){
+      try{
+        // ── Badge 1 : Tel y pris (toute victoire)
+        if(!S.badges.has("teddy_victory"))unlockBadge("teddy_victory");
+        // ── Badge 2 : Cordon Bleu (victoire avec ≤10 plats avariés)
+        /* Nouvelle condition : wrongCount <= 10 (était 0 erreur) */
+        if(data&&(data.wrongCount===undefined||data.wrongCount<=10)&&!S.badges.has("teddy_flawless"))unlockBadge("teddy_flawless");
+        // ── Avatar spécial Teddynounet V2 (toute victoire)
+        // La condition est déjà dans EXCLUSIVE_AV via S.badges.has("teddy_victory")
+        // ── Avatar spécial Bourgour (victoire sans faute)
+        // La condition est via S.badges.has("teddy_flawless")
+
+        // ── XP UNIQUE: 850 pts, une seule fois
+        if(!S.bossXPAwarded)S.bossXPAwarded={};
+        if(!S.bossXPAwarded["teddynounet"]){
+          S.bossXPAwarded["teddynounet"]=true;
+          S.score=Math.min(S.score+850,99999);
+          updateHUD();saveProgress();saveToLB();
+          toast("\u2b50 +850 XP \u2014 Teddynounet vaincu !");
+        }
+      }catch(e){}
+    },
+    onGameOver:function(data){
+      try{
+        // ── Badge 3 : Doberman (défaite sans jamais cliquer correct)
+        if(data&&data.neverCorrect&&!S.badges.has("teddy_doberman"))unlockBadge("teddy_doberman");
+      }catch(e){}
+      // bgMusic gere par _doEnd uniquement apres sequence audio
+    },
+    /* onExit : ne pas redémarrer bgMusic ici — _doEnd() gère le timing audio
+       correctement avec délai selon victoire/défaite. Evite le chevauchement. */
+    onExit:function(){
+      // bgMusic relancé uniquement par _doEnd() avec le bon délai
+    }
+  });
 }
 
 
@@ -8132,6 +8612,14 @@ const UPD_SLIDES=[
    aura:"rgba(220,38,38,.7)",
    title:"📚 Mémélité — Nouveau boss",
    text:"La bibliothécaire des Enfers vous défie sur la culture littéraire. 3 phases, des chats lancés et une battle épique ! Il vous faut 100% en littérature pour obtenir la Clé de la Librairie et l'affronter."},
+  {img:"https://i.postimg.cc/4xK4Ttdx/Teddynounet-Idle.png",
+   aura:"rgba(251,146,60,.7)",
+   title:"Nouveau mini-boss : Teddynounet",
+   text:"Teddynounet attend d\u00e9sormais de d\u00e9fier les joueurs sur leurs connaissances en conjugaison. Mieux vaut avoir l'estomac bien accroch\u00e9 : entre les plats douteux et les pi\u00e8ges de cette nouvelle \u00e9preuve, il faudra avoir autant de r\u00e9flexes que de grammaire.<br><br><strong style='color:#86efac;'>Cette nouvelle \u00e9preuve permet \u00e9galement de d\u00e9bloquer 3 nouveaux badges et 2 nouveaux avatars sp\u00e9ciaux.</strong>"},
+  {img:"https://i.postimg.cc/Y9rMpwZr/echec.png",
+   aura:"rgba(96,165,250,.6)",
+   title:"📊 Refonte de la progression",
+   text:"Les paliers d'XP ont été rééquilibrés. Niveau max : <strong style='color:#86efac;'>100</strong>. La progression est plus fluide sur l'ensemble du jeu."},
 ];
 let _updSlideIdx=0;
 
@@ -8173,41 +8661,44 @@ function showActualites(){
       <div style="font-size:20px;font-weight:900;color:var(--gold);">📰 Actualités</div>
       <button onclick="this.closest('.mb-popup-ov').remove()" style="background:none;border:none;color:#ead7ae;font-size:20px;cursor:pointer;">✕</button>
     </div>
-
-    <!-- Update v3 — Orgografe + Mémélité -->
+    <!-- Du plus récent (haut) au plus ancien (bas) -->
+    <div style="margin-bottom:20px;border-left:3px solid #fb923c;padding-left:14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026</div>
+      <div style="font-size:15px;font-weight:900;color:#fb923c;margin-bottom:8px;">🍔 Teddynounet — Nouveau mini-boss</div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <img src="https://i.postimg.cc/4xK4Ttdx/Teddynounet-Idle.png" style="width:56px;filter:drop-shadow(0 0 8px rgba(251,146,60,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+          Teddynounet attend de défier les joueurs en conjugaison !<br>
+          <strong style="color:#fed7aa;">3 badges</strong> et <strong style="color:#fed7aa;">2 avatars</strong> à débloquer.<br>
+          <span style="font-size:11px;opacity:.7;">Requis : 10 ⭐ en conjugaison</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:20px;border-left:3px solid #60a5fa;padding-left:14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026</div>
+      <div style="font-size:15px;font-weight:900;color:#60a5fa;margin-bottom:8px;">📊 Refonte progression & conjugaison</div>
+      <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+        Paliers XP rééquilibrés — niveau max <strong style="color:#86efac;">100</strong> (35 000 XP).<br>
+        Les réponses acceptent désormais <strong style="color:#fed7aa;">pronom + forme</strong> (ex : "je chante").
+      </div>
+    </div>
     <div style="margin-bottom:20px;border-left:3px solid #f97316;padding-left:14px;">
       <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026</div>
       <div style="font-size:15px;font-weight:900;color:#f97316;margin-bottom:8px;">🐉 Orgografe & 📚 Mémélité</div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">
-        <img src="https://i.postimg.cc/N04Cp0Rt/Gadou.png" style="width:60px;filter:drop-shadow(0 0 8px rgba(249,115,22,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
-        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
-          <strong style="color:#fed7aa;">La grande Orgografe</strong> débarque dans le menu Grammaire !<br>
-          Corrigez ses fautes d'orthographe pour la vaincre.<br>
-          <span style="font-size:11px;opacity:.7;">Requis : 6 ⭐</span>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:flex-start;">
-        <img src="https://i.postimg.cc/bwfcRt83/Memelite.png" style="width:60px;filter:drop-shadow(0 0 8px rgba(220,38,38,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
-        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
-          <strong style="color:#fca5a5;">Mémélité</strong> arrive dans le menu Littérature !<br>
-          60+ questions de culture littéraire sur 3 phases épiques.<br>
-          <span style="font-size:11px;opacity:.7;">Requis : Clé de la Librairie (100% en littérature)</span>
-        </div>
+        <img src="https://i.postimg.cc/N04Cp0Rt/Gadou.png" style="width:56px;filter:drop-shadow(0 0 8px rgba(249,115,22,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;"><strong style="color:#fed7aa;">Orgografe</strong> — menu Grammaire, 6 ⭐ requis.<br><strong style="color:#fca5a5;">Mémélité</strong> — menu Littérature, 100% requis.</div>
       </div>
     </div>
-
-    <!-- Update v2 — Système étoiles + boss -->
     <div style="margin-bottom:20px;border-left:3px solid #c084fc;padding-left:14px;">
       <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Mars 2026</div>
       <div style="font-size:15px;font-weight:900;color:#c084fc;margin-bottom:8px;">⚔️ Conjugus & Grammaria</div>
       <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
-        Les boss principaux font leur apparition.<br>
-        <strong style="color:#e9d5ff;">Conjugus</strong> — maîtrisez la conjugaison (Clé du Temps).<br>
-        <strong style="color:#93c5fd;">Grammaria</strong> — maîtrisez la grammaire (Clé de la Langue).<br>
-        Nouveau système d'⭐ étoiles et de classement en ligne.
+        <strong style="color:#e9d5ff;">Conjugus</strong> — Clé du Temps.<br>
+        <strong style="color:#93c5fd;">Grammaria</strong> — Clé de la Langue.<br>
+        Système d'⭐ étoiles et classement en ligne.
       </div>
     </div>
-
     <div style="font-size:11px;color:#ead7ae;opacity:.4;text-align:center;margin-top:8px;">Mission Brevet · Révisions interactives</div>
   </div>`;
   document.body.appendChild(ov);
@@ -8401,7 +8892,7 @@ function _applyMelBg(phase){
 }
 
 function awardBossXP(boss){
-  const XP={conjugus:1000,grammaria:800,orgografe:300,memelite:1200};
+  const XP={conjugus:1000,grammaria:800,orgografe:300,memelite:1200,teddynounet:850};
   const DEFEATED_KEY="bossDefeated_"+boss;
   if(!S.bossXPAwarded)S.bossXPAwarded={};
   if(S.bossXPAwarded[boss])return; // Une seule fois
@@ -8461,15 +8952,62 @@ function _applyMobileBgs(){
 }
 window.addEventListener("resize",_applyMobileBgs);
 
+/* Robot SIAM : deblocage automatique si connexion avant 21/03/2026 */
+/* Robot SIAM : firstSeenAt persisté — date limite 20 mai 2026 inclus
+   popup affiché une seule fois via siam_popup_shown */
+/* Robot SIAM :
+   - Fonctionne en local (localStorage) et en ligne
+   - firstSeenAt = date ISO de 1re connexion (persistée)
+   - Unlock si firstSeenAt < 21 mai 2026
+   - Popup unique via siam_popup_shown
+   - Admin (Professeur Daudé) débloque automatiquement */
+function maybeSIAMUnlock(){
+  if(!S.name)return;
+  /* Enregistrer la date de 1re connexion si non définie */
+  if(!S.firstSeenAt){
+    S.firstSeenAt=new Date().toISOString();
+    try{saveProgress();}catch(e){}
+  }
+  /* Admin : toujours éligible */
+  var isAdmin=(typeof ADMIN_CODE!=='undefined'&&S.name===ADMIN_CODE)||S.name==="Professeur Daudé";
+  /* Déjà débloqué */
+  if(!isAdmin&&S.badges&&(S.badges.has?S.badges.has("siam_beta"):[...S.badges].includes("siam_beta"))){
+    return;
+  }
+  /* Cutoff : firstSeenAt STRICTEMENT avant le 21 mai 2026 */
+  var cutoff=new Date("2026-05-21T00:00:00Z");
+  var firstSeen=S.firstSeenAt?new Date(S.firstSeenAt):new Date();
+  if(firstSeen<cutoff){
+    if(!S.badges)S.badges=new Set();
+    if(S.badges.add)S.badges.add("siam_beta");
+    saveProgress();
+    /* Popup une seule fois */
+    if(!S.siam_popup_shown){
+      S.siam_popup_shown=true;saveProgress();
+      try{var snd=new Audio("https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge-debloque.mp3");snd.volume=.85;snd.play().catch(function(){});}catch(e){}
+      setTimeout(function(){
+        showAvatarUnlocked(
+          "https://i.postimg.cc/gJ9WBn8Z/avatar-spe-SIAM.png",
+          "Robot SIAM",
+          "Vous faites partie des premiers à découvrir ce projet. Merci beaucoup pour tout ! — M. Daudé."
+        );
+      },1800);
+    }
+  }
+}
+
 function maybeShowUpdateMsg(){
-  if(localStorage.getItem('mb_update_seen_v3'))return;
+  if(localStorage.getItem('mb_update_seen_v5'))return;
   if(!S.name)return; // not logged in yet
-  // Show 1.5s after being on any game screen
   clearTimeout(window._updateMsgTimer);
   window._updateMsgTimer=setTimeout(()=>{
     if(S.currentScreen!=='welcome'){
       const o=document.getElementById('updateMsgOv');
-      if(o){o.style.display='flex';initUpdateSlider();}
+      if(o){
+        o.style.display='flex';initUpdateSlider();
+        // Son Teddynounet une seule fois au popup (pas dans Actualités)
+        try{const _ms=new Audio('https://cdaudemartinez.fr/wp-content/uploads/2026/04/teddynounet_moussieur.mp3');_ms.volume=.85;_ms.play().catch(()=>{});}catch(e){}
+      }
     }
   },1500);
 }
@@ -9165,7 +9703,7 @@ function abandonMemelite(){
       <div style="display:flex;gap:10px;justify-content:center;">
         <button id="updPrev" onclick="_updSlideIdx--;_renderUpdateSlide()" style="padding:9px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.4);color:#ead7ae;font-weight:700;cursor:pointer;">←</button>
         <button id="updNext" onclick="_updSlideIdx++;_renderUpdateSlide()" style="--bh:clamp(28px,4vh,40px);" style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/X7MvxGXy/suivant.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
-        <button id="updClose" onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v3','1');" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
+        <button id="updClose" onclick="document.getElementById('updateMsgOv').style.display='none';localStorage.setItem('mb_update_seen_v5','1');" style="display:none;padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;"><img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(36px,6vh,52px);width:auto;display:block;" alt=""/></button>
       </div>
 <!-- slider populated by initUpdateSlider() -->
     </div>
@@ -9359,5 +9897,1158 @@ function abandonMemelite(){
       Continuer →
     </button>
   </div>
+
+  <!-- TEDDYNOUNET MINI-BOSS OVERLAY -->
+  <div id="teddyOv" style="display:none;position:fixed;inset:0;z-index:250;overflow:hidden;">
+    <div id="teddyBg"></div>
+    <div id="teddyBgOverlay"></div>
+    <div id="teddyX3Overlay"></div>
+    <div id="teddyX2Overlay"></div>
+    <!-- Big combo popup (centre écran) -->
+    <div id="teddyComboGiant"></div>
+    <div id="teddyComboFlash"></div>
+    <div id="teddyHud">
+      <span id="teddyHpLabel">⚡ Teddynounet</span>
+      <div id="teddyHpBarWrap"><div id="teddyHpFill"></div></div>
+      <span id="teddyHpVal">10/50</span>
+    </div>
+    <!-- Correction 8 : combo affiché à droite du HUD, hors zone question -->
+    <div id="teddyComboDisplay"></div>
+    <div id="teddyQuestionBox" style="display:none">
+      <div class="teddy-q-label">CONJUGUE :</div>
+      <div id="teddyQText"></div>
+    </div>
+    <!-- Correction 4 : référence JS pour la crush line -->
+    <div id="teddyCrushLine"></div>
+    <div id="teddyFoodContainer"></div>
+    <img id="teddyChar" src="" alt="Teddynounet"/>
+    <img id="bourgourChar" src="" alt="Bourgour"/>
+    <div id="teddyFuirBtn">
+      <button onclick="TeddynounetBoss.abandon()" class="fuir-btn"
+        onmouseover="this.style.filter='brightness(1.2)'"
+        onmouseout="this.style.filter=''">
+        <img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir"/>
+      </button>
+    </div>
+    <div id="teddyDialogOv" style="display:none">
+      <div id="teddyDialogBox">
+        <img class="teddy-dialog-avatar" id="teddyDialogAvatar" src="" alt=""/>
+        <div class="teddy-dialog-content">
+          <div class="teddy-dialog-name" id="teddyDialogName"></div>
+          <div class="teddy-dialog-text" id="teddyDialogText"></div>
+          <button class="teddy-dialog-next" id="teddyDialogBtn">Continuer ▶</button>
+        </div>
+      </div>
+    </div>
+    <div id="teddyTutoOv" style="display:none">
+      <div class="teddy-tuto-box">
+        <!-- Image de slide tutoriel -->
+        <img class="teddy-tuto-img" id="teddyTutoImg" src="" alt="" style="display:none;"/>
+        <div class="teddy-tuto-title" id="teddyTutoTitle"></div>
+        <div class="teddy-tuto-text" id="teddyTutoText"></div>
+        <div class="teddy-tuto-dots" id="teddyTutoDots"></div>
+        <button class="teddy-tuto-btn" id="teddyTutoBtn">Suivant ▶</button>
+      </div>
+    </div>
+    <div id="teddyEndOv" style="display:none">
+      <img class="teddy-end-img" id="teddyEndImg" src="" alt=""/>
+      <div id="teddyEndTitle"></div>
+      <div id="teddyEndMsg"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+        <button class="teddy-end-btn teddy-end-btn-primary" id="teddyEndPrimary"></button>
+        <button class="teddy-end-btn teddy-end-btn-secondary" id="teddyEndSecondary">← Menu</button>
+      </div>
+    </div>
+    <div id="teddyEpicMsg"></div>
+  </div>
+
+<script>
+
+/* ═════════════════════════════════════════════════════════════
+   TEDDYNOUNET MINI-BOSS — Module v3
+   ═════════════════════════════════════════════════════════════ */
+window.TeddynounetBoss = (function() {
+  'use strict';
+
+  /* ── ASSETS ─────────────────────────────────────────────── */
+  var IMG = {
+    TEDDY_IDLE:   'https://i.postimg.cc/4xK4Ttdx/Teddynounet-Idle.png',
+    TEDDY_ANGRY:  'https://i.postimg.cc/rFZybg82/Teddydounet-angry.png',
+    TEDDY_HAPPY:  'https://i.postimg.cc/BQ7ZyNqQ/Teddynounet-happy.png',
+    TEDDY_MANGE:  'https://i.postimg.cc/kXYMZwng/Teddynounet-mange.png',
+    TEDDY_PANIC:  'https://i.postimg.cc/wT4xPF6v/Teddynounet-panique.png',
+    TEDDY_VOMITO: 'https://i.postimg.cc/rFZybg8s/Teddynounet-vomito.png',
+    BOURG_NORMAL: 'https://i.postimg.cc/7hW6gNhh/Bourgour.png',
+    BOURG_ANGRY:  'https://i.postimg.cc/5yR0wmy6/Bourgour-Angry.png',
+    BOURG_RIT:    'https://i.postimg.cc/QCytpqCj/Bourgour-rit.png',
+    AV_TEDDY:     'https://i.postimg.cc/PrXzKfq0/anime-intervention1.png',
+    AV_BOURG:     'https://i.postimg.cc/qq8bK1jw/avatar-spe-bourbour.png',
+    BG_DESKTOP:   'https://i.postimg.cc/BvMZ2GmY/Teddynounet-fond.png',
+    BG_MOBILE:    'https://i.postimg.cc/43B4pTWM/Teddynounet-fondresponsive.png',
+    VICTORY:      'https://i.postimg.cc/fyjtmdXD/Teddynounet-victoire.png',
+    FOODS: {
+      burger: { n:'https://i.postimg.cc/MTXJyJQ1/burgers.png',    c:'https://i.postimg.cc/pT7rjZpb/burgers-ecrases.png'  },
+      frites: { n:'https://i.postimg.cc/Y9jB1BWb/frites.png',     c:'https://i.postimg.cc/HxKnM2VW/frites-ecrase.png'  },
+      kebab:  { n:'https://i.postimg.cc/gJrbvbZM/kebab.png',      c:'https://i.postimg.cc/k4ZGScBn/kebab-ecrase.png'   },
+      tacos:  { n:'https://i.postimg.cc/d1Dc8cyH/tacos.png',      c:'https://i.postimg.cc/QtPC7bH8/tacos-ecrase.png'   },
+      wrap:   { n:'https://i.postimg.cc/76brgr2K/wrap.png',       c:'https://i.postimg.cc/V6TvtRdN/wrap-ecrase.png'    }
+    }
+  };
+  var SND_URL = {
+    INTRO:      'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-intro-cinematique.mp3',
+    COMBAT:     'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Teddynounet-combat.mp3',
+    B_HIT:      'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Bourgour_blesse.mp3',
+    B_LAUGH:    'https://cdaudemartinez.fr/wp-content/uploads/2026/04/BourgourLaugh.mp3',
+    VIC1:       'https://cdaudemartinez.fr/wp-content/uploads/2026/04/teddynounet_moussieur.mp3',
+    VIC2:       'https://cdaudemartinez.fr/wp-content/uploads/2026/04/BourgourDefaite.mp3',
+    DEFEAT_SFX: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/BourgourDefaiteV2.mp3',
+    FOOTSTEP:   'https://cdaudemartinez.fr/wp-content/uploads/2026/04/heavy_footstep.mp3'
+  };
+  var FOOD_TYPES = ['burger','frites','kebab','tacos','wrap'];
+
+  /* ── CONFIG ─────────────────────────────────────────────── */
+  var HP_START    = 10;
+  var HP_MAX      = 50;
+  var LANES       = [20, 32, 44, 56, 68]; // % left — décalé droite pour éviter Teddynounet (desktop)
+  /* Correction 4 : ligne d'écrasement descendue — 88% de hauteur
+     (était 82%, descend vers le niveau du bouton Fuir) */
+  var CRUSH_Y_PCT = 88;
+
+  /* ── 100 QUESTIONS ──────────────────────────────────────── */
+  var QB = [
+    {inf:'être',p:'je',t:'présent',ok:'suis',w:['es','est','sommes','serai']},
+    {inf:'avoir',p:'tu',t:'présent',ok:'as',w:['a','ai','avons','auras']},
+    {inf:'aller',p:'il',t:'présent',ok:'va',w:['vais','vas','allons','ira']},
+    {inf:'faire',p:'nous',t:'présent',ok:'faisons',w:['faisez','font','ferons','faites']},
+    {inf:'vouloir',p:'vous',t:'présent',ok:'voulez',w:['veulent','voulons','vouliez','voudrez']},
+    {inf:'pouvoir',p:'ils',t:'présent',ok:'peuvent',w:['pouvons','pouvez','peut','pourront']},
+    {inf:'venir',p:'je',t:'présent',ok:'viens',w:['vient','venons','viendrai','venais']},
+    {inf:'voir',p:'tu',t:'présent',ok:'vois',w:['voit','voient','voyons','verras']},
+    {inf:'prendre',p:'il',t:'présent',ok:'prend',w:['prends','prenons','prennent','prendrait']},
+    {inf:'partir',p:'nous',t:'présent',ok:'partons',w:['partez','partent','partirons','partions']},
+    {inf:'savoir',p:'vous',t:'présent',ok:'savez',w:['savent','savons','saurez','sauriez']},
+    {inf:'devoir',p:'ils',t:'présent',ok:'doivent',w:['devons','devez','doit','devront']},
+    {inf:'finir',p:'tu',t:'présent',ok:'finis',w:['finit','finissons','fines','finiras']},
+    {inf:'chanter',p:'je',t:'présent',ok:'chante',w:['chantes','chantons','chantais','chanterai']},
+    {inf:'manger',p:'tu',t:'présent',ok:'manges',w:['mange','mangeons','mangez','mangeras']},
+    {inf:'parler',p:'il',t:'présent',ok:'parle',w:['parles','parlons','parlent','parlait']},
+    {inf:'écrire',p:'nous',t:'présent',ok:'écrivons',w:['écrivez','écrivent','écrivions','écrirons']},
+    {inf:'lire',p:'vous',t:'présent',ok:'lisez',w:['lisent','lisons','lirez','lisiez']},
+    {inf:'courir',p:'ils',t:'présent',ok:'courent',w:['courons','courez','court','courront']},
+    {inf:'dormir',p:'je',t:'présent',ok:'dors',w:['dort','dormons','dormais','dormirai']},
+    {inf:'boire',p:'tu',t:'présent',ok:'bois',w:['boit','boivent','buvons','boiras']},
+    {inf:'mettre',p:'il',t:'présent',ok:'met',w:['mets','mettons','mettent','mettra']},
+    {inf:'tenir',p:'nous',t:'présent',ok:'tenons',w:['tenez','teniez','tiendrons','tenant']},
+    {inf:'croire',p:'vous',t:'présent',ok:'croyez',w:['croient','croyons','croiriez','croire']},
+    {inf:'recevoir',p:'ils',t:'présent',ok:'reçoivent',w:['reçoit','reçu','recevons','recevront']},
+    {inf:'être',p:'je',t:'imparfait',ok:'étais',w:['était','serais','fus','suis']},
+    {inf:'avoir',p:'tu',t:'imparfait',ok:'avais',w:['avait','auras','eus','as']},
+    {inf:'aller',p:'il',t:'imparfait',ok:'allait',w:['allais','alla','irait','allera']},
+    {inf:'faire',p:'nous',t:'imparfait',ok:'faisions',w:['fîmes','ferions','faisons','fissions']},
+    {inf:'vouloir',p:'vous',t:'imparfait',ok:'vouliez',w:['voulûtes','voudriez','voulez','voulions']},
+    {inf:'pouvoir',p:'ils',t:'imparfait',ok:'pouvaient',w:['purent','pourraient','peuvent','pouvons']},
+    {inf:'venir',p:'je',t:'imparfait',ok:'venais',w:['vins','viendrais','viens','vienne']},
+    {inf:'voir',p:'tu',t:'imparfait',ok:'voyais',w:['vis','verrais','vois','voies']},
+    {inf:'prendre',p:'il',t:'imparfait',ok:'prenait',w:['prit','prendrait','prend','prenne']},
+    {inf:'partir',p:'nous',t:'imparfait',ok:'partions',w:['partîmes','partirions','partons','partissions']},
+    {inf:'finir',p:'vous',t:'imparfait',ok:'finissiez',w:['finîtes','finiriez','finissez','finissons']},
+    {inf:'chanter',p:'ils',t:'imparfait',ok:'chantaient',w:['chantèrent','chanteraient','chantent','chanteront']},
+    {inf:'manger',p:'je',t:'imparfait',ok:'mangeais',w:['mangeas','mangeai','mangerais','mange']},
+    {inf:'parler',p:'tu',t:'imparfait',ok:'parlais',w:['parla','parlerais','parles','parlasses']},
+    {inf:'écrire',p:'il',t:'imparfait',ok:'écrivait',w:['écrivit','écrirait','écrit','écrira']},
+    {inf:'lire',p:'nous',t:'imparfait',ok:'lisions',w:['lûmes','lirions','lisons','lussions']},
+    {inf:'courir',p:'vous',t:'imparfait',ok:'couriez',w:['courûtes','courriez','courez','courussiez']},
+    {inf:'dormir',p:'ils',t:'imparfait',ok:'dormaient',w:['dormirent','dormiraient','dorment','dormiront']},
+    {inf:'boire',p:'je',t:'imparfait',ok:'buvais',w:['bus','boirais','bois','busse']},
+    {inf:'mettre',p:'tu',t:'imparfait',ok:'mettais',w:['mis','mettrais','mets','misses']},
+    {inf:'tenir',p:'il',t:'imparfait',ok:'tenait',w:['tint','tiendrait','tient','tînt']},
+    {inf:'croire',p:'nous',t:'imparfait',ok:'croyions',w:['crûmes','croirions','croyons','crussions']},
+    {inf:'savoir',p:'vous',t:'imparfait',ok:'saviez',w:['sûtes','sauriez','savez','sussiez']},
+    {inf:'devoir',p:'ils',t:'imparfait',ok:'devaient',w:['durent','devraient','doivent','dussent']},
+    {inf:'recevoir',p:'je',t:'imparfait',ok:'recevais',w:['reçus','recevrais','reçois','reçusse']},
+    {inf:'être',p:'je',t:'futur simple',ok:'serai',w:['suis','étais','fus','serais']},
+    {inf:'avoir',p:'tu',t:'futur simple',ok:'auras',w:['as','avais','eus','aurais']},
+    {inf:'aller',p:'il',t:'futur simple',ok:'ira',w:['va','allait','alla','irait']},
+    {inf:'faire',p:'nous',t:'futur simple',ok:'ferons',w:['faisons','faisions','fîmes','ferions']},
+    {inf:'vouloir',p:'vous',t:'futur simple',ok:'voudrez',w:['voulez','vouliez','voulûtes','voudriez']},
+    {inf:'pouvoir',p:'ils',t:'futur simple',ok:'pourront',w:['peuvent','pouvaient','purent','pourraient']},
+    {inf:'venir',p:'je',t:'futur simple',ok:'viendrai',w:['viens','venais','vins','viendrais']},
+    {inf:'voir',p:'tu',t:'futur simple',ok:'verras',w:['vois','voyais','vis','verrais']},
+    {inf:'prendre',p:'il',t:'futur simple',ok:'prendra',w:['prend','prenait','prit','prendrait']},
+    {inf:'partir',p:'nous',t:'futur simple',ok:'partirons',w:['partons','partions','partîmes','partirions']},
+    {inf:'finir',p:'vous',t:'futur simple',ok:'finirez',w:['finissez','finissiez','finîtes','finiriez']},
+    {inf:'chanter',p:'ils',t:'futur simple',ok:'chanteront',w:['chantent','chantaient','chantèrent','chanteraient']},
+    {inf:'manger',p:'je',t:'futur simple',ok:'mangerai',w:['mange','mangeais','mangeai','mangerais']},
+    {inf:'parler',p:'tu',t:'futur simple',ok:'parleras',w:['parles','parlais','parlas','parlerais']},
+    {inf:'écrire',p:'il',t:'futur simple',ok:'écrira',w:['écrit','écrivait','écrivit','écrirait']},
+    {inf:'lire',p:'nous',t:'futur simple',ok:'lirons',w:['lisons','lisions','lûmes','lirions']},
+    {inf:'courir',p:'vous',t:'futur simple',ok:'courrez',w:['courez','couriez','courûtes','courriez']},
+    {inf:'dormir',p:'ils',t:'futur simple',ok:'dormiront',w:['dorment','dormaient','dormirent','dormiraient']},
+    {inf:'boire',p:'je',t:'futur simple',ok:'boirai',w:['bois','buvais','bus','boirais']},
+    {inf:'mettre',p:'tu',t:'futur simple',ok:'mettras',w:['mets','mettais','mis','mettrais']},
+    {inf:'tenir',p:'il',t:'futur simple',ok:'tiendra',w:['tient','tenait','tint','tiendrait']},
+    {inf:'croire',p:'nous',t:'futur simple',ok:'croirons',w:['croyons','croyions','crûmes','croirions']},
+    {inf:'savoir',p:'vous',t:'futur simple',ok:'saurez',w:['savez','saviez','sûtes','sauriez']},
+    {inf:'devoir',p:'ils',t:'futur simple',ok:'devront',w:['doivent','devaient','durent','devraient']},
+    {inf:'recevoir',p:'je',t:'futur simple',ok:'recevrai',w:['reçois','recevais','reçus','recevrais']},
+    {inf:'être',p:'je',t:'passé simple',ok:'fus',w:['suis','étais','serais','serai']},
+    {inf:'avoir',p:'tu',t:'passé simple',ok:'eus',w:['as','avais','aurais','auras']},
+    {inf:'aller',p:'il',t:'passé simple',ok:'alla',w:['va','allait','irait','ira']},
+    {inf:'faire',p:'nous',t:'passé simple',ok:'fîmes',w:['faisons','faisions','ferons','ferions']},
+    {inf:'vouloir',p:'vous',t:'passé simple',ok:'voulûtes',w:['voulez','vouliez','voudrez','voudriez']},
+    {inf:'pouvoir',p:'ils',t:'passé simple',ok:'purent',w:['peuvent','pouvaient','pourront','pourraient']},
+    {inf:'venir',p:'je',t:'passé simple',ok:'vins',w:['viens','venais','viendrai','viendrais']},
+    {inf:'voir',p:'tu',t:'passé simple',ok:'vis',w:['vois','voyais','verras','verrais']},
+    {inf:'prendre',p:'il',t:'passé simple',ok:'prit',w:['prend','prenait','prendra','prendrait']},
+    {inf:'partir',p:'nous',t:'passé simple',ok:'partîmes',w:['partons','partions','partirons','partirions']},
+    {inf:'finir',p:'vous',t:'passé simple',ok:'finîtes',w:['finissez','finissiez','finirez','finiriez']},
+    {inf:'chanter',p:'ils',t:'passé simple',ok:'chantèrent',w:['chantent','chantaient','chanteront','chanteraient']},
+    {inf:'manger',p:'je',t:'passé simple',ok:'mangeai',w:['mange','mangeais','mangerai','mangerais']},
+    {inf:'parler',p:'tu',t:'passé simple',ok:'parlas',w:['parles','parlais','parleras','parlerais']},
+    {inf:'écrire',p:'il',t:'passé simple',ok:'écrivit',w:['écrit','écrivait','écrira','écrirait']},
+    {inf:'lire',p:'nous',t:'passé simple',ok:'lûmes',w:['lisons','lisions','lirons','lirions']},
+    {inf:'courir',p:'vous',t:'passé simple',ok:'courûtes',w:['courez','couriez','courrez','courriez']},
+    {inf:'dormir',p:'ils',t:'passé simple',ok:'dormirent',w:['dorment','dormaient','dormiront','dormiraient']},
+    {inf:'boire',p:'je',t:'passé simple',ok:'bus',w:['bois','buvais','boirai','boirais']},
+    {inf:'mettre',p:'tu',t:'passé simple',ok:'mis',w:['mets','mettais','mettras','mettrais']},
+    {inf:'tenir',p:'il',t:'passé simple',ok:'tint',w:['tient','tenait','tiendra','tiendrait']},
+    {inf:'croire',p:'nous',t:'passé simple',ok:'crûmes',w:['croyons','croyions','croirons','croirions']},
+    {inf:'savoir',p:'vous',t:'passé simple',ok:'sûtes',w:['savez','saviez','saurez','sauriez']},
+    {inf:'devoir',p:'ils',t:'passé simple',ok:'durent',w:['doivent','devaient','devront','devraient']},
+    {inf:'recevoir',p:'je',t:'passé simple',ok:'reçus',w:['reçois','recevais','recevrai','recevrais']}
+  ];
+
+  var TUTO_SLIDES = [
+    { title:'Objectif', img:'https://i.postimg.cc/c1wLMcRx/Slide1.png',
+      text:'Nourris Teddynounet en choisissant la <strong>bonne conjugaison</strong> parmi les aliments qui tombent.' },
+    { title:'Attention', img:'https://i.postimg.cc/43WJyLRM/Slide2.png',
+      text:'Les plats douteux de Bourgour sont <strong>immangeables</strong>. Un mauvais choix ou un aliment raté fait perdre de l’énergie.' },
+    { title:'Les combos', img:'https://i.postimg.cc/g0gYjSbT/Slide3.png',
+      text:'<strong>5 bonnes réponses d’affilée</strong> = points ×2 — <strong>10 d’affilée</strong> = points ×3.<br>Plus tu enchaînes les combos, plus les aliments tombent vite ! Bon courage 💪' }
+  ]
+
+  /* ── ÉTAT PRIVÉ ──────────────────────────────────────────── */
+  var _running     = false;
+  var _phase       = 'idle'; // idle|intro|tutorial|combat|victory|defeat
+  var _hp          = HP_START;
+  var _combo       = 0;
+  var _comboState  = 'none'; // 'none'|'x2'|'x3'
+  var _noPerfect   = true;
+  var _neverCorrect= true;
+  var _wrongCount  = 0;   /* Nombre de mauvaises réponses (pour badge Cordon Bleu ≤10) */
+  var _pool        = [];
+  var _poolIdx     = 0;
+  var _curQ        = null;
+  var _timers      = [];
+  var _audio       = {};
+  var _crushY      = 0;
+  var _emberLoop   = null;
+  var _cbs         = {};
+  var _tutoSlide   = 0;
+
+  /* ── CYCLE DE QUESTION ───────────────────────────────────────
+     Correction 2 : une seule question active à la fois.
+     _qActive = true tant que des aliments sont encore sur l'écran
+               OU que la question n'a pas été résolue.
+     _qResolved = true dès qu'une réponse a été donnée (bonne/mauvaise/raté).
+     _activeFoods = liste des aliments courants.
+     _foodsRemaining = nombre d'aliments pas encore écrasés/supprimés.
+     Quand _foodsRemaining atteint 0 ET _qResolved=true → on peut passer.
+  ─────────────────────────────────────────────────────────── */
+  var _qActive      = false;  // true = une question est en cours
+  var _qResolved    = false;  // true = bonne/mauvaise réponse donnée
+  var _activeFoods  = [];     // aliments courants
+  var _foodsRemaining = 0;    // aliments pas encore finalisés
+
+  /* ── UTILS ───────────────────────────────────────────────── */
+  function _shuffle(a) {
+    var arr = a.slice();
+    for (var i = arr.length-1; i > 0; i--) {
+      var j = Math.floor(Math.random()*(i+1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  function _T(fn, ms) { var id = setTimeout(fn, ms); _timers.push(id); return id; }
+  function _clearTimers() { _timers.forEach(clearTimeout); _timers = []; }
+  function _el(id) { return document.getElementById(id); }
+  function _isMobile() { return window.innerWidth < window.innerHeight && window.innerWidth <= 640; }
+  function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ── AUDIO ───────────────────────────────────────────────── */
+  function _initAudio() {
+    _audio = {};
+    Object.keys(SND_URL).forEach(function(k) {
+      var a = document.createElement('audio');
+      a.src = SND_URL[k]; a.preload = 'auto'; _audio[k] = a;
+    });
+  }
+  function _play(k, loop, vol) {
+    var a = _audio[k]; if (!a) return;
+    a.loop = !!loop; a.volume = (vol !== undefined) ? vol : 1.0;
+    a.currentTime = 0; a.play().catch(function(){});
+  }
+  function _stop(k) { var a = _audio[k]; if (!a) return; a.pause(); a.currentTime = 0; }
+  function _stopAll() { Object.keys(_audio).forEach(function(k){ _stop(k); }); }
+  /* Correction 1 : boucle musique combat via ended event */
+  function _playCombatMusic() {
+    var a = _audio['COMBAT']; if (!a) return;
+    a.loop = true;  // HTML5 loop natif pour éviter les micro-coupures
+    a.volume = 0.35; a.currentTime = 0;
+    a.play().catch(function(){});
+  }
+
+  /* ── BG ──────────────────────────────────────────────────── */
+  function _setBg() {
+    var bg = _el('teddyBg');
+    bg.style.backgroundImage = 'url(' + (_isMobile() ? IMG.BG_MOBILE : IMG.BG_DESKTOP) + ')';
+    bg.style.backgroundSize = 'cover'; bg.style.backgroundPosition = 'center';
+  }
+  /* Correction 4 : crush line calculée dynamiquement à 88% */
+  function _computeCrushY() {
+    var ov = _el('teddyOv');
+    _crushY = (ov ? ov.offsetHeight : window.innerHeight) * CRUSH_Y_PCT / 100;
+  }
+
+  /* ── INIT ────────────────────────────────────────────────── */
+  function init(container, opts) {
+    if (_running) destroy();
+    _running = true; _phase = 'intro';
+    _hp = HP_START; _combo = 0; _comboState = 'none';
+    _noPerfect = true; _neverCorrect = true; _wrongCount = 0;
+    _qActive = false; _qResolved = false;
+    _activeFoods = []; _foodsRemaining = 0;
+    _pool = _shuffle(QB.slice()); _poolIdx = 0;
+    _cbs = opts || {}; _tutoSlide = 0;
+
+    var ov = _el('teddyOv');
+    ov.style.display = 'block';
+    ov.classList.remove('x3shaking'); ov.style.animation = '';
+    _el('teddyX3Overlay').classList.remove('active');
+    var _x2el=_el('teddyX2Overlay');if(_x2el)_x2el.classList.remove('active');
+    var _cgel=_el('teddyComboGiant');if(_cgel){_cgel.className='';_cgel.textContent='';}
+    _el('teddyComboFlash').style.cssText = '';
+
+    _setBg(); _computeCrushY(); _initAudio(); _updateHPDisplay(); _updateComboDisplay();
+
+    var tc = _el('teddyChar'), bc = _el('bourgourChar');
+    tc.src = IMG.TEDDY_IDLE; tc.style.left = '-300px'; tc.style.transition = 'none'; tc.style.animation = ''; tc.style.filter = '';
+    bc.src = IMG.BOURG_NORMAL; bc.style.right = '-800px'; bc.style.transition = 'none'; bc.style.animation = ''; bc.style.filter = '';
+
+    _el('teddyFuirBtn').style.display = 'block';
+    _el('teddyQuestionBox').style.display = 'none';
+    _el('teddyFoodContainer').innerHTML = '';
+    _el('teddyEndOv').style.display = 'none';
+    _el('teddyEndPrimary').style.display = '';
+    _el('teddyEpicMsg').classList.remove('show');
+
+    try{var _bgm=document.getElementById('bgMusic');if(_bgm){_bgm.pause();_bgm.currentTime=0;}}catch(e){}
+    _play('INTRO', false, 0.7);
+    _startIntro();
+  }
+
+  /* ── INTRO ───────────────────────────────────────────────── */
+  function _startIntro() {
+    _T(function() {
+      var tc = _el('teddyChar');
+      tc.style.transition = 'left 1s ease-out'; tc.style.left = '2%';
+    }, 200);
+    _T(function() {
+      _showDialog(IMG.AV_TEDDY, 'Teddynounet',
+        'Salut\u00a0! Aujourd\'hui, je vais me r\u00e9galer comme jamais\u00a0! Burgers, frites, tacos\u2026 je vais tout d\u00e9vorer\u00a0!',
+        function() {
+          _stop('INTRO');
+          _shakeOnce();
+          _T(function() { _el('teddyChar').src = IMG.TEDDY_PANIC; }, 80);
+          _T(function() {
+            var bc = _el('bourgourChar');
+            bc.style.transition = 'right 1s ease-out'; bc.style.right = '2%';
+          }, 300);
+          _T(function() {
+            _el('teddyChar').src = IMG.TEDDY_IDLE;
+            _showDialog(IMG.AV_BOURG, 'Cantinier Bourgour',
+              'MOI AVOIR CUISIN\u00c9 POUR TOI\u00a0!! TU MANGER TOUT\u00a0!!',
+              function() { _showTutorial(); }
+            );
+          }, 1600);
+        }
+      );
+    }, 1900);
+  }
+
+  function _showDialog(avatar, name, text, onClose) {
+    _el('teddyDialogAvatar').src = avatar;
+    _el('teddyDialogName').textContent = name;
+    _el('teddyDialogText').textContent = text;
+    _el('teddyDialogOv').style.display = 'flex';
+    var btn = _el('teddyDialogBtn');
+    var nb = btn.cloneNode(true); btn.parentNode.replaceChild(nb, btn);
+    nb.onclick = function() { _el('teddyDialogOv').style.display = 'none'; if (onClose) onClose(); };
+  }
+
+  /* ── TUTORIAL ────────────────────────────────────────────── */
+  function _showTutorial() {
+    _phase = 'tutorial'; _tutoSlide = 0;
+    _el('teddyDialogOv').style.display = 'none';
+    _el('teddyTutoOv').style.display = 'flex';
+    _renderTutoSlide();
+  }
+  /* _renderTutoSlide : affiche image + titre + texte */
+  function _renderTutoSlide() {
+    var s = TUTO_SLIDES[_tutoSlide];
+    var tutoImg = _el('teddyTutoImg');
+    if (tutoImg) {
+      if (s.img) {
+        tutoImg.src = s.img; tutoImg.style.display = 'block';
+        /* Zoom lightbox au clic */
+        tutoImg.onclick = function() {
+          var lb=document.createElement('div');
+          lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+          var li=document.createElement('img');li.src=tutoImg.src;
+          li.style.cssText='max-width:96vw;max-height:96vh;border-radius:12px;object-fit:contain;';
+          lb.appendChild(li);
+          lb.onclick=function(){if(lb.parentNode)document.body.removeChild(lb);};
+          document.body.appendChild(lb);
+        };
+      }
+      else tutoImg.style.display = 'none';
+    }
+    _el('teddyTutoTitle').textContent = s.title;
+    _el('teddyTutoText').innerHTML = s.text;
+    var isLast = (_tutoSlide === TUTO_SLIDES.length - 1);
+    var dots = _el('teddyTutoDots'); dots.innerHTML = '';
+    TUTO_SLIDES.forEach(function(_,i) {
+      var d = document.createElement('div');
+      d.className = 'teddy-tuto-dot' + (i === _tutoSlide ? ' active' : '');
+      dots.appendChild(d);
+    });
+    var btn = _el('teddyTutoBtn');
+    var nb = btn.cloneNode(true); btn.parentNode.replaceChild(nb, btn);
+    nb.textContent = isLast ? 'Compris !' : 'Suivant \u25b6';
+    nb.onclick = function() {
+      if (_tutoSlide < TUTO_SLIDES.length - 1) { _tutoSlide++; _renderTutoSlide(); }
+      else { _el('teddyTutoOv').style.display = 'none'; _startCombat(); }
+    };
+  }
+
+  /* ── COMBAT ──────────────────────────────────────────────── */
+  function _startCombat() {
+    _phase = 'combat';
+    _el('teddyQuestionBox').style.display = 'block';
+    /* Correction 1 : boucle musique propre */
+    _playCombatMusic();
+    _nextRound();
+  }
+
+  function _getQ() {
+    if (_poolIdx >= _pool.length) { _pool = _shuffle(QB.slice()); _poolIdx = 0; }
+    return _pool[_poolIdx++];
+  }
+
+  /* Vitesse : endRush accélère les 20 derniers HP */
+  /* Vitesse de chute : progression lissée + accélération finale renforcée
+     endRush : démarre à 75% HP (au lieu de 80%) avec pente plus raide (×7)
+     Plancher abaissé à 2800ms pour les derniers HP */
+  function _getFallMs() {
+    var hpF    = Math.max(0, (_hp - HP_START) / (HP_MAX - HP_START));
+    var comboF = Math.min(_combo, 20) / 20;
+    // endRush démarre à 75% et plafonne à 25HP restants
+    var endRush = hpF >= 0.75 ? (hpF - 0.75) * 7.0 : 0;
+    var dur = 8500 - 2800*hpF - 1700*comboF - 2000*endRush;
+    return Math.max(2800, dur);
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     CORRECTION 2 : Cycle de question robuste
+     ─────────────────────────────────────────────────────────
+     _nextRound() ne se lance QUE si _qActive === false.
+     Chaque aliment décrémente _foodsRemaining quand il disparaît.
+     Quand _foodsRemaining atteint 0 ET _qResolved === true,
+     _onRoundFullyClear() est appelé pour déclencher la prochaine manche.
+  ════════════════════════════════════════════════════════════ */
+  function _nextRound() {
+    if (_phase !== 'combat' || !_running) return;
+    if (_qActive) return; // Guard : une seule question à la fois
+    _qActive = true;
+    _qResolved = false;
+    _activeFoods = [];
+    _foodsRemaining = 0;
+
+    _curQ = _getQ();
+    _el('teddyQText').textContent =
+      'Conjugue "' + _curQ.inf + '" — ' + _curQ.p + ' — ' + _curQ.t;
+
+    var answers = _shuffle([_curQ.ok].concat(_curQ.w.slice(0,4)));
+    var shuffledLanes = _shuffle(LANES.slice());
+    var fallBase = _getFallMs();
+    var delays = [0,0,0,0,0].map(function() { return Math.floor(Math.random()*2200); });
+    delays.sort(function(a,b){ return a-b; });
+
+    _foodsRemaining = answers.length; // 5 aliments à finaliser
+
+    answers.forEach(function(ans, i) {
+      var isCorrect = (ans === _curQ.ok);
+      var laneX = shuffledLanes[i];
+      var delay = delays[i];
+      var dur = fallBase + Math.floor((Math.random()-0.5)*800);
+      _T(function() {
+        if (_phase !== 'combat' || !_running) return;
+        _spawnFood(ans, isCorrect, FOOD_TYPES[i % FOOD_TYPES.length], laneX, dur);
+      }, delay);
+    });
+  }
+
+  /* ── SPAWN ALIMENT ───────────────────────────────────────── */
+  function _spawnFood(ans, isCorrect, type, laneX, dur) {
+    var container = _el('teddyFoodContainer');
+    var el = document.createElement('div');
+    el.className = 'teddy-food';
+    if (isCorrect) el.classList.add('correct-food');
+
+    /* Correction 5 : rotation aléatoire renforcée ±20° */
+    var rot = Math.round((Math.random()-0.5) * 40);
+    var animName = rot < 0 ? 'teddyFallRotateLeft' : 'teddyFallRotateRight';
+    var containerH = container.offsetHeight || window.innerHeight;
+    var fallDist = containerH * (CRUSH_Y_PCT / 100) + 80;
+
+    /* Séparation sprite (tourne) / label (reste stable et lisible) */
+    var imgs = IMG.FOODS[type];
+    var spinAnim = rot < 0 ? 'teddySpinCCW' : 'teddySpinCW';
+    el.innerHTML =
+      '<div class="teddy-food-spin" style="animation:' + spinAnim + ' ' + dur + 'ms linear forwards;">' +
+        '<img class="teddy-food-img" src="' + imgs.n + '" alt="' + type + '" draggable="false">' +
+      '</div>' +
+      '<div class="teddy-food-label">' + _esc(ans) + '</div>';
+
+    el.style.cssText =
+      'left:' + laneX + '%;' +
+      '--teddy-fall-dist:' + fallDist + 'px;' +
+      'animation:teddyFoodFall ' + dur + 'ms linear forwards;';
+
+    var food = { el: el, isCorrect: isCorrect, type: type, imgs: imgs, done: false };
+    _activeFoods.push(food);
+    container.appendChild(el);
+
+    /* Timer d'impact crush line */
+    var crushId = setTimeout(function() {
+      if (food.done) return;
+      food.done = true;
+      _onFoodLanded(food);
+    }, dur);
+    _timers.push(crushId);
+
+    function _handleClick(e) {
+      e.preventDefault(); e.stopPropagation();
+      if (food.done || _phase !== 'combat' || !_running) return;
+      food.done = true;
+      clearTimeout(crushId);
+      _onFoodClicked(food);
+    }
+    el.addEventListener('click', _handleClick);
+    el.addEventListener('touchend', _handleClick, { passive: false });
+    return food;
+  }
+
+  /* ── ALIMENT CLIQUÉ ──────────────────────────────────────── */
+  /* Animation aliment cliqué : zoom + vol vers Teddynounet.
+     Les autres aliments sont immédiatement écrasés. */
+  function _onFoodClicked(food) {
+    if (_qResolved) { _crushFood(food); return; }
+    _qResolved = true;
+    // Écraser immédiatement tous les autres aliments
+    var others = _activeFoods.filter(function(f){ return f !== food && !f.done; });
+    others.forEach(function(f){ f.done = true; _crushFoodImmediate(f); });
+    // Animer l'aliment sélectionné vers Teddynounet
+    _animateFoodToTeddy(food, function() {
+      // Callback après l'animation
+      if (food.isCorrect) _onCorrect();
+      else _onWrong();
+    });
+  }
+
+  /* Écrasement immédiat (sans attendre le timer) */
+  function _crushFoodImmediate(food) {
+    if (!food.el || !food.el.parentNode) return;
+    food.crushed = true;
+    var img = food.el.querySelector('.teddy-food-img');
+    if (img) img.src = food.imgs.c;
+    food.el.classList.add('crushed');
+    food.el.style.animation = 'none';
+    food.el.style.transform = 'translateY(' + Math.max(0, _crushY - 80) + 'px) scaleY(0.3) scaleX(1.4)';
+    food.el.style.transition = 'transform 0.25s ease-out, opacity 0.4s';
+    food.el.style.opacity = '0';
+    var toRemove = food.el;
+    setTimeout(function() {
+      if (toRemove && toRemove.parentNode) toRemove.parentNode.removeChild(toRemove);
+      _activeFoods = _activeFoods.filter(function(f){ return f !== food; });
+      _foodsRemaining--;
+      // Pas de _checkRoundClear ici — géré par _animateFoodToTeddy
+    }, 500);
+  }
+
+  /* Trajectoire propre : ghost positionné aux vraies coords getBoundingClientRect.
+     Aucun saut visuel — le ghost part exactement depuis la position rendue. */
+  function _animateFoodToTeddy(food, onDone) {
+    var ov = _el('teddyOv');
+    var tc = _el('teddyChar');
+    if (!ov) { onDone(); return; }
+    var ovRect = ov.getBoundingClientRect();
+    var tcRect = tc ? tc.getBoundingClientRect() : null;
+    // Snapshot position rendue de l'aliment (inclut l'animation CSS)
+    var el = food.el;
+    var rect = el ? el.getBoundingClientRect() : null;
+    // Supprimer l'original maintenant
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+    _activeFoods = _activeFoods.filter(function(f){ return f !== food; });
+    if (!rect) { _qActive=false; _foodsRemaining=0; onDone(); _T(_nextRound,650); return; }
+    // Ghost positionné aux vraies coordonnées dans le repère de l'overlay
+    var startX = rect.left - ovRect.left;
+    var startY = rect.top  - ovRect.top;
+    var imgW = rect.width, imgH = rect.height;
+    var auraColor = food.isCorrect ? 'rgba(250,204,21,.9)' : 'rgba(74,222,128,.9)';
+    var ghost = document.createElement('div');
+    ghost.style.cssText =
+      'position:absolute;left:' + startX + 'px;top:' + startY + 'px;' +
+      'width:' + imgW + 'px;height:' + imgH + 'px;' +
+      'z-index:22;pointer-events:none;transition:none;transform-origin:center center;';
+    var gi = document.createElement('img');
+    gi.src = food.imgs.n;
+    gi.style.cssText = 'width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 16px ' + auraColor + ');';
+    ghost.appendChild(gi);
+    ov.appendChild(ghost);
+    // Phase 1 : zoom bref
+    setTimeout(function() {
+      ghost.style.transition = 'transform .11s ease-out';
+      ghost.style.transform = 'scale(1.28)';
+      // Phase 2 : vol vers Teddynounet
+      setTimeout(function() {
+        var targetX = tcRect ? (tcRect.left - ovRect.left + tcRect.width*.5 - imgW*.5) : ovRect.width*.08;
+        var targetY = tcRect ? (tcRect.top  - ovRect.top  + tcRect.height*.22 - imgH*.5) : ovRect.height*.5;
+        var dx = targetX - startX;
+        var dy = targetY - startY;
+        ghost.style.transition = 'transform .50s cubic-bezier(.2,.05,.5,1), opacity .2s .32s';
+        ghost.style.transform = 'translate('+dx+'px,'+dy+'px) scale(.22) rotate('+(food.isCorrect?360:-270)+'deg)';
+        ghost.style.opacity = '0';
+        setTimeout(function() {
+          if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+          _qActive = false; _foodsRemaining = 0;
+          onDone(); _T(_nextRound, 650);
+        }, 540);
+      }, 120);
+    }, 15);
+  }
+
+  /* ── ALIMENT TOUCHE LE SOL ────────────────────────────────── */
+  function _onFoodLanded(food) {
+    var wasCorrect = food.isCorrect;
+    _crushFood(food);
+    if (wasCorrect && !_qResolved) {
+      _qResolved = true;
+      _onMiss();
+    } else {
+      _checkRoundClear();
+    }
+  }
+
+  /* Correction 2 : vérification que tous les aliments sont finalisés */
+  function _checkRoundClear() {
+    _foodsRemaining--;
+    if (_foodsRemaining <= 0 && _qResolved) {
+      _onRoundFullyClear();
+    }
+  }
+
+  /* Tous les aliments ont disparu ET la question est résolue → manche suivante */
+  function _onRoundFullyClear() {
+    if (_phase !== 'combat') return;
+    _qActive = false;
+    _T(_nextRound, 600); // léger délai avant la prochaine manche
+  }
+
+  /* ── ANIMATION ÉCRASEMENT ────────────────────────────────── */
+  /* Écrasement individuel + sauce éclats */
+  function _crushFood(food) {
+    if (!food.el || !food.el.parentNode) { _checkRoundClear(); return; }
+    var img = food.el.querySelector('.teddy-food-img');
+    if (img) img.src = food.imgs.c;
+    food.el.classList.add('crushed');
+    food.el.style.animation = 'none';
+    food.el.style.transform = 'translateY(' + Math.max(0, _crushY - 80) + 'px)';
+    _spawnSauce(food);
+    var toRemove = food.el;
+    setTimeout(function() {
+      if (toRemove && toRemove.parentNode) toRemove.parentNode.removeChild(toRemove);
+      _activeFoods = _activeFoods.filter(function(f){ return f !== food; });
+      _checkRoundClear();
+    }, 1000);
+  }
+
+  /* Sauce renforcée : plus de particules, plus grandes, plus visibles */
+  function _spawnSauce(food) {
+    var ov = _el('teddyOv'); if (!ov || !food.el) return;
+    var rect = food.el.getBoundingClientRect();
+    var ovRect = ov.getBoundingClientRect();
+    var cx = rect.left - ovRect.left + rect.width * .5;
+    var cy = _crushY - 15;
+    var colors = ['#fb923c','#fde047','#f87171','#86efac','#60a5fa','#c084fc','#fbbf24'];
+    var count = 12; // plus de particules
+    for (var i = 0; i < count; i++) {
+      (function(idx){
+        var b = document.createElement('div');
+        b.className = 'teddy-sauce-blob';
+        var ang  = (idx/count)*Math.PI*2 + Math.random()*.4;
+        var dist = 28 + Math.random()*55; // dispersion plus large
+        var sz   = 8  + Math.random()*11; // taille plus grande
+        b.style.cssText =
+          'width:'+sz+'px;height:'+sz+'px;' +
+          'background:'+colors[idx%colors.length]+';' +
+          'box-shadow:0 0 6px '+colors[idx%colors.length]+';' + // glow
+          'left:'+(cx-sz/2)+'px;top:'+(cy-sz/2)+'px;' +
+          '--sx:'+Math.round(Math.cos(ang)*dist)+'px;' +
+          '--sy:'+Math.round(Math.sin(ang)*dist*.55)+'px;';
+        ov.appendChild(b);
+        setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b);}, 700);
+      })(i);
+    }
+  }
+
+  /* Vider tous les aliments actifs d'un coup (fin de partie / abandon) */
+  function _clearAllFoods() {
+    var copy = _activeFoods.slice();
+    copy.forEach(function(f) {
+      if (!f.done) { f.done = true; }
+      if (f.el && f.el.parentNode) f.el.parentNode.removeChild(f.el);
+    });
+    _activeFoods = []; _foodsRemaining = 0;
+    if (_el('teddyFoodContainer')) _el('teddyFoodContainer').innerHTML = '';
+  }
+
+  /* ── BONNE RÉPONSE ───────────────────────────────────────── */
+  function _onCorrect() {
+    _neverCorrect = false;
+    _combo++;
+    var gain = _combo >= 10 ? 3 : _combo >= 3 ? 2 : 1;
+    _changeHP(gain);
+    _floatText('+' + gain, '#4ade80');
+    _animTeddy('correct');
+    _animBourg('hit');
+    _play('B_HIT', false, 0.85);
+    _updateComboState();
+  }
+
+  /* ── MAUVAISE RÉPONSE ────────────────────────────────────── */
+  /* _onWrong: mauvais clic — compteur wrongCount pour badge Cordon Bleu */
+  function _onWrong() {
+    _noPerfect = false;
+    _wrongCount++;
+    _combo = 0;
+    _changeHP(-2);
+    _floatText('-2', '#ef4444');
+    _animTeddy('wrong');
+    _animBourg('laugh');
+    _play('B_LAUGH', false, 0.85);
+    _clearComboState();
+    _updateComboDisplay();
+  }
+
+  /* _onMiss : aliment raté / timeout → sprite angry. Comptabilisé aussi. */
+  function _onMiss() {
+    _noPerfect = false;
+    _wrongCount++;
+    _combo = 0;
+    _changeHP(-2);
+    _floatText('-2', '#ef4444');
+    _animTeddy('miss');  // angry = aliment raté
+    _animBourg('laugh');
+    _play('B_LAUGH', false, 0.85);
+    _clearComboState();
+    _updateComboDisplay();
+  }
+
+  /* ── HP ──────────────────────────────────────────────────── */
+  function _changeHP(delta) {
+    _hp = Math.max(0, Math.min(HP_MAX, _hp + delta));
+    _updateHPDisplay();
+    if (_hp >= HP_MAX) { _clearAllFoods(); _qActive = false; _T(_triggerVictory, 300); }
+    else if (_hp <= 0)  { _clearAllFoods(); _qActive = false; _T(_triggerDefeat,  300); }
+  }
+  function _updateHPDisplay() {
+    var fill = _el('teddyHpFill'), val = _el('teddyHpVal');
+    if (!fill) return;
+    var pct = (_hp / HP_MAX) * 100;
+    fill.style.width = pct + '%';
+    fill.style.background =
+      pct >= 60 ? 'linear-gradient(90deg,#4ade80,#86efac)' :
+      pct >= 30 ? 'linear-gradient(90deg,#facc15,#fde047)' :
+                  'linear-gradient(90deg,#ef4444,#f87171)';
+    /* RENOMMAGE 12 : "Teddynounet" dans le HTML du label */
+    if (val) val.textContent = _hp + '/' + HP_MAX;
+  }
+
+  /* ── COMBO / ÉTAT ────────────────────────────────────────── */
+  /* Gestion combos x2/x3 : popup géant centré + filtres écran + tremblements différenciés */
+  function _updateComboState() {
+    var prev = _comboState;
+    /* Combo seuils : 5 = multiplicateur x2, 10 = x3 */
+    var next = _combo >= 10 ? 'x3' : _combo >= 5 ? 'x2' : 'none';
+    _comboState = next;
+    _updateComboDisplay();
+    if (next !== prev) {
+      /* Découplage combo : effets visuels différés (setTimeout 0)
+         pour ne jamais bloquer la transition vers la question suivante */
+      if (next === 'x2') {
+        _clearX3Effects(); _activateX2Effects();
+        /* Délai 60ms : laisse le reflow DOM se stabiliser avant le surgissement X2 */
+        setTimeout(function() {
+          _triggerComboFlash('rgba(250,204,21,.6)',550);
+          _spawnComboBurst(false);
+          _showGiantCombo('X2',false);
+          _showEpicMsg('À partir de 5 de combo : chaque aliment vaut +2 !');
+        }, 60);
+      } else if (next === 'x3') {
+        _clearX2Effects(); _activateX3Effects();
+        /* Délai 60ms : fiabilité du reflow pour X3 */
+        setTimeout(function() {
+          _triggerComboFlash('rgba(251,146,60,.75)',700);
+          _spawnComboBurst(true);
+          _showGiantCombo('X3',true);
+          _showEpicMsg('À partir de 10 de combo : chaque aliment vaut +3 !');
+        }, 60);
+      } else {
+        _clearX2Effects();
+        _clearX3Effects();
+      }
+    }
+  }
+
+  /* Popup géant X2 / X3 centré à l'écran */
+  /* Surgissement X2/X3 : animation pop spectaculaire centrée à l'écran
+     Visible, rapide, ne bloque pas le jeu (pointer-events:none garanti) */
+  /* Surgissement X2/X3 : animation spectaculaire centrée à l'écran.
+     - Se rejoue à chaque fois que le palier est (ré)atteint
+     - pointer-events:none garanti (CSS ID rule)
+     - setTimeout 50ms pour laisser le DOM se mettre à jour */
+  function _showGiantCombo(text, isX3) {
+    var cg = _el('teddyComboGiant'); if (!cg) return;
+    // Réinitialiser COMPLÈTEMENT avant de relancer (void offsetWidth force reflow)
+    cg.className = '';
+    cg.textContent = '';
+    void cg.offsetWidth; // force reflow pour relancer l'animation CSS
+    setTimeout(function() {
+      cg.textContent = text;
+      // X2 : classe jaune + pop / X3 : classe orange + pop plus fort
+      cg.className = (isX3 ? 'x3' : 'x2') + ' popping';
+      setTimeout(function() {
+        if (cg.textContent === text) { cg.className = ''; cg.textContent = ''; }
+      }, 1200);
+    }, 50); // 50ms : délai minimal pour garantir le reflow
+  }
+
+  /* Effets x2 : overlay jaune léger + tremblement léger */
+  function _activateX2Effects() {
+    var ov = _el('teddyOv'); if (ov) ov.classList.add('x2shaking');
+    var x2 = _el('teddyX2Overlay'); if (x2) x2.classList.add('active');
+  }
+  function _clearX2Effects() {
+    var ov = _el('teddyOv'); if (ov) ov.classList.remove('x2shaking');
+    var x2 = _el('teddyX2Overlay'); if (x2) x2.classList.remove('active');
+  }
+  function _clearComboState() {
+    var prev = _comboState; _comboState = 'none';
+    _clearX2Effects();
+    if (prev === 'x3') _clearX3Effects();
+  }
+  function _activateX3Effects() {
+    _el('teddyOv').classList.add('x3shaking');
+    _el('teddyX3Overlay').classList.add('active');
+    _startEmberLoop();
+  }
+  function _clearX3Effects() {
+    _el('teddyOv').classList.remove('x3shaking');
+    _el('teddyX3Overlay').classList.remove('active');
+    var _x2el=_el('teddyX2Overlay');if(_x2el)_x2el.classList.remove('active');
+    var _cgel=_el('teddyComboGiant');if(_cgel){_cgel.className='';_cgel.textContent='';}
+    _stopEmberLoop();
+  }
+  function _startEmberLoop() {
+    _stopEmberLoop();
+    _emberLoop = setInterval(function() {
+      if (_phase !== 'combat' || _comboState !== 'x3') { _stopEmberLoop(); return; }
+      _spawnEmbers(4);
+    }, 180);
+  }
+  function _stopEmberLoop() {
+    if (_emberLoop) { clearInterval(_emberLoop); _emberLoop = null; }
+  }
+  function _spawnEmbers(count) {
+    var ov = _el('teddyOv'); if (!ov) return;
+    for (var i = 0; i < count; i++) {
+      var e = document.createElement('div');
+      e.className = 'teddy-ember';
+      var size = 3 + Math.random()*6;
+      var x = 10 + Math.random()*80;
+      var y = 40 + Math.random()*45;
+      var dx = (Math.random()-0.5)*60;
+      var dur = (0.6 + Math.random()*0.8).toFixed(2);
+      var del = (Math.random()*0.3).toFixed(2);
+      var col = Math.random()>.5 ? '#fb923c' : '#facc15';
+      e.style.cssText='width:'+size+'px;height:'+size+'px;background:'+col+';left:'+x+'%;top:'+y+'%;--ex:'+Math.round(dx)+'px;--ed:'+dur+'s;--edel:'+del+'s;';
+      ov.appendChild(e);
+      setTimeout(function(el){ if(el&&el.parentNode)el.parentNode.removeChild(el); }, (parseFloat(dur)+parseFloat(del)+0.2)*1000, e);
+    }
+  }
+  function _updateComboDisplay() {
+    var el = _el('teddyComboDisplay'); if (!el) return;
+    /* Correction combo libellé : affiche la série réelle (+N), pas le multiplicateur */
+    if (_combo >= 2) {
+      var icon = _combo >= 10 ? '🔥' : (_combo >= 5 ? '⭐⭐' : '⭐');
+      el.textContent = icon + ' Combo : +' + _combo;
+      el.className = 'visible ' + (_comboState==='x3'?'x3':_comboState==='x2'?'x2':'');
+    } else { el.className=''; }
+  }
+  function _triggerComboFlash(color, durationMs) {
+    var f = _el('teddyComboFlash'); if (!f) return;
+    f.style.cssText='position:absolute;inset:0;z-index:25;pointer-events:none;background:'+color+';opacity:1;';
+    setTimeout(function(){ f.style.opacity='0'; }, 60);
+    setTimeout(function(){ f.style.cssText=''; }, durationMs);
+  }
+
+  /* ── ANIMATIONS PERSONNAGES ──────────────────────────────── */
+    function _animTeddy(type) {
+    var tc = _el('teddyChar'); if (!tc) return;
+    if (type === 'correct') {
+      tc.src = IMG.TEDDY_MANGE; tc.style.animation = 'teddyBounce .5s ease-out'; tc.style.filter = '';
+      setTimeout(function(){
+        if(!tc.isConnected)return;
+        tc.src = IMG.TEDDY_HAPPY; tc.style.animation = 'teddyHealFlash .6s ease-out';
+        setTimeout(function(){ if(!tc.isConnected)return; tc.src=IMG.TEDDY_IDLE; tc.style.animation=''; tc.style.filter=''; }, 700);
+      }, 350);
+    /* 'wrong'=mauvais clic→vomito / 'miss'=aliment raté→angry */
+    } else {
+      tc.src = IMG.TEDDY_MANGE; tc.style.animation = '';
+      var isMiss = (type === 'miss');
+      setTimeout(function(){
+        if(!tc.isConnected)return;
+        tc.src = isMiss ? IMG.TEDDY_ANGRY : IMG.TEDDY_VOMITO;
+        tc.style.animation = 'teddyHitFlash .6s ease-out';
+        setTimeout(function(){
+          if(!tc.isConnected)return;
+          tc.src = IMG.TEDDY_IDLE; tc.style.animation=''; tc.style.filter='';
+        }, isMiss ? 1100 : 900);
+      }, 300);
+    }
+  }
+
+
+  /* Correction 7 : Bourgour animé proprement selon la situation */
+  function _animBourg(type) {
+    var bc = _el('bourgourChar'); if (!bc) return;
+    if (type === 'hit') {
+      /* Bourgour blessé : flash rouge + sprite angry */
+      bc.src = IMG.BOURG_ANGRY;
+      bc.style.animation = 'teddyBourgFlash .7s ease-out';
+    } else {
+      /* Bourgour rit : bounce + sprite rit */
+      bc.src = IMG.BOURG_RIT;
+      bc.style.animation = 'teddyBourgBounce .6s ease-out';
+    }
+    _T(function(){
+      bc.src = IMG.BOURG_NORMAL;
+      bc.style.animation = ''; bc.style.filter = '';
+    }, 1100);
+  }
+
+  function _floatText(txt, color) {
+    var ov = _el('teddyOv'); if (!ov) return;
+    var d = document.createElement('div');
+    d.className = 'teddy-float-text'; d.textContent = txt; d.style.color = color;
+    var tc = _el('teddyChar');
+    var x = tc ? (tc.offsetLeft + tc.offsetWidth/2) : ov.offsetWidth/2;
+    var y = tc ? tc.offsetTop + 20 : 150;
+    d.style.left = x + 'px'; d.style.top = y + 'px';
+    ov.appendChild(d);
+    setTimeout(function(){ if(d.parentNode)d.parentNode.removeChild(d); }, 1400);
+  }
+  function _shakeOnce() {
+    var ov = _el('teddyOv'); if (!ov) return;
+    var wasX3 = ov.classList.contains('x3shaking');
+    if (wasX3) ov.classList.remove('x3shaking');
+    ov.style.animation = 'teddyShakeOnce .4s ease-out';
+    _play('FOOTSTEP', false, 0.7);
+    setTimeout(function(){
+      ov.style.animation = '';
+      if (wasX3) ov.classList.add('x3shaking');
+    }, 450);
+  }
+  function _showEpicMsg(text) {
+    var em = _el('teddyEpicMsg'); if (!em) return;
+    em.textContent = text; em.classList.add('show');
+    _T(function(){ em.classList.remove('show'); }, 4000);
+  }
+
+  /* ── ABANDON ─────────────────────────────────────────────── */
+  /* Fuite Teddynounet : utilise _showFleeFailure comme les autres boss.
+     Pas de victoire, pas d'XP, pas de badge de victoire. */
+  function abandon() {
+    if (_phase === 'idle') return;
+    _stop('COMBAT'); _stop('INTRO');
+    _clearAllFoods(); _clearTimers(); _stopEmberLoop(); _clearX3Effects();
+    _phase = 'idle'; _running = false;
+    _el('teddyOv').style.display = 'none';
+    /* Arrêt immédiat de bgMusic pour éviter chevauchement avec séquence audio d'échec */
+    try{var _abgm=document.getElementById('bgMusic');if(_abgm){_abgm.pause();_abgm.currentTime=0;}}catch(e){}
+    // Séquence audio de fuite : rire + musique game over + son défaite
+    try{var _vl=new Audio('https://cdaudemartinez.fr/wp-content/uploads/2026/04/BourgourLaugh.mp3');_vl.volume=.85;_vl.play().catch(function(){});}catch(e){}
+    // Musique game over
+    try{if(typeof playGameOverMusic==='function')playGameOverMusic();}catch(e){}
+    /* Son BourgourDéfaiteV2 (assimilé à un échec narratif) */
+    _T(function(){ _play('DEFEAT_SFX', false, 0.9); }, 500);
+    /* Correction retour fuir : S._abandonModId = 'teddynounet'
+       closeFailure() lira cette valeur et appellera showConjMenu() */
+    if(typeof S!=='undefined') S._abandonModId='teddynounet';
+    // Afficher l'écran de fuite (system commun des boss)
+    try{
+      if(typeof _showFleeFailure==='function'){
+        _showFleeFailure(
+          'teddynounet',
+          'https://i.postimg.cc/7hW6gNhh/Bourgour.png',
+          '<strong>Tu as fui devant le Cantinier Bourgour !</strong><br><span style="font-size:14px;">Et tu as abandonné le pauvre Teddynounet à son sort…</span>'
+        );
+      } else {
+        try{var bg=document.getElementById('bgMusic');if(bg)bg.play().catch(function(){});}catch(e){}
+        if(typeof showConjMenu==='function')showConjMenu();
+      }
+    }catch(e){
+      try{var bg2=document.getElementById('bgMusic');if(bg2)bg2.play().catch(function(){});}catch(e2){}
+      if(typeof showConjMenu==='function')showConjMenu();
+    }
+    if (_cbs.onExit) _cbs.onExit();
+  }
+
+  /* ── VICTOIRE ────────────────────────────────────────────── */
+  function _triggerVictory() {
+    if (_phase==='victory'||_phase==='defeat') return;
+    _phase = 'victory'; _qActive = false;
+    _clearAllFoods(); _clearTimers(); _stopEmberLoop(); _clearX3Effects(); _stopAll();
+    _el('teddyQuestionBox').style.display = 'none';
+    _el('teddyFuirBtn').style.display = 'none';
+    _el('teddyComboDisplay').classList.remove('visible');
+    _el('teddyEpicMsg').classList.remove('show');
+    try{ if(typeof playVictoryMusic==='function') playVictoryMusic(); }catch(e){}
+    _T(function(){ _play('VIC1', false, 1.0); }, 200);
+    _T(function(){ _play('VIC2', false, 1.0); }, 2400);
+    var tc = _el('teddyChar');
+    if (tc) { tc.src = IMG.TEDDY_HAPPY; tc.style.animation = 'teddyBounce .6s ease-out infinite'; tc.style.filter = ''; }
+    _el('teddyEndImg').src = IMG.VICTORY;
+    _el('teddyEndTitle').textContent = '\uD83C\uDFC6 VICTOIRE\u00a0!';
+    _el('teddyEndTitle').style.color = '#fb923c';
+    /* RENOMMAGE 12 : "Teddynounet" explicitement dans le message */
+    _el('teddyEndMsg').textContent =
+      'Gr\u00e2ce \u00e0 toi, Teddynounet a triomph\u00e9 du terrible Cantinier Bourgour et surv\u00e9cu \u00e0 son festin douteux. Bravo\u00a0!';
+    _el('teddyEndPrimary').textContent = 'Super\u00a0! \u2728';
+    _el('teddyEndPrimary').style.display = '';
+    _el('teddyEndPrimary').onclick = function() {
+      try{if(typeof stopVictoryMusic==='function')stopVictoryMusic();}catch(e){}
+      _doEnd(true);
+    };
+    _el('teddyEndSecondary').onclick = function() {
+      try{if(typeof stopVictoryMusic==='function')stopVictoryMusic();}catch(e){}
+      _doEnd(true);
+    };
+    void _el('teddyEndOv').offsetHeight;
+    _el('teddyEndOv').style.display = 'flex';
+    /* Passer wrongCount pour la condition Cordon Bleu (≤10 erreurs) */
+    if (_cbs.onVictory) _cbs.onVictory({ noPerfect: _noPerfect, wrongCount: _wrongCount });
+  }
+
+  /* ── DÉFAITE ─────────────────────────────────────────────── */
+  function _triggerDefeat() {
+    if (_phase==='victory'||_phase==='defeat') return;
+    _phase = 'defeat'; _qActive = false;
+    _clearAllFoods(); _clearTimers(); _stopEmberLoop(); _clearX3Effects(); _stopAll();
+    _el('teddyQuestionBox').style.display = 'none';
+    _el('teddyFuirBtn').style.display = 'none';
+    _el('teddyComboDisplay').classList.remove('visible');
+    _el('teddyEpicMsg').classList.remove('show');
+
+    /* Correction 6 — Séquence audio défaite :
+       1. musique game over du jeu principal
+       2. son spécifique Bourgour en superposition
+       3. la musique du menu NE SE RELANCE PAS ici (onExit/onGameOver gère ça)
+       La musique de menu sera relancée uniquement depuis _doEnd() */
+    /* Pause bgMusic avant séquence audio défaite Teddynounet */
+    try{var _dbg=document.getElementById('bgMusic');if(_dbg){_dbg.pause();_dbg.currentTime=0;}}catch(e){}
+    try{ if(typeof playGameOverMusic==='function') playGameOverMusic(); }catch(e){}
+    _T(function(){ _play('DEFEAT_SFX', false, 1.0); }, 300);
+    /* On NE relance PAS bgMusic ici — voir _doEnd() */
+
+    var tc = _el('teddyChar');
+    if (tc) { tc.src = IMG.TEDDY_VOMITO; tc.style.animation = ''; }
+    _el('teddyEndImg').src = IMG.BOURG_RIT;
+    _el('teddyEndTitle').textContent = '\uD83D\uDCA4 D\u00e9faite\u2026';
+    _el('teddyEndTitle').style.color = '#ef4444';
+    /* RENOMMAGE 12 : "Teddynounet" dans le message de défaite */
+    _el('teddyEndMsg').textContent =
+      'Teddynounet a succomb\u00e9 aux plats infects de Bourgour\u2026 Reviens quand tu seras pr\u00eat(e)\u00a0!';
+    _el('teddyEndPrimary').style.display = 'none'; // pas de retry
+    _el('teddyEndSecondary').textContent = '\u2190 Menu';
+    _el('teddyEndSecondary').onclick = function() { _doEnd(false); };
+    void _el('teddyEndOv').offsetHeight;
+    _el('teddyEndOv').style.display = 'flex';
+    if (_cbs.onGameOver) _cbs.onGameOver({ neverCorrect: _neverCorrect });
+  }
+
+  /* Correction 6 : _doEnd() gère la reprise de la musique menu
+     après les sons de défaite/victoire — pas de chevauchement */
+  /* Correction musique victoire : stopVictoryMusic() avant tout retour au menu
+     Évite que la musique de victoire continue après fermeture de l'overlay */
+  function _doEnd(isVictory) {
+    /* Couper la musique de victoire AVANT destroy() et retour menu */
+    try{ if(typeof stopVictoryMusic==='function') stopVictoryMusic(); }catch(e){}
+    destroy();
+    if (!isVictory) {
+      /* Défaite : attendre ~2s (fin des sons) avant de relancer le menu */
+      try{ if(typeof stopGameOverMusic==='function') stopGameOverMusic(); }catch(e){}
+      setTimeout(function(){
+        try{ var bg=document.getElementById('bgMusic');if(bg)bg.play().catch(function(){}); }catch(e){}
+      }, 2200);
+    } else {
+      /* Victoire : laisser un court délai avant de reprendre la musique menu */
+      setTimeout(function(){
+        try{ var bg=document.getElementById('bgMusic');if(bg)bg.play().catch(function(){}); }catch(e){}
+      }, 400);
+    }
+    if (typeof showConjMenu==='function') showConjMenu();
+    if (_cbs.onExit) _cbs.onExit();
+  }
+
+  /* ── DESTROY ─────────────────────────────────────────────── */
+  function destroy() {
+    _running = false; _phase = 'idle'; _qActive = false;
+    _clearTimers(); _clearAllFoods(); _stopAll(); _stopEmberLoop();
+    var ov = _el('teddyOv');
+    if (ov) { ov.style.display='none'; ov.classList.remove('x3shaking'); ov.style.animation=''; }
+    var tc=_el('teddyChar');
+    if(tc){tc.style.animation='';tc.style.left='2%';tc.style.transition='';tc.style.filter='';}
+    var bc=_el('bourgourChar');
+    if(bc){bc.style.animation='';bc.style.right='2%';bc.style.transition='';bc.style.filter='';}
+    _el('teddyX3Overlay').classList.remove('active');
+    var _x2el=_el('teddyX2Overlay');if(_x2el)_x2el.classList.remove('active');
+    var _cgel=_el('teddyComboGiant');if(_cgel){_cgel.className='';_cgel.textContent='';}
+    _el('teddyDialogOv').style.display='none';
+    _el('teddyTutoOv').style.display='none';
+    _el('teddyEndOv').style.display='none';
+    _el('teddyEndPrimary').style.display='';
+    _el('teddyQuestionBox').style.display='none';
+    _el('teddyEpicMsg').classList.remove('show');
+    _el('teddyComboDisplay').classList.remove('visible');
+    var cf=_el('teddyComboFlash');if(cf)cf.style.cssText='';
+    _audio={}; _activeFoods=[]; _cbs={}; _foodsRemaining=0;
+  }
+
+  return { init:init, destroy:destroy, abandon:abandon };
+})();
+
+</script>
 </body>
 </html>
