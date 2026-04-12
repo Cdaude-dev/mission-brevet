@@ -4535,18 +4535,19 @@ async function loadBigLB(){
 /* ══════════ QUIZ FLOW ══════════ */
 /* showLitMenu defined above in goScreen section */
 function abandonMod(){
-  // Fuir = défaite scénarisée (même logique qu'une défaite classique)
-  const _modId=S.mod;
+  // Fuir = défaite scénarisée : même logique qu'une perte classique
+  S._abandonModId=S.mod; // garder pour le retour menu
   S.savedMod=null; S.savedQIdx=0; S.savedCorrect=0;
   S.locked=true;
   if(D.quizCard)D.quizCard.style.display="none";
   const ro=document.getElementById("resultsOv");if(ro)ro.remove();
+  try{stopVictoryMusic();}catch(e){}
   playGameOverMusic();
+  // Même overlay que showFailure, même sons, même animation
   const ov=document.getElementById("failureOv");
   const msg=document.getElementById("failureMsg");
-  if(msg)msg.innerHTML='<strong>Vous avez fui… 🏃</strong><br>Revenez quand vous serez plus fort(e) !';
+  if(msg)msg.innerHTML='<strong>Tu as fui… 🏃</strong><br><span style="font-size:14px;">Reviens quand tu seras plus fort(e) !</span>';
   if(ov)ov.style.display="flex";
-  // closeFailure sera appelé par les boutons de l'overlay
 }
 
 function startMod(id, resumeFrom){
@@ -5740,8 +5741,9 @@ function closeFailure(){
   const ov=document.getElementById("failureOv");if(ov)ov.style.display="none";
   if(D.quizCard)D.quizCard.style.display="none";
   S.locked=false;
-  const _fm=S.mod;
-  S.mod=null;
+  // _abandonModId set by abandonMod(); S.mod might already be null
+  const _fm=S._abandonModId||S.mod;
+  S.mod=null; S._abandonModId=null;
   if(_fm){
     if(_fm.startsWith("g"))showGramMenu();
     else if(_fm.startsWith("c"))showConjMenu();
@@ -8588,8 +8590,13 @@ const MEL_METEORE_SKINS=["https://i.postimg.cc/jjJFSBc6/chat-meteore1.png","http
   "https://i.postimg.cc/g06T21sM/chat-meteore3.png","https://i.postimg.cc/q7C5vWwQ/chat-meteore4.png","https://i.postimg.cc/zfRcG470/chat-meteore5.png"];
 
 function startMemelit(){
-  // Reset all overlays from previous session
+  // Hide all potential covering overlays
   const _rov=document.getElementById("melResultOv");if(_rov)_rov.style.display="none";
+  const _orv=document.getElementById("orgResultOv");if(_orv)_orv.style.display="none";
+  // Mobile bg (phase 1) — set before showing overlay
+  const _melMob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
+  const _melBgPre=document.getElementById("melBgImg");
+  if(_melBgPre&&_melMob)_melBgPre.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
   const _cbtb=document.getElementById("chatToggleBtn");if(_cbtb)_cbtb.style.display="none";
   // Full reset
   clearInterval(melState&&melState.timerInt);
@@ -8599,15 +8606,10 @@ function startMemelit(){
   const warn=document.getElementById("melCatWarning");if(warn)warn.style.display="none";
   const cineOv=document.getElementById("melCineOv");if(cineOv)cineOv.style.display="none";
   const hpFill=document.getElementById("melHpFill");if(hpFill){hpFill.style.width="100%";hpFill.style.background="linear-gradient(90deg,#dc2626,#f87171)";}
-  const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";
+  if(!_melMob){const bgImg=document.getElementById("melBgImg");if(bgImg)bgImg.src="https://i.postimg.cc/JnyRpLf0/fond-memelite-P1-2.png";}
   const lbl=document.getElementById("melBossLabel");if(lbl)lbl.textContent="Mémélité";
   document.getElementById("memeliteOv").style.display="block";
-  // Apply responsive bg AFTER overlay is shown
-  setTimeout(()=>{
-    const _melMob=window.innerWidth<window.innerHeight&&window.innerWidth<=640;
-    const _melBgEl=document.getElementById("melBgImg");
-    if(_melMob&&_melBgEl)_melBgEl.src="https://i.postimg.cc/yxg11BdM/responsive-Memelite-P1-P2.png";
-  },50);
+  document.getElementById("memeliteOv").style.zIndex="9000";
   const bg=document.getElementById("bgMusic");if(bg)bg.pause();
   melState={phase:1,qIdx:0,hp:15,lives:5,timerVal:20,timerInt:null,
     catCount:0,catsMissed:0,noPerfect:false,catsToRepel:15,catsRepelled:0,
@@ -9033,6 +9035,7 @@ function melVictory(){
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const snd=document.getElementById("melDefSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
   document.getElementById("memeliteOv").style.display="none";
+  document.getElementById("memeliteOv").style.zIndex="200";
   S.memeliteDefeated=true;
   if(melState.noPerfect===false)S.memeliteFlawless=true;
   if(!S.badges.has("memelite_badge"))unlockBadge("memelite_badge");
@@ -9050,6 +9053,7 @@ function melDefeat(){
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   const snd=document.getElementById("melVicSnd");if(snd){snd.currentTime=0;snd.play().catch(()=>{});}
   document.getElementById("memeliteOv").style.display="none";
+  document.getElementById("memeliteOv").style.zIndex="200";
   playGameOverMusic();
   document.getElementById("melResultImg").src="https://i.postimg.cc/bwfcRt83/Memelite.png";
   document.getElementById("melResultTitle").textContent="💀 Défaite…";
@@ -9073,8 +9077,13 @@ function abandonMemelite(){
   clearInterval(melState.timerInt);
   [1,2,3].forEach(p=>{const m=document.getElementById("melMusicP"+p);if(m)m.pause();});
   document.getElementById("memeliteOv").style.display="none";
-  _restoreBgMusic();showLitMenu();
-  toast("Mémélité te surveille… 📚");
+  document.getElementById("memeliteOv").style.zIndex="200";
+  playGameOverMusic();
+  const ov=document.getElementById("failureOv");
+  const msg=document.getElementById("failureMsg");
+  if(msg)msg.innerHTML='<strong>Tu as fui devant Mémélité… 🏃</strong><br><span style="font-size:14px;">Reviens quand tu seras prêt(e) !</span>';
+  if(ov)ov.style.display="flex";
+  S._abandonModId="memelite";
 }
 
 </script>
