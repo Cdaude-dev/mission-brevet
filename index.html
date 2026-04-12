@@ -573,7 +573,7 @@
         align-self:flex-end;
       }
       .hero-title-wrap{flex:1;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;}
-      .hero-title-wrap img{width:min(380px,82vw)!important;margin-bottom:16px!important;}
+      .hero-title-wrap img{width:min(380px,82vw)!important;margin-bottom:16px!important;filter:none!important;}
       .main-menu{padding-bottom:env(safe-area-inset-bottom,16px);flex-wrap:wrap;gap:10px;padding-inline:12px;}
       .banner-btn{width:calc(50% - 6px);min-height:80px;font-size:17px;}
       /* Big modal */
@@ -7663,8 +7663,9 @@ function submitOrgCorrection(){
     const orig=phrase.style.color;
     phrase.style.color="#86efac";
     setTimeout(()=>{phrase.style.color=orig||"";},400);
-    // Next question
+    // Next question (guard: if hp already 0, orgVictory was already called)
     setTimeout(()=>{
+      if(orgState.hp<=0)return; // victory already triggered in orgHit
       orgState.qIdx++;
       if(orgState.qIdx>=ORG_QUESTIONS.length){orgVictory();return;}
       renderOrgQuestion();
@@ -7728,7 +7729,7 @@ function orgHit(){
     if(hs){hs.currentTime=0;hs.volume=0.8;hs.play().catch(()=>{});}
   }catch(e){}
   // Victoire quand HP=0
-  if(orgState.hp<=0){setTimeout(orgVictory,200);return;}
+  if(orgState.hp<=0){orgVictory();return;}
   // Phase 2 at 50% (hp≤7)
   if(orgState.hp<=7&&!orgState.darkPhase){
     orgState.darkPhase=true;
@@ -7768,7 +7769,9 @@ function orgVictory(){
   document.getElementById("orgResultTitle").textContent="VICTOIRE !";
   document.getElementById("orgResultTitle").style.color="#f97316";
   document.getElementById("orgResultMsg").textContent="Bravo ! Tu as terrass\u00e9 la grande Orgografe et r\u00e9tabli la paix dans le monde de l'orthographe !";
-  document.getElementById("orgResultOv").style.display="flex";
+  const _orov=document.getElementById("orgResultOv");
+  _orov.style.display="flex";
+  void _orov.offsetHeight; // force reflow — ensures browser paints before continuing
   playVictoryMusic();
   if(!S.badges.has("trancheur_ogre"))unlockBadge("trancheur_ogre");
   if(!orgState.noPerfect&&!S.badges.has("inkrevable"))unlockBadge("inkrevable");
@@ -9247,7 +9250,7 @@ function abandonMemelite(){
 </div><!-- end orgOv -->
 
   <!-- ── Orgografe result overlay ── -->
-  <div id="orgResultOv" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);
+  <div id="orgResultOv" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.92);
        flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;">
     <img id="orgResultImg" src="" alt="" style="width:min(180px,50vw);filter:drop-shadow(0 8px 24px rgba(249,115,22,.4));animation:bob 3s ease-in-out infinite;"/>
     <div id="orgResultTitle" style="font-size:28px;font-weight:900;color:#f97316;"></div>
