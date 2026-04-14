@@ -367,11 +367,13 @@
       background:radial-gradient(circle at 30% 0%,#a05018 0%,#723a10 32%,#4a2207 65%,#271005 100%);}
     .quiz-card::-webkit-scrollbar{width:5px;}
     .quiz-card::-webkit-scrollbar-thumb{background:rgba(245,215,161,.4);border-radius:4px;}
+    /* Bouton Question suivante : stable + agrandi sur mobile */
     #nextBtn{
       position:sticky;bottom:0;z-index:90;
       width:100%;max-width:360px;margin:8px auto 0;
       box-shadow:0 -4px 20px rgba(0,0,0,.5);
     }
+    @media(max-width:640px){#nextBtn{min-height:52px;font-size:16px;font-weight:900;border-radius:16px;}}
     /* Content blocks inside quiz get constrained width */
     .quiz-card .banner-large,.quiz-card .q-label,.quiz-card .quiz-prog-bar,
     .quiz-card .quiz-counter,.quiz-card .hint-banner,.quiz-card .question-box,
@@ -685,13 +687,15 @@
   }
 
   
+  /* Orgografe portrait : tableau plus large et descendu sur téléphone */
   @media(max-width:640px) and (orientation:portrait){
     #orgOv > div[style*="left:1%"], #orgOv > div[style*="left:18%"]{
-      left:2% !important;width:68% !important;top:3% !important;height:60% !important;
+      left:1% !important;width:78% !important;top:9% !important;height:56% !important;
     }
-    #orgCharWrap{left:44% !important;width:min(68vw,360px) !important;bottom:-4% !important;}
-    #orgBoardText{font-size:clamp(12px,2.5vw,18px) !important;}
-    #orgPhrase{font-size:clamp(14px,3.5vw,22px) !important;}
+    #orgCharWrap{left:48% !important;width:min(58vw,310px) !important;bottom:-5% !important;}
+    #orgBoardText{font-size:clamp(13px,3vw,19px) !important;}
+    #orgPhrase{font-size:clamp(15px,4vw,23px) !important;}
+    #orgCorrInput{font-size:16px !important;}
   }
 
   
@@ -1239,12 +1243,16 @@
       </div>
       
       <div id="tab-inventaire" class="tab-content">
-        <div id="starTotalDisplay" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(217,164,65,.08);border:1px solid rgba(217,164,65,.2);margin-bottom:12px;">
-          <img src="https://i.postimg.cc/yY0GDKvR/etoile.png" style="width:22px;height:22px;object-fit:contain;"/>
-          <div>
-            <div id="starTotalCount" style="font-size:18px;font-weight:900;color:var(--gold);">0</div>
-            <div style="font-size:10px;color:#ead7ae;opacity:.7;">étoiles collectionnées</div>
+        <!-- Étoiles par catégorie : total global + décomposition calculée dynamiquement -->
+        <div id="starTotalDisplay" style="padding:10px 12px;border-radius:12px;background:rgba(217,164,65,.08);border:1px solid rgba(217,164,65,.2);margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <img src="https://i.postimg.cc/yY0GDKvR/etoile.png" style="width:22px;height:22px;object-fit:contain;"/>
+            <div>
+              <div id="starTotalCount" style="font-size:18px;font-weight:900;color:var(--gold);">0</div>
+              <div style="font-size:10px;color:#ead7ae;opacity:.7;">étoiles collectionnées</div>
+            </div>
           </div>
+          <div id="starCatBreakdown" style="display:flex;flex-direction:column;gap:4px;"></div>
         </div>
         <div class="mini-note" style="margin-bottom:10px;">🗝 Clés</div>
         <div id="invKeys" style="display:flex;gap:14px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;"></div>
@@ -1741,8 +1749,9 @@
     </div>
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
-    <div id="feedbackBox" class="feedback-box"></div>
+    <!-- Question suivante AVANT feedback pour stabilité mobile -->
     <button id="nextBtn" class="img-btn primary-btn" style="display:none;margin-bottom:8px;max-width:360px;"></button>
+    <div id="feedbackBox" class="feedback-box"></div>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
@@ -1928,7 +1937,8 @@
           animation:bossIdle 4s ease-in-out infinite;transition:filter 1s;" alt="Teddynounet"/>
         <!-- Bourgour ajouté après la première ouverture -->
         <img id="teddyCardBourgour" src="" alt="Bourgour"
-          style="display:none;width:110px;height:110px;object-fit:contain;
+          /* Bourgour carte : 140px pour meilleur rapport de force visuel */
+          style="display:none;width:140px;height:140px;object-fit:contain;
           animation:bossIdle 4s ease-in-out infinite 0.7s;transition:filter 1s;"/>
       </div>
     </div>
@@ -4123,6 +4133,31 @@ function renderInventaire(){
   const el=document.getElementById("starTotalCount");if(el)el.textContent=t;
   const el2=document.getElementById("bigStarTotalCount");if(el2)el2.textContent=t;
 }
+/* Affichage étoiles par catégorie dans inventaire :
+   Calcul dynamique — résiste aux futures mises à jour de contenu */
+function renderStarBreakdown(){
+  const el=document.getElementById("starCatBreakdown");if(!el)return;
+  const litM=["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"];
+  const gramM=["g1","g2","g3","g4","g5","g6","g7","g8"];
+  const conjM=["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14"];
+  function cS(mods){
+    var g=mods.reduce(function(a,id){return a+computeModStars(id);},0);
+    var m=mods.reduce(function(a,id){return a+(MODULES&&MODULES[id]?3:0);},0);
+    return {g:g,m:m};
+  }
+  var cats=[
+    {label:"Litt\u00e9rature",e:"\uD83D\uDCD6",c:cS(litM)},
+    {label:"Grammaire",e:"\uD83D\uDCDD",c:cS(gramM)},
+    {label:"Conjugaison",e:"\u23F1",c:cS(conjM)}
+  ];
+  el.innerHTML=cats.map(function(cat){
+    return '<div style="display:flex;justify-content:space-between;font-size:12px;color:#ead7ae;">'
+      +'<span>'+cat.e+' '+cat.label+'</span>'
+      +'<span style="font-weight:900;color:var(--gold);">'+cat.c.g+'/'+cat.c.m+' \u2B50</span>'
+      +'</div>';
+  }).join("");
+}
+
 function renderInventaireFor(containerId){
   const keys=[
     {id:"conj",name:"Clé du Temps",img:"https://i.postimg.cc/rmCC7Djh/cle-conjugaison.png",
@@ -4329,7 +4364,7 @@ function switchTab(tab){
   document.querySelectorAll(".tab-content").forEach(tc=>tc.classList.remove("active"));
   const el=document.getElementById("tab-"+tab);if(el)el.classList.add("active");
   if(tab==="classement"){_refreshLb("lbWrap");startLbPolling();}else{stopLbPolling();}if(tab==="classement")loadLB();
-  if(tab==="inventaire")renderInventaireFor("invKeys");
+  if(tab==="inventaire"){renderInventaireFor("invKeys");renderStarBreakdown();}
 }
 
 function goScreen(name){
@@ -4470,6 +4505,17 @@ function checkBadges(){
 const SUPABASE_URL = "https://ksfataxgdnfcyftlpppr.supabase.co"; // ex: https://abcdef.supabase.co
 const SUPABASE_ANON_KEY = "sb_publishable_uybe_ZSzzAiGYJfDHSFE6Q_0hrzKlcR"; // clé anon publique Supabase
 
+/* ── Gestion audio centralisée ────────────────────────────
+   _stopBgMusicNow() : stoppe bgMusic + annule tout timer
+   À appeler à CHAQUE entrée dans un niveau pour éviter
+   la superposition avec la musique du menu. */
+function _stopBgMusicNow(){
+  try{var _bg=document.getElementById("bgMusic");
+    if(_bg){_bg.pause();_bg.currentTime=0;}
+  }catch(e){}
+  try{clearTimeout(window._teddyBgRestartTimer);window._teddyBgRestartCancel=true;}catch(e){}
+}
+
 
 async function deleteFromLB(name){
   if(!name)return;
@@ -4539,7 +4585,22 @@ function saveProgress(){
     conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,bossXPAwarded:S.bossXPAwarded||{},firstSeenAt:S.firstSeenAt||null,siam_popup_shown:S.siam_popup_shown||false,_teddyFirstOpened:S._teddyFirstOpened||false,siam_unlocked:!!(S.badges&&(S.badges.has?S.badges.has("siam_beta"):[...S.badges].includes("siam_beta")))
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
+  /* Sync multi-device : on tente de sauvegarder aussi dans Supabase.
+     Architecture actuelle :
+     - localStorage = source principale (fonctionne en local et offline)
+     - Supabase leaderboard = sync score/badges cross-device (table: leaderboard)
+     LIMITATION : la progression complète (étoiles, séances, perfect...)
+     n'est pas encore dans Supabase → impossible de restaurer d'un autre device.
+     Pour une vraie sync multi-device, il faudrait une table "progression" jsonb
+     dans Supabase et appeler fetch(SUPABASE_URL+"/rest/v1/progression"...).
+     En attendant, saveToLB() est appelé pour pousser le maximum disponible. */
+  try{if(typeof saveToLB==="function")saveToLB();}catch(e){}
 }
+/* loadProgress : charge depuis localStorage (seule source complète).
+   Sync multi-device partielle via Supabase leaderboard (score/badges).
+   Pour récupérer sa progression sur un nouveau device :
+   → la progression complète est dans localStorage de l'appareil d'origine.
+   → Export/import JSON à implémenter si besoin de migration complète. */
 function loadProgress(name){
   const key="mb_save_"+name.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);
   try{
@@ -5194,7 +5255,7 @@ function showKeyUnlock(type){
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,${isConj?"#1a0a2e,#050a1a":"#061028,#0c1f4a"});border:2px solid rgba(${isConj?"180,120,255":"96,165,250"},.5);border-radius:24px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(${isConj?"180,100,255":"59,130,246"},.3);">
     <div style="font-size:26px;font-weight:900;color:${isConj?"#c084fc":"#60a5fa"};margin-bottom:8px;">✨ ${keyName} débloquée !</div>
-    <div style="font-size:16px;color:${isConj?"#e9d5ff":"#bfdbfe"};margin-bottom:16px;line-height:1.6;">${keyMsg}<br><span style="font-size:14px;opacity:.8;">Canimation:bob 3.2s ease-in-out infinite 0snne accès au boss final de la catégorie.</span></div>
+    <div style="font-size:16px;color:${isConj?"#e9d5ff":"#bfdbfe"};margin-bottom:16px;line-height:1.6;">${keyMsg}<br><span style="font-size:14px;opacity:.8;">Elle vous donne accès au boss final de la catégorie.</span></div>
     <img src="${keyImg}" style="width:140px;margin:0 auto 16px;display:block;filter:drop-shadow(0 0 24px rgba(${isConj?"180,100,255":"59,130,246"},.8));animation:bob 3s ease-in-out infinite;"/>
     <button onclick="this.closest('.mb-popup-ov').remove()" style="padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,${isConj?"#c084fc,#7c3aed":"#60a5fa,#2563eb"});color:#fff;font-size:16px;font-weight:900;cursor:pointer;">🎉 Super !</button>
   </div>`;
@@ -8118,11 +8179,15 @@ function selectOrgWord(idx, word, span){
   setTimeout(()=>document.getElementById("orgCorrInput").focus(),100);
 }
 
+/* normalizeAnswer : corrige le bug "j'avais" Q6 Orgografe sur mobile.
+   Les claviers mobiles envoient des apostrophes typographiques (’, ʼ, etc.)
+   On normalise TOUTES les variantes vers l'apostrophe droite ASCII. */
 function normalizeAnswer(s){
-  return s.trim().toLowerCase()
+  return (s||"").trim().toLowerCase()
     .normalize("NFD").replace(/[̀-ͯ]/g,"")
+    .replace(/[‘’‚‛′ʼ＇ʹ]/g,"'") // apostrophes typographiques mobiles
     .replace(/['']/g,"'")
-    .replace(/œ/g,"oe").replace(/æ/g,"ae");
+    .replace(/æ/g,"ae").replace(/œ/g,"oe");
 }
 
 function submitOrgCorrection(){
@@ -8619,7 +8684,8 @@ function tryOpenTeddynounet(){
       "https://i.postimg.cc/Kj9kyRgx/Teddynounet.png","Teddynounet");
     return;
   }
-  var _bg=document.getElementById("bgMusic");if(_bg)_bg.pause();
+  /* Arrêt garanti bgMusic avant Teddynounet */
+  _stopBgMusicNow();
   var _chatB=document.getElementById("chatToggleBtn");if(_chatB)_chatB.style.display="none";
   var _chatP=document.getElementById("chatPanel");if(_chatP&&_chatP.style.display!=="none"){_chatP.style.display="none";stopChatPolling();}
   var _li=document.getElementById("teddyLockIcon");
