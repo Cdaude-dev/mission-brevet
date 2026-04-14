@@ -1193,7 +1193,347 @@
   #teddyLockIcon.aura-active{
     animation:bossIdle 4s ease-in-out infinite, bourgourAura 3s ease-in-out infinite 0.5s;
   }
-  </style>
+
+  /* ══════════════════════════════════════════════
+     CHRONOSCRIBE — Overlay & Layout
+  ══════════════════════════════════════════════ */
+  #chronoOv {
+    display:none;position:fixed;inset:0;z-index:300;overflow:hidden;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  #chronoBg {
+    position:absolute;inset:0;
+    background:url('https://i.postimg.cc/xdtXkcwB/Chronoscribe-desktop-bg.png') center/cover no-repeat;
+  }
+  #chronoBgOverlay {
+    position:absolute;inset:0;background:rgba(5,8,20,.35);
+  }
+  @media(max-width:640px){
+    #chronoBg{background-image:url('https://i.postimg.cc/q7jNtNfB/Chronoscribe-responsive-bg.png');}
+  }
+
+  /* HUD */
+  #chronoHud {
+    position:absolute;top:0;left:0;right:0;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 14px;background:rgba(0,0,0,.55);
+    border-bottom:1px solid rgba(148,163,184,.25);
+    gap:10px;flex-wrap:wrap;
+  }
+  #chronoBossHp {display:flex;align-items:center;gap:8px;flex:1 1 auto;}
+  #chronoBossHpBar {flex:1;height:12px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden;min-width:80px;}
+  #chronoBossHpFill {height:100%;background:linear-gradient(90deg,#60a5fa,#94a3b8);border-radius:6px;transition:width .4s;}
+  #chronoBossHpLabel {font-size:12px;color:#94a3b8;font-weight:700;white-space:nowrap;}
+  #chronoLives {display:flex;gap:5px;align-items:center;}
+  .chrono-heart {font-size:18px;}
+  #chronoTimer {font-size:15px;font-weight:900;color:#facc15;letter-spacing:1px;}
+  #chronoScore {font-size:12px;color:#94a3b8;}
+
+  /* Boss sprite container */
+/* Chronoscribe plus grand + position centrale finale */
+  #chronoBossWrap {
+    position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    width:min(280px,32vw);z-index:5;
+    display:flex;align-items:flex-end;
+    transition:left 1s ease-out,right 1s ease-out;
+  }
+  @media(max-width:640px){
+    #chronoBossWrap{width:min(160px,36vw);}
+  }
+  #chronoBossSprite {
+    width:100%;object-fit:contain;
+    image-rendering:pixelated;
+    filter:drop-shadow(0 0 18px rgba(148,163,184,.5));
+    animation:chronoFloat 2.5s ease-in-out infinite;
+  }
+  @keyframes chronoFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+  #chronoBossSprite.chrono-hit{animation:chronoHitFlash .4s;filter:drop-shadow(0 0 18px rgba(148,163,184,.5)) hue-rotate(120deg) brightness(1.5);}
+  @keyframes chronoHitFlash{0%,100%{transform:translateX(0);filter:drop-shadow(0 0 18px rgba(148,163,184,.5)) hue-rotate(120deg) brightness(1.5);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+  /* Particules aura boss */
+  .chrono-particle {
+    position:absolute;pointer-events:none;border-radius:50%;
+    background:radial-gradient(circle,#facc15,rgba(250,204,21,0));
+    animation:chronoParticleRise var(--dur,2s) ease-out infinite var(--delay,0s);
+    width:var(--sz,4px);height:var(--sz,4px);
+    left:var(--x,50%);bottom:var(--y,10%);z-index:6;
+  }
+  @keyframes chronoParticleRise{
+    0%{opacity:.9;transform:translateY(0) scale(1);}
+    100%{opacity:0;transform:translateY(-60px) scale(.3);}
+  }
+
+  /* Dialogue box */
+  #chronoDialog {
+    position:absolute;bottom:max(180px,24vw);left:2%;right:2%;z-index:20;
+    display:none;
+    background:rgba(5,10,25,.88);border:1.5px solid rgba(148,163,184,.4);
+    border-radius:16px;padding:14px 18px;max-width:600px;margin:0 auto;
+  }
+  #chronoDialogName{font-size:13px;font-weight:900;color:#94a3b8;margin-bottom:4px;}
+  #chronoDialogText{font-size:14px;color:#e2e8f0;line-height:1.55;}
+  #chronoDialogBtn{
+    margin-top:10px;padding:7px 22px;border-radius:10px;border:1px solid rgba(148,163,184,.4);
+    background:rgba(148,163,184,.15);color:#94a3b8;font-weight:900;font-size:13px;cursor:pointer;
+    display:block;margin-left:auto;
+  }
+  #chronoDialogAv{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(148,163,184,.5);float:left;margin-right:12px;}
+
+  /* Victor Hugo + Rousseau in cinematic */
+  /* Hugo/Rousseau cinématique : grande taille, centré-bas, animation regard */
+  .chrono-author {
+    position:absolute;bottom:0;z-index:4;
+    width:min(220px,22vw);object-fit:contain;
+    image-rendering:pixelated;
+    transition:transform 1.2s ease-in-out;
+  }
+  @media(max-width:640px){
+    .chrono-author{width:min(130px,28vw);}
+  }
+  /* Hugo et Rousseau centrés-bas, séparés pour symétrie */
+  #chronoHugo{left:28%;}
+  #chronoRousseau{right:28%;left:auto;}
+  /* Animation regard : flip horizontal alternée */
+  @keyframes chronoLookAround{
+    0%,40%{transform:scaleX(1);}
+    50%,90%{transform:scaleX(-1);}
+    100%{transform:scaleX(1);}
+  }
+  #chronoHugo.looking{animation:chronoLookAround 3.5s ease-in-out infinite;}
+  #chronoRousseau.looking{animation:chronoLookAround 3.5s ease-in-out infinite 1.2s;}
+
+  /* Flying car */
+  #chronoCar {
+    position:absolute;top:20%;left:-200px;z-index:7;
+    font-size:clamp(28px,5vw,48px);
+    display:none;
+    animation:chronoCarFly 2.5s linear forwards;
+  }
+  @keyframes chronoCarFly{0%{left:-200px;}100%{left:110vw;}}
+
+  /* Tutorial sliders */
+  #chronoTutorial {
+    position:absolute;inset:0;z-index:30;display:none;
+    background:rgba(5,8,20,.94);
+    align-items:center;justify-content:center;padding:16px;
+  }
+  .chrono-tuto-box {
+    background:linear-gradient(160deg,#0f172a,#1e293b);
+    border:2px solid rgba(148,163,184,.35);border-radius:22px;
+    padding:28px 24px;max-width:480px;width:100%;text-align:center;
+    animation:popIn .35s;position:relative;overflow:hidden;
+  }
+  .chrono-tuto-icon{font-size:36px;margin-bottom:10px;}
+  .chrono-tuto-title{font-size:19px;font-weight:900;color:#94a3b8;margin-bottom:10px;}
+  .chrono-tuto-text{font-size:14px;color:#cbd5e1;line-height:1.65;margin-bottom:18px;}
+  .chrono-tuto-dots{display:flex;justify-content:center;gap:8px;margin-bottom:18px;}
+  .chrono-tuto-dot{width:8px;height:8px;border-radius:50%;background:rgba(148,163,184,.3);}
+  .chrono-tuto-dot.active{background:#94a3b8;}
+  #chronoTutoPrev,#chronoTutoNext{
+    padding:8px 22px;border-radius:11px;border:none;font-weight:900;font-size:14px;cursor:pointer;
+  }
+  #chronoTutoPrev{background:rgba(255,255,255,.08);color:#94a3b8;}
+  #chronoTutoNext{background:linear-gradient(180deg,#94a3b8,#64748b);color:#0f172a;}
+
+  /* Main gameplay area */
+  /* Zone de jeu : centrée, plus spacieuse sur desktop */
+  #chronoGameArea {
+    position:absolute;top:48px;left:0;right:0;bottom:0;z-index:8;
+    display:none;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:12px 16px 16px;overflow-y:auto;
+  }
+
+  /* Drag items pool */
+  /* Pool d'items : plus grand, centré */
+  #chronoItemsPool {
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+    width:100%;max-width:900px;margin-bottom:14px;min-height:70px;
+    padding:12px;border-radius:14px;background:rgba(0,0,0,.45);
+    border:1.5px solid rgba(148,163,184,.2);
+  }
+  @media(min-width:901px){
+    .chrono-item{font-size:14px;padding:9px 16px;}
+  }
+  .chrono-item {
+    padding:7px 13px;border-radius:10px;
+    background:linear-gradient(135deg,#1e3a5f,#0f2040);
+    border:1.5px solid rgba(148,163,184,.4);
+    color:#e2e8f0;font-size:clamp(11px,2.2vw,13px);font-weight:700;
+    cursor:grab;user-select:none;position:relative;z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.4);
+    transition:box-shadow .15s,transform .15s;
+    touch-action:none;
+  }
+  .chrono-item:active,.chrono-item.dragging{cursor:grabbing;box-shadow:0 8px 24px rgba(0,0,0,.6);transform:scale(1.06);}
+  .chrono-item.placed{opacity:.4;pointer-events:none;}
+  .chrono-item-sub{font-size:10px;opacity:.7;display:block;}
+
+  /* Timeline */
+  /* Frise : plus large + gaps plus grands sur desktop */
+  #chronoTimeline {
+    width:100%;max-width:900px;
+    display:grid;grid-template-columns:repeat(6,1fr);
+    gap:8px;margin-bottom:12px;
+  }
+  @media(min-width:901px){
+    #chronoTimeline{gap:12px;}
+    .chrono-zone{min-height:90px;font-size:12px;}
+  }
+  @media(max-width:640px){
+    #chronoTimeline{grid-template-columns:repeat(3,1fr);}
+  }
+  .chrono-zone {
+    min-height:64px;border-radius:10px;padding:6px 4px;
+    background:rgba(0,0,0,.5);border:2px dashed rgba(148,163,184,.25);
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    transition:border-color .2s,background .2s;position:relative;
+    font-size:clamp(9px,1.8vw,11px);color:rgba(148,163,184,.6);font-weight:700;
+  }
+  .chrono-zone.drag-over{border-color:#60a5fa;background:rgba(96,165,250,.1);}
+  .chrono-zone.correct{border-color:#4ade80;background:rgba(74,222,128,.08);}
+  .chrono-zone.wrong{border-color:#f87171;background:rgba(248,113,113,.08);animation:chronoShakeZone .3s;}
+  @keyframes chronoShakeZone{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+  .chrono-zone-label{font-size:10px;margin-bottom:3px;text-align:center;opacity:.6;}
+  .chrono-zone-item{
+    font-size:11px;font-weight:700;color:#e2e8f0;text-align:center;
+    padding:4px 6px;border-radius:7px;background:rgba(30,58,95,.8);
+    width:100%;margin-top:2px;
+  }
+
+  #chronoValidateBtn {
+    display:none;padding:11px 32px;border-radius:14px;border:none;
+    background:linear-gradient(180deg,#60a5fa,#2563eb);
+    color:#fff;font-weight:900;font-size:15px;cursor:pointer;
+    margin-bottom:8px;
+    box-shadow:0 4px 16px rgba(37,99,235,.4);
+  }
+  #chronoValidateBtn:hover{filter:brightness(1.1);}
+
+  /* Feedback message */
+  #chronoFeedback {
+    position:absolute;top:54px;left:0;right:0;z-index:25;
+    display:none;text-align:center;padding:12px 20px;
+    background:rgba(0,0,0,.8);font-size:14px;color:#e2e8f0;
+    border-bottom:1.5px solid rgba(148,163,184,.2);
+  }
+
+  /* Boss speech bubble */
+  #chronoSpeech {
+    position:absolute;right:calc(min(220px,28vw) + 10px);bottom:min(220px,28vw);
+    max-width:200px;z-index:10;display:none;
+    background:rgba(15,23,42,.9);border:1.5px solid rgba(148,163,184,.4);
+    border-radius:12px;padding:10px 12px;font-size:12px;color:#e2e8f0;font-style:italic;
+    animation:fadeIn .3s;
+  }
+  #chronoSpeech::after{
+    content:'';position:absolute;bottom:-8px;right:20px;
+    border:8px solid transparent;border-top-color:rgba(148,163,184,.4);
+    border-bottom:0;
+  }
+  @media(max-width:640px){
+    #chronoSpeech{right:2%;bottom:auto;top:54px;max-width:55vw;font-size:11px;}
+    #chronoBossWrap{width:min(130px,30vw);}
+  }
+
+  /* Fissure phase */
+  #chronoFissureArea {
+    position:absolute;inset:0;z-index:15;display:none;
+    pointer-events:none;
+  }
+  .chrono-fissure {
+    position:absolute;cursor:pointer;pointer-events:all;
+    z-index:16;user-select:none;touch-action:none;
+    transition:transform .08s;
+  }
+  .chrono-fissure img{width:100%;height:100%;object-fit:contain;display:block;}
+  .chrono-fissure:active{transform:scale(.92);}
+
+  /* Fissure hit particles */
+  .chrono-fhit {
+    position:absolute;pointer-events:none;border-radius:50%;
+    width:8px;height:8px;background:#60a5fa;
+    animation:chronoFHit .4s ease-out forwards;
+    z-index:20;
+  }
+  @keyframes chronoFHit{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(3) translateY(-15px);}}
+
+  /* Fissure warning */
+  #chronoFissureMsg {
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    z-index:40;display:none;text-align:center;
+    background:rgba(5,8,20,.92);border:2px solid rgba(239,68,68,.6);
+    border-radius:18px;padding:24px 32px;max-width:360px;width:90%;
+    animation:popIn .3s;
+  }
+  #chronoFissureMsg .warn-icon{font-size:40px;margin-bottom:8px;}
+  #chronoFissureMsg .warn-text{font-size:16px;font-weight:900;color:#f87171;margin-bottom:8px;}
+  #chronoFissureMsg .warn-sub{font-size:13px;color:#e2e8f0;}
+
+  /* Screen shake */
+  #chronoOv.shaking{animation:chronoScreenShake .6s;}
+  @keyframes chronoScreenShake{
+    0%,100%{transform:translateX(0);}
+    10%,30%,50%,70%,90%{transform:translateX(-5px);}
+    20%,40%,60%,80%{transform:translateX(5px);}
+  }
+
+  /* End screens */
+  #chronoEndOv {
+    position:absolute;inset:0;z-index:50;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(5,8,20,.92);
+  }
+  #chronoEndBox {
+    text-align:center;padding:36px 32px;max-width:400px;width:92%;
+    background:linear-gradient(160deg,#0f172a,#1e293b);
+    border:2px solid rgba(148,163,184,.4);border-radius:24px;animation:popIn .4s;
+  }
+  #chronoEndTitle{font-size:26px;font-weight:900;margin-bottom:12px;}
+  #chronoEndMsg{font-size:14px;color:#cbd5e1;line-height:1.6;margin-bottom:20px;font-style:italic;}
+  #chronoEndBtn{padding:12px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#94a3b8,#64748b);color:#0f172a;font-weight:900;font-size:16px;cursor:pointer;}
+
+  /* Gear overlays */
+  .chrono-bg-gear{
+/* Engrenages de décor : opacité accrue pour plus de présence */
+    position:absolute;pointer-events:none;opacity:.22;
+    animation:gearSpin var(--gs,20s) linear infinite;
+  }
+
+  
+  /* Entrée de Chronoscribe depuis haut-gauche */
+  @keyframes chronoEntrySlide{
+    0%{transform:translateX(-110vw) translateY(-60px);}
+    60%{transform:translateX(calc(-50% + 0px)) translateY(-20px);}
+    80%{transform:translateX(-50%) translateY(8px);}
+    100%{transform:translateX(-50%) translateY(0);}
+  }
+  #chronoBossWrap.entering{
+    animation:chronoEntrySlide .9s cubic-bezier(.2,1,.4,1) forwards;
+  }
+
+  /* Bouton Fuir Chronoscribe */
+  #chronoFuirBtn {
+    position:absolute;top:56px;left:12px;z-index:20;
+    padding:7px 16px;border-radius:10px;
+    border:1.5px solid rgba(248,113,113,.5);
+    background:rgba(239,68,68,.15);
+    color:#f87171;font-weight:900;font-size:13px;cursor:pointer;
+    transition:background .2s;
+  }
+  #chronoFuirBtn:hover{background:rgba(239,68,68,.3);}
+  @media(max-width:640px){#chronoFuirBtn{top:auto;bottom:10px;left:10px;font-size:12px;padding:6px 12px;}}
+
+  /* Bouton Skip cinématique */
+  #chronoSkipBtn {
+    position:absolute;top:12px;right:14px;z-index:35;
+    padding:5px 14px;border-radius:8px;
+    border:1px solid rgba(148,163,184,.4);
+    background:rgba(0,0,0,.5);color:#94a3b8;
+    font-size:12px;font-weight:700;cursor:pointer;
+    display:none;
+  }
+  #chronoSkipBtn:hover{background:rgba(148,163,184,.15);}
+</style>
 </head>
 <body>
 <div id="app">
@@ -8805,59 +9145,6 @@ function updateMemeliteChapter(){
 
 /* Chronoscribe : boss à venir — message immersif, non jouable */
 /* Chronoscribe : son tic-tac en boucle + popup RP (module à venir) */
-var _chronoAudio=null; // instance audio dédiée, évite les doublons
-function _startChronoSound(){
-  if(_chronoAudio) return; // déjà en cours
-  try{
-    _chronoAudio=new Audio("https://cdaudemartinez.fr/wp-content/uploads/2026/04/tic-tac-02.mp3");
-    _chronoAudio.loop=true;
-    _chronoAudio.volume=0.45;
-    _chronoAudio.play().catch(function(){_chronoAudio=null;});
-  }catch(e){_chronoAudio=null;}
-}
-function _stopChronoSound(){
-  if(!_chronoAudio) return;
-  try{_chronoAudio.pause();_chronoAudio.currentTime=0;}catch(e){}
-  _chronoAudio=null;
-}
-function openChronoscribe(){
-  _startChronoSound();
-  const ov=document.createElement('div');
-  ov.id='chronoPopOv';
-  ov.className='mb-popup-ov';
-  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;';
-  const inner=document.createElement('div');
-  inner.style.cssText='background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(148,163,184,.4);border-radius:24px;padding:32px 28px;max-width:400px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(148,163,184,.2);';
-  inner.innerHTML=(
-    '<div style="position:relative;display:inline-block;margin-bottom:16px;">'
-    +'<div class="chrono-aura" style="transform:scale(1.2);"></div>'
-    +'<img src="https://i.postimg.cc/3RFvPc8c/Chronoscribe-Idle.png"'
-    +' style="width:110px;object-fit:contain;animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;position:relative;z-index:1;"/>'
-    +'</div>'
-    +'<div style="font-size:22px;font-weight:900;color:#94a3b8;margin-bottom:12px;">Chronoscribe</div>'
-    +'<div style="font-size:15px;color:#cbd5e1;line-height:1.7;font-style:italic;margin-bottom:20px;">'
-    +'\u201cLes parchemins du temps fr\u00e9missent\u2026 Chronoscribe n\u2019est pas encore pr\u00eat \u00e0 d\u00e9voiler ses \u00e9preuves.\u201d'
-    +'</div>'
-  );
-  /* Bouton Fermer : référence directe à l'overlay par id, pas de closest() */
-  const btn=document.createElement('button');
-  btn.textContent='Revenir';
-  btn.style.cssText='padding:10px 28px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1);color:#94a3b8;font-weight:900;font-size:15px;cursor:pointer;';
-  btn.onclick=function(e){
-    e.stopPropagation();
-    _stopChronoSound();
-    var _ov=document.getElementById('chronoPopOv');
-    if(_ov) _ov.remove();
-  };
-  inner.appendChild(btn);
-  ov.appendChild(inner);
-  document.body.appendChild(ov);
-  ov.addEventListener('click',function(e){
-    e.stopPropagation();
-    if(e.target===ov){ _stopChronoSound(); ov.remove(); }
-  });
-}
-
 
 function tryOpenMemelite(){
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
@@ -11543,5 +11830,1311 @@ window.TeddynounetBoss = (function() {
 })();
 
 </script>
+
+  <!-- ══ CHRONOSCRIBE BOSS OVERLAY ══════════════════════════════ -->
+  <div id="chronoOv">
+    <div id="chronoBg"></div>
+    <div id="chronoBgOverlay"></div>
+
+    <!-- Background gears -->
+    <img src="https://i.postimg.cc/g0CRN9Tq/engrenage01.png" class="chrono-bg-gear" style="width:180px;right:-30px;top:10%;--gs:22s;" alt=""/>
+    <img src="https://i.postimg.cc/zfsW0mcx/engrenage02.png" class="chrono-bg-gear" style="width:120px;left:-20px;bottom:15%;--gs:15s;animation-direction:reverse;" alt=""/>
+    <img src="https://i.postimg.cc/7LF7mvWm/engrenage03.png" class="chrono-bg-gear" style="width:90px;left:40%;top:5%;--gs:30s;" alt=""/>
+
+    <!-- HUD -->
+    <div id="chronoHud">
+      <div id="chronoBossHp">
+        <span id="chronoBossHpLabel">⚡ Chronoscribe 15/15</span>
+        <div id="chronoBossHpBar"><div id="chronoBossHpFill" style="width:100%"></div></div>
+      </div>
+      <div id="chronoLives">
+        <span class="chrono-heart" id="chronoH1">❤️</span>
+        <span class="chrono-heart" id="chronoH2">❤️</span>
+        <span class="chrono-heart" id="chronoH3">❤️</span>
+      </div>
+      <div id="chronoTimer">5:00</div>
+    </div>
+
+    <!-- Cinematic: Hugo + Rousseau -->
+    <img id="chronoHugo" class="chrono-author" src="https://i.postimg.cc/0y9mbR6S/Cinematic-Hugo.png" alt="Victor Hugo" style="display:none;"/>
+    <img id="chronoRousseau" class="chrono-author" src="https://i.postimg.cc/yY1cNC39/botticelli-3.png" alt="Rousseau" style="display:none;"/>
+
+    <!-- Skip cinématique -->
+    <button id="chronoSkipBtn" onclick="ChronoscribeGame.skipCinematic()">⏩ Passer</button>
+
+    <!-- Flying car -->
+    <div id="chronoCar">🚗✨</div>
+
+    <!-- Boss -->
+    <div id="chronoBossWrap">
+      <img id="chronoBossSprite" src="https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png" alt="Chronoscribe"/>
+    </div>
+
+    <!-- Bouton Fuir Chronoscribe -->
+    <button id="chronoFuirBtn" onclick="ChronoscribeGame.flee()">🏃 Fuir</button>
+
+    <!-- Boss speech bubble -->
+    <div id="chronoSpeech"></div>
+
+    <!-- Feedback message -->
+    <div id="chronoFeedback"></div>
+
+    <!-- Dialogue box -->
+    <div id="chronoDialog">
+      <img id="chronoDialogAv" src="" alt=""/>
+      <div>
+        <div id="chronoDialogName"></div>
+        <div id="chronoDialogText"></div>
+      </div>
+      <div style="clear:both;"></div>
+      <button id="chronoDialogBtn">Continuer ▶</button>
+    </div>
+
+    <!-- Tutorial -->
+    <div id="chronoTutorial">
+      <div class="chrono-tuto-box">
+        <div class="chrono-tuto-icon" id="chronoTutoIcon">🎬</div>
+        <div class="chrono-tuto-title" id="chronoTutoTitle"></div>
+        <div class="chrono-tuto-text" id="chronoTutoText"></div>
+        <div class="chrono-tuto-dots" id="chronoTutoDots"></div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button id="chronoTutoPrev">← Retour</button>
+          <button id="chronoTutoNext">Suivant →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main game area -->
+    <div id="chronoGameArea">
+      <div id="chronoItemsPool"></div>
+      <div id="chronoTimeline"></div>
+      <button id="chronoValidateBtn" onclick="if(window._chronoValidate)window._chronoValidate()">✅ Valider</button>
+    </div>
+
+    <!-- Fissure phase -->
+    <div id="chronoFissureArea"></div>
+    <div id="chronoFissureMsg">
+      <div class="warn-icon">⚡</div>
+      <div class="warn-text" id="chronoFissureMsgText">Chronoscribe déchire le temps !</div>
+      <div class="warn-sub" id="chronoFissureMsgSub">Ferme les fissures temporelles !</div>
+    </div>
+
+    <!-- End screen -->
+    <div id="chronoEndOv" style="display:none;flex-direction:column;">
+      <div id="chronoEndBox">
+        <div id="chronoEndTitle"></div>
+        <div id="chronoEndMsg"></div>
+        <button id="chronoEndBtn" onclick="ChronoscribeGame.stop()">← Retour au menu</button>
+      </div>
+    </div>
+  </div>
+
 </body>
-</html
+</htm</script>
+
+<script>
+
+/* ══════════════════════════════════════════════════════════════
+   CHRONOSCRIBE BOSS MODULE — Mission Brevet
+   Accessible uniquement: Professeur Daudé (admin)
+══════════════════════════════════════════════════════════════ */
+window.ChronoscribeGame = (function(){
+'use strict';
+
+/* ── CONSTANTES ──────────────────────────────────────────── */
+const BOSS_HP_MAX = 15;
+const PLAYER_LIVES_MAX = 3;
+const GAME_DURATION = 5 * 60; // 5 minutes en secondes
+
+const IMG = {
+  BOSS_IDLE:     'https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png',
+  BOSS_AIR:      'https://i.postimg.cc/L5swH0zr/Chronoscribe-airneutre.png',
+  BOSS_FALL:     'https://i.postimg.cc/vTmkQSry/Chronoscribe-tombe.png',
+  BOSS_LAND:     'https://i.postimg.cc/D0zH2YrK/Chronoscribe-reception-sol.png',
+  ATK2:          'https://i.postimg.cc/rwjD6mNg/Chronoscribe-attack2.png',
+  ATK3:          'https://i.postimg.cc/P5yCGxQ9/chronoscribe-attack3.png',
+  ATK4:          'https://i.postimg.cc/XYLrMJkt/chronoscribe-attack4.png',
+  ATK5:          'https://i.postimg.cc/FHpYtRVM/chronoscribe-attack5.png',
+  ATK6:          'https://i.postimg.cc/RZdWrFT5/chronoscribe-attack6.png',
+  HUGO:          'https://i.postimg.cc/0y9mbR6S/Cinematic-Hugo.png',
+  ROUSSEAU:      'https://i.postimg.cc/yY1cNC39/botticelli-3.png',
+  FISSURE1: [
+    'https://i.postimg.cc/PJdGkt4K/fissure1-frame01.png',
+    'https://i.postimg.cc/4yXCTJ5B/fissure1-frame02.png',
+    'https://i.postimg.cc/brqXjzTm/fissure1-frame03.png',
+    'https://i.postimg.cc/1XyxZ9HC/fissure1-frame04.png',
+    'https://i.postimg.cc/fyM4hwKH/fissure1-frame05.png'
+  ],
+  FISSURE2: [
+    'https://i.postimg.cc/5NNc72j6/fissure2-frame01.png',
+    'https://i.postimg.cc/155xC34n/fissure2-frame02.png',
+    'https://i.postimg.cc/QxxL4dVK/fissure2-frame03.png',
+    'https://i.postimg.cc/WbbRW1tZ/fissure2-frame04.png',
+    'https://i.postimg.cc/rFF6nwzt/fissure2-frame05.png',
+    'https://i.postimg.cc/gkk9S2r8/fissure2-frame06.png',
+    'https://i.postimg.cc/dttMHVDG/fissure2-frame07.png',
+    'https://i.postimg.cc/qMMfbvg8/fissure2-frame08.png'
+  ],
+  /* Avatar dialogue Hugo — utilise l'avatar officiel */
+  AV_HUGO:   'https://i.postimg.cc/Gm9bvcwG/avatar-spe-hugo.png',
+  /* Avatar dialogue Rousseau — placeholder Botticelli en attendant l'asset définitif */
+  AV_ROUSSEAU:'https://i.postimg.cc/yY1cNC39/botticelli-3.png',
+  AV_CHRONO: 'https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png'
+};
+
+const MUSIC_URL = 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Chronoscribe.mp3';
+const TIC_URL   = 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/tic-tac-02.mp3';
+
+/* ── DONNÉES FRISE ───────────────────────────────────────── */
+const ALL_ITEMS = [
+  /* Antiquité / Moyen-Âge */
+  {label:'Homère',        type:'auteur',     date:-800, period:'Antiquité'},
+  {label:'Sophocle',      type:'auteur',     date:-497, period:'Antiquité'},
+  {label:'Virgile',       type:'auteur',     date:-70,  period:'Antiquité'},
+  {label:'Ovide',         type:'auteur',     date:-43,  period:'Antiquité'},
+  {label:'La Chanson de Roland', type:'œuvre', date:1100, period:'Moyen Âge'},
+  {label:'François Villon', type:'auteur',   date:1431, period:'Moyen Âge'},
+  /* Renaissance */
+  {label:'Renaissance',   type:'mouvement',  date:1450, period:'XVᵉ–XVIᵉ s.'},
+  {label:'Rabelais',      type:'auteur',     date:1494, period:'XVIᵉ s.'},
+  {label:'Montaigne',     type:'auteur',     date:1533, period:'XVIᵉ s.'},
+  {label:'La Pléiade',    type:'mouvement',  date:1549, period:'XVIᵉ s.'},
+  {label:'Ronsard',       type:'auteur',     date:1524, period:'XVIᵉ s.'},
+  /* XVIIᵉ */
+  {label:'Classicisme',   type:'mouvement',  date:1660, period:'XVIIᵉ s.'},
+  {label:'Corneille',     type:'auteur',     date:1606, period:'XVIIᵉ s.'},
+  {label:'Molière',       type:'auteur',     date:1622, period:'XVIIᵉ s.'},
+  {label:'Racine',        type:'auteur',     date:1639, period:'XVIIᵉ s.'},
+  {label:'La Fontaine',   type:'auteur',     date:1621, period:'XVIIᵉ s.'},
+  {label:'Le Cid',        type:'œuvre',      date:1637, period:'XVIIᵉ s.'},
+  /* XVIIIᵉ */
+  {label:'Lumières',      type:'mouvement',  date:1715, period:'XVIIIᵉ s.'},
+  {label:'Voltaire',      type:'auteur',     date:1694, period:'XVIIIᵉ s.'},
+  {label:'Rousseau',      type:'auteur',     date:1712, period:'XVIIIᵉ s.'},
+  {label:'Diderot',       type:'auteur',     date:1713, period:'XVIIIᵉ s.'},
+  {label:"L'Encyclopédie",type:'œuvre',      date:1751, period:'XVIIIᵉ s.'},
+  {label:'Montesquieu',   type:'auteur',     date:1689, period:'XVIIIᵉ s.'},
+  {label:'Candide',       type:'œuvre',      date:1759, period:'XVIIIᵉ s.'},
+  /* XIXᵉ */
+  {label:'Romantisme',    type:'mouvement',  date:1820, period:'XIXᵉ s.'},
+  {label:'Victor Hugo',   type:'auteur',     date:1802, period:'XIXᵉ s.'},
+  {label:'Balzac',        type:'auteur',     date:1799, period:'XIXᵉ s.'},
+  {label:'Stendhal',      type:'auteur',     date:1783, period:'XIXᵉ s.'},
+  {label:'Flaubert',      type:'auteur',     date:1821, period:'XIXᵉ s.'},
+  {label:'Zola',          type:'auteur',     date:1840, period:'XIXᵉ s.'},
+  {label:'Baudelaire',    type:'auteur',     date:1821, period:'XIXᵉ s.'},
+  {label:'Rimbaud',       type:'auteur',     date:1854, period:'XIXᵉ s.'},
+  {label:'Verlaine',      type:'auteur',     date:1844, period:'XIXᵉ s.'},
+  {label:'Les Misérables',type:'œuvre',      date:1862, period:'XIXᵉ s.'},
+  {label:'Germinal',      type:'œuvre',      date:1885, period:'XIXᵉ s.'},
+  {label:'Réalisme',      type:'mouvement',  date:1850, period:'XIXᵉ s.'},
+  {label:'Naturalisme',   type:'mouvement',  date:1870, period:'XIXᵉ s.'},
+  {label:'Symbolisme',    type:'mouvement',  date:1880, period:'XIXᵉ s.'},
+  /* XXᵉ */
+  {label:'Surréalisme',   type:'mouvement',  date:1924, period:'XXᵉ s.'},
+  {label:'Proust',        type:'auteur',     date:1871, period:'XXᵉ s.'},
+  {label:'Apollinaire',   type:'auteur',     date:1880, period:'XXᵉ s.'},
+  {label:'Breton',        type:'auteur',     date:1896, period:'XXᵉ s.'},
+  {label:'Camus',         type:'auteur',     date:1913, period:'XXᵉ s.'},
+  {label:'Sartre',        type:'auteur',     date:1905, period:'XXᵉ s.'},
+  {label:"L'Étranger",    type:'œuvre',      date:1942, period:'XXᵉ s.'},
+  {label:'Existentialisme',type:'mouvement', date:1945, period:'XXᵉ s.'},
+  {label:'Nouveau Roman', type:'mouvement',  date:1950, period:'XXᵉ s.'},
+  {label:'De Beauvoir',   type:'auteur',     date:1908, period:'XXᵉ s.'},
+  {label:'Ionesco',       type:'auteur',     date:1909, period:'XXᵉ s.'},
+  {label:'Absurde',       type:'mouvement',  date:1942, period:'XXᵉ s.'}
+];
+
+/* Périodes de la frise (colonnes) */
+const PERIODS = [
+  {id:'p0', label:'Antiquité\n–Moyen Âge', min:-900,  max:1499},
+  {id:'p1', label:'XVIᵉ s.',              min:1500,  max:1599},
+  {id:'p2', label:'XVIIᵉ s.',             min:1600,  max:1699},
+  {id:'p3', label:'XVIIIᵉ s.',            min:1700,  max:1799},
+  {id:'p4', label:'XIXᵉ s.',              min:1800,  max:1899},
+  {id:'p5', label:'XXᵉ s.',               min:1900,  max:2000}
+];
+
+/* Tutoriel */
+const TUTO_SLIDES = [
+  {icon:'🎬', title:'Le chaos du temps', text:'Chronoscribe manipule le temps et a semé le chaos dans les siècles, les auteurs et les œuvres… Pour le vaincre, tu devras rétablir l\'ordre dans la chronologie !'},
+  {icon:'🧠', title:'Ta mission', text:'Des auteurs, des œuvres et des mouvements littéraires vont apparaître. À toi de les replacer correctement sur la frise du temps.'},
+  {icon:'🎯', title:'Comment jouer', text:'À chaque tour, fais glisser les éléments dans la bonne colonne de la frise chronologique… Puis valide ta réponse quand tout est placé !'},
+  {icon:'⚠️', title:'Les fissures !', text:'Une erreur renforce Chronoscribe ! Il ouvrira des fissures temporelles : tape-les rapidement pour les refermer avant qu\'elles ne s\'ouvrent complètement ! Sinon… tu perds une vie.'},
+  {icon:'⚔️', title:'Affaiblis le boss', text:'Chaque bonne réponse affaiblit Chronoscribe. Rétablis l\'équilibre du temps pour le vaincre !'},
+  {icon:'⏳', title:'Le temps file…', text:'Tu n\'as que 5 minutes. Sois rapide, précis… et ne laisse pas le temps t\'échapper ! Bonne chance.'}
+];
+
+/* ── ÉTAT PRIVÉ ──────────────────────────────────────────── */
+var _running      = false;
+var _inCinematic  = false;
+var _inFissure    = false;
+var _gameEnded    = false;
+var _introAborted = false;
+var _bossHp       = BOSS_HP_MAX;
+var _lives        = PLAYER_LIVES_MAX;
+var _score        = 0;
+var _timeLeft     = GAME_DURATION;
+var _timerInterval= null;
+var _music        = null;
+var _ticAudio     = null;
+var _timers       = [];
+var _tutoSlide    = 0;
+var _currentItems = []; // items de la question courante
+var _zoneMap      = {}; // periodId → item placé
+var _fissures     = []; // {el, progress, max, interval, frames, frameIdx, size}
+var _fissureCount = 0;
+var _difficulty   = 0;  // 0=easy 1=medium 2=hard
+var _fissurePhaseActive = false;
+var _consecutiveCorrect = 0;
+var _totalQuestions = 0;
+var _isMobile = ('ontouchstart' in window);
+var _particles = [];
+var _particleInterval = null;
+
+/* ── HELPERS DOM ─────────────────────────────────────────── */
+function _el(id){ return document.getElementById(id); }
+function _T(fn, ms){ var t=setTimeout(fn,ms); _timers.push(t); return t; }
+function _clearTimers(){ _timers.forEach(clearTimeout); _timers=[]; }
+
+/* ── AUDIO ───────────────────────────────────────────────── */
+function _playMusic(){
+  if(_music){ try{_music.pause();}catch(e){} }
+  try{
+    var bg=document.getElementById('bgMusic');
+    if(bg){ bg.pause(); bg.currentTime=0; }
+  }catch(e){}
+  try{
+    _music=new Audio(MUSIC_URL);
+    _music.loop=true; _music.volume=0.65;
+    _music.play().catch(function(){});
+  }catch(e){}
+}
+function _stopMusic(){
+  if(_music){ try{_music.pause();_music.currentTime=0;}catch(e){} _music=null; }
+}
+function _startTic(){
+  if(_ticAudio) return;
+  try{
+    _ticAudio=new Audio(TIC_URL);
+    _ticAudio.loop=true; _ticAudio.volume=0.25;
+    _ticAudio.play().catch(function(){});
+  }catch(e){}
+}
+function _stopTic(){
+  if(!_ticAudio) return;
+  try{_ticAudio.pause();_ticAudio.currentTime=0;}catch(e){} _ticAudio=null;
+}
+function _restoreBgMusic(){
+  _stopMusic();
+  try{
+    var bg=document.getElementById('bgMusic');
+    if(bg){ bg.currentTime=0; bg.play().catch(function(){}); }
+  }catch(e){}
+}
+
+/* ── FRISE HELPER ────────────────────────────────────────── */
+function _getPeriodForDate(d){
+  for(var i=0;i<PERIODS.length;i++){
+    if(d>=PERIODS[i].min && d<=PERIODS[i].max) return PERIODS[i].id;
+  }
+  return PERIODS[PERIODS.length-1].id;
+}
+
+/* ── SHUFFE ──────────────────────────────────────────────── */
+function _shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+/* ── POOL DE QUESTIONS ───────────────────────────────────── */
+var _pool = [];
+var _poolIdx = 0;
+function _resetPool(){
+  _pool = _shuffle(ALL_ITEMS.slice());
+  _poolIdx = 0;
+}
+function _nextItems(){
+  /* Sélectionner 3-5 items à placer */
+  var count = Math.min(4, _pool.length - _poolIdx);
+  if(count <= 0){ _resetPool(); count=4; }
+  var items=[];
+  for(var i=0;i<count;i++){ items.push(_pool[_poolIdx+i]); }
+  _poolIdx += count;
+  return items;
+}
+
+/* ── BOSS SPRITE ─────────────────────────────────────────── */
+function _setBossSprite(src){
+  var s=_el('chronoBossSprite');
+  if(s) s.src=src;
+}
+function _bossAttackAnim(cb){
+  var seq=[IMG.ATK2,IMG.ATK3,IMG.ATK4,IMG.ATK5,IMG.ATK6,IMG.BOSS_IDLE];
+  var i=0;
+  var iv=setInterval(function(){
+    _setBossSprite(seq[i]);
+    i++;
+    if(i>=seq.length){ clearInterval(iv); if(cb) cb(); }
+  },120);
+}
+function _bossHitAnim(){
+  var s=_el('chronoBossSprite');
+  if(!s) return;
+  s.classList.remove('chrono-hit');
+  void s.offsetWidth;
+  s.classList.add('chrono-hit');
+  _T(function(){ s.classList.remove('chrono-hit'); },450);
+}
+/* Entrée Chronoscribe: slide depuis haut-gauche vers centre */
+function _bossEntryAnim(cb){
+  var wrap=_el('chronoBossWrap');
+  _setBossSprite(IMG.BOSS_AIR);
+  if(wrap){
+    wrap.style.left='-30%'; wrap.style.transform='none';
+    // Lance l'animation slide vers le centre
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        wrap.classList.add('entering');
+      });
+    });
+  }
+  _T(function(){ _setBossSprite(IMG.BOSS_FALL); },200);
+  _T(function(){ _setBossSprite(IMG.BOSS_LAND); },550);
+  _T(function(){
+    _setBossSprite(IMG.BOSS_IDLE);
+    if(wrap){
+      wrap.classList.remove('entering');
+      wrap.style.left='50%'; wrap.style.transform='translateX(-50%)';
+    }
+    if(cb)cb();
+  },920);
+}
+
+/* ── PARTICULES AURA ─────────────────────────────────────── */
+function _startParticles(){
+  if(_particleInterval) return;
+  var wrap=_el('chronoBossWrap'); if(!wrap) return;
+  _particleInterval=setInterval(function(){
+    if(!_running) return;
+    var p=document.createElement('div');
+    p.className='chrono-particle';
+    var sz=(Math.random()*4+2)+'px';
+    var x=(Math.random()*80+10)+'%';
+    var y=(Math.random()*30+5)+'%';
+    var dur=(Math.random()*1.5+1)+'s';
+    var delay=(Math.random()*.5)+'s';
+    p.style.cssText='--sz:'+sz+';--x:'+x+';--y:'+y+';--dur:'+dur+';--delay:'+delay+';';
+    wrap.appendChild(p);
+    setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); },2000);
+  },180);
+}
+function _stopParticles(){
+  clearInterval(_particleInterval); _particleInterval=null;
+  var wrap=_el('chronoBossWrap');
+  if(wrap) wrap.querySelectorAll('.chrono-particle').forEach(function(p){p.remove();});
+}
+
+/* ── SPEECH BUBBLE ───────────────────────────────────────── */
+function _bossSpeech(text, duration){
+  var s=_el('chronoSpeech'); if(!s) return;
+  s.textContent=text; s.style.display='block';
+  _T(function(){ s.style.display='none'; }, duration||3000);
+}
+
+/* ── HUD ─────────────────────────────────────────────────── */
+function _updateHud(){
+  var hp=_bossHp, hpMax=BOSS_HP_MAX;
+  var lbl=_el('chronoBossHpLabel');
+  var fill=_el('chronoBossHpFill');
+  if(lbl) lbl.textContent='⚡ Chronoscribe '+hp+'/'+hpMax;
+  if(fill) fill.style.width=Math.max(0,(hp/hpMax)*100)+'%';
+  var hearts=['chronoH1','chronoH2','chronoH3'];
+  hearts.forEach(function(id,i){
+    var el=_el(id);
+    if(el) el.textContent = i<_lives ? '❤️' : '🖤';
+  });
+}
+function _updateTimer(){
+  var el=_el('chronoTimer'); if(!el) return;
+  var m=Math.floor(_timeLeft/60);
+  var s=_timeLeft%60;
+  el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  if(_timeLeft<=60) el.style.color='#f87171';
+  else el.style.color='#facc15';
+}
+
+/* ── TIMER ───────────────────────────────────────────────── */
+function _startTimer(){
+  _timerInterval=setInterval(function(){
+    if(!_running||_inCinematic||_inFissure||_gameEnded) return;
+    _timeLeft--;
+    _updateTimer();
+    if(_timeLeft<=0){ _gameDefeat(); }
+  },1000);
+}
+function _stopTimer(){
+  clearInterval(_timerInterval); _timerInterval=null;
+}
+
+/* ── SCREEN SHAKE ────────────────────────────────────────── */
+function _shakeScreen(duration){
+  var ov=_el('chronoOv'); if(!ov) return;
+  ov.classList.add('shaking');
+  setTimeout(function(){ ov.classList.remove('shaking'); },duration||600);
+}
+
+/* ── DIALOGUE SYSTEM ─────────────────────────────────────── */
+function _showDialog(avatar, name, text, onClose){
+  if(_introAborted) return;
+  var av=_el('chronoDialogAv');
+  var nm=_el('chronoDialogName');
+  var tx=_el('chronoDialogText');
+  var bt=_el('chronoDialogBtn');
+  var dv=_el('chronoDialog');
+  if(av) av.src=avatar;
+  if(nm) nm.textContent=name;
+  if(tx) tx.textContent=text;
+  if(dv) dv.style.display='block';
+  if(bt){
+    var nb=bt.cloneNode(true); bt.parentNode.replaceChild(nb,bt);
+    nb.onclick=function(){
+      if(_introAborted) return;
+      _el('chronoDialog').style.display='none';
+      if(onClose) onClose();
+    };
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   CINÉMATIQUE
+══════════════════════════════════════════════════════════ */
+function _startCinematic(){
+  _inCinematic=true;
+  /* Afficher le bouton skip pendant la cinématique */
+  var skipBtn=_el('chronoSkipBtn'); if(skipBtn) skipBtn.style.display='block';
+  var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
+  /* Hugo et Rousseau visibles, animation regard vivante */
+  if(hugo){ hugo.style.display='block'; hugo.style.transform='scaleX(1)'; hugo.classList.add('looking'); }
+  if(rous){ rous.style.display='block'; rous.style.transform='scaleX(-1)'; rous.classList.add('looking'); }
+  _el('chronoBossSprite').style.display='none';
+  _hideGameArea();
+
+  /* Dialogue 1 */
+  _T(function(){
+    if(_introAborted) return;
+    _showDialog(IMG.AV_HUGO,'Victor Hugo',
+      'Où sommes-nous… ? Ce lieu… ne ressemble à rien de connu.',
+      function(){
+        if(_introAborted) return;
+        _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+          'Je… je n\'en ai pas la moindre idée… Tout semble… mélangé.',
+          function(){
+            if(_introAborted) return;
+            _showDialog(IMG.AV_HUGO,'Victor Hugo',
+              'Attendez… mais… vous êtes Jean-Jacques Rousseau !',
+              function(){
+                if(_introAborted) return;
+                _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+                  'Oui, mais vous ? Et... vos vêtements… cette époque…',
+                  function(){
+                    if(_introAborted) return;
+                    _showDialog(IMG.AV_HUGO,'Victor Hugo',
+                      'Quelque chose ne va pas. Le temps… semble s\'être brisé.',
+                      _cinPart2);
+                  });
+              });
+          });
+      });
+  },400);
+}
+
+function _cinPart2(){
+  if(_introAborted) return;
+  _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+    'Brisé ?!',
+    function(){
+      if(_introAborted) return;
+      _showDialog(IMG.AV_HUGO,'Victor Hugo',
+        'Regardez autour de vous… Nous ne devrions pas coexister ainsi.',
+        function(){
+          if(_introAborted) return;
+          _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+            'Diantre… Voilà qui est fort inquiétant…',
+            _cinCarFly);
+        });
+    });
+}
+
+function _cinCarFly(){
+  if(_introAborted) return;
+  /* Voiture volante */
+  var car=_el('chronoCar');
+  if(car){
+    car.style.display='block';
+    car.style.animation='chronoCarFly 2.5s linear forwards';
+  }
+  _T(function(){
+    if(_introAborted) return;
+    if(car) car.style.display='none';
+    _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+      '… Je crains que vous n\'ayez raison.',
+      function(){
+        if(_introAborted) return;
+        _showDialog(IMG.AV_HUGO,'Victor Hugo',
+          'Ce chaos… quelqu\'un en est responsable.',
+          _cinTension);
+      });
+  },2600);
+}
+
+function _cinTension(){
+  if(_introAborted) return;
+  _shakeScreen(800);
+  _T(function(){
+    if(_introAborted) return;
+    _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+      'Qu\'est-ce que c\'était ?!',
+      function(){
+        if(_introAborted) return;
+        _showDialog(IMG.AV_HUGO,'Victor Hugo',
+          'Quelque chose approche…',
+          _cinBossEntry);
+      });
+  },400);
+}
+
+function _cinBossEntry(){
+  if(_introAborted) return;
+  _el('chronoDialog').style.display='none';
+  var bs=_el('chronoBossSprite');
+  if(bs) bs.style.display='block';
+  _bossEntryAnim(function(){
+    if(_introAborted) return;
+    _T(function(){
+      if(_introAborted) return;
+      _showDialog(IMG.AV_CHRONO,'Chronoscribe',
+        'Le temps… n\'est qu\'une illusion fragile.',
+        function(){
+          if(_introAborted) return;
+          _showDialog(IMG.AV_CHRONO,'Chronoscribe',
+            'J\'ai brisé ses chaînes.',
+            function(){
+              if(_introAborted) return;
+              _showDialog(IMG.AV_CHRONO,'Chronoscribe',
+                'Désormais… tout se confond.',
+                function(){
+                  if(_introAborted) return;
+                  _showDialog(IMG.AV_ROUSSEAU,'Rousseau',
+                    'Mais… c\'est de la folie !',
+                    function(){
+                      if(_introAborted) return;
+                      _showDialog(IMG.AV_HUGO,'Victor Hugo',
+                        'Vous condamnez l\'Histoire elle-même !',
+                        function(){
+                          if(_introAborted) return;
+                          _showDialog(IMG.AV_CHRONO,'Chronoscribe',
+                            'L\'Histoire… n\'est qu\'un récit que l\'on peut réécrire.',
+                            _cinFleeAndStart);
+                        });
+                    });
+                });
+            });
+        });
+    },200);
+  });
+}
+
+function _cinFleeAndStart(){
+  if(_introAborted) return;
+  _showDialog(IMG.AV_HUGO,'Victor Hugo',
+    'Fuyons !',
+    function(){
+      if(_introAborted) return;
+      _showDialog(IMG.AV_CHRONO,'Chronoscribe',
+        'Trop tard. Si tu veux rétablir le temps… prouve que tu en es digne.',
+        function(){
+          if(_introAborted) return;
+          /* Hugo et Rousseau fuient */
+          var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
+          if(hugo){ hugo.style.transition='transform 1s'; hugo.style.transform='translateX(-200px)'; }
+          if(rous){ rous.style.transition='transform 1s'; rous.style.transform='translateX(-200px)'; }
+          _T(function(){
+            if(hugo) hugo.style.display='none';
+            if(rous) rous.style.display='none';
+            _inCinematic=false;
+            _startTutorial();
+          },1000);
+        });
+    });
+}
+
+/* ══════════════════════════════════════════════════════════
+   TUTORIEL
+══════════════════════════════════════════════════════════ */
+function _startTutorial(){
+  _el('chronoDialog').style.display='none';
+  /* Cacher le bouton skip */
+  var skipBtn=_el('chronoSkipBtn'); if(skipBtn) skipBtn.style.display='none';
+  _tutoSlide=0;
+  var tutoDiv=_el('chronoTutorial');
+  if(tutoDiv) tutoDiv.style.display='flex';
+  _renderTutoSlide();
+  var prev=_el('chronoTutoPrev'), next=_el('chronoTutoNext');
+  if(prev){
+    var nb=prev.cloneNode(true); prev.parentNode.replaceChild(nb,prev);
+    nb.onclick=function(){ if(_tutoSlide>0){ _tutoSlide--; _renderTutoSlide(); }};
+  }
+  if(next){
+    var nb2=next.cloneNode(true); next.parentNode.replaceChild(nb2,next);
+    nb2.onclick=function(){
+      if(_tutoSlide<TUTO_SLIDES.length-1){ _tutoSlide++; _renderTutoSlide(); }
+      else { _el('chronoTutorial').style.display='none'; _startGameplay(); }
+    };
+  }
+}
+
+function _renderTutoSlide(){
+  var s=TUTO_SLIDES[_tutoSlide];
+  var ic=_el('chronoTutoIcon'),ti=_el('chronoTutoTitle'),tx=_el('chronoTutoText'),dots=_el('chronoTutoDots');
+  var nt=_el('chronoTutoNext');
+  if(ic) ic.textContent=s.icon;
+  if(ti) ti.textContent=s.title;
+  if(tx) tx.innerHTML=s.text;
+  if(nt) nt.textContent=(_tutoSlide===TUTO_SLIDES.length-1)?'Commencer ▶':'Suivant →';
+  if(dots){
+    dots.innerHTML='';
+    TUTO_SLIDES.forEach(function(_,i){
+      var d=document.createElement('div');
+      d.className='chrono-tuto-dot'+(i===_tutoSlide?' active':'');
+      dots.appendChild(d);
+    });
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAMEPLAY
+══════════════════════════════════════════════════════════ */
+function _startGameplay(){
+  _startTimer();
+  _startParticles();
+  _startTic();
+  _buildTimeline();
+  _showNextQuestion();
+}
+
+function _hideGameArea(){
+  var ga=_el('chronoGameArea'); if(ga) ga.style.display='none';
+}
+function _showGameArea(){
+  var ga=_el('chronoGameArea'); if(ga) ga.style.display='flex';
+}
+
+function _buildTimeline(){
+  var tl=_el('chronoTimeline'); if(!tl) return;
+  tl.innerHTML='';
+  PERIODS.forEach(function(p){
+    var zone=document.createElement('div');
+    zone.className='chrono-zone';
+    zone.id='zone-'+p.id;
+    zone.dataset.period=p.id;
+    var lbl=document.createElement('div');
+    lbl.className='chrono-zone-label';
+    lbl.textContent=p.label.replace('\\n','\n');
+    zone.appendChild(lbl);
+    /* Drop handlers */
+    zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('drag-over');});
+    zone.addEventListener('dragleave',function(){zone.classList.remove('drag-over');});
+    zone.addEventListener('drop',function(e){
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      var itemId=e.dataTransfer?e.dataTransfer.getData('text/plain'):'';
+      if(itemId) _placeItem(itemId, p.id);
+    });
+    tl.appendChild(zone);
+  });
+}
+
+function _showNextQuestion(){
+  if(!_running||_inFissure||_gameEnded) return;
+  _currentItems=_nextItems();
+  _zoneMap={};  // Réinitialiser pour la nouvelle question
+  _showGameArea();
+  _renderItemsPool();
+  _updateValidateBtn();
+  _totalQuestions++;
+}
+
+function _renderItemsPool(){
+  var pool=_el('chronoItemsPool'); if(!pool) return;
+  pool.innerHTML='';
+  /* Clear timeline drops */
+  PERIODS.forEach(function(p){
+    var z=_el('zone-'+p.id); if(!z) return;
+    var existing=z.querySelector('.chrono-zone-item');
+    if(existing) existing.remove();
+    z.classList.remove('correct','wrong');
+  });
+  _currentItems.forEach(function(item,idx){
+    var d=document.createElement('div');
+    d.className='chrono-item';
+    d.id='ci-'+idx;
+    d.draggable=true;
+    d.innerHTML=(item.type==='auteur'?'✍️ ':'📚 ')+item.label+'<span class="chrono-item-sub">'+item.type+'</span>';
+    /* Drag HTML5 */
+    d.addEventListener('dragstart',function(e){
+      if(e.dataTransfer) e.dataTransfer.setData('text/plain','ci-'+idx);
+      d.classList.add('dragging');
+    });
+    d.addEventListener('dragend',function(){ d.classList.remove('dragging'); });
+    /* Pointer drag (mobile + PC) */
+    _setupPointerDrag(d, idx);
+    pool.appendChild(d);
+  });
+}
+
+/* Pointer-based drag for mobile */
+function _setupPointerDrag(el, itemIdx){
+  var startX,startY,offX,offY,ghost,active=false;
+  el.addEventListener('pointerdown',function(e){
+    if(e.button && e.button!==0) return;
+    e.preventDefault();
+    active=true;
+    startX=e.clientX; startY=e.clientY;
+    var r=el.getBoundingClientRect();
+    offX=e.clientX-r.left; offY=e.clientY-r.top;
+    ghost=el.cloneNode(true);
+    ghost.style.cssText='position:fixed;left:'+(e.clientX-offX)+'px;top:'+(e.clientY-offY)+'px;z-index:9999;pointer-events:none;opacity:.85;transform:scale(1.05);transition:none;';
+    document.body.appendChild(ghost);
+    el.classList.add('placed');
+  },{ passive:false });
+  document.addEventListener('pointermove',function(e){
+    if(!active||!ghost) return;
+    ghost.style.left=(e.clientX-offX)+'px';
+    ghost.style.top=(e.clientY-offY)+'px';
+    /* Highlight zone under cursor */
+    ghost.style.display='none';
+    var target=document.elementFromPoint(e.clientX,e.clientY);
+    ghost.style.display='';
+    var zone=target?target.closest('.chrono-zone'):null;
+    document.querySelectorAll('.chrono-zone').forEach(function(z){ z.classList.remove('drag-over'); });
+    if(zone) zone.classList.add('drag-over');
+  });
+  document.addEventListener('pointerup',function(e){
+    if(!active) return;
+    active=false;
+    if(ghost){ ghost.remove(); ghost=null; }
+    el.classList.remove('placed');
+    document.querySelectorAll('.chrono-zone').forEach(function(z){ z.classList.remove('drag-over'); });
+    /* Find drop target */
+    ghost=null; // already removed
+    var realTarget=document.elementFromPoint(e.clientX,e.clientY);
+    var zone=realTarget?realTarget.closest('.chrono-zone'):null;
+    if(zone && zone.dataset.period){
+      _placeItem('ci-'+itemIdx, zone.dataset.period);
+    }
+  });
+}
+
+/* _placeItem : supporte plusieurs éléments par zone
+   _zoneMap[periodId] = [idx, idx, ...] (tableau) */
+function _placeItem(itemId, periodId){
+  var idx=parseInt(itemId.replace('ci-',''),10);
+  if(isNaN(idx)||idx<0||idx>=_currentItems.length) return;
+  /* Retirer cet item de toute zone précédente */
+  Object.keys(_zoneMap).forEach(function(pid){
+    if(Array.isArray(_zoneMap[pid])){
+      _zoneMap[pid]=_zoneMap[pid].filter(function(i){return i!==idx;});
+      if(_zoneMap[pid].length===0) delete _zoneMap[pid];
+    } else if(_zoneMap[pid]===idx){ delete _zoneMap[pid]; }
+  });
+  /* Ajouter dans la nouvelle zone */
+  if(!_zoneMap[periodId]) _zoneMap[periodId]=[];
+  if(!Array.isArray(_zoneMap[periodId])) _zoneMap[periodId]=[_zoneMap[periodId]];
+  if(_zoneMap[periodId].indexOf(idx)<0) _zoneMap[periodId].push(idx);
+  /* Rafraîchir l'affichage de TOUTES les zones */
+  PERIODS.forEach(function(p){
+    var z=_el('zone-'+p.id); if(!z) return;
+    /* Supprimer les anciens labels */
+    z.querySelectorAll('.chrono-zone-item').forEach(function(el){el.remove();});
+    var list=_zoneMap[p.id];
+    if(list && list.length>0){
+      (Array.isArray(list)?list:[list]).forEach(function(i){
+        var it=_currentItems[i]; if(!it) return;
+        var d=document.createElement('div');
+        d.className='chrono-zone-item';
+        d.textContent=(it.type==='auteur'?'✍️ ':'📚 ')+it.label;
+        z.appendChild(d);
+      });
+    }
+  });
+  /* Marquer l'item comme placé */
+  var el=_el(itemId);
+  if(el) el.classList.add('placed');
+  _updateValidateBtn();
+}
+
+/* Validate : visible quand TOUS les items sont placés (compter par zone) */
+function _updateValidateBtn(){
+  var btn=_el('chronoValidateBtn'); if(!btn) return;
+  var placed=0;
+  Object.values(_zoneMap).forEach(function(v){
+    placed+=(Array.isArray(v)?v.length:1);
+  });
+  var allPlaced=(placed>=_currentItems.length);
+  btn.style.display=allPlaced?'block':'none';
+  if(allPlaced) window._chronoValidate=_validateAnswer;
+}
+
+function _validateAnswer(){
+  if(!_running||_inFissure||_gameEnded) return;
+  var allCorrect=true;
+  var wrongCount=0;
+  _currentItems.forEach(function(item,idx){
+    /* Trouver dans quelle zone cet item a été placé (support multi-item) */
+    var placedPeriod=null;
+    Object.keys(_zoneMap).forEach(function(pid){
+      var v=_zoneMap[pid];
+      if(Array.isArray(v)? v.indexOf(idx)>=0 : v===idx) placedPeriod=pid;
+    });
+    var correctPeriod=_getPeriodForDate(item.date);
+    var zone=_el('zone-'+correctPeriod);
+    if(placedPeriod===correctPeriod){
+      if(zone) zone.classList.add('correct');
+    } else {
+      allCorrect=false; wrongCount++;
+      if(placedPeriod && _el('zone-'+placedPeriod)) _el('zone-'+placedPeriod).classList.add('wrong');
+      if(zone) zone.classList.add('correct'); /* show correct */
+    }
+  });
+
+  if(allCorrect){
+    _consecutiveCorrect++;
+    _bossHp=Math.max(0,_bossHp-1);
+    _updateHud();
+    _bossHitAnim();
+    _bossSpeech(_consecutiveCorrect>1?'Tu rétablis… une parcelle d\'ordre.':'Intéressant…',2500);
+    _showFeedback('✅ Bonne réponse !', '#4ade80');
+    _T(function(){
+      if(!_running||_gameEnded) return;
+      if(_bossHp<=0){ _gameVictory(); return; }
+      _checkFissurePhase();
+    },1200);
+  } else {
+    _consecutiveCorrect=0;
+    _bossSpeech('Le chaos te dépasse. Le temps se désagrège davantage…',3000);
+    _showFeedback('❌ Erreur ! '+wrongCount+' élément(s) mal placé(s)', '#f87171');
+    _T(function(){
+      if(!_running||_gameEnded) return;
+      _checkFissurePhase(true);
+    },1500);
+  }
+  var btn=_el('chronoValidateBtn'); if(btn) btn.style.display='none';
+}
+
+function _showFeedback(text, color){
+  var fb=_el('chronoFeedback'); if(!fb) return;
+  fb.textContent=text;
+  fb.style.color=color||'#e2e8f0';
+  fb.style.display='block';
+  _T(function(){ if(fb) fb.style.display='none'; },2000);
+}
+
+/* ── FISSURE PHASE ───────────────────────────────────────── */
+function _checkFissurePhase(wasError){
+  if(_gameEnded) return;
+  /* HP thresholds: 10, 5, 1 */
+  var newDiff=_difficulty;
+  if(_bossHp<=1 && _difficulty<2) newDiff=2;
+  else if(_bossHp<=5 && _difficulty<1) newDiff=1;
+
+  if(newDiff>_difficulty || wasError){
+    if(newDiff>_difficulty) _difficulty=newDiff;
+    /* Always trigger fissure on error; on threshold: always */
+    if(wasError || newDiff>(_difficulty-1)){
+      _triggerFissurePhase(); return;
+    }
+  }
+  _showNextQuestion();
+}
+
+function _triggerFissurePhase(){
+  if(_fissurePhaseActive||_gameEnded) return;
+  _fissurePhaseActive=true;
+  _inFissure=true;
+  _hideGameArea();
+  _shakeScreen(1500);
+  _bossAttackAnim(null);
+
+  /* Message warning */
+  var msg=_el('chronoFissureMsg');
+  if(msg){
+    msg.style.display='flex';
+    _el('chronoFissureMsgText').textContent='⚡ Chronoscribe déchire le temps !';
+    _el('chronoFissureMsgSub').textContent='Prépare-toi… des fissures temporelles s\'ouvrent !';
+  }
+  _bossSpeech('Le temps se fracture ! Contiens-le… si tu le peux.',3500);
+
+  _T(function(){
+    if(msg) msg.style.display='none';
+    if(!_running||_gameEnded) return;
+    _spawnFissures();
+  },3500);
+}
+
+var _fissureClicks={}; // id → clicks done
+function _spawnFissures(){
+  var area=_el('chronoFissureArea'); if(!area) return;
+  area.style.display='block';
+  area.innerHTML='';
+  _fissures=[];
+  _fissureClicks={};
+
+  /* Nombre de fissures selon difficulté */
+  var count=[2,3,4][_difficulty]||2;
+  var frames=_difficulty<2?IMG.FISSURE1:IMG.FISSURE2;
+  /* Clics requis selon device + difficulté */
+  var clicksNeeded=_isMobile?([5,8,12][_difficulty]||5):([3,5,8][_difficulty]||3);
+
+  for(var i=0;i<count;i++){
+    (function(fi){
+      var fissureEl=document.createElement('div');
+      fissureEl.className='chrono-fissure';
+      fissureEl.id='fissure-'+fi;
+      /* Position aléatoire mais pas sur le boss */
+      var maxX=Math.floor(Math.min(window.innerWidth*0.7,500));
+      var x=Math.floor(Math.random()*maxX+20);
+      var y=Math.floor(Math.random()*(window.innerHeight*0.5)+60);
+      var size=_isMobile?Math.floor(Math.random()*40+60):Math.floor(Math.random()*60+80);
+      fissureEl.style.cssText='left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;';
+      var img=document.createElement('img');
+      img.src=frames[0];
+      img.alt='Fissure temporelle';
+      img.style.cssText='width:100%;height:100%;object-fit:contain;pointer-events:none;';
+      fissureEl.appendChild(img);
+
+      var frameIdx=0;
+      var progress=0;
+      _fissureClicks['fissure-'+fi]=0;
+
+      /* Animation frames */
+      var frameInterval=setInterval(function(){
+        if(!_running||!_fissurePhaseActive) { clearInterval(frameInterval); return; }
+        frameIdx=(frameIdx+1)%frames.length;
+        img.src=frames[frameIdx];
+        /* Si frame finale atteinte naturellement → pénalité */
+        if(frameIdx===frames.length-1){
+          clearInterval(frameInterval);
+          _fissureTimeout('fissure-'+fi);
+        }
+      },600+(_difficulty===0?200:_difficulty===1?0:-200));
+
+      /* Click/tap handler */
+      fissureEl.addEventListener('pointerdown',function(e){
+        e.stopPropagation();
+        _fissureClicks['fissure-'+fi]++;
+        /* Visual feedback */
+        fissureEl.style.transform='scale(.92)';
+        setTimeout(function(){ fissureEl.style.transform=''; },80);
+        /* Particule hit */
+        _spawnFissureHit(fissureEl, e.clientX, e.clientY);
+        if(_fissureClicks['fissure-'+fi]>=clicksNeeded){
+          clearInterval(frameInterval);
+          _closeFissure('fissure-'+fi, fissureEl, fi, count);
+        }
+      });
+
+      area.appendChild(fissureEl);
+      _fissures.push({id:'fissure-'+fi, interval:frameInterval, el:fissureEl});
+    })(i);
+  }
+}
+
+function _spawnFissureHit(fissureEl, cx, cy){
+  var r=fissureEl.getBoundingClientRect();
+  var area=_el('chronoFissureArea'); if(!area) return;
+  for(var i=0;i<3;i++){
+    var p=document.createElement('div');
+    p.className='chrono-fhit';
+    p.style.left=(cx-r.left+area.getBoundingClientRect().left+Math.random()*20-10)+'px';
+    p.style.top=(cy-r.top+area.getBoundingClientRect().top+Math.random()*20-10)+'px';
+    area.appendChild(p);
+    setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); },450);
+  }
+}
+
+/* Flash blanc quand fissure atteint son état final */
+function _whiteFlash(){
+  var f=document.createElement('div');
+  f.style.cssText='position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9999;transition:opacity .08s';
+  document.body.appendChild(f);
+  requestAnimationFrame(function(){
+    f.style.opacity='.8';
+    setTimeout(function(){ f.style.transition='opacity .18s'; f.style.opacity='0'; setTimeout(function(){f.remove();},200); },80);
+  });
+}
+
+function _fissureTimeout(fissureId){
+  if(!_fissurePhaseActive||_gameEnded) return;
+  /* Une fissure non fermée à temps → flash blanc + perte d'une vie */
+  _whiteFlash();
+  _lives=Math.max(0,_lives-1);
+  _updateHud();
+  _shakeScreen(400);
+  var el=_el(fissureId);
+  if(el) el.style.border='3px solid #f87171';
+  if(_lives<=0){ _gameDefeat(); return; }
+  /* Retirer la fissure */
+  if(el && el.parentNode) el.parentNode.removeChild(el);
+  _checkAllFissuresClosed();
+}
+
+var _closedFissures=0;
+function _closeFissure(fissureId, el, idx, total){
+  if(el && el.parentNode) el.parentNode.removeChild(el);
+  _closedFissures++;
+  if(_closedFissures>=total) _checkAllFissuresClosed(true);
+}
+
+function _checkAllFissuresClosed(all){
+  var area=_el('chronoFissureArea'); if(!area) return;
+  var remaining=area.querySelectorAll('.chrono-fissure').length;
+  if(remaining===0 || all){
+    _closedFissures=0;
+    _fissures.forEach(function(f){ clearInterval(f.interval); });
+    _fissures=[];
+    area.innerHTML='';
+    area.style.display='none';
+    _fissurePhaseActive=false;
+    _inFissure=false;
+    _setBossSprite(IMG.BOSS_IDLE);
+    _bossSpeech('Hm… tu résistes.',2500);
+    _T(function(){
+      if(!_running||_gameEnded) return;
+      _showNextQuestion();
+    },1800);
+  }
+}
+
+/* ── VICTOIRE / DÉFAITE ──────────────────────────────────── */
+function _gameVictory(){
+  if(_gameEnded) return;
+  _gameEnded=true;
+  _stopTimer(); _stopParticles(); _stopTic(); _clearTimers();
+  _hideGameArea();
+  _el('chronoFissureArea').style.display='none';
+  _bossSpeech('Impossible… Le flux… se stabilise… Tu as… restauré l\'ordre…',4000);
+  _T(function(){ _showEndScreen(true); },1500);
+  /* Unlock badge si admin */
+}
+function _gameDefeat(){
+  if(_gameEnded) return;
+  _gameEnded=true;
+  _stopTimer(); _stopParticles(); _stopTic(); _clearTimers();
+  _hideGameArea();
+  _el('chronoFissureArea').style.display='none';
+  _bossSpeech('Tu n\'étais pas prêt. Le temps m\'appartient désormais.',3500);
+  _T(function(){ _showEndScreen(false); },1500);
+}
+function _showEndScreen(victory){
+  var ov=_el('chronoEndOv'); if(!ov) return;
+  ov.style.display='flex';
+  var title=_el('chronoEndTitle'), msg=_el('chronoEndMsg');
+  if(victory){
+    if(title){ title.textContent='⚡ Victoire !'; title.style.color='#60a5fa'; }
+    if(msg) msg.textContent='Tu as restauré l\'équilibre du temps. Chronoscribe est vaincu… pour l\'instant.';
+  } else {
+    if(title){ title.textContent='💀 Défaite'; title.style.color='#f87171'; }
+    if(msg) msg.textContent='Chronoscribe a triomphé. Le temps continue de se désagréger… Reviens plus fort.';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   START / STOP
+══════════════════════════════════════════════════════════ */
+function start(){
+  if(_running) return;
+  /* Admin only */
+  if(typeof S!=='undefined' && S.name!==ADMIN_CODE && S.name!=='Professeur Daudé'){
+    if(typeof toast==='function') toast('Mode en cours de développement');
+    return;
+  }
+  /* Stop everything else */
+  if(typeof _stopBgMusicNow==='function') _stopBgMusicNow();
+  else { try{var bg=document.getElementById('bgMusic');if(bg){bg.pause();bg.currentTime=0;}}catch(e){} }
+
+  _running=true; _inCinematic=false; _inFissure=false;
+  _gameEnded=false; _introAborted=false;
+  _bossHp=BOSS_HP_MAX; _lives=PLAYER_LIVES_MAX;
+  _score=0; _timeLeft=GAME_DURATION;
+  _difficulty=0; _fissurePhaseActive=false;
+  _closedFissures=0; _consecutiveCorrect=0;
+  _fissures=[]; _fissureClicks={};
+  _resetPool();
+
+  var ov=_el('chronoOv'); if(ov) ov.style.display='block';
+  _el('chronoEndOv').style.display='none';
+  _el('chronoFissureArea').style.display='none';
+  _el('chronoTutorial').style.display='none';
+  _el('chronoDialog').style.display='none';
+  _el('chronoFissureMsg').style.display='none';
+  _el('chronoGameArea').style.display='none';
+
+  _updateHud();
+  _updateTimer();
+  _playMusic();
+  _buildTimeline();
+
+  console.log('Chronoscribe state',{running:_running,bossHp:_bossHp,lives:_lives});
+
+  _T(function(){ _startCinematic(); },400);
+  if(ChronoscribeGame.exposeValidate) ChronoscribeGame.exposeValidate();
+}
+
+/* Skip cinématique : passe directement au tutoriel */
+function skipCinematic(){
+  if(!_running||!_inCinematic) return;
+  _introAborted=true;
+  _clearTimers();
+  /* Masquer éléments cinématiques */
+  var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
+  if(hugo){hugo.classList.remove('looking');hugo.style.display='none';}
+  if(rous){rous.classList.remove('looking');rous.style.display='none';}
+  var car=_el('chronoCar'); if(car) car.style.display='none';
+  var dlg=_el('chronoDialog'); if(dlg) dlg.style.display='none';
+  var skip=_el('chronoSkipBtn'); if(skip) skip.style.display='none';
+  /* Reset boss position */
+  var wrap=_el('chronoBossWrap');
+  if(wrap){wrap.classList.remove('entering');wrap.style.left='50%';wrap.style.transform='translateX(-50%)';}
+  var bs=_el('chronoBossSprite');
+  if(bs){bs.style.display='block';}
+  _setBossSprite(IMG.BOSS_IDLE);
+  _inCinematic=false;
+  _introAborted=false; // réinitialiser pour le tuto
+  _startTutorial();
+}
+
+/* Fuite : quitter proprement Chronoscribe, comme les autres boss */
+function flee(){
+  if(!_running||_gameEnded) return;
+  _introAborted=true;
+  _clearTimers();
+  _stopTimer();
+  _stopMusic();
+  _stopTic();
+  _stopParticles();
+  _fissures.forEach(function(f){ clearInterval(f.interval); });
+  _fissures=[];
+  _running=false;
+  var ov=_el('chronoOv'); if(ov) ov.style.display='none';
+  _T(function(){ _restoreBgMusic(); },600);
+  if(typeof showLitMenu==='function') showLitMenu();
+  else if(typeof goScreen==='function') goScreen('literature');
+}
+
+function stop(){
+  _introAborted=true;
+  _running=false;
+  _clearTimers();
+  _stopTimer();
+  _stopMusic();
+  _stopTic();
+  _stopParticles();
+  _fissures.forEach(function(f){ clearInterval(f.interval); });
+  _fissures=[];
+  /* Supprimer écouteur clavier */
+  if(window._chronoKeyHandler){ document.removeEventListener('keydown',window._chronoKeyHandler); window._chronoKeyHandler=null; }
+  var ov=_el('chronoOv'); if(ov) ov.style.display='none';
+  /* Restore menu music */
+  _T(function(){ _restoreBgMusic(); },500);
+  /* Return to litMenu */
+  if(typeof showLitMenu==='function') showLitMenu();
+  else if(typeof goScreen==='function') goScreen('literature');
+}
+
+/* ══════════════════════════════════════════════════════════
+   PUBLIC API
+══════════════════════════════════════════════════════════ */
+/* Expose validate pour bouton + clavier Entrée */
+function _exposeValidate(){
+  window._chronoValidate=_validateAnswer;
+  /* Écouteur clavier : Entrée déclenche Valider si tout est placé */
+  if(!window._chronoKeyHandler){
+    window._chronoKeyHandler=function(e){
+      if(e.key!=='Enter') return;
+      /* Conditions strictes : jeu actif, pas en fissure, bouton visible */
+      if(!_running||_inFissure||_inCinematic||_gameEnded) return;
+      var btn=_el('chronoValidateBtn');
+      if(btn && btn.style.display!=='none'){
+        _validateAnswer();
+      }
+    };
+    document.addEventListener('keydown',window._chronoKeyHandler);
+  }
+}
+return { start:start, stop:stop, exposeValidate:_exposeValidate };
+
+
+})();
+
+/* ── HOOK INTO EXISTING GAME ─────────────────────────────── */
+/* Replace old openChronoscribe stub */
+function openChronoscribe(){
+  /* openChronoscribe : popup narratif pour non-admin, lancement pour admin */
+  var isAdmin=(typeof S!=='undefined')&&
+    (S.name===ADMIN_CODE||S.name==='Professeur Daudé'||S.name==='Daude96');
+  if(!isAdmin){
+    var ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(5,8,20,.93);z-index:950;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;';
+    ov.addEventListener('click',function(e){e.stopPropagation();if(e.target===ov)ov.remove();});
+    var box=document.createElement('div');
+    box.style.cssText='background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(148,163,184,.4);border-radius:24px;padding:36px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(148,163,184,.18);';
+    /* Sprite avec aura argentée */
+    var sw=document.createElement('div');
+    sw.style.cssText='position:relative;display:inline-block;margin-bottom:20px;';
+    var aura=document.createElement('div');
+    aura.style.cssText='position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(226,232,240,.32) 0%,transparent 70%);animation:chronoAuraPulse 2.5s ease-in-out infinite;pointer-events:none;';
+    var spr=document.createElement('img');
+    spr.src='https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png';
+    spr.style.cssText='width:120px;object-fit:contain;position:relative;z-index:1;animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;';
+    sw.appendChild(aura); sw.appendChild(spr); box.appendChild(sw);
+    /* Titre */
+    var ti=document.createElement('div');
+    ti.style.cssText='font-size:22px;font-weight:900;color:#94a3b8;margin-bottom:14px;letter-spacing:1px;';
+    ti.textContent='Chronoscribe';
+    box.appendChild(ti);
+    /* Texte narratif immersif */
+    var tx=document.createElement('div');
+    tx.style.cssText='font-size:15px;color:#cbd5e1;line-height:1.8;font-style:italic;margin-bottom:24px;';
+    tx.innerHTML='« Les parchemins du temps frémissent…<br>Chronoscribe n’est pas encore prêt<br>à dévoiler ses épreuves. »';
+    box.appendChild(tx);
+    /* Bouton Revenir */
+    var btn=document.createElement('button');
+    btn.textContent='Revenir';
+    btn.style.cssText='padding:11px 32px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.12);color:#94a3b8;font-weight:900;font-size:15px;cursor:pointer;';
+    btn.onclick=function(e){e.stopPropagation();ov.remove();};
+    box.appendChild(btn);
+    ov.appendChild(box);
+    document.body.appendChild(ov);
+    return;
+  }
+  ChronoscribeGame.start();
+}
+
+/* Also set validate button onclick */
+(function(){
+  var btn=document.getElementById('chronoValidateBtn');
+  if(btn){
+    btn.onclick=function(){
+      if(window.ChronoscribeGame) {
+        var fn=ChronoscribeGame._validate||null;
+      }
+      /* Access private via direct DOM - we wire it at game start instead */
+    };
+  }
+})();
+
+</script>
+</body>
+</html>
