@@ -1713,6 +1713,22 @@
       </div>
 
   <!-- MÉMELITÉ BOSS CHAPTER (littérature) -->
+  <!-- ══ CHRONOSCRIBE BOSS CARD — module à venir ══
+      Ajouté sous "Le monde comme reflet de l'âme — La poésie"
+      Non jouable pour l'instant : message immersif uniquement -->
+  <div class="chapter-card" id="chronoscribeCard" style="border:2px solid rgba(148,163,184,.4);background:rgba(30,41,59,.12);margin-bottom:8px;">
+    <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="openChronoscribe()">
+      <div class="chapter-title" style="color:#94a3b8;font-size:15px;">Chronoscribe</div>
+      <!-- Sprite avec aura argentée animée -->
+      <div style="position:relative;display:inline-block;margin-top:6px;">
+        <div class="chrono-aura"></div>
+        <img id="chronoscribeLockIcon" src="https://i.postimg.cc/3RFvPc8c/Chronoscribe-Idle.png"
+          style="width:130px;height:130px;object-fit:contain;filter:grayscale(.3) brightness(.7);
+          animation:bossIdle 4.5s ease-in-out infinite;position:relative;z-index:1;" alt="Chronoscribe"/>
+      </div>
+    </div>
+  </div>
+
   <div class="chapter-card" id="memeliteChapterCard" style="border:2px solid rgba(220,38,38,.5);background:rgba(127,29,29,.08);">
     <div class="chapter-header" onclick="tryOpenMemelite()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
       <div class="chapter-title" style="color:#f87171;">Mémélité</div>
@@ -2218,7 +2234,34 @@
 /* ── Boss CSS injected ── */
 const bossStyle=document.createElement("style");
 bossStyle.textContent=`
-  @keyframes bossIdle{0%{transform:translateY(0) rotate(-2deg) scale(1);}25%{transform:translateY(-14px) rotate(0deg) scale(1.02);}50%{transform:translateY(-20px) rotate(2deg) scale(1.03);}75%{transform:translateY(-8px) rotate(1deg) scale(1.01);}100%{transform:translateY(0) rotate(-2deg) scale(1);}}
+  @keyframes bossIdle{0%{transform:translateY(0) rotate(-2deg) scale(1);}25%{transform:translateY(-14px) rotate(0deg) scale(1.02);}50%{transform:translateY(-20px)
+  /* ── Aura Chronoscribe (argentée) ──────────────────────────
+     Cercle lumineux animé en pulse autour du sprite */
+  .chrono-aura{
+    position:absolute;inset:-18px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(148,163,184,.25) 0%, rgba(148,163,184,.08) 55%, transparent 70%);
+    animation:chronoAuraPulse 3s ease-in-out infinite;
+    pointer-events:none;
+    z-index:0;
+  }
+  @keyframes chronoAuraPulse{
+    0%,100%{transform:scale(1);opacity:.7;}
+    50%{transform:scale(1.12);opacity:1;}
+  }
+  /* Aura orange Bourgour dans la carte Teddynounet */
+  #teddyCardBourgour{
+    filter:drop-shadow(0 0 14px rgba(251,146,60,.55)) drop-shadow(0 0 28px rgba(251,146,60,.25));
+  }
+  /* Animation aura orange en pulse sur Bourgour */
+  @keyframes bourgourAura{
+    0%,100%{filter:drop-shadow(0 0 10px rgba(251,146,60,.4)) drop-shadow(0 0 22px rgba(251,146,60,.15));}
+    50%{filter:drop-shadow(0 0 20px rgba(251,146,60,.75)) drop-shadow(0 0 40px rgba(251,146,60,.35));}
+  }
+  #teddyCardBourgour[style*="display:block"],#teddyCardBourgour:not([style*="none"]){
+    animation:bossIdle 4s ease-in-out infinite 0.7s, bourgourAura 2.5s ease-in-out infinite;
+  }
+ rotate(2deg) scale(1.03);}75%{transform:translateY(-8px) rotate(1deg) scale(1.01);}100%{transform:translateY(0) rotate(-2deg) scale(1);}}
   @keyframes bossSlide{0%{right:0;}30%{right:40%;}60%{right:10%;}100%{right:0;}}
   @keyframes gramSlide{0%{left:20px;}30%{left:40%;}60%{left:10%;}100%{left:20px;}}
   @keyframes bossFloat1{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-22px) rotate(10deg);}}
@@ -4185,18 +4228,22 @@ function renderInventaireFor(containerId){
     lbl.textContent=unlocked?key.name:"???";
     btn.appendChild(img);btn.appendChild(lbl);
     if(unlocked){
-      btn.onclick=()=>{
+      /* Bug inventaire corrigé : stopPropagation empêche le click de fermer
+         le panneau compte via le document.click listener global */
+      btn.onclick=(evt)=>{
+        evt.stopPropagation(); // ne pas fermer acctPanel
         const ov=document.createElement("div");
         ov.id="keyDetailOv";
-        ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;align-items:center;justify-content:center;";
+        ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:950;display:flex;align-items:center;justify-content:center;";
         ov.innerHTML=`<div style="background:linear-gradient(160deg,#2a1a00,#1a0a00);border:2px solid rgba(217,164,65,.4);border-radius:20px;padding:28px;max-width:360px;width:92%;text-align:center;animation:popIn .4s;">
           <img src="${key.img}" style="width:100px;filter:drop-shadow(0 0 20px rgba(217,164,65,.7));margin-bottom:12px;"/>
           <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:10px;">${key.name}</div>
           <div style="font-size:14px;color:#ead7ae;line-height:1.6;margin-bottom:16px;">${key.desc}</div>
-          <button onclick="document.getElementById('keyDetailOv').remove()" style="padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
+          <button onclick="document.getElementById('keyDetailOv').remove();event.stopPropagation();" style="padding:10px 24px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--gold),#c87a10);color:#1a0a00;font-weight:900;cursor:pointer;">Fermer</button>
         </div>`;
         document.body.appendChild(ov);
-        ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
+        /* stopPropagation global sur l'overlay aussi */
+        ov.addEventListener("click",e=>{e.stopPropagation();if(e.target===ov)ov.remove();});
       };
     }
     wrap.appendChild(btn);
@@ -4526,50 +4573,159 @@ async function deleteFromLB(name){
   }
 }
 
-async function saveToLB(){
+/* ── Sauvegarde Supabase complète ────────────────────────────
+   Sérialise toute la progression du joueur + sync Supabase.
+   Fusion intelligente côté DB via updated_at + upsert. */
+
+/* Export complet de l'état joueur → objet JSON */
+function exportPlayerState(){
+  if(!S.name) return null;
+  return {
+    player_name: S.name,
+    score: S.score||0,
+    avatar: S.avatar||"",
+    desc: S.desc||"",
+    badges: JSON.stringify([...(S.badges||new Set())]),
+    // Progression complète (étoiles, modules, perfects)
+    progression: JSON.stringify({
+      done: S.done||{},
+      perfect: S.perfect||{},
+      seancePct: S.seancePct||{},
+      seancePts: S.seancePts||{},
+      stars: S.stars||{},
+      bossDefeated: S.bossDefeated||false,
+      bossUnlockShown: S.bossUnlockShown||false,
+      gramBossDefeated: S.gramBossDefeated||false,
+      gramBossUnlockShown: S.gramBossUnlockShown||false,
+      conjKeyShown: S.conjKeyShown||false,
+      gramKeyShown: S.gramKeyShown||false,
+      litKeyShown: S.litKeyShown||false,
+      memeliteDefeated: S.memeliteDefeated||false,
+      memeliteFlawless: S.memeliteFlawless||false,
+      orgBossDefeated: S.orgBossDefeated||false,
+      bossXPAwarded: S.bossXPAwarded||{},
+      _bossXpGranted: S._bossXpGranted||{},
+      _seancesCompleted: S._seancesCompleted||0,
+      _teddyFirstOpened: S._teddyFirstOpened||false,
+      firstSeenAt: S.firstSeenAt||null,
+      siam_popup_shown: S.siam_popup_shown||false
+    }),
+    updated_at: new Date().toISOString()
+  };
+}
+
+/* Fusion intelligente : ne jamais écraser une progression supérieure */
+function mergeRemoteState(remote){
+  if(!remote||!remote.progression) return;
+  try{
+    const rp = typeof remote.progression==="string"
+      ? JSON.parse(remote.progression) : remote.progression;
+    // Score : toujours prendre le max
+    if((remote.score||0) > (S.score||0)) S.score = remote.score;
+    // Badges : union des deux sets
+    if(remote.badges){
+      try{
+        const rb = typeof remote.badges==="string"
+          ? JSON.parse(remote.badges) : remote.badges;
+        if(Array.isArray(rb)) rb.forEach(b=>{if(S.badges)S.badges.add(b);});
+      }catch(e){}
+    }
+    // Avatar : garder le local si défini, sinon prendre le remote
+    if(!S.avatar && remote.avatar) S.avatar = remote.avatar;
+    // seancePct : max par module
+    if(rp.seancePct){
+      S.seancePct = S.seancePct||{};
+      Object.keys(rp.seancePct).forEach(k=>{
+        S.seancePct[k] = Math.max(parseInt(S.seancePct[k]||0), parseInt(rp.seancePct[k]||0));
+      });
+    }
+    // perfects : union (true gagne sur false)
+    if(rp.perfect){
+      S.perfect = S.perfect||{};
+      Object.keys(rp.perfect).forEach(k=>{
+        if(rp.perfect[k]) S.perfect[k] = true;
+      });
+    }
+    // done : union
+    if(rp.done){
+      S.done = S.done||{};
+      Object.keys(rp.done).forEach(k=>{ S.done[k]=S.done[k]||rp.done[k]; });
+    }
+    // Flags booléens : true gagne
+    ['bossDefeated','gramBossDefeated','conjKeyShown','gramKeyShown','litKeyShown',
+     'memeliteDefeated','orgBossDefeated','_teddyFirstOpened'].forEach(k=>{
+      if(rp[k]) S[k] = true;
+    });
+    // bossXPAwarded : union
+    if(rp.bossXPAwarded){
+      S.bossXPAwarded = S.bossXPAwarded||{};
+      Object.assign(S.bossXPAwarded, rp.bossXPAwarded);
+    }
+    if(rp.firstSeenAt && !S.firstSeenAt) S.firstSeenAt = rp.firstSeenAt;
+  }catch(e){ console.warn("mergeRemoteState error", e); }
+}
+
+/* Chargement depuis Supabase (appelé au login si pas de données locales) */
+async function loadFromCloud(playerName){
+  if(!playerName) return null;
+  /* Sécurité : vérifier que fetch est disponible (navigateurs anciens) */
+  if(typeof fetch !== "function"){
+    console.warn("Fetch API non disponible - sync cloud désactivée");
+    return null;
+  }
+  const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
+  if(SUPABASE_URL==="VOTRE_URL_SUPABASE" || _adminNames.includes(playerName)) return null;
+  try{
+    const headers={
+      "Content-Type":"application/json",
+      "apikey":SUPABASE_ANON_KEY,
+      "Authorization":"Bearer "+SUPABASE_ANON_KEY
+    };
+    const res = await fetch(
+      SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(playerName)+"&select=*",
+      {method:"GET", headers}
+    );
+    if(!res.ok) return null;
+    const rows = await res.json();
+    return rows&&rows.length>0 ? rows[0] : null;
+  }catch(e){ return null; }
+}
+
+function saveToLB(){
   if(!S.name)return;
-  const entry={name:S.name,score:S.score||0,avatar:S.avatar||""};
-  // Save locally always
+  // Save locally always (rapide, offline)
   try{
     const entry={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||""};
     const localLB=JSON.parse(localStorage.getItem("mb_lb")||"{}");
     localLB[S.name]={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||""};
     localStorage.setItem("mb_lb",JSON.stringify(localLB));
   }catch(e){}
-  // Save to Supabase if configured
+  // Save to Supabase (progression complète)
   const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
   if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&!_adminNames.includes(S.name)){
     try{
-      const lbPayload={
-        player_name:S.name,
-        score:S.score||0,
-        avatar:S.avatar||"",
-        desc:S.desc||"",
-        badges:JSON.stringify([...(S.badges||new Set())])
-      };
+      const payload = exportPlayerState();
+      if(!payload) return;
       const headers={
         "Content-Type":"application/json",
         "apikey":SUPABASE_ANON_KEY,
         "Authorization":"Bearer "+SUPABASE_ANON_KEY
       };
-      // Try PATCH first (update existing row)
-      const patchRes=await fetch(
-        SUPABASE_URL+"/rest/v1/leaderboard?player_name=eq."+encodeURIComponent(S.name),
-        {method:"PATCH",headers:{...headers,"Prefer":"return=minimal,count=exact"},body:JSON.stringify(lbPayload)}
-      );
-      // If no row was updated (new player), INSERT
-      const contentRange=patchRes.headers.get("Content-Range")||patchRes.headers.get("content-range")||"";
-      const rowsUpdated=contentRange?parseInt(contentRange.split("/")[0]||"0",10):0;
-      if(rowsUpdated===0){
-        await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
-          method:"POST",
-          headers:{...headers,"Prefer":"return=minimal"},
-          body:JSON.stringify(lbPayload)
-        });
-      }
+      if(typeof fetch !== "function") return; // guard fetch
+      (async()=>{
+        try{
+          // Upsert : crée ou met à jour selon player_name
+          await fetch(SUPABASE_URL+"/rest/v1/leaderboard",{
+            method:"POST",
+            headers:{...headers,"Prefer":"resolution=merge-duplicates,return=minimal"},
+            body:JSON.stringify(payload)
+          });
+        }catch(e){}
+      })();
     }catch(e){}
   }
 }
+
 function saveProgress(){
   if(!S.name)return;
   const key="mb_save_"+S.name.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30);
@@ -4653,6 +4809,15 @@ function loadProgress(name){
       saveToLB(); // push latest score to Supabase
       setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },200);
     }
+  }catch(e){}
+  /* Sync cloud après chargement local : fusion intelligente avec données Supabase.
+     Permet de retrouver sa progression sur un autre appareil. */
+  try{
+    loadFromCloud(name).then(function(remote){
+      if(!remote)return;
+      mergeRemoteState(remote);
+      try{saveProgress();updateHUD();}catch(e){}
+    }).catch(function(){});
   }catch(e){}
 }
 const DAUDE={
@@ -8581,6 +8746,28 @@ function updateMemeliteChapter(){
     ["s1","s2","s3","s4","s5","s6","sf","p1","p2","p3","p4","p5","p6","p7","p8","p9"].every(k=>S.perfect&&S.perfect[k]);
   lk.style.filter=unlocked?"drop-shadow(0 0 12px rgba(220,38,38,.7)) brightness(1.1)":"grayscale(1) brightness(.35)";
   lk.style.opacity=unlocked?"1":"0.6";
+}
+
+/* Chronoscribe : boss à venir — message immersif, non jouable */
+function openChronoscribe(){
+  const ov=document.createElement("div");
+  ov.className="mb-popup-ov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
+  ov.innerHTML='<div style="background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(148,163,184,.4);border-radius:24px;padding:32px 28px;max-width:400px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(148,163,184,.2);">'
+    +'<div style="position:relative;display:inline-block;margin-bottom:16px;">'
+    +'<div class="chrono-aura" style="transform:scale(1.2);"></div>'
+    +'<img src="https://i.postimg.cc/3RFvPc8c/Chronoscribe-Idle.png" style="width:110px;object-fit:contain;animation:bossIdle 4.5s ease-in-out infinite;filter:brightness(.8);position:relative;z-index:1;"/>'
+    +'</div>'
+    +'<div style="font-size:22px;font-weight:900;color:#94a3b8;margin-bottom:12px;">Chronoscribe</div>'
+    +'<div style="font-size:15px;color:#cbd5e1;line-height:1.7;font-style:italic;margin-bottom:20px;">'
+    +'"Les parchemins du temps frémissent… Chronoscribe n’est pas encore prêt à dévoiler ses épreuves."'
+    +'</div>'
+    +'<button onclick="this.closest(\\".mb-popup-ov\\").remove();event.stopPropagation();" '
+    +'style="padding:10px 28px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1);color:#94a3b8;font-weight:900;font-size:15px;cursor:pointer;">'
+    +'Revenir</button>'
+    +'</div>';
+  document.body.appendChild(ov);
+  ov.addEventListener("click",e=>{e.stopPropagation();if(e.target===ov)ov.remove();});
 }
 
 function tryOpenMemelite(){
