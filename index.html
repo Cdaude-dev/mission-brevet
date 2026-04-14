@@ -924,17 +924,23 @@
     will-change:transform;
   }
   /* FIX ombre : drop-shadow uniquement, pas de box-shadow ni background */
+  /* Aliments Teddynounet — taille adaptée par media query */
   .teddy-food-img {
     display:block;background:transparent;
     width:clamp(58px,10.5vw,82px);height:clamp(58px,10.5vw,82px);
     object-fit:contain;
     filter:drop-shadow(0 4px 7px rgba(0,0,0,.42));
   }
+  /* Desktop uniquement : aliments plus grands pour meilleur confort visuel */
+  @media(min-width:901px){
+    .teddy-food-img{width:100px;height:100px;}
+  }
   .teddy-food:active .teddy-food-img { transform:scale(.9); }
   /* ── Correction 10 : étiquette-réponse intégrée visuellement ──
      Bandeau collé en bas du sprite, fond fondu, coins arrondis */
+  /* Label aliments Teddynounet */
   .teddy-food-label {
-    margin-top:-6px;  /* chevauchement léger pour coller au sprite */
+    margin-top:-6px;
     background:linear-gradient(0deg,rgba(15,5,0,.95) 60%,rgba(15,5,0,.6));
     color:#fff;font-size:clamp(10px,1.9vw,13px);font-weight:900;
     padding:3px 8px 4px;
@@ -944,6 +950,9 @@
     max-width:clamp(80px,17vw,130px);
     text-align:center;line-height:1.2;word-break:break-word;
     width:100%;
+  }
+  @media(min-width:901px){
+    .teddy-food-label{font-size:15px;max-width:130px;padding:4px 10px 5px;}
   }
   /* Écrasement individuel avec squash effect */
   @keyframes teddyCrushSquash {
@@ -1143,6 +1152,47 @@
   }
 
 
+
+  /* ── Chronoscribe : aura argentée + engrenages + glow sprite ── */
+  .chrono-aura{
+    position:absolute;inset:-20px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(226,232,240,.38) 0%,rgba(148,163,184,.16) 55%,transparent 72%);
+    border:1.5px solid rgba(203,213,225,.32);
+    animation:chronoAuraPulse 2.5s ease-in-out infinite;
+    pointer-events:none;z-index:0;
+  }
+  @keyframes chronoAuraPulse{
+    0%,100%{transform:scale(1);opacity:.6;box-shadow:0 0 22px rgba(203,213,225,.28),0 0 44px rgba(148,163,184,.13);}
+    50%{transform:scale(1.15);opacity:1;box-shadow:0 0 38px rgba(203,213,225,.58),0 0 75px rgba(148,163,184,.3);}
+  }
+  @keyframes chronoSpriteGlow{
+    0%,100%{filter:brightness(.72) drop-shadow(0 0 6px rgba(203,213,225,.52)) drop-shadow(0 0 14px rgba(148,163,184,.26));}
+    50%{filter:brightness(.9) drop-shadow(0 0 15px rgba(203,213,225,.92)) drop-shadow(0 0 30px rgba(148,163,184,.52));}
+  }
+  .chrono-gear{
+    position:absolute;pointer-events:none;object-fit:contain;
+    opacity:.68;
+    filter:drop-shadow(0 0 3px rgba(234,179,8,.62)) drop-shadow(0 0 6px rgba(234,179,8,.22));
+  }
+  .chrono-gear-1{width:16px;height:16px;bottom:-5px;left:-6px;animation:gearSpin 6s linear infinite;}
+  .chrono-gear-2{width:12px;height:12px;top:-3px;right:-4px;animation:gearSpin 9s linear infinite reverse;}
+  .chrono-gear-3{width:10px;height:10px;bottom:18px;right:-7px;animation:gearSpin 5s linear infinite;opacity:.5;}
+  @keyframes gearSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  #chronoscribeCard{transition:box-shadow .3s;}
+  #chronoscribeCard:hover{box-shadow:0 0 16px rgba(148,163,184,.3);}
+
+  /* ── Auras orange — Teddynounet ET Bourgour dans la carte menu ── */
+  @keyframes bourgourAura{
+    0%,100%{filter:drop-shadow(0 0 8px rgba(251,146,60,.62)) drop-shadow(0 0 20px rgba(251,146,60,.26));}
+    50%{filter:drop-shadow(0 0 20px rgba(251,146,60,.98)) drop-shadow(0 0 42px rgba(251,146,60,.48));}
+  }
+  #teddyCardBourgour.aura-active{
+    animation:bossIdle 4s ease-in-out infinite 0.7s, bourgourAura 2.5s ease-in-out infinite;
+  }
+  #teddyLockIcon.aura-active{
+    animation:bossIdle 4s ease-in-out infinite, bourgourAura 3s ease-in-out infinite 0.5s;
+  }
   </style>
 </head>
 <body>
@@ -1719,12 +1769,17 @@
   <div class="chapter-card" id="chronoscribeCard" style="border:2px solid rgba(148,163,184,.4);background:rgba(30,41,59,.12);margin-bottom:8px;">
     <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="openChronoscribe()">
       <div class="chapter-title" style="color:#94a3b8;font-size:15px;">Chronoscribe</div>
-      <!-- Sprite avec aura argentée animée -->
+      <!-- Sprite Chronoscribe avec aura + engrenages animés -->
       <div style="position:relative;display:inline-block;margin-top:6px;">
         <div class="chrono-aura"></div>
+        <!-- Engrenages décoratifs aux bords de la carte -->
+        <img src="https://i.postimg.cc/g0CRN9Tq/engrenage01.png" class="chrono-gear chrono-gear-1" alt=""/>
+        <img src="https://i.postimg.cc/zfsW0mcx/engrenage02.png" class="chrono-gear chrono-gear-2" alt=""/>
+        <img src="https://i.postimg.cc/7LF7mvWm/engrenage03.png" class="chrono-gear chrono-gear-3" alt=""/>
         <img id="chronoscribeLockIcon" src="https://i.postimg.cc/3RFvPc8c/Chronoscribe-Idle.png"
-          style="width:130px;height:130px;object-fit:contain;filter:grayscale(.3) brightness(.7);
-          animation:bossIdle 4.5s ease-in-out infinite;position:relative;z-index:1;" alt="Chronoscribe"/>
+          style="width:130px;height:130px;object-fit:contain;
+          animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;
+          position:relative;z-index:1;" alt="Chronoscribe"/>
       </div>
     </div>
   </div>
@@ -2235,32 +2290,6 @@
 const bossStyle=document.createElement("style");
 bossStyle.textContent=`
   @keyframes bossIdle{0%{transform:translateY(0) rotate(-2deg) scale(1);}25%{transform:translateY(-14px) rotate(0deg) scale(1.02);}50%{transform:translateY(-20px)
-  /* ── Aura Chronoscribe (argentée) ──────────────────────────
-     Cercle lumineux animé en pulse autour du sprite */
-  .chrono-aura{
-    position:absolute;inset:-18px;
-    border-radius:50%;
-    background:radial-gradient(circle, rgba(148,163,184,.25) 0%, rgba(148,163,184,.08) 55%, transparent 70%);
-    animation:chronoAuraPulse 3s ease-in-out infinite;
-    pointer-events:none;
-    z-index:0;
-  }
-  @keyframes chronoAuraPulse{
-    0%,100%{transform:scale(1);opacity:.7;}
-    50%{transform:scale(1.12);opacity:1;}
-  }
-  /* Aura orange Bourgour dans la carte Teddynounet */
-  #teddyCardBourgour{
-    filter:drop-shadow(0 0 14px rgba(251,146,60,.55)) drop-shadow(0 0 28px rgba(251,146,60,.25));
-  }
-  /* Animation aura orange en pulse sur Bourgour */
-  @keyframes bourgourAura{
-    0%,100%{filter:drop-shadow(0 0 10px rgba(251,146,60,.4)) drop-shadow(0 0 22px rgba(251,146,60,.15));}
-    50%{filter:drop-shadow(0 0 20px rgba(251,146,60,.75)) drop-shadow(0 0 40px rgba(251,146,60,.35));}
-  }
-  #teddyCardBourgour[style*="display:block"],#teddyCardBourgour:not([style*="none"]){
-    animation:bossIdle 4s ease-in-out infinite 0.7s, bourgourAura 2.5s ease-in-out infinite;
-  }
  rotate(2deg) scale(1.03);}75%{transform:translateY(-8px) rotate(1deg) scale(1.01);}100%{transform:translateY(0) rotate(-2deg) scale(1);}}
   @keyframes bossSlide{0%{right:0;}30%{right:40%;}60%{right:10%;}100%{right:0;}}
   @keyframes gramSlide{0%{left:20px;}30%{left:40%;}60%{left:10%;}100%{left:20px;}}
@@ -5022,7 +5051,15 @@ function renderLbEntries(entries, container){
   const medals = ["🥇","🥈","🥉"];
   const ADMIN_NAMES=["Professeur Daudé","Daude96","Daudé96"];
   // Exclude real Daudé saves from player list (he only appears as easter egg at top)
-  let all = entries.filter(e=>e.name&&e.name!==DAUDE.name&&!ADMIN_NAMES.includes(e.name));
+  /* Déduplication finale — 3e ligne de défense contre les doublons
+     (protège même si Supabase n'a pas de contrainte UNIQUE côté DB) */
+  const _rdedup=new Map();
+  entries.forEach(e=>{
+    if(!e.name)return;
+    const k=e.name.trim().toLowerCase();
+    if(!_rdedup.has(k)||e.score>_rdedup.get(k).score) _rdedup.set(k,e);
+  });
+  let all=[..._rdedup.values()].filter(e=>e.name!==DAUDE.name&&!ADMIN_NAMES.includes(e.name));
   const isAdmin=S.name&&(S.name===ADMIN_CODE||ADMIN_NAMES.includes(S.name));
   if(S.name && !isAdmin && !all.find(e=>e.name===S.name))
     all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||"",badges:[...(S.badges||new Set())]});
@@ -5113,21 +5150,30 @@ async function fetchLBEntries(){
         const data=await res.json();
         // Update chatAvatarCache and filter out banned players
         data.forEach(r=>{if(r.player_name&&r.avatar)chatAvatarCache[r.player_name]=r.avatar;});
-        entries=data.filter(r=>!_bannedNames.has(r.player_name)).map(r=>({
+        const rawEntries=data.filter(r=>!_bannedNames.has(r.player_name)).map(r=>({
           name:r.player_name,
           score:r.score,
-          avatar:r.avatar||"",  // real avatar from Supabase
+          avatar:r.avatar||"",
           desc:r.desc||"",
           badges:(()=>{try{return r.badges?JSON.parse(r.badges):[];}catch(_){return [];}})()
         }));
+        /* Déduplication : garder le meilleur score par nom */
+        const dedup=new Map();
+        rawEntries.forEach(e=>{
+          const k=e.name.trim().toLowerCase();
+          if(!dedup.has(k)||e.score>dedup.get(k).score) dedup.set(k,e);
+        });
+        entries=[...dedup.values()];
       }
     }catch(e){}
   }
   // 2. Fallback: merge with local scores (include own badges)
   try{
     const localLB=JSON.parse(localStorage.getItem("mb_lb")||"{}");
+    /* Déduplication locale : comparaison insensible à la casse */
     Object.values(localLB).forEach(e=>{
-      if(!entries.find(x=>x.name===e.name)) entries.push(e);
+      const ek=(e.name||"").trim().toLowerCase();
+      if(!entries.find(x=>(x.name||"").trim().toLowerCase()===ek)) entries.push(e);
     });
     // Always ensure current player is present with full badge data
     if(S.name){
@@ -5417,6 +5463,7 @@ function showKeyUnlock(type){
     :"Bravo ! Vous avez terminé toutes les séances de grammaire à 100% — vous débloquez la Clé de la Langue !";
   const ov=document.createElement("div");
   ov.className="mb-popup-ov";
+  ov.id="chronoPopOv";
   ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
   ov.innerHTML=`<div style="background:linear-gradient(160deg,${isConj?"#1a0a2e,#050a1a":"#061028,#0c1f4a"});border:2px solid rgba(${isConj?"180,120,255":"96,165,250"},.5);border-radius:24px;padding:32px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(${isConj?"180,100,255":"59,130,246"},.3);">
     <div style="font-size:26px;font-weight:900;color:${isConj?"#c084fc":"#60a5fa"};margin-bottom:8px;">✨ ${keyName} débloquée !</div>
@@ -6275,6 +6322,14 @@ function doLogin(){
     goScreen("home");updateHUD();
     loadProgress(v);
     saveToLB();
+    /* Auth multi-appareil : sync cloud au login */
+    if(typeof loadFromCloud==="function"){
+      loadFromCloud(v).then(function(remote){
+        if(!remote)return;
+        if(typeof mergeRemoteState==="function")mergeRemoteState(remote);
+        try{saveProgress();updateHUD();}catch(e){}
+      }).catch(function(){});
+    }
     setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },300);
     try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
     setTimeout(maybeShowUpdateMsg,600);
@@ -8749,26 +8804,60 @@ function updateMemeliteChapter(){
 }
 
 /* Chronoscribe : boss à venir — message immersif, non jouable */
+/* Chronoscribe : son tic-tac en boucle + popup RP (module à venir) */
+var _chronoAudio=null; // instance audio dédiée, évite les doublons
+function _startChronoSound(){
+  if(_chronoAudio) return; // déjà en cours
+  try{
+    _chronoAudio=new Audio("https://cdaudemartinez.fr/wp-content/uploads/2026/04/tic-tac-02.mp3");
+    _chronoAudio.loop=true;
+    _chronoAudio.volume=0.45;
+    _chronoAudio.play().catch(function(){_chronoAudio=null;});
+  }catch(e){_chronoAudio=null;}
+}
+function _stopChronoSound(){
+  if(!_chronoAudio) return;
+  try{_chronoAudio.pause();_chronoAudio.currentTime=0;}catch(e){}
+  _chronoAudio=null;
+}
 function openChronoscribe(){
-  const ov=document.createElement("div");
-  ov.className="mb-popup-ov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;";
-  ov.innerHTML='<div style="background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(148,163,184,.4);border-radius:24px;padding:32px 28px;max-width:400px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(148,163,184,.2);">'
-    +'<div style="position:relative;display:inline-block;margin-bottom:16px;">'
+  _startChronoSound();
+  const ov=document.createElement('div');
+  ov.id='chronoPopOv';
+  ov.className='mb-popup-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;';
+  const inner=document.createElement('div');
+  inner.style.cssText='background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(148,163,184,.4);border-radius:24px;padding:32px 28px;max-width:400px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(148,163,184,.2);';
+  inner.innerHTML=(
+    '<div style="position:relative;display:inline-block;margin-bottom:16px;">'
     +'<div class="chrono-aura" style="transform:scale(1.2);"></div>'
-    +'<img src="https://i.postimg.cc/3RFvPc8c/Chronoscribe-Idle.png" style="width:110px;object-fit:contain;animation:bossIdle 4.5s ease-in-out infinite;filter:brightness(.8);position:relative;z-index:1;"/>'
+    +'<img src="https://i.postimg.cc/3RFvPc8c/Chronoscribe-Idle.png"'
+    +' style="width:110px;object-fit:contain;animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;position:relative;z-index:1;"/>'
     +'</div>'
     +'<div style="font-size:22px;font-weight:900;color:#94a3b8;margin-bottom:12px;">Chronoscribe</div>'
     +'<div style="font-size:15px;color:#cbd5e1;line-height:1.7;font-style:italic;margin-bottom:20px;">'
-    +'"Les parchemins du temps frémissent… Chronoscribe n’est pas encore prêt à dévoiler ses épreuves."'
+    +'\u201cLes parchemins du temps fr\u00e9missent\u2026 Chronoscribe n\u2019est pas encore pr\u00eat \u00e0 d\u00e9voiler ses \u00e9preuves.\u201d'
     +'</div>'
-    +'<button onclick="this.closest(\\".mb-popup-ov\\").remove();event.stopPropagation();" '
-    +'style="padding:10px 28px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1);color:#94a3b8;font-weight:900;font-size:15px;cursor:pointer;">'
-    +'Revenir</button>'
-    +'</div>';
+  );
+  /* Bouton Fermer : référence directe à l'overlay par id, pas de closest() */
+  const btn=document.createElement('button');
+  btn.textContent='Revenir';
+  btn.style.cssText='padding:10px 28px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1);color:#94a3b8;font-weight:900;font-size:15px;cursor:pointer;';
+  btn.onclick=function(e){
+    e.stopPropagation();
+    _stopChronoSound();
+    var _ov=document.getElementById('chronoPopOv');
+    if(_ov) _ov.remove();
+  };
+  inner.appendChild(btn);
+  ov.appendChild(inner);
   document.body.appendChild(ov);
-  ov.addEventListener("click",e=>{e.stopPropagation();if(e.target===ov)ov.remove();});
+  ov.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(e.target===ov){ _stopChronoSound(); ov.remove(); }
+  });
 }
+
 
 function tryOpenMemelite(){
   const isAdmin=S.name===ADMIN_CODE||S.name==="Professeur Daudé"||S.name==="Daude96";
@@ -8846,8 +8935,13 @@ function updateTeddynounetCard(){
     bourgourEl.src='https://i.postimg.cc/7hW6gNhh/Bourgour.png';
     bourgourEl.style.display='block';
     bourgourEl.style.filter='';
+    /* Aura orange : classe ajoutée pour déclencher l'animation CSS */
+    bourgourEl.classList.add('aura-active');
   }
-  if(teddyEl) teddyEl.style.filter=''; /* retirer grayscale */
+  if(teddyEl){
+    teddyEl.style.filter=''; /* retirer grayscale */
+    teddyEl.classList.add('aura-active'); /* aura orange Teddynounet */
+  }
 }
 
 function tryOpenTeddynounet(){
@@ -11450,4 +11544,4 @@ window.TeddynounetBoss = (function() {
 
 </script>
 </body>
-</html>
+</html
