@@ -1264,8 +1264,9 @@
   }
 
   /* Dialogue box */
+  /* Dialog remonté sur mobile */
   #chronoDialog {
-    position:absolute;bottom:max(180px,24vw);left:2%;right:2%;z-index:20;
+    position:absolute;bottom:max(200px,28vw);left:2%;right:2%;z-index:20;
     display:none;
     background:rgba(5,10,25,.88);border:1.5px solid rgba(148,163,184,.4);
     border-radius:16px;padding:14px 18px;max-width:600px;margin:0 auto;
@@ -1277,7 +1278,8 @@
     background:rgba(148,163,184,.15);color:#94a3b8;font-weight:900;font-size:13px;cursor:pointer;
     display:block;margin-left:auto;
   }
-  #chronoDialogAv{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(148,163,184,.5);float:left;margin-right:12px;}
+  /* Avatars de dialogue agrandis */
+  #chronoDialogAv{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(148,163,184,.5);float:left;margin-right:14px;}
 
   /* Victor Hugo + Rousseau in cinematic */
   /* Hugo/Rousseau cinématique : grande taille, centré-bas, animation regard */
@@ -1291,8 +1293,9 @@
     .chrono-author{width:min(130px,28vw);}
   }
   /* Hugo et Rousseau centrés-bas, séparés pour symétrie */
-  #chronoHugo{left:28%;}
-  #chronoRousseau{right:28%;left:auto;}
+  /* Hugo/Rousseau : centrés-bas, positionnés symétriquement */
+  #chronoHugo{left:30%;}
+  #chronoRousseau{right:30%;left:auto;}
   /* Animation regard : flip horizontal alternée */
   @keyframes chronoLookAround{
     0%,40%{transform:scaleX(1);}
@@ -1337,10 +1340,14 @@
 
   /* Main gameplay area */
   /* Zone de jeu : centrée, plus spacieuse sur desktop */
+  /* Zone de jeu centrée, hierarchie visuelle claire */
   #chronoGameArea {
     position:absolute;top:48px;left:0;right:0;bottom:0;z-index:8;
-    display:none;flex-direction:column;align-items:center;justify-content:flex-start;
-    padding:12px 16px 16px;overflow-y:auto;
+    display:none;flex-direction:column;align-items:center;justify-content:center;
+    padding:12px 16px 16px;overflow-y:auto;gap:10px;
+  }
+  @media(max-width:640px){
+    #chronoGameArea{justify-content:flex-start;gap:6px;}
   }
 
   /* Drag items pool */
@@ -1370,26 +1377,41 @@
 
   /* Timeline */
   /* Frise : plus large + gaps plus grands sur desktop */
+  /* Frise 7 colonnes — plus grande, plus visible */
   #chronoTimeline {
-    width:100%;max-width:900px;
-    display:grid;grid-template-columns:repeat(6,1fr);
+    width:100%;max-width:960px;
+    display:grid;grid-template-columns:repeat(7,1fr);
     gap:8px;margin-bottom:12px;
+  }
+  @media(max-width:640px){
+    #chronoTimeline{grid-template-columns:repeat(4,1fr);gap:5px;}
   }
   @media(min-width:901px){
     #chronoTimeline{gap:12px;}
     .chrono-zone{min-height:90px;font-size:12px;}
   }
   @media(max-width:640px){
+    /* Layout mobile : centré, plus pratique */
+    #chronoDialog{bottom:max(160px,22vw);padding:10px 12px;}
     #chronoTimeline{grid-template-columns:repeat(3,1fr);}
+    #chronoGameArea{padding:8px;}
+    #chronoItemsPool{padding:8px;gap:6px;}
+    .chrono-item{font-size:11px;padding:6px 10px;}
   }
+  /* Zones de dépôt plus grandes et plus lisibles */
+  /* Zones plus grandes + plus lisibles */
   .chrono-zone {
-    min-height:64px;border-radius:10px;padding:6px 4px;
-    background:rgba(0,0,0,.5);border:2px dashed rgba(148,163,184,.25);
+    min-height:80px;border-radius:12px;padding:6px 4px;
+    background:rgba(0,0,6,.42);border:2px dashed rgba(148,163,184,.2);
     display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-    transition:border-color .2s,background .2s;position:relative;
-    font-size:clamp(9px,1.8vw,11px);color:rgba(148,163,184,.6);font-weight:700;
+    transition:border-color .2s,background .2s,box-shadow .2s;position:relative;
+    font-size:clamp(9px,1.5vw,12px);color:rgba(148,163,184,.6);font-weight:700;
   }
-  .chrono-zone.drag-over{border-color:#60a5fa;background:rgba(96,165,250,.1);}
+  .chrono-zone.drag-over{border-color:#60a5fa;background:rgba(96,165,250,.1);box-shadow:0 0 18px rgba(96,165,250,.35);}
+  @media(min-width:901px){
+    .chrono-zone{min-height:100px;font-size:12px;}
+    .chrono-item{font-size:14px;padding:9px 16px;}
+  }
   .chrono-zone.correct{border-color:#4ade80;background:rgba(74,222,128,.08);}
   .chrono-zone.wrong{border-color:#f87171;background:rgba(248,113,113,.08);animation:chronoShakeZone .3s;}
   @keyframes chronoShakeZone{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
@@ -1500,15 +1522,18 @@
   }
 
   
-  /* Entrée de Chronoscribe depuis haut-gauche */
+  /* Chronoscribe : chute spectaculaire haut-gauche → centre, rotation + rebond */
   @keyframes chronoEntrySlide{
-    0%{transform:translateX(-110vw) translateY(-60px);}
-    60%{transform:translateX(calc(-50% + 0px)) translateY(-20px);}
-    80%{transform:translateX(-50%) translateY(8px);}
-    100%{transform:translateX(-50%) translateY(0);}
+    0%  {left:-28vw; top:-160px; transform:scaleX(1) rotate(-15deg) scale(.6); opacity:0;}
+    20% {left:10%;   top:-80px;  transform:scaleX(1) rotate(-8deg) scale(.9); opacity:1;}
+    55% {left:45%;   top:-10px;  transform:scaleX(1) rotate(4deg) scale(1.08);}
+    72% {left:50%;   top:8px;    transform:scaleX(1) rotate(-2deg) scale(1.12);}
+    88% {left:50%;   top:-4px;   transform:scaleX(1) rotate(1deg) scale(1.04);}
+    100%{left:50%;   top:0;      transform:scaleX(1) rotate(0deg) scale(1); opacity:1;}
   }
   #chronoBossWrap.entering{
-    animation:chronoEntrySlide .9s cubic-bezier(.2,1,.4,1) forwards;
+    animation:chronoEntrySlide 1.2s cubic-bezier(.1,1.15,.4,1) forwards;
+    position:absolute;
   }
 
   /* Bouton Fuir Chronoscribe */
@@ -1533,6 +1558,113 @@
     display:none;
   }
   #chronoSkipBtn:hover{background:rgba(148,163,184,.15);}
+
+  /* ── Îles flottantes de la frise ────────────────────────── */
+  .chrono-zone{
+    background:transparent;
+    border:2px dashed rgba(148,163,184,.2);
+  }
+  .chrono-isle-wrap{
+    width:100%;text-align:center;margin-bottom:4px;
+  }
+  .chrono-isle{
+    width:clamp(40px,7vw,72px);height:auto;
+    object-fit:contain;
+    filter:drop-shadow(0 4px 12px rgba(59,130,246,.45));
+    animation:isleFloat 3s ease-in-out infinite;
+  }
+  @keyframes isleFloat{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+  }
+  .chrono-zone.drag-over .chrono-isle{filter:drop-shadow(0 4px 16px rgba(96,165,250,.9));}
+  .chrono-zone.correct .chrono-isle{filter:drop-shadow(0 4px 14px rgba(74,222,128,.8));}
+  .chrono-zone.wrong .chrono-isle{filter:drop-shadow(0 4px 14px rgba(248,113,113,.8));}
+
+  @keyframes shockwaveExpand{
+    0%{width:10px;height:10px;opacity:1;}
+    100%{width:300px;height:300px;opacity:0;transform:translate(-50%,-50%);}
+  }
+
+  /* Types de fissures */
+  .ftype-thick{box-shadow:0 0 15px rgba(239,68,68,.5);}
+  .ftype-doree{box-shadow:0 0 20px rgba(251,191,36,.6);}
+  .ftype-instable{box-shadow:0 0 12px rgba(167,139,250,.5);}
+  .ftype-leurre{box-shadow:0 0 12px rgba(251,191,36,.4);opacity:.85;}
+  @keyframes dangerPulse{
+    0%,100%{box-shadow:inset 0 0 0 rgba(239,68,68,0);}
+    50%{box-shadow:inset 0 0 60px rgba(239,68,68,.18);}
+  }
+
+  /* Fissure types: auras pulsées */
+  .ftype-doree{animation:fissDoreePulse 1s ease-in-out infinite !important;}
+  .ftype-instable{animation:fissInstablePulse .7s ease-in-out infinite !important;}
+  .ftype-leurre{animation:fissLeurreShake .5s ease-in-out infinite !important;}
+  .ftype-thick{animation:fissThickPulse 1.3s ease-in-out infinite !important;}
+  @keyframes fissDoreePulse{0%,100%{box-shadow:0 0 10px 3px rgba(251,191,36,.45);}50%{box-shadow:0 0 24px 7px rgba(251,191,36,.9);}}
+  @keyframes fissInstablePulse{0%,100%{box-shadow:0 0 8px 2px rgba(168,85,247,.45);}50%{box-shadow:0 0 20px 6px rgba(168,85,247,.9);}}
+  @keyframes fissLeurreShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px);}75%{transform:translateX(3px);}}
+  @keyframes fissThickPulse{0%,100%{box-shadow:0 0 8px 2px rgba(139,92,246,.4);}50%{box-shadow:0 0 18px 5px rgba(139,92,246,.8);}}
+
+  /* ── Jugement du temps : scan des zones ──── */
+  .chrono-zone.chrono-scanning{
+    animation:chronoScan .6s ease-out;
+    border-color:#facc15;
+    box-shadow:0 0 0 3px rgba(250,204,21,.5);
+  }
+  @keyframes chronoScan{
+    0%  {box-shadow:0 0 0 0 rgba(250,204,21,0);border-color:rgba(250,204,21,.3);}
+    40% {box-shadow:0 0 28px 8px rgba(250,204,21,.7);border-color:#fef08a;}
+    100%{box-shadow:0 0 0 0 rgba(250,204,21,0);border-color:rgba(148,163,184,.2);}
+  }
+
+  /* ── Fissures : types visuels plus intenses ──── */
+  .ftype-simple {filter:drop-shadow(0 0 10px rgba(96,165,250,.8));}
+  .ftype-thick  {filter:drop-shadow(0 0 16px rgba(168,85,247,.9)); animation:fissurePulse .6s ease-in-out infinite alternate;}
+  .ftype-instable{filter:drop-shadow(0 0 12px rgba(251,146,60,.9)); animation:fissureWobble .4s ease-in-out infinite alternate;}
+  .ftype-leurre {filter:drop-shadow(0 0 14px rgba(244,63,94,1)); animation:fissureLeurre .5s ease-in-out infinite alternate;}
+  .ftype-doree  {filter:drop-shadow(0 0 18px rgba(251,191,36,1)); animation:fissureGlow .7s ease-in-out infinite alternate;}
+  @keyframes fissurePulse{0%{transform:scale(1);}100%{transform:scale(1.08);}}
+  @keyframes fissureWobble{0%{transform:rotate(-3deg);}100%{transform:rotate(3deg);}}
+  @keyframes fissureLeurre{0%{transform:scale(.95) rotate(-2deg);}100%{transform:scale(1.05) rotate(2deg);}}
+  @keyframes fissureGlow{0%{transform:scale(1);filter:drop-shadow(0 0 14px rgba(251,191,36,.7));}100%{transform:scale(1.06);filter:drop-shadow(0 0 28px rgba(251,191,36,1));}}
+
+  /* Barre de progression sur les fissures épaisses */
+  .fissure-progress{
+    position:absolute;bottom:-8px;left:0;right:0;height:5px;
+    background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;
+  }
+  .fissure-progress-fill{height:100%;background:#a855f7;border-radius:3px;transition:width .1s;}
+
+  /* ── Desktop : zones et items plus grands ──── */
+  @media(min-width:901px){
+    #chronoGameArea{padding:16px 20px;}
+    #chronoItemsPool{min-height:90px;padding:14px;gap:12px;}
+    .chrono-item{font-size:15px;padding:10px 18px;letter-spacing:.3px;}
+    .chrono-zone{min-height:100px;padding:8px 6px;}
+    .chrono-isle{width:clamp(50px,8vw,88px) !important;}
+    .chrono-zone-label{font-size:12px !important;}
+    .chrono-zone-item{font-size:12px;padding:5px 8px;}
+  }
+
+  /* ── Phase fissures : fond animé plus intense ──── */
+  #chronoFissureArea.active-fissure{
+    background:radial-gradient(ellipse at center,rgba(88,28,135,.25) 0%,transparent 60%);
+    animation:fissureAreaPulse .8s ease-in-out infinite alternate;
+  }
+  @keyframes fissureAreaPulse{
+    0%{background:radial-gradient(ellipse at center,rgba(88,28,135,.25) 0%,transparent 60%);}
+    100%{background:radial-gradient(ellipse at center,rgba(124,58,237,.35) 0%,transparent 60%);}
+  }
+
+  /* ── Type indicator label ──── */
+  .fissure-type-badge{
+    position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+    font-size:9px;font-weight:900;padding:2px 6px;border-radius:4px;
+    pointer-events:none;white-space:nowrap;
+  }
+  .ftype-doree .fissure-type-badge{background:rgba(251,191,36,.3);color:#fbbf24;}
+  .ftype-leurre .fissure-type-badge{background:rgba(244,63,94,.3);color:#f43f5e;}
 </style>
 </head>
 <body>
@@ -4858,7 +4990,7 @@ function unlockBadge(id){
   try{
     let _bsnd=document.getElementById("badgeUnlockSnd");
     if(!_bsnd){_bsnd=document.createElement("audio");_bsnd.id="badgeUnlockSnd";
-      _bsnd.src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge-debloque.mp3";
+      _bsnd.src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge_debloque.mp3";
       _bsnd.preload="auto";document.body.appendChild(_bsnd);}
     _bsnd.currentTime=0;_bsnd.volume=0.8;_bsnd.play().catch(()=>{});
   }catch(e){}
@@ -6827,16 +6959,14 @@ function closeFailure(){
   const _bg=document.getElementById("bgMusic");
   /* Arrêt musique menu pendant séquence audio Teddynounet :
      Délai 2s pour laisser finir la musique d'échec avant de reprendre le menu */
-  if(_fm==="teddynounet"){
+  if(_fm==="teddynounet"||_fm==="chrono_flee"){
     if(_bg){_bg.pause();}
-    /* Timer annulable : si le module est relancé avant 2s, ce timer est
-       annulé dans init() via window._teddyBgRestartCancel */
     clearTimeout(window._teddyBgRestartTimer);
     window._teddyBgRestartTimer=setTimeout(function(){
       if(!window._teddyBgRestartCancel)if(_bg)_bg.play().catch(function(){});
       window._teddyBgRestartCancel=false;
     },2000);
-    showConjMenu();
+    if(_fm==="chrono_flee") showLitMenu(); else showConjMenu();
   } else {
     if(_bg)_bg.play().catch(function(){});
     if(_fm==="memelite"){_restoreBgMusic();showLitMenu();}
@@ -9680,7 +9810,7 @@ function maybeSIAMUnlock(){
     /* Popup une seule fois */
     if(!S.siam_popup_shown){
       S.siam_popup_shown=true;saveProgress();
-      try{var snd=new Audio("https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge-debloque.mp3");snd.volume=.85;snd.play().catch(function(){});}catch(e){}
+      try{var snd=new Audio("https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge_debloque.mp3");snd.volume=.85;snd.play().catch(function(){});}catch(e){}
       setTimeout(function(){
         showAvatarUnlocked(
           "https://i.postimg.cc/gJ9WBn8Z/avatar-spe-SIAM.png",
@@ -11857,13 +11987,13 @@ window.TeddynounetBoss = (function() {
 
     <!-- Cinematic: Hugo + Rousseau -->
     <img id="chronoHugo" class="chrono-author" src="https://i.postimg.cc/0y9mbR6S/Cinematic-Hugo.png" alt="Victor Hugo" style="display:none;"/>
-    <img id="chronoRousseau" class="chrono-author" src="https://i.postimg.cc/yY1cNC39/botticelli-3.png" alt="Rousseau" style="display:none;"/>
+    <img id="chronoRousseau" class="chrono-author" src="https://i.postimg.cc/QtPvhbnh/Rousseau-cinematic.png" alt="Rousseau" style="display:none;"/>
 
     <!-- Skip cinématique -->
     <button id="chronoSkipBtn" onclick="ChronoscribeGame.skipCinematic()">⏩ Passer</button>
 
     <!-- Flying car -->
-    <div id="chronoCar">🚗✨</div>
+    <div id="chronoCar"><img src="https://i.postimg.cc/zfxVtZbw/voiture-volante-cinematic.png" alt="voiture volante" style="height:clamp(40px,6vw,70px);object-fit:contain;filter:drop-shadow(0 4px 12px rgba(148,163,184,.5));"/></div>
 
     <!-- Boss -->
     <div id="chronoBossWrap">
@@ -11930,7 +12060,7 @@ window.TeddynounetBoss = (function() {
   </div>
 
 </body>
-</htm</script>
+
 
 <script>
 
@@ -11948,6 +12078,7 @@ const GAME_DURATION = 5 * 60; // 5 minutes en secondes
 
 const IMG = {
   BOSS_IDLE:     'https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png',
+  BOSS_HURT:     'https://i.postimg.cc/28BrbqQR/Chronoscribe-hurt.png',
   BOSS_AIR:      'https://i.postimg.cc/L5swH0zr/Chronoscribe-airneutre.png',
   BOSS_FALL:     'https://i.postimg.cc/vTmkQSry/Chronoscribe-tombe.png',
   BOSS_LAND:     'https://i.postimg.cc/D0zH2YrK/Chronoscribe-reception-sol.png',
@@ -11957,7 +12088,9 @@ const IMG = {
   ATK5:          'https://i.postimg.cc/FHpYtRVM/chronoscribe-attack5.png',
   ATK6:          'https://i.postimg.cc/RZdWrFT5/chronoscribe-attack6.png',
   HUGO:          'https://i.postimg.cc/0y9mbR6S/Cinematic-Hugo.png',
-  ROUSSEAU:      'https://i.postimg.cc/yY1cNC39/botticelli-3.png',
+  ROUSSEAU:      'https://i.postimg.cc/QtPvhbnh/Rousseau-cinematic.png', /* Nouveau skin Rousseau */
+  HUGO_FLEE:     'https://i.postimg.cc/bvmsCcDS/Hugo-fuite-cinematic.png',
+  ROUSSEAU_FLEE: 'https://i.postimg.cc/CKczPTBH/Rousseau-fuite-cinematic.png',
   FISSURE1: [
     'https://i.postimg.cc/PJdGkt4K/fissure1-frame01.png',
     'https://i.postimg.cc/4yXCTJ5B/fissure1-frame02.png',
@@ -11975,84 +12108,201 @@ const IMG = {
     'https://i.postimg.cc/dttMHVDG/fissure2-frame07.png',
     'https://i.postimg.cc/qMMfbvg8/fissure2-frame08.png'
   ],
-  /* Avatar dialogue Hugo — utilise l'avatar officiel */
-  AV_HUGO:   'https://i.postimg.cc/Gm9bvcwG/avatar-spe-hugo.png',
-  /* Avatar dialogue Rousseau — placeholder Botticelli en attendant l'asset définitif */
-  AV_ROUSSEAU:'https://i.postimg.cc/yY1cNC39/botticelli-3.png',
-  AV_CHRONO: 'https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png'
+
+  AV_ROUSSEAU:'https://i.postimg.cc/GpXH7w8F/Rousseau-avatar-dialogue-cinematic.png', /* Avatar dialogue Rousseau */
+  AV_HUGO_FLEE:'https://i.postimg.cc/bvmsCcDS/Hugo-fuite-cinematic.png',
+  AV_CHRONO: 'https://i.postimg.cc/JnWBvVRG/Chronoscribe-avatar-dialogue.png', /* Avatar dialogue Chronoscribe */
+  AV_HUGO:   'https://i.postimg.cc/Gm9bvcwG/avatar-spe-hugo.png'
 };
 
 const MUSIC_URL = 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Musique-Chronoscribe.mp3';
 const TIC_URL   = 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/tic-tac-02.mp3';
 
 /* ── DONNÉES FRISE ───────────────────────────────────────── */
+/* Corpus 160+ items — pid = époque de référence (jamais ambigu).
+   AUCUN item n'a date floue : Renaissance=xvi, Stendhal=xix, etc. */
 const ALL_ITEMS = [
-  /* Antiquité / Moyen-Âge */
-  {label:'Homère',        type:'auteur',     date:-800, period:'Antiquité'},
-  {label:'Sophocle',      type:'auteur',     date:-497, period:'Antiquité'},
-  {label:'Virgile',       type:'auteur',     date:-70,  period:'Antiquité'},
-  {label:'Ovide',         type:'auteur',     date:-43,  period:'Antiquité'},
-  {label:'La Chanson de Roland', type:'œuvre', date:1100, period:'Moyen Âge'},
-  {label:'François Villon', type:'auteur',   date:1431, period:'Moyen Âge'},
-  /* Renaissance */
-  {label:'Renaissance',   type:'mouvement',  date:1450, period:'XVᵉ–XVIᵉ s.'},
-  {label:'Rabelais',      type:'auteur',     date:1494, period:'XVIᵉ s.'},
-  {label:'Montaigne',     type:'auteur',     date:1533, period:'XVIᵉ s.'},
-  {label:'La Pléiade',    type:'mouvement',  date:1549, period:'XVIᵉ s.'},
-  {label:'Ronsard',       type:'auteur',     date:1524, period:'XVIᵉ s.'},
-  /* XVIIᵉ */
-  {label:'Classicisme',   type:'mouvement',  date:1660, period:'XVIIᵉ s.'},
-  {label:'Corneille',     type:'auteur',     date:1606, period:'XVIIᵉ s.'},
-  {label:'Molière',       type:'auteur',     date:1622, period:'XVIIᵉ s.'},
-  {label:'Racine',        type:'auteur',     date:1639, period:'XVIIᵉ s.'},
-  {label:'La Fontaine',   type:'auteur',     date:1621, period:'XVIIᵉ s.'},
-  {label:'Le Cid',        type:'œuvre',      date:1637, period:'XVIIᵉ s.'},
-  /* XVIIIᵉ */
-  {label:'Lumières',      type:'mouvement',  date:1715, period:'XVIIIᵉ s.'},
-  {label:'Voltaire',      type:'auteur',     date:1694, period:'XVIIIᵉ s.'},
-  {label:'Rousseau',      type:'auteur',     date:1712, period:'XVIIIᵉ s.'},
-  {label:'Diderot',       type:'auteur',     date:1713, period:'XVIIIᵉ s.'},
-  {label:"L'Encyclopédie",type:'œuvre',      date:1751, period:'XVIIIᵉ s.'},
-  {label:'Montesquieu',   type:'auteur',     date:1689, period:'XVIIIᵉ s.'},
-  {label:'Candide',       type:'œuvre',      date:1759, period:'XVIIIᵉ s.'},
-  /* XIXᵉ */
-  {label:'Romantisme',    type:'mouvement',  date:1820, period:'XIXᵉ s.'},
-  {label:'Victor Hugo',   type:'auteur',     date:1802, period:'XIXᵉ s.'},
-  {label:'Balzac',        type:'auteur',     date:1799, period:'XIXᵉ s.'},
-  {label:'Stendhal',      type:'auteur',     date:1783, period:'XIXᵉ s.'},
-  {label:'Flaubert',      type:'auteur',     date:1821, period:'XIXᵉ s.'},
-  {label:'Zola',          type:'auteur',     date:1840, period:'XIXᵉ s.'},
-  {label:'Baudelaire',    type:'auteur',     date:1821, period:'XIXᵉ s.'},
-  {label:'Rimbaud',       type:'auteur',     date:1854, period:'XIXᵉ s.'},
-  {label:'Verlaine',      type:'auteur',     date:1844, period:'XIXᵉ s.'},
-  {label:'Les Misérables',type:'œuvre',      date:1862, period:'XIXᵉ s.'},
-  {label:'Germinal',      type:'œuvre',      date:1885, period:'XIXᵉ s.'},
-  {label:'Réalisme',      type:'mouvement',  date:1850, period:'XIXᵉ s.'},
-  {label:'Naturalisme',   type:'mouvement',  date:1870, period:'XIXᵉ s.'},
-  {label:'Symbolisme',    type:'mouvement',  date:1880, period:'XIXᵉ s.'},
-  /* XXᵉ */
-  {label:'Surréalisme',   type:'mouvement',  date:1924, period:'XXᵉ s.'},
-  {label:'Proust',        type:'auteur',     date:1871, period:'XXᵉ s.'},
-  {label:'Apollinaire',   type:'auteur',     date:1880, period:'XXᵉ s.'},
-  {label:'Breton',        type:'auteur',     date:1896, period:'XXᵉ s.'},
-  {label:'Camus',         type:'auteur',     date:1913, period:'XXᵉ s.'},
-  {label:'Sartre',        type:'auteur',     date:1905, period:'XXᵉ s.'},
-  {label:"L'Étranger",    type:'œuvre',      date:1942, period:'XXᵉ s.'},
-  {label:'Existentialisme',type:'mouvement', date:1945, period:'XXᵉ s.'},
-  {label:'Nouveau Roman', type:'mouvement',  date:1950, period:'XXᵉ s.'},
-  {label:'De Beauvoir',   type:'auteur',     date:1908, period:'XXᵉ s.'},
-  {label:'Ionesco',       type:'auteur',     date:1909, period:'XXᵉ s.'},
-  {label:'Absurde',       type:'mouvement',  date:1942, period:'XXᵉ s.'}
+  /* Antiquité */
+  {label:"Hom\u00e8re",type:"auteur",pid:"antiq"},
+  {label:"L'Iliade",type:"\u0153uvre",pid:"antiq"},
+  {label:"L'Odyss\u00e9e",type:"\u0153uvre",pid:"antiq"},
+  {label:"Sophocle",type:"auteur",pid:"antiq"},
+  {label:"\u0152dipe roi",type:"\u0153uvre",pid:"antiq"},
+  {label:"Euripide",type:"auteur",pid:"antiq"},
+  {label:"M\u00e9d\u00e9e",type:"\u0153uvre",pid:"antiq"},
+  {label:"Aristophane",type:"auteur",pid:"antiq"},
+  {label:"Les Grenouilles",type:"\u0153uvre",pid:"antiq"},
+  {label:"Virgile",type:"auteur",pid:"antiq"},
+  {label:"L'\u00c9n\u00e9ide",type:"\u0153uvre",pid:"antiq"},
+  {label:"Ovide",type:"auteur",pid:"antiq"},
+  {label:"Les M\u00e9tamorphoses",type:"\u0153uvre",pid:"antiq"},
+  {label:"Platon",type:"auteur",pid:"antiq"},
+  {label:"Aristote",type:"auteur",pid:"antiq"},
+  {label:"Horace",type:"auteur",pid:"antiq"},
+  {label:"Lucr\u00e8ce",type:"auteur",pid:"antiq"},
+  {label:"S\u00e9n\u00e8que",type:"auteur",pid:"antiq"},
+  {label:"Sapho",type:"auteur",pid:"antiq"},
+  {label:"Eschyle",type:"auteur",pid:"antiq"},
+  {label:"Antigone",type:"\u0153uvre",pid:"antiq"},
+  /* Moyen \u00c2ge */
+  {label:"La Chanson de Roland",type:"\u0153uvre",pid:"moyen"},
+  {label:"Chr\u00e9tien de Troyes",type:"auteur",pid:"moyen"},
+  {label:"Perceval",type:"\u0153uvre",pid:"moyen"},
+  {label:"Lancelot",type:"\u0153uvre",pid:"moyen"},
+  {label:"Marie de France",type:"auteur",pid:"moyen"},
+  {label:"Fran\u00e7ois Villon",type:"auteur",pid:"moyen"},
+  {label:"Le Testament",type:"\u0153uvre",pid:"moyen"},
+  {label:"Rutebeuf",type:"auteur",pid:"moyen"},
+  {label:"Roman de la Rose",type:"\u0153uvre",pid:"moyen"},
+  {label:"Tristan et Iseut",type:"\u0153uvre",pid:"moyen"},
+  {label:"po\u00e9sie courtoise",type:"mouvement",pid:"moyen"},
+  {label:"chanson de geste",type:"mouvement",pid:"moyen"},
+  {label:"fabliau",type:"mouvement",pid:"moyen"},
+  {label:"La Farce de M. Pathelin",type:"\u0153uvre",pid:"moyen"},
+  {label:"troubadours",type:"mouvement",pid:"moyen"},
+  {label:"cycle arthurien",type:"mouvement",pid:"moyen"},
+  {label:"Adam de la Halle",type:"auteur",pid:"moyen"},
+  /* XVIe si\u00e8cle */
+  {label:"Renaissance",type:"mouvement",pid:"xvi"},
+  {label:"humanisme",type:"mouvement",pid:"xvi"},
+  {label:"Rabelais",type:"auteur",pid:"xvi"},
+  {label:"Gargantua",type:"\u0153uvre",pid:"xvi"},
+  {label:"Pantagruel",type:"\u0153uvre",pid:"xvi"},
+  {label:"Montaigne",type:"auteur",pid:"xvi"},
+  {label:"Essais",type:"\u0153uvre",pid:"xvi"},
+  {label:"Ronsard",type:"auteur",pid:"xvi"},
+  {label:"Du Bellay",type:"auteur",pid:"xvi"},
+  {label:"Les Regrets",type:"\u0153uvre",pid:"xvi"},
+  {label:"D\u00e9fense et illustration",type:"\u0153uvre",pid:"xvi"},
+  {label:"La Pl\u00e9iade",type:"mouvement",pid:"xvi"},
+  {label:"Louise Lab\u00e9",type:"auteur",pid:"xvi"},
+  {label:"Cl\u00e9ment Marot",type:"auteur",pid:"xvi"},
+  {label:"po\u00e9sie humaniste",type:"mouvement",pid:"xvi"},
+  /* XVIIe si\u00e8cle */
+  {label:"Classicisme",type:"mouvement",pid:"xvii"},
+  {label:"baroque",type:"mouvement",pid:"xvii"},
+  {label:"Corneille",type:"auteur",pid:"xvii"},
+  {label:"Le Cid",type:"\u0153uvre",pid:"xvii"},
+  {label:"Racine",type:"auteur",pid:"xvii"},
+  {label:"Ph\u00e8dre",type:"\u0153uvre",pid:"xvii"},
+  {label:"Andromaque",type:"\u0153uvre",pid:"xvii"},
+  {label:"Moli\u00e8re",type:"auteur",pid:"xvii"},
+  {label:"Tartuffe",type:"\u0153uvre",pid:"xvii"},
+  {label:"L'Avare",type:"\u0153uvre",pid:"xvii"},
+  {label:"Le Bourgeois gentilhomme",type:"\u0153uvre",pid:"xvii"},
+  {label:"Mme de La Fayette",type:"auteur",pid:"xvii"},
+  {label:"La Princesse de Cl\u00e8ves",type:"\u0153uvre",pid:"xvii"},
+  {label:"La Fontaine",type:"auteur",pid:"xvii"},
+  {label:"Fables",type:"\u0153uvre",pid:"xvii"},
+  {label:"Pascal",type:"auteur",pid:"xvii"},
+  {label:"Pens\u00e9es",type:"\u0153uvre",pid:"xvii"},
+  {label:"Boileau",type:"auteur",pid:"xvii"},
+  {label:"pr\u00e9ciosit\u00e9",type:"mouvement",pid:"xvii"},
+  {label:"Mme de S\u00e9vign\u00e9",type:"auteur",pid:"xvii"},
+  /* XVIIIe si\u00e8cle */
+  {label:"Lumi\u00e8res",type:"mouvement",pid:"xviii"},
+  {label:"Voltaire",type:"auteur",pid:"xviii"},
+  {label:"Candide",type:"\u0153uvre",pid:"xviii"},
+  {label:"Rousseau",type:"auteur",pid:"xviii"},
+  {label:"Les Confessions",type:"\u0153uvre",pid:"xviii"},
+  {label:"Du contrat social",type:"\u0153uvre",pid:"xviii"},
+  {label:"Diderot",type:"auteur",pid:"xviii"},
+  {label:"Jacques le Fataliste",type:"\u0153uvre",pid:"xviii"},
+  {label:"Montesquieu",type:"auteur",pid:"xviii"},
+  {label:"Lettres persanes",type:"\u0153uvre",pid:"xviii"},
+  {label:"L'Encyclop\u00e9die",type:"\u0153uvre",pid:"xviii"},
+  {label:"Beaumarchais",type:"auteur",pid:"xviii"},
+  {label:"Le Mariage de Figaro",type:"\u0153uvre",pid:"xviii"},
+  {label:"Marivaux",type:"auteur",pid:"xviii"},
+  {label:"Abb\u00e9 Pr\u00e9vost",type:"auteur",pid:"xviii"},
+  {label:"Manon Lescaut",type:"\u0153uvre",pid:"xviii"},
+  {label:"Les Liaisons dangereuses",type:"\u0153uvre",pid:"xviii"},
+  {label:"conte philosophique",type:"mouvement",pid:"xviii"},
+  {label:"roman \u00e9pistolaire",type:"mouvement",pid:"xviii"},
+  {label:"Olympe de Gouges",type:"auteur",pid:"xviii"},
+  /* XIXe si\u00e8cle */
+  {label:"Romantisme",type:"mouvement",pid:"xix"},
+  {label:"R\u00e9alisme",type:"mouvement",pid:"xix"},
+  {label:"Naturalisme",type:"mouvement",pid:"xix"},
+  {label:"Symbolisme",type:"mouvement",pid:"xix"},
+  {label:"Parnasse",type:"mouvement",pid:"xix"},
+  {label:"Victor Hugo",type:"auteur",pid:"xix"},
+  {label:"Les Mis\u00e9rables",type:"\u0153uvre",pid:"xix"},
+  {label:"Notre-Dame de Paris",type:"\u0153uvre",pid:"xix"},
+  {label:"Les Contemplations",type:"\u0153uvre",pid:"xix"},
+  {label:"Balzac",type:"auteur",pid:"xix"},
+  {label:"Le P\u00e8re Goriot",type:"\u0153uvre",pid:"xix"},
+  {label:"La Com\u00e9die humaine",type:"\u0153uvre",pid:"xix"},
+  {label:"Stendhal",type:"auteur",pid:"xix"},
+  {label:"Le Rouge et le Noir",type:"\u0153uvre",pid:"xix"},
+  {label:"Flaubert",type:"auteur",pid:"xix"},
+  {label:"Madame Bovary",type:"\u0153uvre",pid:"xix"},
+  {label:"Zola",type:"auteur",pid:"xix"},
+  {label:"Germinal",type:"\u0153uvre",pid:"xix"},
+  {label:"L'Assommoir",type:"\u0153uvre",pid:"xix"},
+  {label:"Baudelaire",type:"auteur",pid:"xix"},
+  {label:"Les Fleurs du mal",type:"\u0153uvre",pid:"xix"},
+  {label:"Rimbaud",type:"auteur",pid:"xix"},
+  {label:"Une saison en enfer",type:"\u0153uvre",pid:"xix"},
+  {label:"Verlaine",type:"auteur",pid:"xix"},
+  {label:"Mallarm\u00e9",type:"auteur",pid:"xix"},
+  {label:"Maupassant",type:"auteur",pid:"xix"},
+  {label:"Bel-Ami",type:"\u0153uvre",pid:"xix"},
+  {label:"George Sand",type:"auteur",pid:"xix"},
+  {label:"Lamartine",type:"auteur",pid:"xix"},
+  {label:"Musset",type:"auteur",pid:"xix"},
+  {label:"spleen",type:"mouvement",pid:"xix"},
+  /* XXe si\u00e8cle */
+  {label:"Surr\u00e9alisme",type:"mouvement",pid:"xx"},
+  {label:"Existentialisme",type:"mouvement",pid:"xx"},
+  {label:"Nouveau Roman",type:"mouvement",pid:"xx"},
+  {label:"absurde",type:"mouvement",pid:"xx"},
+  {label:"Apollinaire",type:"auteur",pid:"xx"},
+  {label:"Alcools",type:"\u0153uvre",pid:"xx"},
+  {label:"Calligrammes",type:"\u0153uvre",pid:"xx"},
+  {label:"Breton",type:"auteur",pid:"xx"},
+  {label:"Manifeste du surr\u00e9alisme",type:"\u0153uvre",pid:"xx"},
+  {label:"\u00c9luard",type:"auteur",pid:"xx"},
+  {label:"Aragon",type:"auteur",pid:"xx"},
+  {label:"Camus",type:"auteur",pid:"xx"},
+  {label:"L'\u00c9tranger",type:"\u0153uvre",pid:"xx"},
+  {label:"La Peste",type:"\u0153uvre",pid:"xx"},
+  {label:"Sartre",type:"auteur",pid:"xx"},
+  {label:"Huis clos",type:"\u0153uvre",pid:"xx"},
+  {label:"Beckett",type:"auteur",pid:"xx"},
+  {label:"En attendant Godot",type:"\u0153uvre",pid:"xx"},
+  {label:"Ionesco",type:"auteur",pid:"xx"},
+  {label:"La Cantatrice chauve",type:"\u0153uvre",pid:"xx"},
+  {label:"Proust",type:"auteur",pid:"xx"},
+  {label:"\u00c0 la recherche\u2026",type:"\u0153uvre",pid:"xx"},
+  {label:"Saint-Exup\u00e9ry",type:"auteur",pid:"xx"},
+  {label:"Le Petit Prince",type:"\u0153uvre",pid:"xx"},
+  {label:"Malraux",type:"auteur",pid:"xx"},
+  {label:"Colette",type:"auteur",pid:"xx"},
+  {label:"Pr\u00e9vert",type:"auteur",pid:"xx"},
+  {label:"Paroles",type:"\u0153uvre",pid:"xx"},
+  {label:"Duras",type:"auteur",pid:"xx"},
+  {label:"L'Amant",type:"\u0153uvre",pid:"xx"},
+  {label:"Yourcenar",type:"auteur",pid:"xx"},
+  {label:"Perec",type:"auteur",pid:"xx"},
+  {label:"Queneau",type:"auteur",pid:"xx"},
+  {label:"Zazie dans le m\u00e9tro",type:"\u0153uvre",pid:"xx"},
+  {label:"C\u00e9saire",type:"auteur",pid:"xx"},
+  {label:"n\u00e9gritude",type:"mouvement",pid:"xx"},
+  {label:"th\u00e9\u00e2tre de l'absurde",type:"mouvement",pid:"xx"},
+  {label:"De Beauvoir",type:"auteur",pid:"xx"},
+  {label:"Simone Weil",type:"auteur",pid:"xx"}
 ];
 
-/* Périodes de la frise (colonnes) */
+/* Frise 7 époques — pid = clé de validation pédagogique sans ambiguïté */
 const PERIODS = [
-  {id:'p0', label:'Antiquité\n–Moyen Âge', min:-900,  max:1499},
-  {id:'p1', label:'XVIᵉ s.',              min:1500,  max:1599},
-  {id:'p2', label:'XVIIᵉ s.',             min:1600,  max:1699},
-  {id:'p3', label:'XVIIIᵉ s.',            min:1700,  max:1799},
-  {id:'p4', label:'XIXᵉ s.',              min:1800,  max:1899},
-  {id:'p5', label:'XXᵉ s.',               min:1900,  max:2000}
+  {id:'p0', label:'Antiquit\u00e9', pid:'antiq', img:'https://i.postimg.cc/KYQB5fWY/antiquite.png',    min:-800,max:-1},
+  {id:'p1', label:'Moyen \u00c2ge',  pid:'moyen', img:'https://i.postimg.cc/YCmGCyPc/Moyen-Age.png',    min:0,   max:1499},
+  {id:'p2', label:'XVI\u1d49 s.',    pid:'xvi',   img:'https://i.postimg.cc/VkbrkHhr/XVIe-siecle.png',  min:1500,max:1599},
+  {id:'p3', label:'XVII\u1d49 s.',   pid:'xvii',  img:'https://i.postimg.cc/y8Sg8rGJ/XVIIe-siecle.png', min:1600,max:1699},
+  {id:'p4', label:'XVIII\u1d49 s.',  pid:'xviii', img:'https://i.postimg.cc/K8gk8sW3/XVIIIe-siecle.png',min:1700,max:1799},
+  {id:'p5', label:'XIX\u1d49 s.',    pid:'xix',   img:'https://i.postimg.cc/fR0tRgPy/XIXe-siecle.png',  min:1800,max:1899},
+  {id:'p6', label:'XX\u1d49 s.',     pid:'xx',    img:'https://i.postimg.cc/vmF1gtRH/XXe-siecle.png',   min:1900,max:2000}
 ];
 
 /* Tutoriel */
@@ -12134,9 +12384,19 @@ function _restoreBgMusic(){
 }
 
 /* ── FRISE HELPER ────────────────────────────────────────── */
-function _getPeriodForDate(d){
-  for(var i=0;i<PERIODS.length;i++){
-    if(d>=PERIODS[i].min && d<=PERIODS[i].max) return PERIODS[i].id;
+/* _getPeriodId : retourne l'id de zone pour le pid d'un item.
+   Priorité au champ pid explicite — pas de déduction par date floue */
+function _getPeriodId(item){
+  if(item.pid){
+    for(var i=0;i<PERIODS.length;i++){
+      if(PERIODS[i].pid===item.pid) return PERIODS[i].id;
+    }
+  }
+  /* Fallback date si pas de pid */
+  if(item.date!==undefined){
+    for(var j=0;j<PERIODS.length;j++){
+      if(item.date>=PERIODS[j].min && item.date<=PERIODS[j].max) return PERIODS[j].id;
+    }
   }
   return PERIODS[PERIODS.length-1].id;
 }
@@ -12179,37 +12439,96 @@ function _bossAttackAnim(cb){
     if(i>=seq.length){ clearInterval(iv); if(cb) cb(); }
   },120);
 }
+/* Skin blessé + animation shake lors d'un coup */
 function _bossHitAnim(){
   var s=_el('chronoBossSprite');
   if(!s) return;
+  var prevSrc=s.src;
+  s.src=IMG.BOSS_HURT;
   s.classList.remove('chrono-hit');
   void s.offsetWidth;
   s.classList.add('chrono-hit');
-  _T(function(){ s.classList.remove('chrono-hit'); },450);
+  _T(function(){
+    s.classList.remove('chrono-hit');
+    s.src=prevSrc||IMG.BOSS_IDLE;
+  },500);
 }
-/* Entrée Chronoscribe: slide depuis haut-gauche vers centre */
+/* Chronoscribe arrive depuis HAUT-GAUCHE, chute brutale vers le centre */
+/* Entrée Chronoscribe depuis haut-gauche : chute dramatique vers le centre */
 function _bossEntryAnim(cb){
   var wrap=_el('chronoBossWrap');
   _setBossSprite(IMG.BOSS_AIR);
   if(wrap){
-    wrap.style.left='-30%'; wrap.style.transform='none';
-    // Lance l'animation slide vers le centre
+    wrap.style.transition='none';
+    wrap.style.left='-28vw';
+    wrap.style.top='-160px';
+    wrap.style.transform='scaleX(1) rotate(-15deg) scale(.6)';
+    wrap.style.opacity='0';
+    wrap.style.position='absolute';
+    /* Hugo + Rousseau s'écartent instantanément */
+    var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
+    if(hugo){ hugo.classList.remove('looking'); hugo.style.transition='transform .6s ease-in-out'; hugo.style.transform='translateX(-55vw)'; }
+    if(rous){ rous.classList.remove('looking'); rous.style.transition='transform .6s ease-in-out'; rous.style.transform='translateX(55vw)'; }
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         wrap.classList.add('entering');
       });
     });
   }
-  _T(function(){ _setBossSprite(IMG.BOSS_FALL); },200);
-  _T(function(){ _setBossSprite(IMG.BOSS_LAND); },550);
+  _T(function(){ _setBossSprite(IMG.BOSS_FALL); },400);
+  _T(function(){
+    _setBossSprite(IMG.BOSS_LAND);
+    /* Tremblement brutal + flash lumineux à l'impact */
+    _shakeScreen(700);
+    /* Flash blanc d'impact */
+    var f=document.createElement('div');
+    f.style.cssText='position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9999;transition:opacity .06s';
+    document.body.appendChild(f);
+    requestAnimationFrame(function(){ f.style.opacity='.7'; setTimeout(function(){ f.style.transition='opacity .25s'; f.style.opacity='0'; setTimeout(function(){f.remove();},260); },60); });
+    /* Onde de choc circulaire */
+    var wr=_el('chronoBossWrap');
+    if(wr){
+      var shock=document.createElement('div');
+      var r=wr.getBoundingClientRect();
+      shock.style.cssText='position:fixed;left:'+(r.left+r.width/2)+'px;top:'+(r.top+r.height/2)+'px;'+
+        'width:10px;height:10px;border-radius:50%;border:3px solid rgba(148,163,184,.8);'+
+        'pointer-events:none;z-index:9998;transform:translate(-50%,-50%);'+
+        'transition:width .5s ease-out,height .5s ease-out,opacity .5s;';
+      document.body.appendChild(shock);
+      requestAnimationFrame(function(){
+        shock.style.width='200px'; shock.style.height='200px'; shock.style.opacity='0';
+        setTimeout(function(){shock.remove();},520);
+      });
+    }
+  },780);
   _T(function(){
     _setBossSprite(IMG.BOSS_IDLE);
     if(wrap){
       wrap.classList.remove('entering');
-      wrap.style.left='50%'; wrap.style.transform='translateX(-50%)';
+      wrap.style.left='50%'; wrap.style.top='auto';
+      wrap.style.transform='translateX(-50%)';
+      wrap.style.opacity='1'; wrap.style.transition='';
     }
-    if(cb)cb();
-  },920);
+    if(cb) cb();
+  },1250);
+}
+
+function _impactFlash(){
+  var f=document.createElement('div');
+  f.style.cssText='position:fixed;inset:0;background:rgba(148,163,220,.75);z-index:9999;pointer-events:none;transition:opacity .25s';
+  document.body.appendChild(f);
+  requestAnimationFrame(function(){
+    setTimeout(function(){ f.style.opacity='0'; setTimeout(function(){f.remove();},280); },50);
+  });
+}
+function _shockwave(){
+  var ov=_el('chronoOv'); if(!ov) return;
+  var w=document.createElement('div');
+  w.style.cssText='position:absolute;left:50%;top:70%;transform:translate(-50%,-50%);'+
+    'width:10px;height:10px;border-radius:50%;border:3px solid rgba(148,163,220,.9);'+
+    'pointer-events:none;z-index:30;animation:shockwaveExpand .6s ease-out forwards;';
+  ov.appendChild(w);
+  setTimeout(function(){w.remove();},650);
 }
 
 /* ── PARTICULES AURA ─────────────────────────────────────── */
@@ -12456,16 +12775,34 @@ function _cinFleeAndStart(){
         'Trop tard. Si tu veux rétablir le temps… prouve que tu en es digne.',
         function(){
           if(_introAborted) return;
-          /* Hugo et Rousseau fuient */
+          /* Hugo et Rousseau fuient dans deux directions opposées */
           var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
-          if(hugo){ hugo.style.transition='transform 1s'; hugo.style.transform='translateX(-200px)'; }
-          if(rous){ rous.style.transition='transform 1s'; rous.style.transform='translateX(-200px)'; }
+          /* Hugo : skin fuite + fuit vers la gauche (flip horizontal) */
+          if(hugo){
+            hugo.src=IMG.HUGO_FLEE||'https://i.postimg.cc/bvmsCcDS/Hugo-fuite-cinematic.png';
+            hugo.style.transform='scaleX(-1)'; /* orienté droite → flip pour aller gauche */
+            hugo.style.transition='transform 1s ease-in, opacity .4s .7s';
+            _T(function(){
+              hugo.style.transform='scaleX(-1) translateX(200px)';
+              hugo.style.opacity='0';
+            },50);
+          }
+          /* Rousseau : skin fuite + fuit vers la droite */
+          if(rous){
+            rous.src=IMG.ROUSSEAU_FLEE||'https://i.postimg.cc/CKczPTBH/Rousseau-fuite-cinematic.png';
+            rous.style.transform='scaleX(1)';
+            rous.style.transition='transform 1s ease-in, opacity .4s .7s';
+            _T(function(){
+              rous.style.transform='translateX(200px)';
+              rous.style.opacity='0';
+            },50);
+          }
           _T(function(){
-            if(hugo) hugo.style.display='none';
-            if(rous) rous.style.display='none';
+            if(hugo){hugo.style.display='none';hugo.style.opacity='';}
+            if(rous){rous.style.display='none';rous.style.opacity='';}
             _inCinematic=false;
             _startTutorial();
-          },1000);
+          },1100);
         });
     });
 }
@@ -12531,17 +12868,29 @@ function _showGameArea(){
   var ga=_el('chronoGameArea'); if(ga) ga.style.display='flex';
 }
 
+/* _buildTimeline : zones avec îles flottantes */
 function _buildTimeline(){
   var tl=_el('chronoTimeline'); if(!tl) return;
   tl.innerHTML='';
-  PERIODS.forEach(function(p){
+  PERIODS.forEach(function(p,pi){
     var zone=document.createElement('div');
     zone.className='chrono-zone';
     zone.id='zone-'+p.id;
     zone.dataset.period=p.id;
+    /* Image île flottante */
+    if(p.img){
+      var isleWrap=document.createElement('div');
+      isleWrap.className='chrono-isle-wrap';
+      var isle=document.createElement('img');
+      isle.src=p.img; isle.alt=p.label;
+      isle.className='chrono-isle';
+      isle.style.animationDelay=(pi*0.3)+'s';
+      isleWrap.appendChild(isle);
+      zone.appendChild(isleWrap);
+    }
     var lbl=document.createElement('div');
     lbl.className='chrono-zone-label';
-    lbl.textContent=p.label.replace('\\n','\n');
+    lbl.textContent=p.label;
     zone.appendChild(lbl);
     /* Drop handlers */
     zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('drag-over');});
@@ -12559,10 +12908,18 @@ function _buildTimeline(){
 function _showNextQuestion(){
   if(!_running||_inFissure||_gameEnded) return;
   _currentItems=_nextItems();
-  _zoneMap={};  // Réinitialiser pour la nouvelle question
+  _zoneMap={};
   _showGameArea();
   _renderItemsPool();
   _updateValidateBtn();
+  /* Rebrancher le bouton Valider à chaque question (fix robuste) */
+  var vbtn=_el('chronoValidateBtn');
+  if(vbtn){
+    var nb=vbtn.cloneNode(true);
+    nb.onclick=function(e){ e.preventDefault(); _validateAnswer(); };
+    vbtn.parentNode.replaceChild(nb,vbtn);
+    window._chronoValidate=_validateAnswer;
+  }
   _totalQuestions++;
 }
 
@@ -12689,48 +13046,111 @@ function _updateValidateBtn(){
 
 function _validateAnswer(){
   if(!_running||_inFissure||_gameEnded) return;
-  var allCorrect=true;
-  var wrongCount=0;
+  var btn=_el('chronoValidateBtn'); if(btn) btn.style.display='none';
+
+  /* Sons de feedback */
+  var SND_OK  ='https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge_debloque.mp3';
+  var SND_BAD ='https://cdaudemartinez.fr/wp-content/uploads/2026/04/wrong_answer.mp3';
+  function _playFbSound(url){ try{var a=new Audio(url);a.volume=0.65;a.play().catch(function(){});}catch(e){} }
+  function _playFbSnd(u,v){ try{var a=new Audio(u);a.volume=v||0.55;a.play().catch(function(){});}catch(e){} }
+
+  /* Feu d'artifice sur une zone correcte */
+  function _firework(zone){
+    if(!zone) return;
+    var r=zone.getBoundingClientRect();
+    var cx=r.left+r.width/2, cy=r.top+r.height/2;
+    for(var i=0;i<8;i++){
+      var p=document.createElement('div');
+      var ang=(i/8)*Math.PI*2;
+      var dist=35+Math.random()*25;
+      p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:7px;height:7px;'+
+        'border-radius:50%;background:#4ade80;pointer-events:none;z-index:9999;opacity:1;'+
+        'transition:transform .5s ease-out,opacity .5s ease-out;';
+      document.body.appendChild(p);
+      (function(pp,a,d){
+        requestAnimationFrame(function(){
+          pp.style.transform='translate('+(Math.cos(a)*d)+'px,'+(Math.sin(a)*d-18)+'px)';
+          pp.style.opacity='0';
+          setTimeout(function(){if(pp.parentNode)pp.parentNode.removeChild(pp);},520);
+        });
+      })(p,ang,dist);
+    }
+  }
+
+  /* Construire les résultats */
+  var results=[];
   _currentItems.forEach(function(item,idx){
-    /* Trouver dans quelle zone cet item a été placé (support multi-item) */
     var placedPeriod=null;
     Object.keys(_zoneMap).forEach(function(pid){
       var v=_zoneMap[pid];
       if(Array.isArray(v)? v.indexOf(idx)>=0 : v===idx) placedPeriod=pid;
     });
-    var correctPeriod=_getPeriodForDate(item.date);
-    var zone=_el('zone-'+correctPeriod);
-    if(placedPeriod===correctPeriod){
-      if(zone) zone.classList.add('correct');
-    } else {
-      allCorrect=false; wrongCount++;
-      if(placedPeriod && _el('zone-'+placedPeriod)) _el('zone-'+placedPeriod).classList.add('wrong');
-      if(zone) zone.classList.add('correct'); /* show correct */
-    }
+    var correctPeriod=_getPeriodId(item);
+    results.push({idx:idx,item:item,placedPeriod:placedPeriod,correctPeriod:correctPeriod,
+                  ok:placedPeriod===correctPeriod});
   });
 
-  if(allCorrect){
-    _consecutiveCorrect++;
-    _bossHp=Math.max(0,_bossHp-1);
-    _updateHud();
-    _bossHitAnim();
-    _bossSpeech(_consecutiveCorrect>1?'Tu rétablis… une parcelle d\'ordre.':'Intéressant…',2500);
-    _showFeedback('✅ Bonne réponse !', '#4ade80');
+  /* Révélation progressive — 420ms entre chaque item */
+  var allOk=results.every(function(r){return r.ok;});
+  var wrongCount=results.filter(function(r){return !r.ok;}).length;
+
+  results.forEach(function(res,i){
     _T(function(){
-      if(!_running||_gameEnded) return;
-      if(_bossHp<=0){ _gameVictory(); return; }
-      _checkFissurePhase();
-    },1200);
-  } else {
-    _consecutiveCorrect=0;
-    _bossSpeech('Le chaos te dépasse. Le temps se désagrège davantage…',3000);
-    _showFeedback('❌ Erreur ! '+wrongCount+' élément(s) mal placé(s)', '#f87171');
-    _T(function(){
-      if(!_running||_gameEnded) return;
-      _checkFissurePhase(true);
-    },1500);
-  }
-  var btn=_el('chronoValidateBtn'); if(btn) btn.style.display='none';
+      if(!_running) return;
+      var cZone=_el('zone-'+res.correctPeriod);
+      var pZone=res.placedPeriod?_el('zone-'+res.placedPeriod):null;
+      /* Trouver le label de l'item dans la zone */
+      var allItems=(pZone||cZone)?Array.from((pZone||cZone).querySelectorAll('.chrono-zone-item')):[];
+      var itemEl=allItems.find(function(el){return el.textContent.indexOf(res.item.label)>=0;});
+      if(res.ok){
+        /* Scan lumineux avant révélation */
+        if(cZone){ cZone.classList.add('chrono-scanning'); }
+        _T(function(){
+          if(cZone) cZone.classList.remove('chrono-scanning');
+          _playFbSound(SND_OK);
+          if(cZone) cZone.classList.add('correct');
+        if(itemEl){itemEl.style.transition='background .3s,color .3s';itemEl.style.background='rgba(74,222,128,.3)';itemEl.style.color='#4ade80';}
+        _firework(cZone);
+        }, 300);
+      } else {
+        _playFbSound(SND_BAD);
+        if(pZone) pZone.classList.add('wrong');
+        if(cZone) cZone.classList.add('correct');
+        if(itemEl){
+          itemEl.style.transition='background .3s,color .3s';
+          itemEl.style.background='rgba(248,113,113,.3)';
+          itemEl.style.color='#f87171';
+          itemEl.style.animation='chronoShakeZone .35s';
+          setTimeout(function(){if(itemEl)itemEl.style.animation='';},400);
+        }
+      }
+    }, i*420);
+  });
+
+  /* Après toutes les révélations : résultat final */
+  _T(function(){
+    if(!_running||_gameEnded) return;
+    if(allOk){
+      _consecutiveCorrect++;
+      _bossHp=Math.max(0,_bossHp-1);
+      _updateHud(); _bossHitAnim();
+      _bossSpeech(_consecutiveCorrect>1?'Tu rétablis… une parcelle d’ordre.':'Intéressant…',2500);
+      _showFeedback('✅ Parfait ! Toutes les réponses sont correctes.','#4ade80');
+      _T(function(){
+        if(!_running||_gameEnded) return;
+        if(_bossHp<=0){_gameVictory();return;}
+        _checkFissurePhase();
+      },1200);
+    } else {
+      _consecutiveCorrect=0;
+      _bossSpeech('Le chaos te dépasse. Le temps se désagrège davantage…',3000);
+      _showFeedback('❌ '+wrongCount+' erreur(s) — Chronoscribe gagne en force !','#f87171');
+      _T(function(){
+        if(!_running||_gameEnded) return;
+        _checkFissurePhase(true);
+      },1500);
+    }
+  }, results.length*420+250);
 }
 
 function _showFeedback(text, color){
@@ -12764,18 +13184,22 @@ function _triggerFissurePhase(){
   _fissurePhaseActive=true;
   _inFissure=true;
   _hideGameArea();
-  _shakeScreen(1500);
+  /* Désaturation dramatique du décor */
+  var bg=_el('chronoBg');
+  if(bg) bg.style.filter='saturate(.3) brightness(.7)';
+  _shakeScreen(2000);
   _bossAttackAnim(null);
-
-  /* Message warning */
   var msg=_el('chronoFissureMsg');
   if(msg){
     msg.style.display='flex';
     _el('chronoFissureMsgText').textContent='⚡ Chronoscribe déchire le temps !';
-    _el('chronoFissureMsgSub').textContent='Prépare-toi… des fissures temporelles s\'ouvrent !';
+    _el('chronoFissureMsgSub').textContent='Les fissures temporelles s’ouvrent — vite !';
   }
   _bossSpeech('Le temps se fracture ! Contiens-le… si tu le peux.',3500);
-
+  /* Éclairs d'annonce */
+  for(var i=0;i<3;i++){
+    _T(function(){ _impactFlash(); }, 300+i*500);
+  }
   _T(function(){
     if(msg) msg.style.display='none';
     if(!_running||_gameEnded) return;
@@ -12784,6 +13208,15 @@ function _triggerFissurePhase(){
 }
 
 var _fissureClicks={}; // id → clicks done
+/* ── FISSURES TEMPORELLES — 5 types ──────────────────────────
+   simple  : 1 clic, petite
+   thick   : 3-5 clics, résistante
+   instable: bouge / change de position
+   leurre  : NE PAS cliquer → pénalité si cliqué
+   dorée   : bonus de temps ou de HP boss
+   ─────────────────────────────────────────────────────────── */
+var _fissureTypes=['simple','thick','instable','leurre','doree'];
+
 function _spawnFissures(){
   var area=_el('chronoFissureArea'); if(!area) return;
   area.style.display='block';
@@ -12791,62 +13224,197 @@ function _spawnFissures(){
   _fissures=[];
   _fissureClicks={};
 
-  /* Nombre de fissures selon difficulté */
-  var count=[2,3,4][_difficulty]||2;
-  var frames=_difficulty<2?IMG.FISSURE1:IMG.FISSURE2;
-  /* Clics requis selon device + difficulté */
-  var clicksNeeded=_isMobile?([5,8,12][_difficulty]||5):([3,5,8][_difficulty]||3);
+  /* Plus de fissures et plus variées selon difficulté */
+  var count=[2,4,6][_difficulty]||2;
+  var vw=window.innerWidth, vh=window.innerHeight;
+
+  /* Pulsation de danger : fond qui pulse */
+  area.classList.add('active-fissure');
+  /* Flashs répétés au début de la phase */
+  for(var fi=0;fi<3;fi++){ (function(delay){
+    _T(function(){ _shakeScreen(200); },delay*400);
+  })(fi); }
 
   for(var i=0;i<count;i++){
     (function(fi){
-      var fissureEl=document.createElement('div');
-      fissureEl.className='chrono-fissure';
-      fissureEl.id='fissure-'+fi;
-      /* Position aléatoire mais pas sur le boss */
-      var maxX=Math.floor(Math.min(window.innerWidth*0.7,500));
-      var x=Math.floor(Math.random()*maxX+20);
-      var y=Math.floor(Math.random()*(window.innerHeight*0.5)+60);
-      var size=_isMobile?Math.floor(Math.random()*40+60):Math.floor(Math.random()*60+80);
-      fissureEl.style.cssText='left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;';
+      /* Choisir le type selon difficulté + aléatoire */
+      var typeIdx;
+      var rnd=Math.random();
+      if(_difficulty===0){
+        typeIdx=rnd<0.7?0:1; /* mostly simple + quelques thick */
+      } else if(_difficulty===1){
+        typeIdx=rnd<0.4?0:(rnd<0.7?1:(rnd<0.85?2:3));
+      } else {
+        typeIdx=rnd<0.2?0:(rnd<0.45?1:(rnd<0.65?2:(rnd<0.8?3:4)));
+      }
+      var fType=_fissureTypes[typeIdx];
+
+      /* Position variée — jamais sur le boss (centre) */
+      var margin=80;
+      var x, y;
+      do {
+        x=Math.floor(Math.random()*(vw-margin*2)+margin);
+        y=Math.floor(Math.random()*(vh*0.55)+60);
+      } while(Math.abs(x-vw/2)<100 && y>vh*0.4);
+
+      var baseSize=_isMobile?60:80;
+      var sizeVariation={'simple':0,'thick':1.4,'instable':1,'leurre':0.9,'doree':1.1};
+      var size=Math.floor(baseSize*(sizeVariation[fType]||1)+Math.random()*30);
+
+      var el=document.createElement('div');
+      el.className='chrono-fissure ftype-'+fType;
+      el.id='fissure-'+fi;
+      el.style.cssText='left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;';
+
+      var frames=(fi%2===0)?IMG.FISSURE1:IMG.FISSURE2;
       var img=document.createElement('img');
       img.src=frames[0];
-      img.alt='Fissure temporelle';
       img.style.cssText='width:100%;height:100%;object-fit:contain;pointer-events:none;';
-      fissureEl.appendChild(img);
+
+      /* Label type */
+      /* Badge type pour dorée et leurre */
+      if(fType==='doree'||fType==='leurre'){
+        var badge=document.createElement('div');
+        badge.className='fissure-type-badge';
+        badge.textContent=fType==='doree'?'★ DORÉE':'⚠ NE PAS CLIQUER';
+        el.appendChild(badge);
+      }
+      /* Barre de progression pour fissure épaisse */
+      if(fType==='thick'){
+        var pgBar=document.createElement('div'); pgBar.className='fissure-progress';
+        var pgFill=document.createElement('div'); pgFill.className='fissure-progress-fill';
+        pgFill.style.width='0%'; pgBar.appendChild(pgFill); el.appendChild(pgBar);
+      }
+      if(fType==='leurre'){
+        var lbl=document.createElement('div');
+        lbl.style.cssText='position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);'+
+          'font-size:10px;color:#fbbf24;font-weight:900;white-space:nowrap;pointer-events:none;';
+        lbl.textContent=''; /* intentionnellement caché */
+        el.appendChild(lbl);
+        /* Couleur jaune doré pour leurre */
+        img.style.filter='hue-rotate(200deg) saturate(2)';
+      }
+      if(fType==='doree'){
+        img.style.filter='hue-rotate(40deg) saturate(3) brightness(1.3)';
+        el.style.boxShadow='0 0 20px rgba(251,191,36,.6)';
+      }
+
+      el.appendChild(img);
+
+      /* Vitesse d'animation selon type + difficulté */
+      var speeds={'simple':700,'thick':500,'instable':400,'leurre':600,'doree':550};
+      var diffMult=[1.2,1,0.75][_difficulty]||1;
+      var frameSpeed=Math.floor((speeds[fType]||600)*diffMult);
 
       var frameIdx=0;
-      var progress=0;
       _fissureClicks['fissure-'+fi]=0;
 
-      /* Animation frames */
       var frameInterval=setInterval(function(){
-        if(!_running||!_fissurePhaseActive) { clearInterval(frameInterval); return; }
+        if(!_running||!_fissurePhaseActive){ clearInterval(frameInterval); return; }
         frameIdx=(frameIdx+1)%frames.length;
         img.src=frames[frameIdx];
-        /* Si frame finale atteinte naturellement → pénalité */
         if(frameIdx===frames.length-1){
           clearInterval(frameInterval);
-          _fissureTimeout('fissure-'+fi);
+          if(fType!=='leurre') _fissureTimeout('fissure-'+fi);
+          /* Leurre : timeout sans pénalité */
         }
-      },600+(_difficulty===0?200:_difficulty===1?0:-200));
+      },frameSpeed);
 
-      /* Click/tap handler */
-      fissureEl.addEventListener('pointerdown',function(e){
+      /* Clics requis selon type + device */
+      var cliqsBase={'simple':1,'thick':_isMobile?6:4,'instable':_isMobile?4:2,'leurre':99,'doree':1};
+      var clicksNeeded=cliqsBase[fType]||1;
+
+      /* Fissure instable : bouge toutes les 1.2s */
+      var moveInterval=null;
+      if(fType==='instable'){
+        moveInterval=setInterval(function(){
+          if(!_running||!_fissurePhaseActive){ clearInterval(moveInterval); return; }
+          var nx=Math.floor(Math.random()*(vw-margin*2)+margin);
+          var ny=Math.floor(Math.random()*(vh*0.45)+60);
+          el.style.transition='left .4s,top .4s';
+          el.style.left=nx+'px'; el.style.top=ny+'px';
+        },1200);
+        _fissures.push({id:'fissure-'+fi, interval:frameInterval, extraInterval:moveInterval, el:el, type:fType});
+      } else {
+        _fissures.push({id:'fissure-'+fi, interval:frameInterval, el:el, type:fType});
+      }
+
+      el.addEventListener('pointerdown',function(e){
         e.stopPropagation();
+        /* Leurre : pénalité */
+        if(fType==='leurre'){
+          _playFbSnd('https://cdaudemartinez.fr/wp-content/uploads/2026/04/wrong_answer.mp3');
+          clearInterval(frameInterval);
+          _whiteFlash();
+          _lives=Math.max(0,_lives-1);
+          _updateHud();
+          _shakeScreen(400);
+          if(el.parentNode) el.parentNode.removeChild(el);
+          if(_lives<=0){ _gameDefeat(); return; }
+          _closedFissures++;
+          _checkAllFissuresClosed();
+          return;
+        }
+        /* Dorée : bonus */
+        if(fType==='doree'){
+          _playFbSnd('https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge_debloque.mp3');
+          clearInterval(frameInterval);
+          _timeLeft=Math.min(_timeLeft+30, GAME_DURATION); /* +30 secondes */
+          _updateTimer();
+          _bossHp=Math.max(0,_bossHp-1);
+          _updateHud();
+          _bossHitAnim();
+          /* Flash doré */
+          var gf=document.createElement('div');
+          gf.style.cssText='position:fixed;inset:0;background:rgba(251,191,36,.3);z-index:9999;pointer-events:none;transition:opacity .3s';
+          document.body.appendChild(gf);
+          setTimeout(function(){gf.style.opacity='0';setTimeout(function(){gf.remove();},320);},100);
+          if(el.parentNode) el.parentNode.removeChild(el);
+          _closedFissures++;
+          _checkAllFissuresClosed();
+          return;
+        }
+        /* Fissure normale */
         _fissureClicks['fissure-'+fi]++;
-        /* Visual feedback */
-        fissureEl.style.transform='scale(.92)';
-        setTimeout(function(){ fissureEl.style.transform=''; },80);
-        /* Particule hit */
-        _spawnFissureHit(fissureEl, e.clientX, e.clientY);
+        el.style.transform='scale(.90)';
+        setTimeout(function(){ el.style.transform=''; },90);
+        _spawnFissureHit(el, e.clientX, e.clientY);
+        /* Son de frappe + mise à jour barre progression épaisse */
+        _playFbSnd('https://cdaudemartinez.fr/wp-content/uploads/2026/04/wrong_answer.mp3',0.3);
+        if(fType==='thick'){
+          var pg=el.querySelector('.fissure-progress-fill');
+          if(pg) pg.style.width=((_fissureClicks['fissure-'+fi]/clicksNeeded)*100)+'%';
+        }
+        /* Tremblement d'écran fort pour épaisse */
+        if(fType==='thick') _shakeScreen(150);
         if(_fissureClicks['fissure-'+fi]>=clicksNeeded){
           clearInterval(frameInterval);
-          _closeFissure('fissure-'+fi, fissureEl, fi, count);
+          if(moveInterval) clearInterval(moveInterval);
+          /* Effet de fermeture : flash vert + rétrécissement */
+          el.style.transition='transform .25s,opacity .25s';
+          el.style.transform='scale(0.1)'; el.style.opacity='0';
+          setTimeout(function(){
+            if(el.parentNode) el.parentNode.removeChild(el);
+            _closedFissures++;
+            _checkAllFissuresClosed();
+          },280);
+          /* Flash court */
+          var gf2=document.createElement('div');
+          gf2.style.cssText='position:fixed;inset:0;background:rgba(74,222,128,.2);z-index:9999;pointer-events:none;transition:opacity .2s;';
+          document.body.appendChild(gf2);
+          setTimeout(function(){gf2.style.opacity='0';setTimeout(function(){gf2.remove();},220);},80);
         }
       });
 
-      area.appendChild(fissureEl);
-      _fissures.push({id:'fissure-'+fi, interval:frameInterval, el:fissureEl});
+      area.appendChild(el);
+      /* Apparition décalée pour chaque fissure */
+      el.style.opacity='0';
+      el.style.transform='scale(0)';
+      setTimeout(function(){
+        el.style.transition='transform .35s cubic-bezier(.2,1.4,.4,1),opacity .25s';
+        el.style.transform=''; el.style.opacity='1';
+      }, fi*350);
+
     })(i);
   }
 }
@@ -12908,6 +13476,9 @@ function _checkAllFissuresClosed(all){
     area.style.display='none';
     _fissurePhaseActive=false;
     _inFissure=false;
+    /* Restaurer la saturation */
+    var bg2=_el('chronoBg'); if(bg2) bg2.style.filter='';
+    var area2=_el('chronoFissureArea'); if(area2) area2.style.animation='none';
     _setBossSprite(IMG.BOSS_IDLE);
     _bossSpeech('Hm… tu résistes.',2500);
     _T(function(){
@@ -12940,10 +13511,22 @@ function _gameDefeat(){
 function _showEndScreen(victory){
   var ov=_el('chronoEndOv'); if(!ov) return;
   ov.style.display='flex';
+  var box=_el('chronoEndBox');
   var title=_el('chronoEndTitle'), msg=_el('chronoEndMsg');
   if(victory){
     if(title){ title.textContent='⚡ Victoire !'; title.style.color='#60a5fa'; }
-    if(msg) msg.textContent='Tu as restauré l\'équilibre du temps. Chronoscribe est vaincu… pour l\'instant.';
+    if(msg) msg.textContent='Tu as restauré l\'équilibre du temps. Le Chronoscribe est vaincu.';
+    /* Musique de victoire */
+    try{if(typeof playVictoryMusic==='function') playVictoryMusic();}catch(e){}
+    /* Image de victoire */
+    if(box && !box.querySelector('.chrono-mort-img')){
+      var img=document.createElement('img');
+      img.className='chrono-mort-img';
+      img.src='https://i.postimg.cc/q7zMBmvk/Chronoscribe-mort.png';
+      img.style.cssText='width:160px;object-fit:contain;margin:0 auto 20px;display:block;'+
+        'filter:drop-shadow(0 0 30px rgba(96,165,250,.8));animation:chronoFloat 3s ease-in-out infinite;';
+      box.insertBefore(img, box.firstChild);
+    }
   } else {
     if(title){ title.textContent='💀 Défaite'; title.style.color='#f87171'; }
     if(msg) msg.textContent='Chronoscribe a triomphé. Le temps continue de se désagréger… Reviens plus fort.';
@@ -12953,6 +13536,29 @@ function _showEndScreen(victory){
 /* ══════════════════════════════════════════════════════════
    START / STOP
 ══════════════════════════════════════════════════════════ */
+/* Reset complet des personnages cinématiques */
+function _resetCinematicChars(){
+  var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
+  if(hugo){
+    hugo.src=IMG.HUGO;
+    hugo.style.display='none'; hugo.style.opacity='1';
+    hugo.style.transition='none'; hugo.style.transform='';
+    hugo.classList.remove('looking');
+  }
+  if(rous){
+    rous.src=IMG.ROUSSEAU;
+    rous.style.display='none'; rous.style.opacity='1';
+    rous.style.transition='none'; rous.style.transform='scaleX(-1)';
+    rous.classList.remove('looking');
+  }
+  var wrap=_el('chronoBossWrap');
+  if(wrap){
+    wrap.classList.remove('entering');
+    wrap.style.left='50%'; wrap.style.top='auto';
+    wrap.style.transform='translateX(-50%)'; wrap.style.transition='';
+  }
+}
+
 function start(){
   if(_running) return;
   /* Admin only */
@@ -12972,6 +13578,8 @@ function start(){
   _closedFissures=0; _consecutiveCorrect=0;
   _fissures=[]; _fissureClicks={};
   _resetPool();
+  /* Reset complet des sprites cinématiques — évite le bug "skin fuite persistant" */
+  _resetCinematicChars();
 
   var ov=_el('chronoOv'); if(ov) ov.style.display='block';
   _el('chronoEndOv').style.display='none';
@@ -12986,6 +13594,12 @@ function start(){
   _playMusic();
   _buildTimeline();
 
+  /* Reset Hugo/Rousseau skins et positions au relancement */
+  var _hr=_el('chronoHugo'), _rr=_el('chronoRousseau');
+  if(_hr){_hr.src=IMG.HUGO;_hr.style.cssText='transform:scaleX(1);transition:none;opacity:1;display:none;';_hr.classList.remove('looking');}
+  if(_rr){_rr.src=IMG.ROUSSEAU;_rr.style.cssText='transform:scaleX(1);transition:none;opacity:1;display:none;';_rr.classList.remove('looking');}
+  var _bwr=_el('chronoBossWrap');
+  if(_bwr){_bwr.classList.remove('entering');_bwr.style.left='50%';_bwr.style.top='auto';_bwr.style.transform='translateX(-50%)';}  _setBossSprite(IMG.BOSS_IDLE);
   console.log('Chronoscribe state',{running:_running,bossHp:_bossHp,lives:_lives});
 
   _T(function(){ _startCinematic(); },400);
@@ -13015,22 +13629,85 @@ function skipCinematic(){
   _startTutorial();
 }
 
-/* Fuite : quitter proprement Chronoscribe, comme les autres boss */
+/* Fuite Chronoscribe : comportement identique aux autres boss
+   - playGameOverMusic() + _showFleeFailure() → failureOv standard
+   - S._abandonModId = 'chrono_flee' → closeFailure() → showLitMenu() */
 function flee(){
   if(!_running||_gameEnded) return;
   _introAborted=true;
   _clearTimers();
-  _stopTimer();
-  _stopMusic();
-  _stopTic();
-  _stopParticles();
-  _fissures.forEach(function(f){ clearInterval(f.interval); });
+  _stopTimer(); _stopMusic(); _stopTic(); _stopParticles();
+  _fissures.forEach(function(f){
+    clearInterval(f.interval);
+    if(f.extraInterval) clearInterval(f.extraInterval);
+  });
   _fissures=[];
+  if(window._chronoKeyHandler){ document.removeEventListener('keydown',window._chronoKeyHandler); window._chronoKeyHandler=null; }
   _running=false;
-  var ov=_el('chronoOv'); if(ov) ov.style.display='none';
-  _T(function(){ _restoreBgMusic(); },600);
-  if(typeof showLitMenu==='function') showLitMenu();
-  else if(typeof goScreen==='function') goScreen('literature');
+  /* Musique d'échec */
+  try{if(typeof playGameOverMusic==='function') playGameOverMusic();}catch(e){}
+
+  /* Masquer tout sauf l'overlay de fuite */
+  var ov=_el('chronoOv');
+  if(ov){
+    ov.style.display='block'; /* Garder visible pour la popup */
+    _el('chronoGameArea').style.display='none';
+    _el('chronoFissureArea').style.display='none';
+    _el('chronoDialog').style.display='none';
+    _el('chronoFissureMsg').style.display='none';
+    var skipBtn=_el('chronoSkipBtn'); if(skipBtn) skipBtn.style.display='none';
+    var fuirBtn=_el('chronoFuirBtn'); if(fuirBtn) fuirBtn.style.display='none';
+  }
+
+  /* Popup de fuite entièrement auto-géré — pas de failureOv externe */
+  var popup=document.createElement('div');
+  popup.id='chronoFleePopup';
+  popup.style.cssText='position:absolute;inset:0;z-index:60;display:flex;align-items:center;'+
+    'justify-content:center;background:rgba(5,8,20,.96);animation:fadeIn .4s;';
+  var box=document.createElement('div');
+  box.style.cssText='background:linear-gradient(160deg,#0f172a,#1e293b);'+
+    'border:2px solid rgba(239,68,68,.4);border-radius:24px;padding:36px 28px;'+
+    'max-width:440px;width:92%;text-align:center;animation:popIn .4s;'+
+    'box-shadow:0 0 60px rgba(239,68,68,.15);';
+  /* Image boss */
+  var spr=document.createElement('img');
+  spr.src='https://i.postimg.cc/7hLdxQ3r/Chronoscribe-idle.png';
+  spr.style.cssText='width:100px;margin-bottom:16px;filter:drop-shadow(0 0 12px rgba(239,68,68,.5));';
+  box.appendChild(spr);
+  /* Texte narratif */
+  var ti=document.createElement('div');
+  ti.style.cssText='font-size:20px;font-weight:900;color:#f87171;margin-bottom:14px;';
+  ti.textContent='« Tempus fugit… »';
+  box.appendChild(ti);
+  var tx=document.createElement('div');
+  tx.style.cssText='font-size:14px;color:#cbd5e1;line-height:1.75;font-style:italic;margin-bottom:24px;';
+  tx.innerHTML='Le temps fuit… comme toi devant le Chronoscribe.<br>'+
+    '<em>Il ne te poursuivra pas…<br>'+
+    'Mais le temps, lui, ne pardonne pas.<br>'+
+    'Reviens quand tu auras appris à le maîtriser.</em>';
+  box.appendChild(tx);
+  /* Bouton Revenir */
+  var btn=document.createElement('button');
+  btn.textContent='← Revenir';
+  btn.style.cssText='padding:12px 32px;border-radius:14px;border:none;'+
+    'background:linear-gradient(180deg,#ef4444,#b91c1c);'+
+    'color:#fff;font-weight:900;font-size:16px;cursor:pointer;'+
+    'box-shadow:0 4px 16px rgba(239,68,68,.4);';
+  btn.onclick=function(){
+    popup.remove();
+    var ov2=_el('chronoOv'); if(ov2) ov2.style.display='none';
+    /* Restaurer la musique menu */
+    try{
+      var bg=document.getElementById('bgMusic');
+      if(bg){ bg.currentTime=0; bg.play().catch(function(){}); }
+    }catch(e){}
+    /* Retour propre au menu littérature */
+    if(typeof showLitMenu==='function') showLitMenu();
+    else if(typeof goScreen==='function') goScreen('literature');
+  };
+  box.appendChild(btn);
+  popup.appendChild(box);
+  ov.appendChild(popup);
 }
 
 function stop(){
@@ -13041,7 +13718,7 @@ function stop(){
   _stopMusic();
   _stopTic();
   _stopParticles();
-  _fissures.forEach(function(f){ clearInterval(f.interval); });
+  _fissures.forEach(function(f){ clearInterval(f.interval); if(f.extraInterval) clearInterval(f.extraInterval); });
   _fissures=[];
   /* Supprimer écouteur clavier */
   if(window._chronoKeyHandler){ document.removeEventListener('keydown',window._chronoKeyHandler); window._chronoKeyHandler=null; }
@@ -13073,7 +13750,7 @@ function _exposeValidate(){
     document.addEventListener('keydown',window._chronoKeyHandler);
   }
 }
-return { start:start, stop:stop, exposeValidate:_exposeValidate };
+return { start:start, stop:stop, flee:flee, skipCinematic:skipCinematic, exposeValidate:_exposeValidate };
 
 
 })();
