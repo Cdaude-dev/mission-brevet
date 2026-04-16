@@ -834,7 +834,7 @@
   #teddyComboGiant.x3{color:#fb923c;text-shadow:0 0 50px rgba(251,146,60,.9),0 4px 20px rgba(0,0,0,.8);}
   /* Surgissement X2/X3 : scale peak 1.6, durée 1.1s, impact fort */
   /* Keyframe X2/X3 : départ à scale(.05) pour éviter scale(0) absolu */
-  @keyframes teddyGiantPop{0%{transform:translateX(-50%) scale(.05) rotate(-3deg);opacity:0;}30%{transform:translateX(-50%) scale(1.6) rotate(2deg);opacity:1;}55%{transform:translateX(-50%) scale(1.1) rotate(0deg);opacity:1;}75%{transform:translateX(-50%) scale(1.2) rotate(0deg);opacity:1;}90%{transform:translateX(-50%) scale(1.15);opacity:.85;}100%{transform:translateX(-50%) scale(.8);opacity:0;}}
+  @keyframes teddyGiantPop{0%{transform:translateX(-50%) scale(.05) rotate(-3deg);opacity:0;}30%{transform:translateX(-50%) scale(1.6) rotate(2deg);opacity:1;}55%{transform:translateX(-50%) scale(1.1) rotate(0deg);opacity:1;}75%{transform:translateX(-50%) scale(1.2) rotate(0deg);opacity:1;}90%{transform:translateX(-50%) scale(1.15);opacity:.85;}100%{left:50%; top:auto; transform:translateX(-50%) scale(1); opacity:1;}}
   /* Durée 1.1s, cubic-bezier for punchier impact */
   #teddyComboGiant.popping{animation:teddyGiantPop 1.1s cubic-bezier(.2,1.4,.4,1) forwards;}
   @keyframes teddyContinuousShakeLight{0%,100%{transform:translate(0,0);}25%{transform:translate(-1px,.5px);}50%{transform:translate(1px,-.5px);}75%{transform:translate(-.5px,1px);}}
@@ -1211,19 +1211,22 @@
   #chronoBg {
     position:absolute;inset:0;
     background:url('https://i.postimg.cc/xdtXkcwB/Chronoscribe-desktop-bg.png') center/cover no-repeat;
+    transform-origin:center center;
+    will-change:transform;
   }
   #chronoBgOverlay {
     position:absolute;inset:0;background:rgba(5,8,20,.35);
   }
   @media(max-width:640px){
-    #chronoBg{background-image:url('https://i.postimg.cc/q7jNtNfB/Chronoscribe-responsive-bg.png');}
+    #chronoBg{background-image:url('https://cdaudemartinez.fr/wp-content/uploads/2026/04/Chronoscribe_responsive_bg.png');}
   }
 
   /* HUD */
+  /* HUD: position fixed = jamais affecté par transform des parents */
   #chronoHud {
-    position:absolute;top:0;left:0;right:0;z-index:10;
+    position:fixed;top:0;left:0;right:0;z-index:400;
     display:flex;align-items:center;justify-content:space-between;
-    padding:8px 14px;background:rgba(0,0,0,.55);
+    padding:8px 14px;background:rgba(0,0,0,.68);
     border-bottom:1px solid rgba(148,163,184,.25);
     gap:10px;flex-wrap:wrap;
   }
@@ -1294,14 +1297,14 @@
     transition:transform 1.2s ease-in-out;
   }
   @media(max-width:640px){
-    .chrono-author{width:min(130px,28vw);}
+    .chrono-author{width:min(110px,26vw);}
   }
   /* Hugo et Rousseau centrés-bas, séparés pour symétrie */
   /* Hugo/Rousseau : centrés-bas, positionnés symétriquement */
   /* Hugo et Rousseau centrés sans overlap */
   /* Hugo et Rousseau plus proches du centre */
-  #chronoHugo{left:38%;}
-  #chronoRousseau{right:38%;left:auto;}
+  #chronoHugo{left:36%;}
+  #chronoRousseau{right:36%;left:auto;}
   /* Animation regard : flip horizontal alternée */
   @keyframes chronoLookAround{
     0%,40%{transform:scaleX(1);}
@@ -1348,9 +1351,10 @@
   /* Zone de jeu : centrée, plus spacieuse sur desktop */
   /* Zone de jeu centrée, hierarchie visuelle claire */
   #chronoGameArea {
-    position:absolute;top:48px;left:0;right:0;bottom:0;z-index:8;
+    position:absolute;top:50px;left:0;right:0;bottom:0;z-index:8;
     display:none;flex-direction:column;align-items:center;justify-content:center;
     padding:12px 16px 16px;overflow-y:auto;gap:10px;
+    transform-origin:center 15%;
   }
   @media(max-width:640px){
     #chronoGameArea{justify-content:flex-start;gap:6px;}
@@ -1377,13 +1381,35 @@
     transition:box-shadow .15s,transform .15s;
     touch-action:none;
     /* Taille fixe — évite l'étirement en drag */
-    min-width:90px;max-width:175px;width:auto;
-    white-space:normal;overflow:visible;word-break:break-word;line-height:1.2;
+    /* Taille fixe absolue - TOUTES les props de dimension gelées */
+    min-width:100px;max-width:170px;width:auto;
+    white-space:normal;overflow:visible;word-break:break-word;line-height:1.25;
     box-sizing:border-box;flex-shrink:0;flex-grow:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    text-align:center;vertical-align:top;
+  }
+  /* Ghost item pendant drag: même taille absolue */
+  .chrono-item-ghost{
+    min-width:100px;max-width:170px;box-sizing:border-box;
+    padding:7px 13px;border-radius:10px;
+    background:linear-gradient(135deg,rgba(30,58,95,.9),rgba(15,32,64,.9));
+    color:#e2e8f0;font-size:clamp(12px,2.4vw,13px);font-weight:700;
+    white-space:normal;word-break:break-word;line-height:1.25;
+    pointer-events:none;z-index:9999;opacity:.88;
+    display:inline-flex;align-items:center;justify-content:center;
+    text-align:center;
   }
   .chrono-item:active,.chrono-item.dragging{cursor:grabbing;box-shadow:0 8px 24px rgba(0,0,0,.6);transform:scale(1.06);}
   .chrono-item.placed{opacity:.4;pointer-events:none;}
-  .chrono-item-sub{font-size:10px;opacity:.7;display:block;}
+  .chrono-item-title{
+    display:block;font-size:clamp(11px,2.2vw,13px);font-weight:700;line-height:1.3;
+  }
+  .chrono-item-sub{
+    display:block;font-size:9px;font-weight:900;letter-spacing:.6px;
+    text-transform:uppercase;padding:1px 7px;border-radius:5px;
+    background:rgba(148,163,184,.14);border:1px solid rgba(148,163,184,.22);
+    color:#94a3b8;margin-top:4px;line-height:1.5;width:fit-content;margin-left:auto;margin-right:auto;
+  }
 
   /* Timeline */
   /* Frise : plus large + gaps plus grands sur desktop */
@@ -1411,9 +1437,10 @@
   /* Zones de dépôt plus grandes et plus lisibles */
   /* Zones plus grandes + plus lisibles */
   .chrono-zone {
-    min-height:165px;border-radius:20px;padding:10px 5px;
-    background:linear-gradient(160deg,rgba(15,23,42,.72),rgba(5,8,20,.52));border:1.5px solid rgba(148,163,184,.14);
-    box-shadow:0 4px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04);
+    min-height:180px;border-radius:26px;padding:10px 4px;
+    background:linear-gradient(155deg,rgba(8,15,35,.78),rgba(2,4,15,.6));border:none;
+    box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(148,163,184,.06);
+    backdrop-filter:blur(2px);
     display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
     transition:border-color .2s,background .2s,box-shadow .2s;position:relative;
     font-size:clamp(9px,1.5vw,12px);color:rgba(148,163,184,.6);font-weight:700;
@@ -1430,9 +1457,11 @@
   .chrono-zone-label{font-size:12px;font-weight:900;margin-bottom:4px;text-align:center;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,1),0 0 10px rgba(0,0,0,.8);letter-spacing:.4px;opacity:1;}
   .chrono-zone-item{
     font-size:11px;font-weight:700;color:#e2e8f0;text-align:center;
-    padding:4px 6px;width:100%;box-sizing:border-box;
-    white-space:normal;overflow:visible;word-break:break-word;line-height:1.2;border-radius:7px;background:rgba(30,58,95,.8);
-    width:100%;margin-top:2px;
+    padding:4px 8px;width:90%;max-width:160px;box-sizing:border-box;
+    white-space:normal;word-break:break-word;line-height:1.25;
+    border-radius:7px;background:rgba(30,58,95,.8);margin:2px auto 0;
+    display:block;flex-shrink:0;
+    cursor:pointer;
   }
 
   #chronoValidateBtn {
@@ -1455,9 +1484,9 @@
   /* Boss speech bubble */
   /* Speech bubble au-dessus du boss, centré */
   #chronoSpeech {
-    position:absolute;bottom:calc(min(380px,44vw) + 10px);
+    position:absolute;top:54px;
     left:50%;transform:translateX(-50%);
-    width:min(240px,48vw);z-index:10;display:none;
+    width:min(280px,55vw);z-index:12;display:none;pointer-events:none;
     background:rgba(5,10,25,.92);border:1.5px solid rgba(148,163,184,.4);
     border-radius:12px;padding:10px 14px;font-size:12px;color:#e2e8f0;
     font-style:italic;text-align:center;animation:fadeIn .3s;
@@ -1570,9 +1599,9 @@
   /* Bouton Fuir Chronoscribe */
   /* Bouton Fuir — style identique aux autres boss */
   #chronoFuirBtn {
-    position:absolute;top:54px;left:10px;z-index:20;
+    position:absolute;bottom:14px;left:12px;z-index:20;
     padding:0;border:none;background:transparent;cursor:pointer;
-    filter:drop-shadow(0 2px 6px rgba(239,68,68,.45));
+    filter:drop-shadow(0 2px 8px rgba(239,68,68,.55));
     transition:filter .18s,transform .18s;
   }
   #chronoFuirBtn:hover{filter:drop-shadow(0 2px 12px rgba(239,68,68,.8));transform:scale(1.06);}
@@ -1604,7 +1633,7 @@
     width:100%;text-align:center;margin-bottom:4px;
   }
   .chrono-isle{
-    width:clamp(92px,16vw,158px);height:auto;object-fit:contain;
+    width:clamp(110px,18vw,182px);height:auto;object-fit:contain;
     filter:drop-shadow(0 4px 12px rgba(59,130,246,.45));
     animation:isleFloat 3s ease-in-out infinite;
   }
@@ -1771,6 +1800,11 @@
   @media(max-width:640px){
     #chronoSpeech{bottom:min(200px,48vw);width:min(180px,54vw);font-size:11px;}
   }
+  @media(max-width:640px){
+    #chronoHugo{left:12%;}
+    #chronoRousseau{right:12%;}
+    .chrono-author{width:min(100px,24vw);}
+  }
 
   /* Bouton Skip repositionné sans chevauchement */
   #chronoSkipBtn {
@@ -1803,6 +1837,12 @@
     animation:specialFissPulse .6s ease-in-out infinite;
   }
   @keyframes specialFissPulse{0%,100%{opacity:.85;}50%{opacity:1;}}
+
+  @keyframes fissureOvPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+
+  #chronoBossSprite.chrono-attacking{
+    width:100%;max-height:100%;object-fit:contain;
+  }
 </style>
 </head>
 <body>
@@ -3084,7 +3124,11 @@ const BADGES_DEF=[
   
   ,{id:"teddy_victory",img:"https://i.postimg.cc/05HZ5Wqv/Tel-y-pris-qui-croyait-prendre.png",emoji:null,name:"Tel y pris qui croyait prendre",desc:"Vaincre le Cantinier Bourgour"}
   ,{id:"teddy_flawless",img:"https://i.postimg.cc/D0DcCZcN/Cordon-bleu.png",emoji:null,name:"Cordon Bleu",desc:"Vaincre le Cantinier Bourgour en ne faisant pas consommer plus de 10 plats avariés à Teddynounet"}
-  ,{id:"teddy_doberman",img:"https://i.postimg.cc/90SBxMBs/Doberman.png",emoji:null,name:"Doberman",desc:"Ne faire manger que des aliments avariés à Teddynounet"}];
+  ,{id:"teddy_doberman",img:"https://i.postimg.cc/90SBxMBs/Doberman.png",emoji:null,name:"Doberman",desc:"Ne faire manger que des aliments avariés à Teddynounet"}
+  ,{id:'chrono_win',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Desynchronisation-annulee.png',emoji:null,name:'Désynchronisation annulée',desc:'Vaincre le Chronoscribe'}
+  ,{id:'chrono_lastmin',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/A-la-minute-pres.png',emoji:null,name:'À la minute près',desc:'Vaincre le Chronoscribe dans la dernière minute'}
+  ,{id:'chrono_nofissure',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Gardien-du-continuum.png',emoji:null,name:'Gardien du continuum',desc:'Vaincre Chronoscribe sans qu’il ouvre une fissure'}
+];
 
 /* ══════════ MODULES DATA ══════════ */
 const MODULES={
@@ -12140,7 +12184,7 @@ window.TeddynounetBoss = (function() {
     </div>
 
     <!-- Bouton Fuir Chronoscribe -->
-    <button id="chronoFuirBtn" onclick="ChronoscribeGame.flee()"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir" style="height:28px;object-fit:contain;display:block;"/></button>
+    <button id="chronoFuirBtn" onclick="ChronoscribeGame.flee()"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir" style="height:40px;object-fit:contain;display:block;"/></button>
 
     <!-- Boss speech bubble -->
     <div id="chronoSpeech"></div>
@@ -12223,13 +12267,11 @@ const IMG = {
   BOSS_FALL: 'https://i.postimg.cc/HLKpnWbD/Chronoscribe-tombe.png',
   BOSS_LAND: 'https://i.postimg.cc/rpb8syxv/Chronoscribe-reception-sol.png',
   BOSS_DEAD: 'https://i.postimg.cc/q7zMBmvk/Chronoscribe-mort.png',
-  /* Attack sprites — cdaudemartinez.fr */
   ATK2: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Chronoscribe_attack2.png',
   ATK3: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Chronoscribe_attack3.png',
   ATK4: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/chronoscribe_attack4.png',
   ATK5: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Chronoscribe_attack5.png',
   ATK6: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/chronoscribe_attack6.png',
-  /* Hugo — skin cinématique + avatar dialogue distincts */
   HUGO: 'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Hugo_cinematic.png',
   ROUSSEAU: 'https://i.postimg.cc/QtPvhbnh/Rousseau-cinematic.png',
   HUGO_FLEE: 'https://i.postimg.cc/bvmsCcDS/Hugo-fuite-cinematic.png',
@@ -12254,8 +12296,23 @@ const IMG = {
     'https://i.postimg.cc/gkk9S2r8/fissure2-frame06.png',
     'https://i.postimg.cc/dttMHVDG/fissure2-frame07.png',
     'https://i.postimg.cc/qMMfbvg8/fissure2-frame08.png'
+  ],
+  FISSURE3: [
+    'https://i.postimg.cc/L4QRnHPy/fissure4-frame01.png',
+    'https://i.postimg.cc/XN13pV5h/fissure4-frame02.png',
+    'https://i.postimg.cc/gctdnYhQ/fissure4-frame03.png',
+    'https://i.postimg.cc/WpYjh2ZQ/fissure4-frame04.png',
+    'https://i.postimg.cc/v82McQnJ/fissure4-frame05.png'
+  ],
+  FISSURE4: [
+    'https://i.postimg.cc/T1V3rnGB/fissure5-01.png',
+    'https://i.postimg.cc/KcBjShL1/fissure5-02.png',
+    'https://i.postimg.cc/QN1CGZ57/fissure5-03.png',
+    'https://i.postimg.cc/jqP20YNy/fissure5-04.png',
+    'https://i.postimg.cc/05DjR1mp/fissure5-05.png'
   ]
 };
+
 
 
 
@@ -12481,6 +12538,7 @@ var _fissures     = []; // {el, progress, max, interval, frames, frameIdx, size}
 var _fissureCount = 0;
 var _difficulty   = 0;
 var _charge         = 0;
+var _chargeFissureCount = 0; /* charge-triggered phases */
 var _fissurePhaseCount = 0;
 var _autoPhaseSet   = new Set();  // 0=easy 1=medium 2=hard
 var _fissurePhaseActive = false;
@@ -12577,17 +12635,38 @@ function _nextItems(){
 
 /* ── BOSS SPRITE ─────────────────────────────────────────── */
 function _setBossSprite(src){
-  var s=_el('chronoBossSprite');
-  if(s) s.src=src;
+  var s=_el('chronoBossSprite'); if(!s) return;
+  s.src=src;
+  /* Reset all visual state — prevents blue tint after restart */
+  s.classList.remove('chrono-hit');
+  if(src===IMG.BOSS_IDLE){
+    s.style.filter='';
+    s.style.opacity='1';
+    s.style.transform='';
+  }
 }
 function _bossAttackAnim(cb){
+  var sp2=_el('chronoBossSprite'); if(sp2) sp2.classList.add('chrono-attacking');
   var seq=[IMG.ATK2,IMG.ATK3,IMG.ATK4,IMG.ATK5,IMG.ATK6,IMG.BOSS_IDLE];
-  var i=0;
-  var iv=setInterval(function(){
-    _setBossSprite(seq[i]);
-    i++;
-    if(i>=seq.length){ clearInterval(iv); if(cb) cb(); }
-  },120);
+  var idx=0;
+  var s=_el('chronoBossSprite');
+  function _nextFrame(){
+    if(idx>=seq.length){
+      var sp3=_el('chronoBossSprite'); if(sp3) sp3.classList.remove('chrono-attacking');
+      if(cb) cb(); return;
+    }
+    if(s){
+      /* Crossfade: fade out, swap, fade in */
+      s.style.transition='opacity .07s';
+      s.style.opacity='0';
+      setTimeout(function(){
+        s.src=seq[idx]; idx++;
+        s.style.opacity='1';
+        setTimeout(_nextFrame, 180);
+      },70);
+    } else { idx++; setTimeout(_nextFrame,180); }
+  }
+  _nextFrame();
 }
 /* Skin blessé + animation shake lors d'un coup */
 /* Skin hurt temporaire — toujours revenir à IDLE */
@@ -12618,7 +12697,7 @@ function _bossEntryAnim(cb){
     if(rous){ rous.classList.remove('looking'); rous.style.transition='transform 1s ease-out'; rous.style.transform='translateX(22vw) scaleX(-1)'; }
     requestAnimationFrame(function(){requestAnimationFrame(function(){ wrap.classList.add('entering'); });});
   }
-  _T(function(){ _setBossSprite(IMG.BOSS_FALL); }, 750);
+  _T(function(){ _setBossSprite(IMG.BOSS_FALL); }, 680);
   _T(function(){
     _setBossSprite(IMG.BOSS_LAND);
     _shakeScreen(2500);
@@ -12655,24 +12734,19 @@ function _bossEntryAnim(cb){
         },delay);
       });
     }
-  }, 2200);
+  }, 1950);
   /* IDLE — position finale identique à la position CSS de base */
   _T(function(){
     _setBossSprite(IMG.BOSS_IDLE);
     var wrap2=_el('chronoBossWrap');
     if(wrap2){
-      /* 1. Stop animation, reset top inline BEFORE removing class */
-      wrap2.style.transition='none';
-      wrap2.style.top='auto';
-      /* 2. Remove animation class — revient à bottom:0;left:50%;transform:translateX(-50%) */
+      wrap2.style.animation='none';
+      void wrap2.offsetWidth;
       wrap2.classList.remove('entering');
-      /* 3. Forcer la position finale correcte */
-      wrap2.style.left='50%';
-      wrap2.style.transform='translateX(-50%)';
-      wrap2.style.opacity='1';
+      wrap2.removeAttribute('style');
     }
     if(cb) cb();
-  }, 3300);
+  }, 2900);
 }
 
 
@@ -12702,17 +12776,26 @@ function _startParticles(){
   var wrap=_el('chronoBossWrap'); if(!wrap) return;
   _particleInterval=setInterval(function(){
     if(!_running) return;
-    var p=document.createElement('div');
-    p.className='chrono-particle';
-    var sz=(Math.random()*4+2)+'px';
-    var x=(Math.random()*80+10)+'%';
-    var y=(Math.random()*30+5)+'%';
-    var dur=(Math.random()*1.5+1)+'s';
-    var delay=(Math.random()*.5)+'s';
-    p.style.cssText='--sz:'+sz+';--x:'+x+';--y:'+y+';--dur:'+dur+';--delay:'+delay+';';
-    wrap.appendChild(p);
-    setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); },2000);
-  },180);
+    var cr=Math.min(1,_charge/CHARGE_MAX);
+    if(Math.random()>0.25+cr*0.75) return;
+    var count=1+Math.floor(cr*2.5);
+    for(var pi=0;pi<count;pi++){
+      var p=document.createElement('div');
+      p.className='chrono-particle';
+      var baseSize=2+cr*5;
+      var sz=(Math.random()*baseSize+1.5)+'px';
+      var spread=8+cr*72;
+      var x=(Math.random()*spread*2+(50-spread))+'%';
+      var y=(Math.random()*40+5)+'%';
+      var dur=(1.8-cr*0.9+Math.random()*0.5)+'s';
+      var delay=(Math.random()*.25)+'s';
+      p.style.cssText='--sz:'+sz+';--x:'+x+';--y:'+y+';--dur:'+dur+';--delay:'+delay+';';
+      if(cr>=0.75) p.style.background='radial-gradient(circle,rgba(251,191,36,1),rgba(251,191,36,0))';
+      wrap.appendChild(p);
+      setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},2200);
+    }
+    if(cr>=1&&Math.random()>0.88) _shakeScreen(45);
+  },80);
 }
 function _stopParticles(){
   clearInterval(_particleInterval); _particleInterval=null;
@@ -13075,29 +13158,38 @@ function _startGameplay(){
 
 function _hideGameArea(){
   var ga=_el('chronoGameArea'); if(!ga) return;
-  ga.style.transition='opacity .3s ease-in';
+  ga.style.transition='transform .32s ease-in, opacity .25s ease-in';
+  ga.style.transform='scale(.9) translateY(12px)';
   ga.style.opacity='0';
-  setTimeout(function(){ga.style.display='none';ga.style.opacity='1';ga.style.transform='';ga.style.transition='';},330);
-  var ov=_el('chronoOv');
-  if(ov){ov.style.transition='transform .5s ease-in-out,filter .5s';ov.style.transform='scale(1)';ov.style.filter='';}
+  setTimeout(function(){ga.style.display='none';ga.style.transform='';ga.style.opacity='1';ga.style.transition='';},350);
+  var bg=_el('chronoBg');
+  if(bg){ bg.style.transition='transform .55s ease-in-out'; bg.style.transform='scale(1)'; }
   var bw=_el('chronoBossWrap');
-  if(bw){bw.style.transition='opacity .6s,filter .6s';bw.style.opacity='1';bw.style.filter='';}
+  if(bw){ bw.style.transition='opacity .55s,filter .55s'; bw.style.opacity='1'; bw.style.filter=''; }
 }
 
 function _showGameArea(){
   var ga=_el('chronoGameArea'); if(!ga) return;
-  ga.style.display='flex'; ga.style.opacity='1'; ga.style.transform=''; ga.style.transition='';
-  var ov=_el('chronoOv');
-  if(ov){
-    ov.style.transition='none'; ov.style.transform='scale(1)';
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      ov.style.transition='transform .75s cubic-bezier(.08,1.05,.25,1),filter .65s';
-      ov.style.transform='scale(1.55) translateY(-3%)';
-      ov.style.filter='blur(0px)';
-    });});
+  ga.style.display='flex';
+  ga.style.opacity='0';
+  ga.style.transform='scale(.88) translateY(16px)';
+  ga.style.transition='none';
+  var isMob=window.innerWidth<=640;
+  var zoomGA=isMob?1.06:1.26;
+  var yShift=isMob?'-4px':'-14px';
+  var bg=_el('chronoBg');
+  if(bg){
+    bg.style.transition='transform .75s ease-out';
+    bg.style.transformOrigin='center center';
+    bg.style.transform='scale(1.14)';
   }
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    ga.style.transition='transform .6s cubic-bezier(.08,1.1,.25,1), opacity .44s';
+    ga.style.transform='scale('+zoomGA+') translateY('+yShift+')';
+    ga.style.opacity='1';
+  });});
   var bw=_el('chronoBossWrap');
-  if(bw){bw.style.transition='opacity .5s,filter .5s';bw.style.opacity='.07';bw.style.filter='blur(4px)';}
+  if(bw){ bw.style.transition='opacity .5s,filter .5s'; bw.style.opacity='.07'; bw.style.filter='blur(3px)'; }
 }
 
 
@@ -13213,8 +13305,8 @@ function _renderItemsPool(){
     d.className='chrono-item';
     d.id='ci-'+idx;
     d.draggable=true;
-    d.innerHTML=(item.type==='auteur'?'\u270d\ufe0f ':'\ud83d\udcda ')+item.label+
-      '<span class="chrono-item-sub">'+item.type+'</span>';
+    var _ico=item.type==='auteur'?'\u270d\ufe0f':'\ud83d\udcda';
+      d.innerHTML='<span class="chrono-item-title">'+_ico+' '+item.label+'</span>'+'<span class="chrono-item-sub">'+item.type+'</span>';
     d.addEventListener('dragstart',function(e){
       if(e.dataTransfer) e.dataTransfer.setData('text/plain','ci-'+idx);
       d.classList.add('dragging');
@@ -13236,8 +13328,18 @@ function _setupPointerDrag(el, itemIdx){
     startX=e.clientX; startY=e.clientY;
     var r=el.getBoundingClientRect();
     offX=e.clientX-r.left; offY=e.clientY-r.top;
+    /* Capture exact size before clone */
+    var _er=el.getBoundingClientRect();
     ghost=el.cloneNode(true);
-    ghost.style.cssText='position:fixed;left:'+(e.clientX-offX)+'px;top:'+(e.clientY-offY)+'px;z-index:9999;pointer-events:none;opacity:.85;transform:scale(1.05);transition:none;';
+    ghost.className='chrono-item-ghost';
+    ghost.innerHTML=el.innerHTML;
+    ghost.style.position='fixed';
+    ghost.style.left=(e.clientX-offX)+'px';
+    ghost.style.top=(e.clientY-offY)+'px';
+    ghost.style.width=_er.width+'px';
+    ghost.style.height=_er.height+'px';
+    ghost.style.transform='scale(1.04)';
+    ghost.style.transition='none';
     document.body.appendChild(ghost);
     el.classList.add('placed');
   },{ passive:false });
@@ -13376,6 +13478,13 @@ function _updateValidateBtn(){
 function _validateAnswer(){
   if(!_running||_inFissure||_gameEnded) return;
   var btn=_el('chronoValidateBtn'); if(btn) btn.style.display='none';
+  /* Dezoom avant révélation */
+  (function(){
+    var ga=_el('chronoGameArea');
+    if(ga){ ga.style.transition='transform .45s ease-in-out'; ga.style.transform='scale(1) translateY(0)'; }
+    var bw=_el('chronoBossWrap');
+    if(bw){ bw.style.transition='opacity .5s,filter .5s'; bw.style.opacity='1'; bw.style.filter=''; }
+  })();
   var SND_OK ='https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge_debloque.mp3';
   var SND_BAD='https://cdaudemartinez.fr/wp-content/uploads/2026/04/wrong_answer.mp3';
   function _pfs(url){ try{var a=new Audio(url);a.volume=0.65;a.play().catch(function(){});}catch(e){} }
@@ -13418,12 +13527,12 @@ function _validateAnswer(){
       if(!_running) return;
       var _sc1=_el('zone-'+res.correctPeriod); if(_sc1) _sc1.classList.add('chrono-scanning');
       var _sc2=res.placedPeriod?_el('zone-'+res.placedPeriod):null; if(_sc2&&_sc2!==_sc1) _sc2.classList.add('chrono-scanning');
-    }, i*420);
+    }, i*480);
     _T(function(){
       if(!_running) return;
       var _sc1=_el('zone-'+res.correctPeriod); if(_sc1) _sc1.classList.remove('chrono-scanning');
       var _sc2=res.placedPeriod?_el('zone-'+res.placedPeriod):null; if(_sc2) _sc2.classList.remove('chrono-scanning');
-    }, i*420+310);
+    }, i*480+360);
     _T(function(){
       if(!_running) return;
       var cZone=_el('zone-'+res.correctPeriod);
@@ -13447,7 +13556,7 @@ function _validateAnswer(){
               _autoPhaseSet.add(_AT[_ai]);
               (function(){_T(function(){
                 if(!_running||_gameEnded||_fissurePhaseActive)return;
-                _charge=0; _updateHud(); _triggerFissurePhase();
+                _charge=0; _updateHud(); _triggerFissurePhase(false);
               }, results.length*380+700);})();
               break;
             }
@@ -13488,11 +13597,12 @@ function _validateAnswer(){
     }
     if(fissureTrigger){
       _charge=0; _updateHud();
-      _T(function(){if(!_running||_gameEnded)return;_triggerFissurePhase();},900);
+      _chargeFissureCount++; /* Track charge-triggered phases separately */
+      _T(function(){if(!_running||_gameEnded)return;_triggerFissurePhase(true);},900);
     } else {
       _T(function(){if(!_running||_gameEnded)return;_showNextQuestion();},1100);
     }
-  }, results.length*420+640);
+  }, results.length*480+700);
 }
 
 
@@ -13507,14 +13617,33 @@ function _showFeedback(text, color){
 /* ── FISSURE PHASE ───────────────────────────────────────── */
 function _checkFissurePhase(wasError){if(_gameEnded)return;_showNextQuestion();}
 
-function _triggerFissurePhase(){
+function _triggerFissurePhase(isCharge){
   if(_fissurePhaseActive||_gameEnded) return;
   _fissurePhaseCount++;
-  _difficulty=Math.min(2,Math.floor((_fissurePhaseCount-1)/2));
+  if(isCharge){
+    /* Charge-triggered: starts easy but escalates hard — 0→2 over 10 phases */
+    _difficulty=Math.min(2, Math.floor((_chargeFissureCount-1)/3.5|0));
+  } else {
+    /* Scripted (HP threshold): smooth 0→2 progression */
+    _difficulty=Math.min(2, Math.floor((_fissurePhaseCount-1)/2));
+  }
   _fissurePhaseActive=true; _inFissure=true;
+  /* Clear pending question timers */
+  _clearTimers();
   _hideGameArea();
   _showPhaseTransition('⚡ Failles temporelles !','#f87171');
-  var bg=_el('chronoBg'); if(bg) bg.style.filter='saturate(.25) brightness(.6)';
+  var bg=_el('chronoBg');
+  if(bg){
+    bg.style.transition='filter .5s';
+    bg.style.filter='saturate(.1) brightness(.45) hue-rotate(200deg)';
+  }
+  /* Red overlay pulsé */
+  var _fOverlay=document.createElement('div');
+  _fOverlay.id='chronoFissureOverlay';
+  _fOverlay.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:14;'+
+    'background:radial-gradient(ellipse at center,rgba(239,68,68,.0) 40%,rgba(239,68,68,.25) 100%);'+
+    'animation:fissureOvPulse .8s ease-in-out infinite;';
+  var _fovOv=_el('chronoOv'); if(_fovOv && !_el('chronoFissureOverlay')) _fovOv.appendChild(_fOverlay);
   _shakeScreen(3500);
   _bossAttackAnim(null);
   var msg=_el('chronoFissureMsg');
@@ -13548,29 +13677,31 @@ function _spawnFissures(){
   var area=_el('chronoFissureArea'); if(!area) return;
   area.style.display='block'; area.innerHTML=''; _fissures=[]; _fissureClicks={};
   var phaseMul=Math.min(2,Math.floor((_fissurePhaseCount-1)/2));
-  var baseCount=[[3,5,7],[5,7,10],[7,10,13]][phaseMul][_difficulty]||3;
-  var count=Math.min(13,baseCount+Math.floor((_fissurePhaseCount-1)*1.2|0));
+  var baseCount=[[4,6,8],[6,8,11],[8,11,14]][phaseMul][_difficulty]||4;
+  var count=Math.min(16,baseCount+Math.floor((_fissurePhaseCount-1)*1.5|0));
   var mob=_isMobile;
   /* Types: clics réduits pour rendre jouable */
   var TYPES=[
-    {n:'simple',  cl:[1,1,2],sp:[950,750,550], hue:0,  leurre:false,bonus:false,moves:false,sym:''},
-    {n:'epaisse', cl:[2,3,3],sp:[1150,900,660],hue:270,leurre:false,bonus:false,moves:false,sym:'\ud83d\udcaa'},
-    {n:'instable',cl:[1,2,2],sp:[850,650,450], hue:285,leurre:false,bonus:false,moves:true, sym:'\ud83c\udf00'},
-    {n:'leurre',  cl:[0,0,0],sp:[750,580,400], hue:135,leurre:true, bonus:false,moves:false,sym:'\u26a0\ufe0f'},
-    {n:'doree',   cl:[1,2,2],sp:[1000,800,580],hue:30, leurre:false,bonus:true, moves:false,sym:'\u2b50'}
-    ,{n:'special', cl:[1,1,1],sp:[600,500,380],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true}
+    {n:'simple',  cl:[1,1,2],sp:[800,600,420], hue:0,  leurre:false,bonus:false,moves:false,sym:''},
+    {n:'epaisse', cl:[2,3,3],sp:[900,680,480],hue:270,leurre:false,bonus:false,moves:false,sym:'\ud83d\udcaa'},
+    {n:'instable',cl:[1,2,2],sp:[700,520,360], hue:285,leurre:false,bonus:false,moves:true, sym:'\ud83c\udf00'},
+    {n:'leurre',  cl:[0,0,0],sp:[630,480,330], hue:135,leurre:true, bonus:false,moves:false,sym:'\u26a0\ufe0f'},
+    {n:'doree',   cl:[1,2,2],sp:[830,640,450],hue:30, leurre:false,bonus:true, moves:false,sym:'\u2b50'}
+    ,{n:'fissure3',cl:[1,2,2],sp:[740,560,390],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3}
+    ,{n:'fissure4',cl:[1,2,3],sp:[680,510,350],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4}
+    ,{n:'special', cl:[1,1,1],sp:[480,380,280],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true}
   ];
-  var pools=[[0,0,0,3],[0,0,1,2,3,4],/* special=5 at diff2 */[0,1,1,2,2,3,4]]; /* NOTE: special type (idx 5) injected when count>5 */
+  var pools=[[0,0,0,3],[0,0,1,2,3,5],[0,1,1,2,3,5,6]]; /* NOTE: special type (idx 5) injected when count>5 */
   var pool=pools[_difficulty]||pools[0];
   _closedFissures=0;
   for(var i=0;i<count;i++){
     /* Injecter une faille spéciale quand il y en a plus de 5 */
-    if(i===Math.floor(count/2) && count>5 && _difficulty>=1) pool.push(5);
+    if(i===Math.floor(count/2) && count>5 && _difficulty>=1) pool.push(7);
     (function(fi,delay){
       _T(function(){
         if(!_running||!_fissurePhaseActive) return;
         var tp=TYPES[pool[Math.floor(Math.random()*pool.length)]];
-        var frames=fi%2===0?IMG.FISSURE1:IMG.FISSURE2;
+        var frames=tp.frames?tp.frames:fi%2===0?IMG.FISSURE1:IMG.FISSURE2;
         var nc=tp.cl[_difficulty]+(mob?1:0);
         var sp=tp.sp[_difficulty];
         var w=window.innerWidth, h=window.innerHeight;
@@ -13691,7 +13822,7 @@ function _spawnFissures(){
           }
         });
         area.appendChild(el);
-        _fissures.push({id:'fissure-'+fi,interval:fiv,el:el});
+        _fissures.push({id:'fissure-'+fi,interval:fiv,el:el,special:!!tp.special});
       },delay);
     })(i, i*320+150);
   }
@@ -13724,16 +13855,19 @@ function _whiteFlash(){
 
 function _fissureTimeout(fissureId){
   if(!_fissurePhaseActive||_gameEnded) return;
-  /* Une fissure non fermée à temps → flash blanc + perte d'une vie */
-  _whiteFlash();
-  _lives=Math.max(0,_lives-1);
-  _updateHud();
-  _shakeScreen(400);
+  /* Check if special fissure — no life loss for special */
+  var _fdata=_fissures.find(function(f){return f.id===fissureId;});
+  var _isSpecial=_fdata&&_fdata.special;
+  if(!_isSpecial){
+    _whiteFlash();
+    _lives=Math.max(0,_lives-1);
+    _updateHud();
+    _shakeScreen(400);
+  }
   var el=_el(fissureId);
-  if(el) el.style.border='3px solid #f87171';
-  if(_lives<=0){ _gameDefeat(); return; }
-  /* Retirer la fissure */
-  if(el && el.parentNode) el.parentNode.removeChild(el);
+  if(el&&!_isSpecial) el.style.border='3px solid #f87171';
+  if(_lives<=0&&!_isSpecial){ _gameDefeat(); return; }
+  if(el&&el.parentNode) el.parentNode.removeChild(el);
   _checkAllFissuresClosed();
 }
 
@@ -13759,8 +13893,11 @@ function _checkAllFissuresClosed(all){
     var bg2=_el('chronoBg'); if(bg2) bg2.style.filter='';
     var area2=_el('chronoFissureArea'); if(area2) area2.style.animation='none';
     _setBossSprite(IMG.BOSS_IDLE);
+    var _fo=_el('chronoFissureOverlay'); if(_fo) _fo.remove();
     var bg=_el('chronoBg'); if(bg) bg.style.filter='';
     _bossSpeech('Hm… tu résistes.',2500);
+    /* Clear any pending validation timers to prevent question-défilement bug */
+    _clearTimers();
     _T(function(){
       if(!_running||_gameEnded) return;
       _showNextQuestion();
@@ -13792,9 +13929,11 @@ function _gameDefeat(){
   if(_gameEnded) return;
   _gameEnded=true;
   _stopTimer(); _stopParticles(); _stopTic(); _clearTimers();
+  _stopMusic();
+  try{if(typeof playGameOverMusic==='function') playGameOverMusic();}catch(e){}
   _hideGameArea();
   _el('chronoFissureArea').style.display='none';
-  _bossSpeech('Tu n\'étais pas prêt. Le temps m\'appartient désormais.',3500);
+  _bossSpeech('Tu n\'\u00e9tais pas pr\u00eat. Le temps m\'appartient d\u00e9sormais.',3500);
   _T(function(){ _showEndScreen(false); },1500);
 }
 function _showEndScreen(victory){
@@ -13873,6 +14012,7 @@ function start(){
   _score=0; _timeLeft=GAME_DURATION;
   _difficulty=0; _fissurePhaseActive=false;
   _charge=0; _fissurePhaseCount=0;
+  _chargeFissureCount=0;
   _autoPhaseSet=new Set();
   _closedFissures=0; _consecutiveCorrect=0;
   _fissures=[]; _fissureClicks={};
@@ -13903,7 +14043,14 @@ function start(){
   if(_hr){_hr.src=IMG.HUGO;_hr.style.cssText='transform:scaleX(1);transition:none;opacity:1;display:none;';_hr.classList.remove('looking');}
   if(_rr){_rr.src=IMG.ROUSSEAU;_rr.style.cssText='transform:scaleX(1);transition:none;opacity:1;display:none;';_rr.classList.remove('looking');}
   var _bwr=_el('chronoBossWrap');
-  if(_bwr){_bwr.classList.remove('entering');_bwr.style.left='50%';_bwr.style.top='auto';_bwr.style.transform='translateX(-50%)';}  _setBossSprite(IMG.BOSS_IDLE);
+  if(_bwr){_bwr.classList.remove('entering');_bwr.style.left='50%';_bwr.style.top='auto';_bwr.style.transform='translateX(-50%)';_bwr.style.opacity='1';_bwr.style.filter='';}
+  /* Reset sprite filter/class pour éviter teinte bleue */
+  var _bsp=_el('chronoBossSprite');
+  if(_bsp){_bsp.classList.remove('chrono-hit');_bsp.style.filter='';_bsp.style.opacity='1';_bsp.style.transform='';_bsp.style.transition='';}
+  /* Reset HUD scale */
+  /* Reset overlay */
+  var _ovR=_el('chronoOv'); if(_ovR){_ovR.style.transform='';_ovR.style.filter='';}
+  _setBossSprite(IMG.BOSS_IDLE);
   console.log('Chronoscribe state',{running:_running,bossHp:_bossHp,lives:_lives});
 
   _T(function(){ _startCinematic(); },400);
