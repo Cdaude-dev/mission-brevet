@@ -1232,9 +1232,18 @@
   #chronoHud {
     position:absolute;top:0;left:0;right:0;z-index:401;
     display:flex;align-items:center;justify-content:space-between;
-    padding:8px 14px;background:rgba(0,0,0,.68);
+    padding:6px 10px;background:rgba(0,0,0,.78);
     border-bottom:1px solid rgba(148,163,184,.25);
-    gap:10px;flex-wrap:wrap;
+    gap:6px;flex-wrap:nowrap; /* no-wrap pour éviter 2 lignes */
+  }
+  @media(max-width:640px){
+    #chronoHud{padding:4px 8px;gap:4px;font-size:10px;}
+    #chronoBossHpLabel{font-size:9px;}
+    #chronoBossHpBar{height:5px;width:80px;}
+    #chronoChargeWrap{gap:2px;}
+    #chronoChargeLabel{font-size:8px;}
+    #chronoTimer{font-size:11px;min-width:36px;}
+    .chrono-pip{width:6px;height:6px;}
   }
   #chronoBossHp {display:flex;align-items:center;gap:8px;flex:1 1 auto;}
   #chronoBossHpBar {flex:1;height:12px;background:rgba(255,255,255,.12);border-radius:6px;overflow:hidden;min-width:80px;}
@@ -1363,17 +1372,17 @@
     transform-origin:center top;
   }
   @media(max-width:640px){
-    #chronoGameArea{justify-content:flex-start;gap:5px;top:52px;padding:8px 8px 56px;overflow-y:auto;}
+    #chronoGameArea{justify-content:flex-start;gap:4px;top:44px;padding:6px 6px 52px;overflow-y:auto;}
     #chronoTimeline{grid-template-columns:repeat(4,1fr);gap:4px;}
-    #chronoItemsPool{padding:8px;gap:7px;margin-bottom:8px;}
-    .chrono-item{font-size:11px;padding:5px 8px;}
+    #chronoItemsPool{padding:6px;gap:5px;margin-bottom:6px;min-height:40px;}
+    .chrono-item{font-size:10px;padding:4px 7px;min-width:70px;max-width:130px;}
   }
 
   /* Drag items pool */
   /* Pool d'items : plus grand, centré */
   #chronoItemsPool {
-    display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
-    width:100%;max-width:900px;margin-bottom:14px;min-height:70px;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+    width:100%;max-width:900px;margin-bottom:10px;min-height:60px;
     padding:12px;border-radius:14px;background:rgba(0,0,0,.45);
     border:1.5px solid rgba(148,163,184,.2);
   }
@@ -1391,7 +1400,7 @@
     touch-action:none;
     /* Taille fixe — évite l'étirement en drag */
     /* Taille fixe absolue - TOUTES les props de dimension gelées */
-    min-width:100px;max-width:170px;width:auto;
+    min-width:85px;max-width:155px;width:auto;
     white-space:normal;overflow:visible;word-break:break-word;line-height:1.25;
     box-sizing:border-box;flex-shrink:0;flex-grow:0;
     display:inline-flex;align-items:center;justify-content:center;
@@ -1496,12 +1505,13 @@
   /* Boss speech bubble */
   /* Speech bubble au-dessus du boss, centré */
   #chronoSpeech {
-    position:absolute;top:54px;
+    /* Juste au-dessus des propositions, dans le flux de jeu */
+    position:absolute;bottom:calc(min(380px,44vw) + 14px);
     left:50%;transform:translateX(-50%);
     width:min(280px,55vw);max-height:none;height:auto;
     z-index:12;display:none;pointer-events:none;
-    background:rgba(5,10,25,.92);border:1.5px solid rgba(148,163,184,.4);
-    border-radius:12px;padding:10px 14px;font-size:12px;color:#e2e8f0;
+    background:rgba(5,10,25,.92);border:1.5px solid rgba(148,163,184,.35);
+    border-radius:12px;padding:8px 12px;font-size:11px;color:#e2e8f0;
     font-style:italic;text-align:center;animation:fadeIn .3s;
     overflow:hidden;
   }
@@ -1801,7 +1811,7 @@
     border-bottom:0;
   }
   @media(max-width:640px){
-    #chronoSpeech{width:min(180px,52vw);font-size:11px;top:54px;}
+    #chronoSpeech{width:min(200px,56vw);font-size:10px;bottom:auto;top:50px;}
   }
   @media(max-width:640px){
     #chronoHugo{left:12%;}
@@ -3072,7 +3082,7 @@ const EXCLUSIVE_AV=[
    label:"Bourgour",
    desc:"Vaincre le Cantinier Bourgour en ne faisant pas consommer plus de 10 plats avariés à Teddynounet",
    check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_flawless"):[...S.badges].includes("teddy_flawless"))}
-  ,{src:"https://i.postimg.cc/RCbvD4Xq/avatar-spe-chronoscribe.png",
+  ,{src:"https://i.postimg.cc/dtYDBq1B/avatar-spe-chronoscribe.png",
    label:"Chronoscribe",
    desc:"Vaincre le Chronoscribe en moins de 4 minutes",
    check:()=>!!(S.badges&&S.badges.has&&S.badges.has("chrono_speed"))},
@@ -3137,7 +3147,7 @@ const BADGES_DEF=[
   ,{id:'chrono_win',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Desynchronisation-annulee.png',emoji:null,name:'Désynchronisation annulée',desc:'Vaincre le Chronoscribe'}
   ,{id:'chrono_lastmin',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/A-la-minute-pres.png',emoji:null,name:'À la minute près',desc:'Vaincre le Chronoscribe dans la dernière minute'}
   ,{id:'chrono_nofissure',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Gardien-du-continuum.png',emoji:null,name:'Gardien du continuum',desc:'Vaincre Chronoscribe sans qu’il ouvre une fissure'}
-  ,{id:'chrono_speed',img:'https://i.postimg.cc/RCbvD4Xq/avatar-spe-chronoscribe.png',emoji:null,name:'Chronoscribe',desc:'Vaincre le Chronoscribe en moins de 4 minutes'}
+  ,{id:'chrono_speed',img:'https://i.postimg.cc/dtYDBq1B/avatar-spe-chronoscribe.png',emoji:null,name:'Chronoscribe',desc:'Vaincre le Chronoscribe en moins de 4 minutes'}
 ];
 
 /* ══════════ MODULES DATA ══════════ */
@@ -13694,10 +13704,12 @@ function _showClockIntro(cb){
     'border:3px solid rgba(251,191,36,.6);box-shadow:0 0 32px rgba(251,191,36,.35);';
   var bigH=document.createElement('img');
   bigH.src='https://i.postimg.cc/k5MZCtgh/grande-aiguille.png';
-  bigH.style.cssText='position:absolute;width:38%;top:10%;left:50%;transform-origin:50% 90%;transform:translateX(-50%);object-fit:contain;';
+  /* Grande aiguille: pivot en bas = axis of rotation at bottom center */
+  bigH.style.cssText='position:absolute;width:22%;height:40%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   var smallH=document.createElement('img');
   smallH.src='https://i.postimg.cc/bvYMP2vp/petite-aiguille.png';
-  smallH.style.cssText='position:absolute;width:28%;top:16%;left:50%;transform-origin:50% 90%;transform:translateX(-50%);object-fit:contain;';
+  /* Petite aiguille: plus courte, même pivot */
+  smallH.style.cssText='position:absolute;width:16%;height:28%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   dial.appendChild(bg); dial.appendChild(bigH); dial.appendChild(smallH);
   wrap.appendChild(dial);
   ov.appendChild(wrap);
@@ -13822,10 +13834,13 @@ function _spawnFissureCharacterAt(typeN, rect){
     el2.style.transition='top 0.5s cubic-bezier(.4,0,.2,1)';
     el2.style.top=floorY+'px';
   },40);
-  /* Impact + run off screen */
+  /* Impact + run off screen — flip horizontally if going left */
   setTimeout(function(){
     _shakeScreen(160);
-    var goLeft=(startX>scR.width/2);
+    /* Randomize direction slightly */
+    var goLeft=Math.random()>0.5;
+    /* Sprites face right → mirror if going left */
+    if(goLeft) img2.style.transform='scaleX(-1)';
     el2.style.transition='left 1s linear, opacity 0.3s 0.8s';
     el2.style.left=(goLeft?-charSz-20:scR.width+charSz+20)+'px';
     el2.style.opacity='0';
@@ -13885,12 +13900,19 @@ function _spawnFissures(){
   var _isCharge=!!_chargeFissureCount&&_charge===0; /* reset after charge trigger */
   var phaseMul=Math.min(2,Math.floor((_fissurePhaseCount-1)/2));
   var chargeMul=Math.min(3,Math.floor((_chargeFissureCount-1)/2.5|0));
-  /* Scriptées: démarrent doucement */
-  var baseScripted=[[3,5,7],[5,8,11],[8,11,14]][phaseMul][_difficulty]||3;
-  /* Charge: démarrent moyennes, finissent brutales */
-  var baseCharge=[[4,6,9],[7,10,13],[10,14,16]][chargeMul][_difficulty]||4;
+  var _desk=!_isMobile;
+  /* Scriptées: plus douces sur desktop */
+  var baseScripted=_desk
+    ?[[2,3,5],[3,5,8],[5,8,11]][phaseMul][_difficulty]||2
+    :[[3,4,6],[4,6,9],[6,9,12]][phaseMul][_difficulty]||3;
+  /* Charge: plus douces sur desktop */
+  var baseCharge=_desk
+    ?[[2,4,6],[4,6,9],[6,9,12]][chargeMul][_difficulty]||2
+    :[[3,5,8],[5,8,11],[8,11,14]][chargeMul][_difficulty]||3;
   var baseCount=_isCharge?baseCharge:baseScripted;
-  var count=Math.min(16,baseCount+Math.floor((_fissurePhaseCount-1)*1.3|0));
+  var ramp=_desk?1.0:1.2;
+  var cap=_desk?12:15;
+  var count=Math.min(cap,baseCount+Math.floor((_fissurePhaseCount-1)*ramp|0));
   var mob=_isMobile;
   /* Types: clics réduits pour rendre jouable */
   var TYPES=[
