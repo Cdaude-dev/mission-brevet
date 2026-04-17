@@ -1208,6 +1208,12 @@
     display:none;position:fixed;inset:0;z-index:300;overflow:hidden;
     font-family:'Space Grotesk',sans-serif;
   }
+  /* Scene wrapper — zoomé sans affecter le HUD */
+  #chronoScene {
+    position:absolute;inset:0;
+    transform-origin:center center;
+    will-change:transform;
+  }
   #chronoBg {
     position:absolute;inset:0;
     background:url('https://i.postimg.cc/xdtXkcwB/Chronoscribe-desktop-bg.png') center/cover no-repeat;
@@ -1224,7 +1230,7 @@
   /* HUD */
   /* HUD: position fixed = jamais affecté par transform des parents */
   #chronoHud {
-    position:fixed;top:0;left:0;right:0;z-index:400;
+    position:absolute;top:0;left:0;right:0;z-index:401;
     display:flex;align-items:center;justify-content:space-between;
     padding:8px 14px;background:rgba(0,0,0,.68);
     border-bottom:1px solid rgba(148,163,184,.25);
@@ -1354,10 +1360,13 @@
     position:absolute;top:50px;left:0;right:0;bottom:0;z-index:8;
     display:none;flex-direction:column;align-items:center;justify-content:center;
     padding:12px 16px 16px;overflow-y:auto;gap:10px;
-    transform-origin:center 15%;
+    transform-origin:center top;
   }
   @media(max-width:640px){
-    #chronoGameArea{justify-content:flex-start;gap:6px;}
+    #chronoGameArea{justify-content:flex-start;gap:5px;top:52px;padding:8px 8px 56px;overflow-y:auto;}
+    #chronoTimeline{grid-template-columns:repeat(4,1fr);gap:4px;}
+    #chronoItemsPool{padding:8px;gap:7px;margin-bottom:8px;}
+    .chrono-item{font-size:11px;padding:5px 8px;}
   }
 
   /* Drag items pool */
@@ -1486,21 +1495,19 @@
   #chronoSpeech {
     position:absolute;top:54px;
     left:50%;transform:translateX(-50%);
-    width:min(280px,55vw);z-index:12;display:none;pointer-events:none;
+    width:min(280px,55vw);max-height:none;height:auto;
+    z-index:12;display:none;pointer-events:none;
     background:rgba(5,10,25,.92);border:1.5px solid rgba(148,163,184,.4);
     border-radius:12px;padding:10px 14px;font-size:12px;color:#e2e8f0;
     font-style:italic;text-align:center;animation:fadeIn .3s;
+    overflow:hidden;
   }
   #chronoSpeech::after{
     content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
     border:7px solid transparent;border-top-color:rgba(148,163,184,.4);border-bottom:0;
   }
   @media(max-width:640px){#chronoSpeech{width:min(180px,55vw);font-size:11px;}}
-  #chronoSpeech::after{
-    content:'';position:absolute;bottom:-8px;right:20px;
-    border:8px solid transparent;border-top-color:rgba(148,163,184,.4);
-    border-bottom:0;
-  }
+
   @media(max-width:640px){
     #chronoSpeech{right:2%;bottom:auto;top:54px;max-width:55vw;font-size:11px;}
     #chronoBossWrap{width:min(130px,30vw);}
@@ -1784,21 +1791,14 @@
   }
 
   /* Speech bubble au-dessus du boss */
-  #chronoSpeech {
-    position:absolute;
-    bottom:min(380px,44vw);left:50%;transform:translateX(-50%);
-    width:min(260px,50vw);z-index:10;display:none;
-    background:rgba(15,23,42,.92);border:1.5px solid rgba(148,163,184,.45);
-    border-radius:12px;padding:10px 13px;font-size:12px;color:#e2e8f0;
-    font-style:italic;text-align:center;animation:fadeIn .3s;
-  }
+  
   #chronoSpeech::after{
     content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
     border:8px solid transparent;border-top-color:rgba(148,163,184,.45);
     border-bottom:0;
   }
   @media(max-width:640px){
-    #chronoSpeech{bottom:min(200px,48vw);width:min(180px,54vw);font-size:11px;}
+    #chronoSpeech{width:min(180px,52vw);font-size:11px;top:54px;}
   }
   @media(max-width:640px){
     #chronoHugo{left:12%;}
@@ -1843,6 +1843,8 @@
   #chronoBossSprite.chrono-attacking{
     width:100%;max-height:100%;object-fit:contain;
   }
+
+  @keyframes chronoVictoryFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.02);}}
 </style>
 </head>
 <body>
@@ -12145,6 +12147,7 @@ window.TeddynounetBoss = (function() {
 
   <!-- ══ CHRONOSCRIBE BOSS OVERLAY ══════════════════════════════ -->
   <div id="chronoOv">
+
     <div id="chronoBg"></div>
     <div id="chronoBgOverlay"></div>
 
@@ -12167,6 +12170,9 @@ window.TeddynounetBoss = (function() {
       <div id="chronoLives"><!-- dynamic --></div>
       <div id="chronoTimer">5:00</div>
     </div>
+    <!-- Scene: toute la scène sauf HUD — zoomable -->
+    <button id="chronoFuirBtn" onclick="ChronoscribeGame.flee()"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir" style="height:40px;object-fit:contain;display:block;"/></button>
+    <div id="chronoScene">
 
     <!-- Cinematic: Hugo + Rousseau -->
     <img id="chronoHugo" class="chrono-author" src="https://cdaudemartinez.fr/wp-content/uploads/2026/04/Hugo_cinematic.png" alt="Victor Hugo" style="display:none;"/>
@@ -12182,10 +12188,6 @@ window.TeddynounetBoss = (function() {
     <div id="chronoBossWrap">
       <img id="chronoBossSprite" src="https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png" alt="Chronoscribe"/>
     </div>
-
-    <!-- Bouton Fuir Chronoscribe -->
-    <button id="chronoFuirBtn" onclick="ChronoscribeGame.flee()"><img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir" style="height:40px;object-fit:contain;display:block;"/></button>
-
     <!-- Boss speech bubble -->
     <div id="chronoSpeech"></div>
 
@@ -12240,7 +12242,8 @@ window.TeddynounetBoss = (function() {
         <button id="chronoEndBtn" onclick="ChronoscribeGame.stop()">← Retour au menu</button>
       </div>
     </div>
-  </div>
+      </div><!-- /chronoScene -->
+  </div><!-- /chronoOv -->
 
 </body>
 
@@ -12298,20 +12301,34 @@ const IMG = {
     'https://i.postimg.cc/qMMfbvg8/fissure2-frame08.png'
   ],
   FISSURE3: [
-    'https://i.postimg.cc/L4QRnHPy/fissure4-frame01.png',
-    'https://i.postimg.cc/XN13pV5h/fissure4-frame02.png',
-    'https://i.postimg.cc/gctdnYhQ/fissure4-frame03.png',
-    'https://i.postimg.cc/WpYjh2ZQ/fissure4-frame04.png',
-    'https://i.postimg.cc/v82McQnJ/fissure4-frame05.png'
+    'https://i.postimg.cc/VkwWDMT6/fissure3-frame01.png',
+    'https://i.postimg.cc/fRsfBXFV/fissure3-frame02.png',
+    'https://i.postimg.cc/zGNF0WMb/fissure3-frame03.png',
+    'https://i.postimg.cc/nhxG075s/fissure3-frame04.png'
   ],
   FISSURE4: [
-    'https://i.postimg.cc/T1V3rnGB/fissure5-01.png',
-    'https://i.postimg.cc/KcBjShL1/fissure5-02.png',
-    'https://i.postimg.cc/QN1CGZ57/fissure5-03.png',
-    'https://i.postimg.cc/jqP20YNy/fissure5-04.png',
-    'https://i.postimg.cc/05DjR1mp/fissure5-05.png'
-  ]
+    'https://i.postimg.cc/yNd9bTTq/fissure4-frame01.png',
+    'https://i.postimg.cc/ZqR3MLLK/fissure4-frame02.png',
+    'https://i.postimg.cc/nLz7P11p/fissure4-frame03.png',
+    'https://i.postimg.cc/CK1DQ44M/fissure4-frame04.png',
+    'https://i.postimg.cc/7L67WNNL/fissure4-frame05.png'
+  ],
+  FISSURE5: [
+    'https://i.postimg.cc/rm4DBZR8/fissure5-01.png',
+    'https://i.postimg.cc/2yf1rdnY/fissure5-02.png',
+    'https://i.postimg.cc/SRpnkLcq/fissure5-03.png',
+    'https://i.postimg.cc/ZnhW4P6J/fissure5-04.png',
+    'https://i.postimg.cc/gjPxmy3z/fissure5-05.png'
+  ],
+  CHARS: {
+    dino:   ['https://i.postimg.cc/Hk714qq1/F1-D1.png','https://i.postimg.cc/zGRYSssz/F1-D2.png','https://i.postimg.cc/JzBCcff7/F1-D3.png','https://i.postimg.cc/Bn1fcrrn/F1-D4.png','https://i.postimg.cc/YSKKXX7c/F1-D5.png','https://i.postimg.cc/GpwwMMRr/F1-D6.png'],
+    bot:    ['https://i.postimg.cc/n9jbBnF2/f.png','https://i.postimg.cc/XBGSdnj1/f.png','https://i.postimg.cc/642JnBWm/f.png','https://i.postimg.cc/JtGW95NL/f.png'],
+    revolt: ['https://i.postimg.cc/VSry0YKv/f.png','https://i.postimg.cc/VSry0YKd/f.png','https://i.postimg.cc/2qbpLz0q/f.png','https://i.postimg.cc/zLbmHJxy/f.png','https://i.postimg.cc/yJgq3VLg/f.png','https://i.postimg.cc/Jy9fb9Fr/f.png','https://i.postimg.cc/f36Gx6PW/f.png'],
+    soldat: ['https://i.postimg.cc/8fr9sw4X/f.png','https://i.postimg.cc/7JTdbX9c/f.png','https://i.postimg.cc/XBymXxLz/f.png','https://i.postimg.cc/GTsV9zKV/f.png'],
+    knight: ['https://i.postimg.cc/jnJmCvc1/f.png','https://i.postimg.cc/pmP7Y6Fk/f.png','https://i.postimg.cc/bZqMHBt6/f.png','https://i.postimg.cc/dD6wMr9v/f.png']
+  }
 };
+
 
 
 
@@ -12646,27 +12663,24 @@ function _setBossSprite(src){
   }
 }
 function _bossAttackAnim(cb){
-  var sp2=_el('chronoBossSprite'); if(sp2) sp2.classList.add('chrono-attacking');
+  var sp2=_el('chronoBossSprite'); if(!sp2) return;
+  var idleW=sp2.getBoundingClientRect().width;
+  var idleH=sp2.getBoundingClientRect().height;
+  sp2.style.width=idleW+'px'; sp2.style.height=idleH+'px';
+  sp2.classList.add('chrono-attacking');
   var seq=[IMG.ATK2,IMG.ATK3,IMG.ATK4,IMG.ATK5,IMG.ATK6,IMG.BOSS_IDLE];
-  var idx=0;
-  var s=_el('chronoBossSprite');
-  function _nextFrame(){
+  var idx=0; var s=_el('chronoBossSprite');
+  function _nf(){
     if(idx>=seq.length){
+      if(s){s.style.width='';s.style.height='';}
       var sp3=_el('chronoBossSprite'); if(sp3) sp3.classList.remove('chrono-attacking');
       if(cb) cb(); return;
     }
-    if(s){
-      /* Crossfade: fade out, swap, fade in */
-      s.style.transition='opacity .07s';
-      s.style.opacity='0';
-      setTimeout(function(){
-        s.src=seq[idx]; idx++;
-        s.style.opacity='1';
-        setTimeout(_nextFrame, 180);
-      },70);
-    } else { idx++; setTimeout(_nextFrame,180); }
+    if(s){ s.style.transition='opacity .06s'; s.style.opacity='0';
+      setTimeout(function(){ s.src=seq[idx]; idx++; s.style.opacity='1'; setTimeout(_nf,210); },65);
+    } else { idx++; setTimeout(_nf,210); }
   }
-  _nextFrame();
+  _nf();
 }
 /* Skin blessé + animation shake lors d'un coup */
 /* Skin hurt temporaire — toujours revenir à IDLE */
@@ -12735,18 +12749,24 @@ function _bossEntryAnim(cb){
       });
     }
   }, 1950);
-  /* IDLE — position finale identique à la position CSS de base */
   _T(function(){
     _setBossSprite(IMG.BOSS_IDLE);
     var wrap2=_el('chronoBossWrap');
     if(wrap2){
       wrap2.style.animation='none';
+      wrap2.style.transition='none';
       void wrap2.offsetWidth;
       wrap2.classList.remove('entering');
-      wrap2.removeAttribute('style');
+      /* Position explicite = CSS base exact */
+      wrap2.style.position='absolute';
+      wrap2.style.bottom='0';
+      wrap2.style.top='';
+      wrap2.style.left='50%';
+      wrap2.style.transform='translateX(-50%)';
+      wrap2.style.opacity='1';
     }
     if(cb) cb();
-  }, 2900);
+  }, 3400);
 }
 
 
@@ -13161,33 +13181,39 @@ function _hideGameArea(){
   ga.style.transition='transform .32s ease-in, opacity .25s ease-in';
   ga.style.transform='scale(.9) translateY(12px)';
   ga.style.opacity='0';
-  setTimeout(function(){ga.style.display='none';ga.style.transform='';ga.style.opacity='1';ga.style.transition='';},350);
+  setTimeout(function(){
+    ga.style.display='none'; ga.style.transform=''; ga.style.opacity='1'; ga.style.transition='';
+  },350);
+  var scene=_el('chronoScene');
+  if(scene){ scene.style.transition='transform .45s ease-in-out'; scene.style.transform='scale(1)'; }
   var bg=_el('chronoBg');
-  if(bg){ bg.style.transition='transform .55s ease-in-out'; bg.style.transform='scale(1)'; }
+  if(bg){ bg.style.transition='transform .45s ease-in-out'; bg.style.transform='scale(1)'; }
   var bw=_el('chronoBossWrap');
   if(bw){ bw.style.transition='opacity .55s,filter .55s'; bw.style.opacity='1'; bw.style.filter=''; }
 }
 
 function _showGameArea(){
   var ga=_el('chronoGameArea'); if(!ga) return;
-  ga.style.display='flex';
-  ga.style.opacity='0';
-  ga.style.transform='scale(.88) translateY(16px)';
-  ga.style.transition='none';
+  ga.style.display='flex'; ga.style.opacity='1'; ga.style.transform=''; ga.style.transition='';
   var isMob=window.innerWidth<=640;
-  var zoomGA=isMob?1.06:1.26;
-  var yShift=isMob?'-4px':'-14px';
+  var zoomLevel=isMob?1.08:1.28;
+  /* Zoom chronoScene (contient la frise, le boss, etc.) */
+  var scene=_el('chronoScene');
+  if(scene){
+    scene.style.transition='none'; scene.style.transform='scale(1)';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      scene.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
+      scene.style.transform='scale('+zoomLevel+')';
+    });});
+  }
+  /* Zoom chronoBg (décor arrière-plan, hors de chronoScene) */
   var bg=_el('chronoBg');
   if(bg){
-    bg.style.transition='transform .75s ease-out';
+    bg.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
     bg.style.transformOrigin='center center';
-    bg.style.transform='scale(1.14)';
+    bg.style.transform='scale('+zoomLevel+')';
   }
-  requestAnimationFrame(function(){ requestAnimationFrame(function(){
-    ga.style.transition='transform .6s cubic-bezier(.08,1.1,.25,1), opacity .44s';
-    ga.style.transform='scale('+zoomGA+') translateY('+yShift+')';
-    ga.style.opacity='1';
-  });});
+  /* Boss s'estompe */
   var bw=_el('chronoBossWrap');
   if(bw){ bw.style.transition='opacity .5s,filter .5s'; bw.style.opacity='.07'; bw.style.filter='blur(3px)'; }
 }
@@ -13478,12 +13504,14 @@ function _updateValidateBtn(){
 function _validateAnswer(){
   if(!_running||_inFissure||_gameEnded) return;
   var btn=_el('chronoValidateBtn'); if(btn) btn.style.display='none';
-  /* Dezoom avant révélation */
+  /* Dézoom scène + retour boss visible */
   (function(){
-    var ga=_el('chronoGameArea');
-    if(ga){ ga.style.transition='transform .45s ease-in-out'; ga.style.transform='scale(1) translateY(0)'; }
+    var scene=_el('chronoScene');
+    if(scene){ scene.style.transition='transform .4s ease-in-out'; scene.style.transform='scale(1)'; }
+    var bg=_el('chronoBg');
+    if(bg){ bg.style.transition='transform .4s ease-in-out'; bg.style.transform='scale(1)'; }
     var bw=_el('chronoBossWrap');
-    if(bw){ bw.style.transition='opacity .5s,filter .5s'; bw.style.opacity='1'; bw.style.filter=''; }
+    if(bw){ bw.style.transition='opacity .45s,filter .45s'; bw.style.opacity='1'; bw.style.filter=''; }
   })();
   var SND_OK ='https://cdaudemartinez.fr/wp-content/uploads/2026/04/badge_debloque.mp3';
   var SND_BAD='https://cdaudemartinez.fr/wp-content/uploads/2026/04/wrong_answer.mp3';
@@ -13673,30 +13701,81 @@ var _fissureClicks={}; // id → clicks done
    ─────────────────────────────────────────────────────────── */
 var _fissureTypes=['simple','thick','instable','leurre','doree'];
 
+
+function _spawnFissureCharacter(typeN, fissureEl){
+  if(!_running||!_fissurePhaseActive||!fissureEl) return;
+  var scene=_el('chronoScene'); if(!scene) return;
+  var typeMap={simple:'dino',epaisse:'bot',instable:'revolt',leurre:'revolt',doree:'soldat',fissure3:'revolt',fissure4:'soldat',fissure5:'knight',special:'knight'};
+  var charKey=typeMap[typeN]||'dino';
+  var frames=IMG.CHARS[charKey]||IMG.CHARS.dino;
+  var r=fissureEl.getBoundingClientRect();
+  var scR=scene.getBoundingClientRect();
+  var startX=(r.left-scR.left+r.width/2);
+  var startY=(r.top-scR.top+r.height/2);
+  var el2=document.createElement('div');
+  el2.style.cssText='position:absolute;left:'+startX+'px;top:'+startY+'px;'+
+    'width:80px;z-index:17;pointer-events:none;transform:translateX(-50%);';
+  var img2=document.createElement('img');
+  img2.src=frames[0];
+  img2.style.cssText='width:100%;object-fit:contain;image-rendering:pixelated;'+
+    'filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));';
+  el2.appendChild(img2);
+  scene.appendChild(el2);
+  var fi3=0,totF3=frames.length;
+  var fiv3=setInterval(function(){
+    if(!_running){clearInterval(fiv3);if(el2.parentNode)el2.parentNode.removeChild(el2);return;}
+    fi3=(fi3+1)%totF3; img2.src=frames[fi3];
+  },110);
+  var scH=scene.clientHeight;
+  var floorY=scH-90;
+  setTimeout(function(){
+    el2.style.transition='top 0.5s cubic-bezier(.4,0,.2,1)';
+    el2.style.top=floorY+'px';
+  },40);
+  setTimeout(function(){
+    _shakeScreen(180);
+    var goLeft=(startX>scR.width/2);
+    el2.style.transition='left 1s linear, opacity 0.3s 0.8s';
+    el2.style.left=(goLeft?-130:scR.width+130)+'px';
+    el2.style.opacity='0';
+  },600);
+  setTimeout(function(){
+    clearInterval(fiv3);
+    if(el2.parentNode) el2.parentNode.removeChild(el2);
+  },1900);
+}
 function _spawnFissures(){
   var area=_el('chronoFissureArea'); if(!area) return;
   area.style.display='block'; area.innerHTML=''; _fissures=[]; _fissureClicks={};
+  /* Courbe agressive: phases scriptées vs charge */
+  var _isCharge=!!_chargeFissureCount&&_charge===0; /* reset after charge trigger */
   var phaseMul=Math.min(2,Math.floor((_fissurePhaseCount-1)/2));
-  var baseCount=[[4,6,8],[6,8,11],[8,11,14]][phaseMul][_difficulty]||4;
-  var count=Math.min(16,baseCount+Math.floor((_fissurePhaseCount-1)*1.5|0));
+  var chargeMul=Math.min(3,Math.floor((_chargeFissureCount-1)/2.5|0));
+  /* Scriptées: démarrent doucement */
+  var baseScripted=[[3,5,7],[5,8,11],[8,11,14]][phaseMul][_difficulty]||3;
+  /* Charge: démarrent moyennes, finissent brutales */
+  var baseCharge=[[4,6,9],[7,10,13],[10,14,16]][chargeMul][_difficulty]||4;
+  var baseCount=_isCharge?baseCharge:baseScripted;
+  var count=Math.min(16,baseCount+Math.floor((_fissurePhaseCount-1)*1.3|0));
   var mob=_isMobile;
   /* Types: clics réduits pour rendre jouable */
   var TYPES=[
-    {n:'simple',  cl:[1,1,2],sp:[800,600,420], hue:0,  leurre:false,bonus:false,moves:false,sym:''},
-    {n:'epaisse', cl:[2,3,3],sp:[900,680,480],hue:270,leurre:false,bonus:false,moves:false,sym:'\ud83d\udcaa'},
-    {n:'instable',cl:[1,2,2],sp:[700,520,360], hue:285,leurre:false,bonus:false,moves:true, sym:'\ud83c\udf00'},
-    {n:'leurre',  cl:[0,0,0],sp:[630,480,330], hue:135,leurre:true, bonus:false,moves:false,sym:'\u26a0\ufe0f'},
-    {n:'doree',   cl:[1,2,2],sp:[830,640,450],hue:30, leurre:false,bonus:true, moves:false,sym:'\u2b50'}
-    ,{n:'fissure3',cl:[1,2,2],sp:[740,560,390],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3}
-    ,{n:'fissure4',cl:[1,2,3],sp:[680,510,350],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4}
-    ,{n:'special', cl:[1,1,1],sp:[480,380,280],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true}
+    {n:'simple',  cl:[1,2,3],sp:[680,520,360], hue:0,  leurre:false,bonus:false,moves:false,sym:''},
+    {n:'epaisse', cl:[2,3,4],sp:[760,570,400],hue:270,leurre:false,bonus:false,moves:false,sym:'\ud83d\udcaa'},
+    {n:'instable',cl:[2,3,4],sp:[590,440,300], hue:285,leurre:false,bonus:false,moves:true, sym:'\ud83c\udf00'},
+    {n:'leurre',  cl:[0,0,0],sp:[540,400,280], hue:135,leurre:true, bonus:false,moves:false,sym:'\u26a0\ufe0f'},
+    {n:'doree',   cl:[1,2,3],sp:[700,530,370],hue:30, leurre:false,bonus:true, moves:false,sym:'\u2b50'}
+    ,{n:'fissure3',cl:[2,3,4],sp:[620,460,320],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3}
+    ,{n:'fissure4',cl:[2,3,5],sp:[580,430,300],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4}
+    ,{n:'fissure5',cl:[2,3,5],sp:[530,390,270],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5}
+    ,{n:'special', cl:[1,2,2],sp:[460,360,260],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true}
   ];
-  var pools=[[0,0,0,3],[0,0,1,2,3,5],[0,1,1,2,3,5,6]]; /* NOTE: special type (idx 5) injected when count>5 */
+  var pools=[[0,0,1,3],[0,1,2,3,4,5],[0,1,2,3,4,5,6,7]]; /* NOTE: special type (idx 5) injected when count>5 */
   var pool=pools[_difficulty]||pools[0];
   _closedFissures=0;
   for(var i=0;i<count;i++){
     /* Injecter une faille spéciale quand il y en a plus de 5 */
-    if(i===Math.floor(count/2) && count>5 && _difficulty>=1) pool.push(7);
+    if(i===Math.floor(count/2) && count>5 && _difficulty>=1) pool.push(8);
     (function(fi,delay){
       _T(function(){
         if(!_running||!_fissurePhaseActive) return;
@@ -13753,7 +13832,11 @@ function _spawnFissures(){
           /* Grossissement aussi sur le wrapper */
           el.style.transform='scale('+(1+fi2*0.08)+')';
           setTimeout(function(){img.style.opacity='1';},55);
-          if(fi2===totF-1){clearInterval(fiv);_fissureTimeout('fissure-'+fi);}
+          if(fi2===totF-1){
+            clearInterval(fiv);
+            (function(_tp2,_el3){setTimeout(function(){_spawnFissureCharacter(_tp2.n,_el3);},60);})(tp,el);
+            _fissureTimeout('fissure-'+fi);
+          }
         },sp);
 
         var miv=null;
@@ -13936,35 +14019,41 @@ function _gameDefeat(){
   _bossSpeech('Tu n\'\u00e9tais pas pr\u00eat. Le temps m\'appartient d\u00e9sormais.',3500);
   _T(function(){ _showEndScreen(false); },1500);
 }
-function _showEndScreen(victory){
+function _showEndScreen(victory, reason){
   var ov=_el('chronoEndOv'); if(!ov) return;
   ov.style.display='flex';
   var box=_el('chronoEndBox');
   if(box) box.querySelectorAll('.chrono-end-img').forEach(function(e){e.remove();});
-  /* Pas de titre h2 separé */
   var et=_el('chronoEndTitle'); if(et) et.style.display='none';
   var msg=_el('chronoEndMsg');
+  if(box){
+    var img=document.createElement('img');
+    img.className='chrono-end-img';
+    if(victory){
+      img.src=IMG.BOSS_DEAD;
+      img.style.cssText='width:185px;display:block;margin:0 auto 16px;object-fit:contain;'+
+        'filter:drop-shadow(0 0 28px rgba(96,165,250,.7));animation:chronoVictoryFloat 2.8s ease-in-out infinite;';
+    } else {
+      img.src=IMG.BOSS_IDLE;
+      img.style.cssText='width:140px;display:block;margin:0 auto 16px;object-fit:contain;'+
+        'filter:drop-shadow(0 0 20px rgba(239,68,68,.55)) drop-shadow(0 0 40px rgba(239,68,68,.28));'+
+        'animation:chronoAuraPulse 2.2s ease-in-out infinite;';
+    }
+    box.insertBefore(img, box.firstChild);
+  }
   if(victory){
-    /* Couper toute musique */
     try{_stopMusic();}catch(e){}
     try{if(typeof playVictoryMusic==='function') playVictoryMusic();}catch(e){}
-    /* Image centrée SANS animation */
-    if(box){
-      var img=document.createElement('img');
-      img.className='chrono-end-img';
-      img.src=IMG.BOSS_DEAD;
-      img.style.cssText='width:130px;display:block;margin:0 auto 14px;object-fit:contain;'+
-        'filter:drop-shadow(0 0 22px rgba(96,165,250,.6));';
-      box.insertBefore(img, box.firstChild);
-    }
     if(msg) msg.innerHTML='<strong style="color:#60a5fa">\u26a1\u00a0Victoire\u00a0!</strong> Tu as restaur\u00e9 l\u2019\u00e9quilibre du temps. Chronoscribe est vaincu.';
     try{
       if(typeof unlockBadge==='function') unlockBadge('chrono_win');
       if(_timeLeft<=60 && typeof unlockBadge==='function') unlockBadge('chrono_lastmin');
       if(_fissurePhaseCount===0 && typeof unlockBadge==='function') unlockBadge('chrono_nofissure');
     }catch(e){}
+  } else if(reason==='flee'){
+    if(msg) msg.innerHTML='<strong style="color:#f87171">Tu as fui le combat\u2026</strong><br>Le temps ne pardonne pas la l\u00e2chet\u00e9. Reviens quand tu seras pr\u00eat \u00e0 affronter le Chronoscribe.';
   } else {
-    if(msg) msg.innerHTML='<strong style="color:#f87171">&#x1F480;\u00a0D\u00e9faite</strong> Chronoscribe a triomph\u00e9. Le temps continue de se d\u00e9sagr\u00e9ger\u2026 Reviens plus fort.';
+    if(msg) msg.innerHTML='<strong style="color:#f87171">&#x1F480;\u00a0D\u00e9faite\u00a0!</strong> Chronoscribe a triomph\u00e9. Le temps continue de se d\u00e9sagr\u00e9ger\u2026 Reviens plus fort.';
   }
 }
 
@@ -14021,6 +14110,8 @@ function start(){
   _resetCinematicChars();
 
   var _rOv=_el('chronoOv'); if(_rOv){_rOv.style.filter='';_rOv.style.transform='';}
+  var _rScene=_el('chronoScene'); if(_rScene){_rScene.style.transform='';_rScene.style.transition='';}
+  var _rBg=_el('chronoBg'); if(_rBg){_rBg.style.transform='';_rBg.style.transition='';}
   var _rBg=_el('chronoBg'); if(_rBg) _rBg.style.filter='';
   var _rGa=_el('chronoGameArea'); if(_rGa){_rGa.style.transform='';_rGa.style.filter='';_rGa.style.opacity='1';}
   var _rBw=_el('chronoBossWrap'); if(_rBw){_rBw.style.opacity='1';_rBw.style.transform='translateX(-50%)';_rBw.style.filter='';}
@@ -14092,56 +14183,16 @@ function flee(){
   _fissures=[];
   if(window._chronoKeyHandler){ document.removeEventListener('keydown',window._chronoKeyHandler); window._chronoKeyHandler=null; }
   _running=false;
-  /* Reset visuel complet — fix fond gris */
-  var bg=_el('chronoBg'); if(bg) bg.style.filter='';
-  var ga=_el('chronoGameArea');
-  if(ga){ ga.style.transform=''; ga.style.filter=''; ga.style.opacity='1'; ga.style.display='none'; }
-  var bw=_el('chronoBossWrap');
-  if(bw){ bw.style.opacity='1'; bw.style.transform='translateX(-50%)'; bw.style.filter=''; }
-  /* Musique d'échec */
   try{if(typeof playGameOverMusic==='function') playGameOverMusic();}catch(e){}
-  var ov=_el('chronoOv');
-  if(ov){
-    /* Reset filter/transform de l'overlay */
-    ov.style.filter=''; ov.style.transform=''; ov.style.backdropFilter='';
-    ov.style.display='block';
-    _el('chronoGameArea').style.display='none';
-    _el('chronoFissureArea').style.display='none';
-    _el('chronoDialog').style.display='none';
-    _el('chronoFissureMsg').style.display='none';
-    var skipBtn=_el('chronoSkipBtn'); if(skipBtn) skipBtn.style.display='none';
-    var fuirBtn=_el('chronoFuirBtn'); if(fuirBtn) fuirBtn.style.display='none';
-  }
-  /* Popup fuite */
-  var popup=document.createElement('div');
-  popup.id='chronoFleePopup';
-  popup.style.cssText='position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(5,8,20,.96);animation:fadeIn .4s;';
-  var box=document.createElement('div');
-  box.style.cssText='background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(239,68,68,.4);border-radius:24px;padding:36px 28px;max-width:440px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(239,68,68,.15);';
-  /* Image boss avec aura drop-shadow (suit la forme, pas de carré) */
-  var spr=document.createElement('img');
-  spr.src=IMG.BOSS_IDLE;
-  spr.style.cssText='width:88px;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto;'+
-    'filter:drop-shadow(0 0 10px rgba(239,68,68,.7)) drop-shadow(0 0 22px rgba(239,68,68,.4));';
-  box.appendChild(spr);
-  /* Message compact — pas de titre rouge séparé */
-  var tx=document.createElement('div');
-  tx.style.cssText='font-size:15px;color:#cbd5e1;line-height:1.75;font-style:italic;margin-bottom:24px;';
-  tx.innerHTML='<strong style="color:#f87171">Tu as fui le combat\u2026</strong><br>Le temps ne pardonne pas la l\u00e2chet\u00e9. Reviens quand tu seras pr\u00eat \u00e0 affronter le Chronoscribe.';
-  box.appendChild(tx);
-  var btn=document.createElement('button');
-  btn.textContent='\u2190 Revenir';
-  btn.style.cssText='padding:12px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(239,68,68,.4);';
-  btn.onclick=function(){
-    popup.remove();
-    var ov2=_el('chronoOv'); if(ov2) ov2.style.display='none';
-    try{ var bgm=document.getElementById('bgMusic'); if(bgm){ bgm.currentTime=0; bgm.play().catch(function(){}); } }catch(e){}
-    if(typeof showLitMenu==='function') showLitMenu();
-    else if(typeof goScreen==='function') goScreen('literature');
-  };
-  box.appendChild(btn);
-  popup.appendChild(box);
-  ov.appendChild(popup);
+  var bg=_el('chronoBg'); if(bg) bg.style.filter='';
+  var sc=_el('chronoScene'); if(sc){sc.style.transform='';sc.style.transition='';}
+  var bw=_el('chronoBossWrap'); if(bw){bw.style.opacity='1';bw.style.transform='translateX(-50%)';bw.style.filter='';}
+  _el('chronoGameArea').style.display='none';
+  _el('chronoFissureArea').style.display='none';
+  _el('chronoDialog').style.display='none';
+  var skipBtn=_el('chronoSkipBtn'); if(skipBtn) skipBtn.style.display='none';
+  var fuirBtn=_el('chronoFuirBtn'); if(fuirBtn) fuirBtn.style.display='none';
+  _T(function(){_showEndScreen(false,'flee');},350);
 }
 
 
@@ -14193,51 +14244,58 @@ return { start:start, stop:stop, flee:flee, skipCinematic:skipCinematic, exposeV
 /* ── HOOK INTO EXISTING GAME ─────────────────────────────── */
 /* Replace old openChronoscribe stub */
 function openChronoscribe(){
-  /* openChronoscribe : popup narratif pour non-admin, lancement pour admin */
   var isAdmin=(typeof S!=='undefined')&&
-    (S.name===ADMIN_CODE||S.name==='Professeur Daudé'||S.name==='Daude96');
-  if(!isAdmin){
-    var ov=document.createElement('div');
-    ov.style.cssText='position:fixed;inset:0;background:rgba(5,8,20,.93);z-index:950;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;';
-    ov.addEventListener('click',function(e){e.stopPropagation();if(e.target===ov){
-      if(window._chronoLockedTic){try{window._chronoLockedTic.pause();window._chronoLockedTic.currentTime=0;}catch(_){} window._chronoLockedTic=null;}ov.remove();}});
-    try{var _lt=new Audio('https://cdaudemartinez.fr/wp-content/uploads/2026/04/tic-tac-02.mp3');_lt.loop=true;_lt.volume=0.32;_lt.play().catch(function(){});window._chronoLockedTic=_lt;}catch(_){}
-    var box=document.createElement('div');
-    box.style.cssText='background:linear-gradient(160deg,#0f172a,#1e293b);border:2px solid rgba(148,163,184,.4);border-radius:24px;padding:36px 28px;max-width:420px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 60px rgba(148,163,184,.18);';
-    /* Sprite avec aura argentée */
-    var sw=document.createElement('div');
-    sw.style.cssText='position:relative;display:inline-block;margin-bottom:20px;';
-    var aura=document.createElement('div');
-    aura.style.cssText='position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(226,232,240,.32) 0%,transparent 70%);animation:chronoAuraPulse 2.5s ease-in-out infinite;pointer-events:none;';
-    var spr=document.createElement('img');
-    spr.src='https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png';
-    spr.style.cssText='width:120px;object-fit:contain;position:relative;z-index:1;animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;';
-    sw.appendChild(aura); sw.appendChild(spr); box.appendChild(sw);
-    /* Titre */
-    var ti=document.createElement('div');
-    ti.style.cssText='font-size:22px;font-weight:900;color:#94a3b8;margin-bottom:14px;letter-spacing:1px;';
-    ti.textContent='Chronoscribe';
-    box.appendChild(ti);
-    /* Texte narratif immersif */
-    var tx=document.createElement('div');
-    tx.style.cssText='font-size:15px;color:#cbd5e1;line-height:1.8;font-style:italic;margin-bottom:24px;';
-    tx.innerHTML='« Les parchemins du temps frémissent…<br>Chronoscribe n’est pas encore prêt<br>à dévoiler ses épreuves. »';
-    box.appendChild(tx);
-    /* Bouton Revenir */
-    var btn=document.createElement('button');
-    btn.textContent='Revenir';
-    btn.style.cssText='padding:11px 32px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.12);color:#94a3b8;font-weight:900;font-size:15px;cursor:pointer;';
-    btn.onclick=function(e){
-      e.stopPropagation(); ov.remove();
-      /* Arrêt son tic-tac du popup */
-      if(window._chronoLockedTic){try{window._chronoLockedTic.pause();window._chronoLockedTic.currentTime=0;}catch(_){} window._chronoLockedTic=null;}
-    };
-    box.appendChild(btn);
-    ov.appendChild(box);
-    document.body.appendChild(ov);
-    return;
+    (S.name===ADMIN_CODE||S.name==='Professeur Daud\u00e9'||S.name==='Daude96');
+  var ov=document.createElement('div');
+  ov.id='chronoPreCombat';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(5,8,20,.92);z-index:950;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;';
+  function _cleanup(){
+    if(window._chronoLockedTic){try{window._chronoLockedTic.pause();window._chronoLockedTic.currentTime=0;}catch(_){} window._chronoLockedTic=null;}
+    if(ov.parentNode) ov.remove();
   }
-  ChronoscribeGame.start();
+  try{var _lt=new Audio('https://cdaudemartinez.fr/wp-content/uploads/2026/04/tic-tac-02.mp3');_lt.loop=true;_lt.volume=0.28;_lt.play().catch(function(){});window._chronoLockedTic=_lt;}catch(_){}
+  var box=document.createElement('div');
+  /* Design rouge cohérent avec les autres boss */
+  box.style.cssText='background:linear-gradient(160deg,#0a0f1e,#12071a);border:2px solid rgba(239,68,68,.55);border-radius:24px;padding:36px 28px;max-width:450px;width:92%;text-align:center;animation:popIn .4s;box-shadow:0 0 80px rgba(239,68,68,.18),0 0 40px rgba(239,68,68,.08);';
+  /* Image boss avec aura + animation flottante */
+  var sw=document.createElement('div');
+  sw.style.cssText='position:relative;display:inline-block;margin-bottom:18px;';
+  var aura=document.createElement('div');
+  aura.style.cssText='position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.32) 0%,transparent 70%);animation:chronoAuraPulse 2.2s ease-in-out infinite;pointer-events:none;';
+  var spr=document.createElement('img');
+  spr.src='https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png';
+  spr.style.cssText='width:130px;object-fit:contain;position:relative;z-index:1;'+
+    'filter:drop-shadow(0 0 22px rgba(251,191,36,.6)) drop-shadow(0 0 44px rgba(239,68,68,.2));'+
+    'animation:chronoVictoryFloat 3s ease-in-out infinite;';
+  sw.appendChild(aura); sw.appendChild(spr); box.appendChild(sw);
+  /* Titre en rouge */
+  var ti=document.createElement('div');
+  ti.style.cssText='font-size:26px;font-weight:900;color:#f87171;margin-bottom:8px;letter-spacing:1px;text-shadow:0 0 18px rgba(239,68,68,.45);';
+  ti.textContent='Chronoscribe';
+  box.appendChild(ti);
+  /* Description */
+  var tx=document.createElement('div');
+  tx.style.cssText='font-size:14px;color:#cbd5e1;line-height:1.75;margin-bottom:28px;text-align:left;';
+  tx.innerHTML='Le Chronoscribe, cr\u00e9ation de Conjugus, manipule le temps et l\u2019espace pour d\u00e9truire la coh\u00e9rence temporelle de l\u2019Histoire litt\u00e9raire.<br><br><strong style="color:#f87171;">5 minutes</strong> pour r\u00e9tablir le continuum temporel en repla\u00e7ant les bons \u00e9l\u00e9ments litt\u00e9raires \u00e0 leur p\u00e9riode historique originale.';
+  box.appendChild(tx);
+  /* Boutons style boss */
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:14px;justify-content:center;flex-wrap:wrap;';
+  var cBtn=document.createElement('button');
+  cBtn.innerHTML='\u2694\ufe0f Combattre';
+  cBtn.style.cssText='padding:12px 28px;border-radius:14px;border:none;background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(239,68,68,.45);transition:filter .18s;';
+  cBtn.onmouseover=function(){this.style.filter='brightness(1.12)';};cBtn.onmouseout=function(){this.style.filter='';};    
+  cBtn.onclick=function(){ _cleanup(); if(isAdmin) ChronoscribeGame.start(); };
+  var lBtn=document.createElement('button');
+  lBtn.textContent='Plus tard';
+  lBtn.style.cssText='padding:12px 24px;border-radius:14px;border:1.5px solid rgba(239,68,68,.35);background:rgba(239,68,68,.08);color:#f87171;font-weight:900;font-size:15px;cursor:pointer;transition:background .18s;';
+  lBtn.onmouseover=function(){this.style.background='rgba(239,68,68,.18)';};lBtn.onmouseout=function(){this.style.background='rgba(239,68,68,.08)';};    
+  lBtn.onclick=_cleanup;
+  btns.appendChild(cBtn); btns.appendChild(lBtn);
+  box.appendChild(btns);
+  ov.appendChild(box);
+  ov.addEventListener('click',function(e){if(e.target===ov) _cleanup();});
+  document.body.appendChild(ov);
 }
 
 /* Also set validate button onclick */
