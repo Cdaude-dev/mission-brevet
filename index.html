@@ -1507,7 +1507,8 @@
   /* Speech bubble au-dessus du boss, centré */
   #chronoSpeech {
     /* Juste au-dessus des propositions, dans le flux de jeu */
-    position:absolute;bottom:calc(min(380px,44vw) + 14px);
+    /* Au-dessus du pool de propositions */
+    position:absolute;bottom:70px;
     left:50%;transform:translateX(-50%);
     width:min(280px,55vw);max-height:none;height:auto;
     z-index:12;display:none;pointer-events:none;
@@ -1556,10 +1557,11 @@
 
   /* Fissure warning */
   #chronoFissureMsg {
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    /* Centré en haut pour ne pas couvrir le contenu — temporaire (3.2s) */
+    position:absolute;top:54px;left:50%;transform:translateX(-50%);
     z-index:40;display:none;text-align:center;
     background:rgba(5,8,20,.92);border:2px solid rgba(239,68,68,.6);
-    border-radius:18px;padding:24px 32px;max-width:360px;width:90%;
+    border-radius:18px;padding:16px 24px;max-width:320px;width:88%;
     animation:popIn .3s;
   }
   #chronoFissureMsg .warn-icon{font-size:40px;margin-bottom:8px;}
@@ -1812,7 +1814,7 @@
     border-bottom:0;
   }
   @media(max-width:640px){
-    #chronoSpeech{width:min(200px,56vw);font-size:10px;bottom:auto;top:50px;}
+    #chronoSpeech{width:min(200px,56vw);font-size:10px;bottom:60px;}
   }
   @media(max-width:640px){
     #chronoHugo{left:12%;}
@@ -3084,7 +3086,11 @@ const EXCLUSIVE_AV=[
   {src:"https://i.postimg.cc/PrXLch7F/avatar-spe-bourgour.png",
    label:"Bourgour",
    desc:"Vaincre le Cantinier Bourgour en ne faisant pas consommer plus de 10 plats avariés à Teddynounet",
-   check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_flawless"):[...S.badges].includes("teddy_flawless"))},
+   check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_flawless"):[...S.badges].includes("teddy_flawless"))}
+  ,{src:"https://i.postimg.cc/dtYDBq1B/avatar-spe-chronoscribe.png",
+   label:"Chronoscribe",
+   desc:"Vaincre le Chronoscribe",
+   check:()=>!!S.bossXPAwarded&&!!S.bossXPAwarded.chronoscribe},
   {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
    label:"Professeur Daudé",
    desc:"Être le créateur du jeu, le seul l'unique",
@@ -9918,7 +9924,7 @@ function _applyMelBg(phase){
 }
 
 function awardBossXP(boss){
-  const XP={conjugus:1000,grammaria:800,orgografe:300,memelite:1200,teddynounet:850};
+  const XP={conjugus:1000,grammaria:800,orgografe:300,memelite:1200,teddynounet:850,chronoscribe:1400};
   const DEFEATED_KEY="bossDefeated_"+boss;
   if(!S.bossXPAwarded)S.bossXPAwarded={};
   if(S.bossXPAwarded[boss])return; // Une seule fois
@@ -12542,11 +12548,11 @@ const PERIODS = [
 
 /* Tutoriel */
 const TUTO_SLIDES = [
-  {icon:'\ud83c\udfa5', title:'Le chaos du temps', text:'Chronoscribe a 60 PV. Chaque bonne r\u00e9ponse lui enl\u00e8ve 1 PV. R\u00e9tablis l\u2019ordre chronologique pour le vaincre !', img:'https://i.postimg.cc/RhcRF8cr/Slide01.png'},
-  {icon:'\ud83e\udde0', title:'Place les \u00e9l\u00e9ments', text:'Des auteurs, des \u0153uvres et des mouvements litt\u00e9raires vont appara\u00eetre. Fais-les glisser dans la bonne \u00e9poque de la frise.', img:'https://i.postimg.cc/c1YTXKPg/Slide02.png'},
-  {icon:'\ud83c\udfaf', title:'Valide ta r\u00e9ponse', text:'Quand tous les \u00e9l\u00e9ments sont plac\u00e9s, clique sur Valider. Chaque bonne r\u00e9ponse = -1 PV. Tu peux cliquer sur un \u00e9l\u00e9ment plac\u00e9 pour le retirer.', img:'https://i.postimg.cc/zDWp0L4j/Slide03.png'},
-  {icon:'\u26a0\ufe0f', title:'La jauge de charge', text:'Chaque mauvaise r\u00e9ponse remplit la jauge de charge (+1). \u00c0 4/4, Chronoscribe d\u00e9clenche une phase de fissures temporelles !', img:'https://i.postimg.cc/SRWrs5c3/slide04.png'},
-  {icon:'\u23f3', title:'Danger croissant', text:'Plus tu accumules d\u2019erreurs, plus les phases de fissures s\u2019intensifient. Tu as 5 minutes. Bonne chance !', img:'https://i.postimg.cc/RVLdxkSw/slide05.png'}
+  {icon:'', title:'Le chaos du temps', text:'Chronoscribe a 60 PV. Chaque bonne r\u00e9ponse lui enl\u00e8ve 1 PV. R\u00e9tablis l\u2019ordre chronologique pour le vaincre !', img:'https://i.postimg.cc/RhcRF8cr/Slide01.png'},
+  {icon:'', title:'Place les \u00e9l\u00e9ments', text:'Des auteurs, des \u0153uvres et des mouvements litt\u00e9raires vont appara\u00eetre. Fais-les glisser dans la bonne \u00e9poque de la frise.', img:'https://i.postimg.cc/c1YTXKPg/Slide02.png'},
+  {icon:'', title:'Valide ta r\u00e9ponse', text:'Quand tous les \u00e9l\u00e9ments sont plac\u00e9s, clique sur Valider. Chaque bonne r\u00e9ponse = -1 PV. Tu peux cliquer sur un \u00e9l\u00e9ment plac\u00e9 pour le retirer.', img:'https://i.postimg.cc/zDWp0L4j/Slide03.png'},
+  {icon:'', title:'La jauge de charge', text:'Chaque mauvaise r\u00e9ponse remplit la jauge de charge (+1). \u00c0 4/4, Chronoscribe d\u00e9clenche une phase de fissures temporelles !', img:'https://i.postimg.cc/SRWrs5c3/slide04.png'},
+  {icon:'', title:'Danger croissant', text:'Plus tu accumules d\u2019erreurs, plus les phases de fissures s\u2019intensifient. Tu as 5 minutes. Bonne chance !', img:'https://i.postimg.cc/RVLdxkSw/slide05.png'}
 ];
 
 
@@ -12719,6 +12725,7 @@ function _bossHitAnim(){
 /* Entrée depuis haut-gauche: AIR→FALL→LAND+impact→IDLE */
 function _bossEntryAnim(cb){
   var wrap=_el('chronoBossWrap');
+  if(wrap){wrap.style.visibility='visible';wrap.style.opacity='0';}
   _setBossSprite(IMG.BOSS_AIR);
   if(wrap){
     wrap.style.transition='none';
@@ -12966,6 +12973,8 @@ function _startCinematic(){
   _startTic();
   /* Afficher le bouton skip pendant la cinématique */
   var skipBtn=_el('chronoSkipBtn'); if(skipBtn) skipBtn.style.display='block';
+  /* Hide boss until entry animation — prevents idle flash */
+  var _bwCi=_el('chronoBossWrap'); if(_bwCi){ _bwCi.style.opacity='0'; _bwCi.style.visibility='hidden'; }
   var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
   /* Hugo et Rousseau visibles, animation regard vivante */
   if(hugo){ hugo.style.display='block'; hugo.style.transform='scaleX(1)'; hugo.classList.add('looking'); }
@@ -13191,7 +13200,7 @@ function _renderTutoSlide(){
   var nt=_el('chronoTutoNext'), pr=_el('chronoTutoPrev');
   /* Masquer le bouton Retour sur le premier slide */
   if(pr){ pr.style.display=(_tutoSlide===0)?'none':''; }
-  if(ic) ic.textContent=s.icon;
+  if(ic){ ic.textContent=s.icon||''; ic.style.display=s.icon?'':'none'; }
   if(ti) ti.textContent=s.title;
   if(tx) tx.innerHTML=s.text;
   /* Image illustration */
@@ -13231,6 +13240,7 @@ function _hideGameArea(){
   if(scene){ scene.style.transition='transform .45s ease-in-out'; scene.style.transform='scale(1)'; }
   var bg=_el('chronoBg');
   if(bg){ bg.style.transition='transform .45s ease-in-out'; bg.style.transform='scale(1)'; }
+  var bgOv=_el('chronoBgOverlay'); if(bgOv){ bgOv.style.transition='background .4s'; bgOv.style.background='rgba(5,8,20,.35)'; }
   var bw=_el('chronoBossWrap');
   if(bw){ bw.style.transition='opacity .55s,filter .55s'; bw.style.opacity='1'; bw.style.filter=''; }
 }
@@ -13239,24 +13249,27 @@ function _showGameArea(){
   var ga=_el('chronoGameArea'); if(!ga) return;
   ga.style.display='flex'; ga.style.opacity='1'; ga.style.transform=''; ga.style.transition='';
   var isMob=window.innerWidth<=640;
-  var zoomLevel=isMob?1.0:1.28; /* Mobile: no zoom — items hidden otherwise */
-  /* Zoom chronoScene (contient la frise, le boss, etc.) */
   var scene=_el('chronoScene');
   if(scene){
+    var zoomLevel=isMob?1.0:1.28;
     scene.style.transition='none'; scene.style.transform='scale(1)';
     requestAnimationFrame(function(){ requestAnimationFrame(function(){
       scene.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
       scene.style.transform='scale('+zoomLevel+')';
     });});
   }
-  /* Zoom chronoBg seulement sur desktop */
+  /* Zoom bg décor seulement sur desktop */
   var bg=_el('chronoBg');
   if(bg&&!isMob){
     bg.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
     bg.style.transformOrigin='center center';
-    bg.style.transform='scale('+zoomLevel+')';
+    bg.style.transform='scale(1.28)';
   }
-  /* Boss s'estompe */
+  /* Effet caméra mobile: fond légèrement tamisé */
+  if(isMob){
+    var bgOv=_el('chronoBgOverlay');
+    if(bgOv){ bgOv.style.transition='background .5s'; bgOv.style.background='rgba(5,8,20,.55)'; }
+  }
   var bw=_el('chronoBossWrap');
   if(bw){ bw.style.transition='opacity .5s,filter .5s'; bw.style.opacity='.07'; bw.style.filter='blur(3px)'; }
 }
@@ -13717,11 +13730,11 @@ function _showClockIntro(cb){
   var bigH=document.createElement('img');
   bigH.src='https://i.postimg.cc/k5MZCtgh/grande-aiguille.png';
   /* Grande aiguille: pivot en bas = axis of rotation at bottom center */
-  bigH.style.cssText='position:absolute;width:32%;height:40%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
+  bigH.style.cssText='position:absolute;width:32%;height:40%;bottom:46%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   var smallH=document.createElement('img');
   smallH.src='https://i.postimg.cc/bvYMP2vp/petite-aiguille.png';
   /* Petite aiguille: plus courte, même pivot */
-  smallH.style.cssText='position:absolute;width:24%;height:28%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
+  smallH.style.cssText='position:absolute;width:24%;height:28%;bottom:46%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   dial.appendChild(bg); dial.appendChild(bigH); dial.appendChild(smallH);
   wrap.appendChild(dial);
   ov.appendChild(wrap);
@@ -13816,19 +13829,9 @@ var _fissureTypes=['simple','thick','instable','leurre','doree'];
 function _spawnFissureCharacterAt(typeN, rect){
   if(!_running) return;
   var scene=_el('chronoScene'); if(!scene) return;
-  /* Type → personnage: lié à l'apparence de la fissure */
-  var typeMap={
-    simple:'dino',      /* FISSURE1 → dinosaure */
-    epaisse:'bot',      /* FISSURE2 → robot */
-    instable:'bot',     /* FISSURE2 look → robot */
-    leurre:'dino',      /* fissure piège → dino */
-    doree:'dino',       /* fissure bonus → dino */
-    fissure3:'revolt',  /* FISSURE3 → révolutionnaire */
-    fissure4:'soldat',  /* FISSURE4 → soldat 2GM */
-    fissure5:'knight',  /* FISSURE5 → chevalier */
-    special:'knight'    /* fissure spéciale → chevalier */
-  };
-  var charKey=typeMap[typeN]||'dino';
+  /* typeN is already the char key (dino/bot/revolt/soldat/knight) from tp.char */
+  var validChars={'dino':1,'bot':1,'revolt':1,'soldat':1,'knight':1};
+  var charKey=validChars[typeN]?typeN:'dino';
   var frames=IMG.CHARS[charKey]||IMG.CHARS.dino;
   var scR=scene.getBoundingClientRect();
   var startX=rect?(rect.left-scR.left+rect.width/2):scR.width/2;
@@ -13938,15 +13941,15 @@ function _spawnFissures(){
   var mob=_isMobile;
   /* Types: clics réduits pour rendre jouable */
   var TYPES=[
-    {n:'simple',  cl:[1,2,3],sp:[680,520,360], hue:0,  leurre:false,bonus:false,moves:false,sym:''},
-    {n:'epaisse', cl:[2,3,4],sp:[760,570,400],hue:270,leurre:false,bonus:false,moves:false,sym:'\ud83d\udcaa'},
-    {n:'instable',cl:[2,3,4],sp:[590,440,300], hue:285,leurre:false,bonus:false,moves:true, sym:'\ud83c\udf00'},
-    {n:'leurre',  cl:[0,0,0],sp:[540,400,280], hue:135,leurre:true, bonus:false,moves:false,sym:'\u26a0\ufe0f'},
-    {n:'doree',   cl:[1,2,3],sp:[700,530,370],hue:30, leurre:false,bonus:true, moves:false,sym:'\u2b50'}
-    ,{n:'fissure3',cl:[2,3,4],sp:[620,460,320],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3}
-    ,{n:'fissure4',cl:[2,3,5],sp:[580,430,300],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4}
-    ,{n:'fissure5',cl:[2,3,5],sp:[530,390,270],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5}
-    ,{n:'special', cl:[1,2,2],sp:[460,360,260],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true}
+    {n:'simple',  cl:[1,2,3],sp:[680,520,360], hue:0,  leurre:false,bonus:false,moves:false,sym:'',char:'dino',frames:IMG.FISSURE1},
+    {n:'epaisse', cl:[2,3,4],sp:[760,570,400],hue:270,leurre:false,bonus:false,moves:false,sym:'',char:'bot', frames:IMG.FISSURE2},
+    {n:'instable',cl:[2,3,4],sp:[590,440,300], hue:285,leurre:false,bonus:false,moves:true, sym:'',char:'bot', frames:IMG.FISSURE2},
+    {n:'leurre',  cl:[0,0,0],sp:[540,400,280], hue:135,leurre:true, bonus:false,moves:false,sym:'',char:'dino',frames:IMG.FISSURE1},
+    {n:'doree',   cl:[1,2,3],sp:[700,530,370],hue:30, leurre:false,bonus:true, moves:false,sym:'',char:'dino',frames:IMG.FISSURE1}
+    ,{n:'fissure3',cl:[2,3,4],sp:[620,460,320],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3,char:'revolt'}
+    ,{n:'fissure4',cl:[2,3,5],sp:[580,430,300],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4,char:'soldat'}
+    ,{n:'fissure5',cl:[2,3,5],sp:[530,390,270],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5,char:'knight'}
+    ,{n:'special', cl:[1,2,2],sp:[460,360,260],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true,char:'knight',frames:IMG.FISSURE5}
   ];
   var pools=[[0,0,1,3],[0,1,2,3,4,5],[0,1,1,2,3,4,5,6,7]]; /* 5=fissure3 6=fissure4 7=fissure5 8=special */ /* NOTE: special type (idx 5) injected when count>5 */
   var pool=pools[_difficulty]||pools[0];
@@ -13958,7 +13961,7 @@ function _spawnFissures(){
       _T(function(){
         if(!_running||!_fissurePhaseActive) return;
         var tp=TYPES[pool[Math.floor(Math.random()*pool.length)]];
-        var frames=tp.frames?tp.frames:fi%2===0?IMG.FISSURE1:IMG.FISSURE2;
+        var frames=tp.frames||IMG.FISSURE1; /* All types now have .frames */
         var nc=tp.cl[_difficulty]+(mob?1:0);
         var sp=tp.sp[_difficulty];
         var w=window.innerWidth, h=window.innerHeight;
@@ -14015,7 +14018,8 @@ function _spawnFissures(){
             /* Capture position AVANT que fissureTimeout retire l'élément */
             (function(_tp2,_el3){
               var _r=_el3?_el3.getBoundingClientRect():null;
-              setTimeout(function(){_spawnFissureCharacterAt(_tp2.n,_r);},80);
+              /* Pass .char (explicit) or fall back to tp.n */
+              setTimeout(function(){_spawnFissureCharacterAt(_tp2.char||_tp2.n,_r);},80);
             })(tp,el);
             _fissureTimeout('fissure-'+fi);
           }
@@ -14179,6 +14183,18 @@ function _gameVictory(){
   _el('chronoFissureArea').style.display='none';
   _bossSpeech('Impossible\u2026 Le flux\u2026 se stabilise\u2026 Tu as\u2026 restaur\u00e9 l\u2019ordre\u2026',4000);
   /* Badges Chronoscribe */
+  /* XP: 1400 points, une seule fois */
+  try{
+    if(typeof awardBossXP==='function') awardBossXP('chronoscribe');
+    else if(typeof S!=='undefined'&&!S.bossXPAwarded?.chronoscribe){
+      if(!S.bossXPAwarded) S.bossXPAwarded={};
+      S.bossXPAwarded.chronoscribe=true;
+      S.score=(S.score||0)+1400;
+      if(typeof updateHUD==='function') updateHUD();
+      if(typeof saveProgress==='function') saveProgress();
+      if(typeof saveToLB==='function') saveToLB();
+    }
+  }catch(e){}
   try{
     /* 1. Victoire standard : D\u00e9synchronisation annul\u00e9e */
     if(typeof unlockBadge==='function') unlockBadge('chrono_win');
@@ -14223,6 +14239,13 @@ function _showEndScreen(victory, reason){
   }
   var et=_el('chronoEndTitle'); if(et) et.style.display='none';
   var msg=_el('chronoEndMsg');
+  /* Style the return button */
+  var retBtn=_el('chronoEndBtn');
+  if(retBtn){
+    retBtn.style.cssText='padding:12px 32px;border-radius:14px;border:none;'+
+      'background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;font-weight:900;'+
+      'font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(59,130,246,.45);margin-top:12px;';
+  }
   if(box){
     var img=document.createElement('img');
     img.className='chrono-end-img';
