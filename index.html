@@ -1250,7 +1250,8 @@
   #chronoBossHpFill {height:100%;background:linear-gradient(90deg,#60a5fa,#94a3b8);border-radius:6px;transition:width .4s;}
   #chronoBossHpLabel {font-size:12px;color:#94a3b8;font-weight:700;white-space:nowrap;}
   #chronoLives {display:flex;gap:5px;align-items:center;}
-  .chrono-heart {font-size:18px;}
+  .chrono-heart {font-size:16px;}
+  .chrono-heart-sm{font-size:11px!important;}
   #chronoTimer {font-size:15px;font-weight:900;color:#facc15;letter-spacing:1px;}
   #chronoScore {font-size:12px;color:#94a3b8;}
 
@@ -1858,6 +1859,8 @@
   }
 
   @keyframes chronoVictoryFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.02);}}
+
+  .chrono-heart-sm{font-size:9px!important;}
 </style>
 </head>
 <body>
@@ -3081,11 +3084,7 @@ const EXCLUSIVE_AV=[
   {src:"https://i.postimg.cc/PrXLch7F/avatar-spe-bourgour.png",
    label:"Bourgour",
    desc:"Vaincre le Cantinier Bourgour en ne faisant pas consommer plus de 10 plats avariés à Teddynounet",
-   check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_flawless"):[...S.badges].includes("teddy_flawless"))}
-  ,{src:"https://i.postimg.cc/dtYDBq1B/avatar-spe-chronoscribe.png",
-   label:"Chronoscribe",
-   desc:"Vaincre le Chronoscribe en moins de 4 minutes",
-   check:()=>!!(S.badges&&S.badges.has&&S.badges.has("chrono_speed"))},
+   check:()=>S.badges&&(S.badges.has?S.badges.has("teddy_flawless"):[...S.badges].includes("teddy_flawless"))},
   {src:"https://i.postimg.cc/mDfdmW1T/avatar-professeur-cede.png",
    label:"Professeur Daudé",
    desc:"Être le créateur du jeu, le seul l'unique",
@@ -3147,7 +3146,6 @@ const BADGES_DEF=[
   ,{id:'chrono_win',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Desynchronisation-annulee.png',emoji:null,name:'Désynchronisation annulée',desc:'Vaincre le Chronoscribe'}
   ,{id:'chrono_lastmin',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/A-la-minute-pres.png',emoji:null,name:'À la minute près',desc:'Vaincre le Chronoscribe dans la dernière minute'}
   ,{id:'chrono_nofissure',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Gardien-du-continuum.png',emoji:null,name:'Gardien du continuum',desc:'Vaincre Chronoscribe sans qu’il ouvre une fissure'}
-  ,{id:'chrono_speed',img:'https://i.postimg.cc/dtYDBq1B/avatar-spe-chronoscribe.png',emoji:null,name:'Chronoscribe',desc:'Vaincre le Chronoscribe en moins de 4 minutes'}
 ];
 
 /* ══════════ MODULES DATA ══════════ */
@@ -12227,6 +12225,7 @@ window.TeddynounetBoss = (function() {
     <div id="chronoTutorial">
       <div class="chrono-tuto-box">
         <div class="chrono-tuto-icon" id="chronoTutoIcon">🎬</div>
+        <img id="chronoTutoImg" src="" alt="" style="width:100%;max-width:280px;border-radius:10px;margin:8px auto 4px;display:none;object-fit:contain;"/>
         <div class="chrono-tuto-title" id="chronoTutoTitle"></div>
         <div class="chrono-tuto-text" id="chronoTutoText"></div>
         <div class="chrono-tuto-dots" id="chronoTutoDots"></div>
@@ -12543,12 +12542,11 @@ const PERIODS = [
 
 /* Tutoriel */
 const TUTO_SLIDES = [
-  {icon:'🎬', title:'Le chaos du temps', text:'Chronoscribe a 60 PV. Chaque bonne réponse lui enlève 1 PV. Rétablis l\u2019ordre chronologique pour le vaincre !'},
-  {icon:'🧠', title:'Place les éléments', text:'Des auteurs, des œuvres et des mouvements littéraires vont apparaître. Fais-les glisser dans la bonne époque de la frise.'},
-  {icon:'🎯', title:'Valide ta réponse', text:'Quand tous les éléments sont placés, clique sur Valider. Chaque bonne réponse = -1 PV. Tu peux cliquer sur un élément placé pour le retirer.'},
-  {icon:'⚠️', title:'La jauge de charge', text:'Chaque mauvaise réponse remplit la jauge de charge (+1). À 4/4, Chronoscribe déclenche une phase de fissures temporelles !'},
-  {icon:'⚡', title:'Les fissures temporelles', text:'Ferme les fissures avant qu\u2019elles ne s\u2019ouvrent ! Les fissures vertes (⚠️) sont des leurres : ne clique PAS. Les fissures dorées (⭐) donnent +30s.'},
-  {icon:'⏳', title:'Danger croissant', text:'Plus tu accumules d\u2019erreurs, plus les phases de fissures s\u2019intensifient. Tu as 5 minutes. Bonne chance !'}
+  {icon:'\ud83c\udfa5', title:'Le chaos du temps', text:'Chronoscribe a 60 PV. Chaque bonne r\u00e9ponse lui enl\u00e8ve 1 PV. R\u00e9tablis l\u2019ordre chronologique pour le vaincre !', img:'https://i.postimg.cc/RhcRF8cr/Slide01.png'},
+  {icon:'\ud83e\udde0', title:'Place les \u00e9l\u00e9ments', text:'Des auteurs, des \u0153uvres et des mouvements litt\u00e9raires vont appara\u00eetre. Fais-les glisser dans la bonne \u00e9poque de la frise.', img:'https://i.postimg.cc/c1YTXKPg/Slide02.png'},
+  {icon:'\ud83c\udfaf', title:'Valide ta r\u00e9ponse', text:'Quand tous les \u00e9l\u00e9ments sont plac\u00e9s, clique sur Valider. Chaque bonne r\u00e9ponse = -1 PV. Tu peux cliquer sur un \u00e9l\u00e9ment plac\u00e9 pour le retirer.', img:'https://i.postimg.cc/zDWp0L4j/Slide03.png'},
+  {icon:'\u26a0\ufe0f', title:'La jauge de charge', text:'Chaque mauvaise r\u00e9ponse remplit la jauge de charge (+1). \u00c0 4/4, Chronoscribe d\u00e9clenche une phase de fissures temporelles !', img:'https://i.postimg.cc/SRWrs5c3/slide04.png'},
+  {icon:'\u23f3', title:'Danger croissant', text:'Plus tu accumules d\u2019erreurs, plus les phases de fissures s\u2019intensifient. Tu as 5 minutes. Bonne chance !', img:'https://i.postimg.cc/RVLdxkSw/slide05.png'}
 ];
 
 
@@ -12882,9 +12880,10 @@ function _updateHud(){
   var livesWrap=_el('chronoLives');
   if(livesWrap){
     livesWrap.innerHTML='';
+    var _mob=window.innerWidth<=640;
     for(var _hi=0;_hi<PLAYER_LIVES_MAX;_hi++){
       var _hsp=document.createElement('span');
-      _hsp.className='chrono-heart';
+      _hsp.className='chrono-heart'+(_mob?' chrono-heart-sm':'');
       _hsp.innerHTML=_hi<_lives?'&#x2764;&#xFE0F;':'&#x1F5A4;';
       livesWrap.appendChild(_hsp);
     }
@@ -13195,6 +13194,9 @@ function _renderTutoSlide(){
   if(ic) ic.textContent=s.icon;
   if(ti) ti.textContent=s.title;
   if(tx) tx.innerHTML=s.text;
+  /* Image illustration */
+  var tutoImg=_el('chronoTutoImg');
+  if(tutoImg){ if(s.img){ tutoImg.src=s.img; tutoImg.style.display='block'; } else tutoImg.style.display='none'; }
   if(nt) nt.textContent=(_tutoSlide===TUTO_SLIDES.length-1)?'Commencer ▶':'Suivant →';
   if(dots){
     dots.innerHTML='';
@@ -13460,7 +13462,7 @@ function _setupZoneItemDrag(el, itemIdx, fromPeriodId){
       'background:linear-gradient(135deg,#1e3a5f,#0f2040);border-radius:8px;padding:4px 8px;color:#e2e8f0;font-size:12px;font-weight:700;';
     document.body.appendChild(ghost);
   },{passive:false});
-  document.addEventListener('pointermove',function(e){
+  function _mm(e){
     if(!active||!ghost) return;
     ghost.style.left=(e.clientX-offX)+'px'; ghost.style.top=(e.clientY-offY)+'px';
     ghost.style.display='none';
@@ -13469,10 +13471,12 @@ function _setupZoneItemDrag(el, itemIdx, fromPeriodId){
     var zone=target?target.closest('.chrono-zone'):null;
     document.querySelectorAll('.chrono-zone').forEach(function(z){z.classList.remove('drag-over');});
     if(zone) zone.classList.add('drag-over');
-  });
-  document.addEventListener('pointerup',function(e){
+  }
+  function _mu(e){
     if(!active) return;
     active=false;
+    document.removeEventListener('pointermove',_mm);
+    document.removeEventListener('pointerup',_mu);
     if(ghost){ghost.remove();ghost=null;}
     document.querySelectorAll('.chrono-zone').forEach(function(z){z.classList.remove('drag-over');});
     var rt=document.elementFromPoint(e.clientX,e.clientY);
@@ -13481,7 +13485,11 @@ function _setupZoneItemDrag(el, itemIdx, fromPeriodId){
       _removeItemFromZone(itemIdx, fromPeriodId);
       _placeItem('ci-'+itemIdx, zone.dataset.period);
     }
-  });
+  }
+  el.addEventListener('pointerdown',function(e){
+    document.addEventListener('pointermove',_mm,{passive:false});
+    document.addEventListener('pointerup',_mu,{passive:false});
+  },{passive:false});
 }
 function _placeItem(itemId, periodId){
   var idx=parseInt(itemId.replace('ci-',''),10);
@@ -13505,7 +13513,11 @@ function _placeItem(itemId, periodId){
         var d=document.createElement('div');
         d.className='chrono-zone-item';
         d.dataset.itemIdx=i;
-        d.textContent=(it.type==='auteur'?'\u270d\ufe0f ':'\ud83d\udcda ')+it.label;
+        var _zIco={'auteur':'https://i.postimg.cc/8CWxzbbC/auteur.png',
+              '\u0153uvre':'https://i.postimg.cc/Ssh32zZp/oeuvre.png',
+              'mouvement litt\u00e9raire':'https://i.postimg.cc/3JkZCx09/mouvement-litteraire.png'};
+          var _zIcoSrc=_zIco[it.type]||_zIco['\u0153uvre'];
+          d.innerHTML='<img src="'+_zIcoSrc+'" style="height:14px;vertical-align:middle;margin-right:3px;"/>'+it.label+'<span style="font-size:8px;opacity:.6;display:block;">'+it.type+'</span>';
         /* Clic pour retirer de la zone */
         d.addEventListener('click',function(e){
           e.stopPropagation();
@@ -13705,11 +13717,11 @@ function _showClockIntro(cb){
   var bigH=document.createElement('img');
   bigH.src='https://i.postimg.cc/k5MZCtgh/grande-aiguille.png';
   /* Grande aiguille: pivot en bas = axis of rotation at bottom center */
-  bigH.style.cssText='position:absolute;width:22%;height:40%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
+  bigH.style.cssText='position:absolute;width:32%;height:40%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   var smallH=document.createElement('img');
   smallH.src='https://i.postimg.cc/bvYMP2vp/petite-aiguille.png';
   /* Petite aiguille: plus courte, même pivot */
-  smallH.style.cssText='position:absolute;width:16%;height:28%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
+  smallH.style.cssText='position:absolute;width:24%;height:28%;bottom:50%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   dial.appendChild(bg); dial.appendChild(bigH); dial.appendChild(smallH);
   wrap.appendChild(dial);
   ov.appendChild(wrap);
@@ -13804,8 +13816,18 @@ var _fissureTypes=['simple','thick','instable','leurre','doree'];
 function _spawnFissureCharacterAt(typeN, rect){
   if(!_running) return;
   var scene=_el('chronoScene'); if(!scene) return;
-  var typeMap={simple:'dino',epaisse:'bot',instable:'revolt',leurre:'revolt',doree:'soldat',
-               fissure3:'revolt',fissure4:'soldat',fissure5:'knight',special:'knight'};
+  /* Type → personnage: lié à l'apparence de la fissure */
+  var typeMap={
+    simple:'dino',      /* FISSURE1 → dinosaure */
+    epaisse:'bot',      /* FISSURE2 → robot */
+    instable:'bot',     /* FISSURE2 look → robot */
+    leurre:'dino',      /* fissure piège → dino */
+    doree:'dino',       /* fissure bonus → dino */
+    fissure3:'revolt',  /* FISSURE3 → révolutionnaire */
+    fissure4:'soldat',  /* FISSURE4 → soldat 2GM */
+    fissure5:'knight',  /* FISSURE5 → chevalier */
+    special:'knight'    /* fissure spéciale → chevalier */
+  };
   var charKey=typeMap[typeN]||'dino';
   var frames=IMG.CHARS[charKey]||IMG.CHARS.dino;
   var scR=scene.getBoundingClientRect();
@@ -14160,8 +14182,6 @@ function _gameVictory(){
   try{
     /* 1. Victoire standard : D\u00e9synchronisation annul\u00e9e */
     if(typeof unlockBadge==='function') unlockBadge('chrono_win');
-    /* Badge vitesse < 4 min */
-    if((GAME_DURATION-_timeLeft)<240 && typeof unlockBadge==='function') unlockBadge('chrono_speed');
     /* Son victoire Chronoscribe */
     try{var _vs=new Audio('https://cdaudemartinez.fr/wp-content/uploads/2026/04/Chronoscribe_victory.mp3');_vs.volume=0.75;_vs.play().catch(function(){});}catch(_){};
     /* 2. \u00c0 la minute pr\u00e8s : vaincre dans la derni\u00e8re minute */
@@ -14189,6 +14209,18 @@ function _showEndScreen(victory, reason){
   ov.style.display='flex';
   var box=_el('chronoEndBox');
   if(box) box.querySelectorAll('.chrono-end-img').forEach(function(e){e.remove();});
+  /* Style defeat vs victory */
+  if(box){
+    if(victory){
+      box.style.borderColor='rgba(96,165,250,.55)';
+      box.style.boxShadow='0 0 60px rgba(96,165,250,.18)';
+      box.style.background='linear-gradient(160deg,#0a1128,#0f1a3a)';
+    } else {
+      box.style.borderColor='rgba(239,68,68,.55)';
+      box.style.boxShadow='0 0 60px rgba(239,68,68,.2)';
+      box.style.background='linear-gradient(160deg,#120610,#1a0718)';
+    }
+  }
   var et=_el('chronoEndTitle'); if(et) et.style.display='none';
   var msg=_el('chronoEndMsg');
   if(box){
