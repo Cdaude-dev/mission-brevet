@@ -1580,7 +1580,8 @@
   #chronoEndOv {
     position:absolute;inset:0;z-index:50;display:none;
     align-items:center;justify-content:center;
-    background:rgba(5,8,20,.92);
+    background:rgba(3,5,15,.97); /* Near-black like other bosses */
+    flex-direction:column;
   }
   #chronoEndBox {
     text-align:center;padding:36px 32px;max-width:400px;width:92%;
@@ -1863,6 +1864,15 @@
   @keyframes chronoVictoryFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.02);}}
 
   .chrono-heart-sm{font-size:9px!important;}
+
+  @media(max-width:640px){#boutiqueBg{background-image:url('https://i.postimg.cc/xdvk8YzX/boutique-responsive-bg.png')!important;}}
+
+  @media(max-width:640px){
+    #boutiqueOv>[style*='position:absolute'][style*='top:max']{
+      left:50%!important;transform:translateX(-50%)!important;
+      right:auto!important;width:88vw!important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -2247,6 +2257,12 @@
       <button class="banner-btn" data-target="conjugaison">Conjugaison</button>
       <button class="banner-btn">Rédaction</button>
     </div>
+    <!-- Boutique -->
+    <div style="display:flex;justify-content:center;margin-top:14px;position:relative;z-index:8;">
+      <button onclick="openBoutique()" style="padding:0;border:none;background:transparent;cursor:pointer;transition:transform .18s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'">
+        <img src="https://i.postimg.cc/JhYhGnzp/shop-button.png" alt="Boutique" style="height:clamp(44px,8vh,64px);width:auto;object-fit:contain;filter:drop-shadow(0 2px 10px rgba(0,0,0,.45));"/>
+      </button>
+    </div>
     <div style="display:flex;justify-content:center;gap:12px;margin-top:18px;position:relative;z-index:8;flex-wrap:wrap;">
       <button onclick="showActualites()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/zXmfpb3q/actualites.png" style="height:clamp(36px,5vh,48px);width:auto;" alt="Actualités"/></button>
       <button <button id="homeLbBtn" onclick="showHomeLb()" style="background:none;border:none;cursor:pointer;padding:0;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onmousedown="this.style.transform='scale(.93)'"><img src="https://i.postimg.cc/MKkGtMXZ/classement-en-ligne.png" style="height:clamp(48px,7vh,72px);width:auto;" alt="Classement"/></button>
@@ -2394,7 +2410,30 @@
             <div class="seance-right"><span id="db-p8" class="seance-done-badge"></span><button class="seance-start-btn">▶</button></div>
           </div>
         </div>
-      </div><!-- end poésie chapter -->
+      </div>
+<!-- end poésie chapter -->
+
+  <!-- ══ CHRONOSCRIBE BOSS CARD — module à venir ══
+      Ajouté sous "Le monde comme reflet de l'âme — La poésie"
+      Non jouable pour l'instant : message immersif uniquement -->
+  <div class="chapter-card" id="chronoscribeCard" style="border:2px solid rgba(148,163,184,.4);background:rgba(30,41,59,.12);margin-bottom:8px;">
+    <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="openChronoscribe()">
+      <div class="chapter-title" style="color:#94a3b8;font-size:15px;">Chronoscribe</div>
+      <!-- Sprite Chronoscribe avec aura + engrenages animés -->
+      <div style="position:relative;display:inline-block;margin-top:6px;">
+        <div class="chrono-aura"></div>
+        <!-- Engrenages décoratifs aux bords de la carte -->
+        <img src="https://i.postimg.cc/g0CRN9Tq/engrenage01.png" class="chrono-gear chrono-gear-1" alt=""/>
+        <img src="https://i.postimg.cc/zfsW0mcx/engrenage02.png" class="chrono-gear chrono-gear-2" alt=""/>
+        <img src="https://i.postimg.cc/7LF7mvWm/engrenage03.png" class="chrono-gear chrono-gear-3" alt=""/>
+        <img id="chronoscribeLockIcon" src="https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png"
+          style="width:130px;height:130px;object-fit:contain;
+          animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;
+          position:relative;z-index:1;" alt="Chronoscribe"/>
+      </div>
+    </div>
+  </div>
+
 
       <!-- Autobio extra séances -->
       <div class="chapter-card">
@@ -2433,26 +2472,6 @@
       </div>
 
   <!-- MÉMELITÉ BOSS CHAPTER (littérature) -->
-  <!-- ══ CHRONOSCRIBE BOSS CARD — module à venir ══
-      Ajouté sous "Le monde comme reflet de l'âme — La poésie"
-      Non jouable pour l'instant : message immersif uniquement -->
-  <div class="chapter-card" id="chronoscribeCard" style="border:2px solid rgba(148,163,184,.4);background:rgba(30,41,59,.12);margin-bottom:8px;">
-    <div class="chapter-header" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;" onclick="openChronoscribe()">
-      <div class="chapter-title" style="color:#94a3b8;font-size:15px;">Chronoscribe</div>
-      <!-- Sprite Chronoscribe avec aura + engrenages animés -->
-      <div style="position:relative;display:inline-block;margin-top:6px;">
-        <div class="chrono-aura"></div>
-        <!-- Engrenages décoratifs aux bords de la carte -->
-        <img src="https://i.postimg.cc/g0CRN9Tq/engrenage01.png" class="chrono-gear chrono-gear-1" alt=""/>
-        <img src="https://i.postimg.cc/zfsW0mcx/engrenage02.png" class="chrono-gear chrono-gear-2" alt=""/>
-        <img src="https://i.postimg.cc/7LF7mvWm/engrenage03.png" class="chrono-gear chrono-gear-3" alt=""/>
-        <img id="chronoscribeLockIcon" src="https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png"
-          style="width:130px;height:130px;object-fit:contain;
-          animation:bossIdle 4.5s ease-in-out infinite,chronoSpriteGlow 2.5s ease-in-out infinite;
-          position:relative;z-index:1;" alt="Chronoscribe"/>
-      </div>
-    </div>
-  </div>
 
   <div class="chapter-card" id="memeliteChapterCard" style="border:2px solid rgba(220,38,38,.5);background:rgba(127,29,29,.08);">
     <div class="chapter-header" onclick="tryOpenMemelite()" style="cursor:pointer;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;">
@@ -2955,6 +2974,84 @@
     <button onclick="closeGramResult()" class="primary-btn"><img src="https://i.postimg.cc/CLyKJBdn/retour-a-l-accueil.png" style="height:clamp(32px,5vh,46px);width:auto;display:block;" alt=""/></button>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+/* Supabase client */
+const SUPA_URL='https://ksfataxgdnfcyftlpppr.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZmF0YXhnZG5mY3lmdGxwcHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Njk0MzEsImV4cCI6MjA5MTI0NTQzMX0._YoiI6CeJ3Eoksl--ansL3gE55iRrb4C6gthX0o6dq8';
+const _supa=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+/* Email helper: pseudo → fake email format for Supabase auth */
+function _supaEmail(pseudo){
+  return pseudo.toLowerCase().replace(/[^a-z0-9]/g,"_").substring(0,30)+"@missionbrevet.app";
+}
+
+/* Supabase register */
+async function supaRegister(pseudo,pwd,onOk,onErr){
+  try{
+    const {data,error}=await _supa.auth.signUp({
+      email:_supaEmail(pseudo),
+      password:pwd,
+      options:{data:{pseudo:pseudo}}
+    });
+    if(error){onErr(error.message);return;}
+    onOk(data.user);
+  }catch(e){onErr(e.message);}
+}
+
+/* Supabase login */
+async function supaLogin(pseudo,pwd,onOk,onErr){
+  try{
+    const {data,error}=await _supa.auth.signInWithPassword({
+      email:_supaEmail(pseudo),
+      password:pwd
+    });
+    if(error){onErr(error.message);return;}
+    onOk(data.user);
+  }catch(e){onErr(e.message);}
+}
+
+/* Save game data to Supabase user metadata */
+async function supaSave(data){
+  try{
+    await _supa.auth.updateUser({data:{gameData:data}});
+  }catch(e){}
+}
+
+/* Load game data from Supabase session */
+async function supaLoad(){
+  try{
+    const {data:{session}}=await _supa.auth.getSession();
+    if(!session)return null;
+    return session.user.user_metadata||null;
+  }catch(e){return null;}
+}
+
+/* Restore session on page load */
+async function supaRestoreSession(){
+  try{
+    const {data:{session}}=await _supa.auth.getSession();
+    if(!session)return false;
+    const meta=session.user.user_metadata||{};
+    const pseudo=meta.pseudo||"";
+    if(!pseudo)return false;
+    /* Restore into S */
+    if(typeof S!=="undefined"){
+      S.name=pseudo;
+      if(meta.gameData){
+        const d=meta.gameData;
+        S.score=d.score||0;S.done=d.done||{};S.perfect=d.perfect||{};
+        S.seancePct=d.seancePct||{};S.badges=new Set(d.badges||[]);
+        S.unlockedSecrets=new Set(d.unlockedSecrets||[]);
+        S.bossDefeated=d.bossDefeated||false;
+        S.bossXPAwarded=d.bossXPAwarded||{};
+        Object.assign(S,d);
+      }
+    }
+    return pseudo;
+  }catch(e){return false;}
+}
+</script>
 <script>
 /* ── Boss CSS injected ── */
 const bossStyle=document.createElement("style");
@@ -6790,7 +6887,17 @@ function checkRegisterAvail(v){
   }
 }
 
+/* SHA-256 hash via Web Crypto API — synchronous fallback for legacy */
 function simpleHash(s){let h=0;for(let i=0;i<s.length;i++){h=(Math.imul(31,h)+s.charCodeAt(i))|0;}return h.toString(36);}
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+/* Hash a password — SHA-256 with app salt */
+async function hashPwd(pwd){
+  return await sha256('mb_salt_v2:'+pwd);
+}
+
 const ADMIN_PWD=simpleHash("Lolmdrxd1478");
 
 /* ══════════ BAN SYSTEM ══════════ */
@@ -6935,6 +7042,26 @@ function doLogout(){
   };
 }
 
+
+function _doLoginVerified(v){
+  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
+  checkBanStatus(v).then(_ban=>{
+    if(_ban){S.name="";showBanMessage(_ban);return;}
+    goScreen("home");updateHUD();
+    loadProgress(v);
+    saveToLB();
+    if(typeof loadFromCloud==="function"){
+      loadFromCloud(v).then(function(remote){
+        if(!remote)return;
+        if(typeof mergeRemoteState==="function")mergeRemoteState(remote);
+        try{saveProgress();updateHUD();}catch(e){}
+      }).catch(function(){});
+    }
+    setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },300);
+    try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
+    setTimeout(maybeShowUpdateMsg,600);
+  });
+}
 function doLogin(){
   const el=document.getElementById("loginNameInput");
   const pwdEl=document.getElementById("loginPwdInput");
@@ -6983,35 +7110,49 @@ function doLogin(){
   }
 
   // Normal user: check password only if save has one set
-  if(savedPwd&&pwdVal&&simpleHash(pwdVal)!==savedPwd){
-    if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
-    return;
-  }
-  if(savedPwd&&!pwdVal){
+  /* Require password for ALL accounts — prevent username-only login */
+  if(!pwdVal||pwdVal.length<1){
     if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe requis.";}
     return;
   }
-  if(pwdHint)pwdHint.style.display="none";
-
-  // Check ban before allowing in
-  S.name=v;S.avatar=S.welcomeAv||AVATARS[0];
-  checkBanStatus(v).then(_ban=>{
-    if(_ban){S.name="";showBanMessage(_ban);return;}
-    goScreen("home");updateHUD();
-    loadProgress(v);
-    saveToLB();
-    /* Auth multi-appareil : sync cloud au login */
-    if(typeof loadFromCloud==="function"){
-      loadFromCloud(v).then(function(remote){
-        if(!remote)return;
-        if(typeof mergeRemoteState==="function")mergeRemoteState(remote);
-        try{saveProgress();updateHUD();}catch(e){}
-      }).catch(function(){});
-    }
-    setTimeout(()=>{ try{updateSeanceBadges();}catch(e){} },300);
-    try{localStorage.setItem("mb_session",JSON.stringify({name:v,avatar:S.avatar,ts:Date.now()}));}catch(e){}
-    setTimeout(maybeShowUpdateMsg,600);
-  });
+  /* No account found — block login (must register) */
+  if(!savedPwd){
+    if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Aucun compte. Crée-en un.";}
+    return;
+  }
+  /* Verify with SHA-256 (new) or legacy simpleHash */
+  /* Try Supabase first, fall back to localStorage */
+  if(typeof supaLogin==="function"){
+    supaLogin(v,pwdVal,function(user){
+      /* Supabase OK */
+      if(pwdHint)pwdHint.style.display="none";
+      /* Sync game data from metadata */
+      var meta=user.user_metadata||{};
+      if(meta.gameData){try{var d=meta.gameData;localStorage.setItem("mb_save_"+v.toLowerCase().replace(/[^a-z0-9]/g,'_').substring(0,30),JSON.stringify(Object.assign({},d,{pwd:meta.pwd_hash||''})));}catch(e){}}
+      _doLoginVerified(v);
+    },function(errMsg){
+      /* Supabase failed — try localStorage */
+      hashPwd(pwdVal).then(function(newHash){
+        const pwdOk=(newHash===savedPwd||simpleHash(pwdVal)===savedPwd);
+        if(!pwdOk){
+          if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
+          return;
+        }
+        if(pwdHint)pwdHint.style.display="none";
+        _doLoginVerified(v);
+      });
+    });
+  } else {
+    hashPwd(pwdVal).then(function(newHash){
+      const pwdOk=(newHash===savedPwd||simpleHash(pwdVal)===savedPwd);
+      if(!pwdOk){
+        if(pwdHint){pwdHint.style.display="block";pwdHint.textContent="❌ Mot de passe incorrect.";}
+        return;
+      }
+      if(pwdHint)pwdHint.style.display="none";
+      _doLoginVerified(v);
+    });
+  }
 }
 
 
@@ -7042,7 +7183,19 @@ function doRegister(){
     const hint=document.getElementById("pwdHint");
     if(hint)hint.innerHTML='<span style="color:#fca5a5;">Les mots de passe ne correspondent pas</span>';return;
   }
-  showDescriptionPopup(v, S.welcomeAv||AVATARS[0], simpleHash(pwd));
+  hashPwd(pwd).then(function(hpwd){
+    /* Register with Supabase if available */
+    if(typeof supaRegister==="function"){
+      supaRegister(v,pwd,function(){
+        showDescriptionPopup(v, S.welcomeAv||AVATARS[0], hpwd);
+      },function(){
+        /* Supabase failed (e.g. already registered) — continue locally */
+        showDescriptionPopup(v, S.welcomeAv||AVATARS[0], hpwd);
+      });
+    } else {
+      showDescriptionPopup(v, S.welcomeAv||AVATARS[0], hpwd);
+    }
+  });
 }
 
 function showDescriptionPopup(name, avatar, hashedPwd){
@@ -12268,6 +12421,49 @@ window.TeddynounetBoss = (function() {
       </div><!-- /chronoScene -->
   </div><!-- /chronoOv -->
 
+
+<!-- Boutique overlay -->
+<div id="boutiqueOv" style="display:none;position:fixed;inset:0;z-index:800;">
+  <!-- Desktop BG -->
+  <div id="boutiqueBg" style="position:absolute;inset:0;background:url('https://i.postimg.cc/7L3ChD2L/background-locked.png') center/cover no-repeat;"></div>
+  <!-- Mobile BG via CSS class -->
+  <div style="position:absolute;inset:0;background:rgba(5,8,20,.45);"></div>
+  <!-- Plumes flottantes -->
+  <div id="boutiquePlumes"></div>
+  <!-- Contenu centré -->
+  <div style="position:absolute;inset:0;display:flex;flex-direction:row;align-items:flex-end;justify-content:flex-start;padding:0;overflow:hidden;">
+    <!-- Fripier (très grand, cadré buste+) -->
+    <img src="https://i.postimg.cc/mZqY1Lnh/fripier-du-savoir-V2.png" alt="Fripier du Savoir"
+      style="height:110vh;max-height:110vh;width:auto;object-fit:cover;object-position:top center;
+      position:relative;z-index:3;
+      margin-left:-2vw;margin-bottom:-5vh;
+      filter:drop-shadow(0 0 50px rgba(96,165,250,.45)) drop-shadow(0 0 120px rgba(96,165,250,.2));"/>
+  </div>
+  <!-- Message -->
+  <div style="position:absolute;top:max(12px,4vh);right:max(16px,3vw);
+    width:min(420px,44vw);z-index:5;text-align:center;">
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(18px,3.5vw,28px);font-weight:900;
+      color:#e2e8f0;letter-spacing:.5px;text-shadow:0 0 20px rgba(96,165,250,.6);margin-bottom:12px;">
+      La Boutique du Fripier
+    </div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,2vw,17px);
+      color:#cbd5e1;font-style:italic;line-height:1.65;
+      background:rgba(5,8,20,.72);border:1.5px solid rgba(96,165,250,.25);
+      border-radius:16px;padding:16px 20px;
+      text-shadow:0 1px 4px rgba(0,0,0,.8);">
+      Le Fripier du Savoir range soigneusement ses trésors…<br>
+      <strong style="color:#93c5fd;">La boutique n'est pas encore ouverte.</strong><br>
+      Revenez bientôt — il vous prépare quelque chose d'extraordinaire.
+    </div>
+    <button onclick="closeBoutique()" style="margin-top:16px;padding:10px 28px;border-radius:12px;
+      border:1.5px solid rgba(96,165,250,.4);background:rgba(15,23,42,.85);color:#93c5fd;
+      font-weight:900;font-size:15px;cursor:pointer;transition:background .15s;"
+      onmouseover="this.style.background='rgba(30,58,138,.85)'" onmouseout="this.style.background='rgba(15,23,42,.85)'">
+      ← Fermer
+    </button>
+  </div>
+</div>
+
 </body>
 
 
@@ -12277,6 +12473,48 @@ window.TeddynounetBoss = (function() {
    CHRONOSCRIBE BOSS MODULE — Mission Brevet
    Accessible uniquement: Professeur Daudé (admin)
 ══════════════════════════════════════════════════════════════ */
+
+function openBoutique(){
+  var ov=document.getElementById('boutiqueOv');
+  if(!ov)return;
+  ov.style.display='block';
+  _spawnBoutiquePlumes();
+}
+function closeBoutique(){
+  var ov=document.getElementById('boutiqueOv');
+  if(ov){
+    ov.style.opacity='1';
+    ov.style.transition='opacity .35s';
+    ov.style.opacity='0';
+    setTimeout(function(){ov.style.display='none';ov.style.opacity='1';ov.style.transition='';},380);
+  }
+  var pp=document.getElementById('boutiquePlumes');
+  if(pp) pp.innerHTML='';
+}
+function _spawnBoutiquePlumes(){
+  var pp=document.getElementById('boutiquePlumes');
+  if(!pp)return;
+  pp.innerHTML='';
+  var imgs=['https://i.postimg.cc/7L3ChD2T/plume01.png','https://i.postimg.cc/1zGgXPqf/plume02.png','https://i.postimg.cc/q7stq036/plume03.png'];
+  var count=14;
+  for(var i=0;i<count;i++){
+    var p=document.createElement('img');
+    p.src=imgs[i%imgs.length];
+    p.className='plume';
+    var pw=30+Math.random()*60; /* 30-90px */
+    var blur=Math.random()>0.5?(Math.random()*3).toFixed(1)+'px':'0px';
+    var op=(0.4+Math.random()*.5).toFixed(2);
+    var dur=(4+Math.random()*5).toFixed(1)+'s';
+    var delay=(Math.random()*4).toFixed(1)+'s';
+    var left=Math.random()*95; var top=Math.random()*80;
+    var scale=(0.7+Math.random()*.6).toFixed(2);
+    p.style.cssText='left:'+left+'%;top:'+top+'%;'+
+      '--pd:'+dur+';--pdelay:'+delay+'s;--ps:'+scale+';--pa:'+(parseFloat(op)*0.4)+';'+
+      '--pb:'+blur+';--pop:'+op+';--pw:'+pw+'px;';
+    pp.appendChild(p);
+  }
+}
+
 window.ChronoscribeGame = (function(){
 'use strict';
 
@@ -13251,7 +13489,7 @@ function _showGameArea(){
   var isMob=window.innerWidth<=640;
   var scene=_el('chronoScene');
   if(scene){
-    var zoomLevel=isMob?1.0:1.28;
+    var zoomLevel=isMob?1.10:1.28;
     scene.style.transition='none'; scene.style.transform='scale(1)';
     requestAnimationFrame(function(){ requestAnimationFrame(function(){
       scene.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
@@ -13730,11 +13968,11 @@ function _showClockIntro(cb){
   var bigH=document.createElement('img');
   bigH.src='https://i.postimg.cc/k5MZCtgh/grande-aiguille.png';
   /* Grande aiguille: pivot en bas = axis of rotation at bottom center */
-  bigH.style.cssText='position:absolute;width:32%;height:40%;bottom:46%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
+  bigH.style.cssText='position:absolute;width:32%;height:38%;bottom:44%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   var smallH=document.createElement('img');
   smallH.src='https://i.postimg.cc/bvYMP2vp/petite-aiguille.png';
   /* Petite aiguille: plus courte, même pivot */
-  smallH.style.cssText='position:absolute;width:24%;height:28%;bottom:46%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
+  smallH.style.cssText='position:absolute;width:24%;height:26%;bottom:44%;left:50%;object-fit:contain;transform-origin:50% 100%;transform:translateX(-50%);';
   dial.appendChild(bg); dial.appendChild(bigH); dial.appendChild(smallH);
   wrap.appendChild(dial);
   ov.appendChild(wrap);
@@ -13927,16 +14165,18 @@ function _spawnFissures(){
   var chargeMul=Math.min(3,Math.floor((_chargeFissureCount-1)/2.5|0));
   var _desk=!_isMobile;
   /* Scriptées: plus douces sur desktop */
+  /* Desktop: very gentle — max 5 at phase 5, crescendo to impossible at phase 10 */
   var baseScripted=_desk
-    ?[[2,3,5],[3,5,8],[5,8,11]][phaseMul][_difficulty]||2
-    :[[3,4,6],[4,6,9],[6,9,12]][phaseMul][_difficulty]||3;
+    ?[[1,2,3],[2,3,4],[3,5,7]][phaseMul][_difficulty]||1
+    :[[2,3,5],[3,5,8],[5,8,12]][phaseMul][_difficulty]||2;
   /* Charge: plus douces sur desktop */
+  /* Charge phases: gentler on desktop early, hard late */
   var baseCharge=_desk
-    ?[[2,4,6],[4,6,9],[6,9,12]][chargeMul][_difficulty]||2
-    :[[3,5,8],[5,8,11],[8,11,14]][chargeMul][_difficulty]||3;
+    ?[[2,3,4],[3,4,6],[5,7,9]][chargeMul][_difficulty]||2
+    :[[3,5,7],[5,7,10],[7,10,14]][chargeMul][_difficulty]||3;
   var baseCount=_isCharge?baseCharge:baseScripted;
-  var ramp=_desk?1.0:1.2;
-  var cap=_desk?12:15;
+  var ramp=_desk?0.6:0.9;
+  var cap=_desk?8:12;
   var count=Math.min(cap,baseCount+Math.floor((_fissurePhaseCount-1)*ramp|0));
   var mob=_isMobile;
   /* Types: clics réduits pour rendre jouable */
@@ -13951,7 +14191,7 @@ function _spawnFissures(){
     ,{n:'fissure5',cl:[2,3,5],sp:[530,390,270],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5,char:'knight'}
     ,{n:'special', cl:[1,2,2],sp:[460,360,260],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true,char:'knight',frames:IMG.FISSURE5}
   ];
-  var pools=[[0,0,1,3],[0,1,2,3,4,5],[0,1,1,2,3,4,5,6,7]]; /* 5=fissure3 6=fissure4 7=fissure5 8=special */ /* NOTE: special type (idx 5) injected when count>5 */
+  var pools=[[0,0,1,2,3],[0,1,2,3,4,5,6],[0,1,2,3,4,5,6,7,8]]; /* 5=fissure3 6=fissure4 7=fissure5 8=special */ /* NOTE: special type (idx 5) injected when count>5 */
   var pool=pools[_difficulty]||pools[0];
   _closedFissures=0;
   for(var i=0;i<count;i++){
@@ -13961,7 +14201,7 @@ function _spawnFissures(){
       _T(function(){
         if(!_running||!_fissurePhaseActive) return;
         var tp=TYPES[pool[Math.floor(Math.random()*pool.length)]];
-        var frames=tp.frames||IMG.FISSURE1; /* All types now have .frames */
+        var frames=tp.frames||[IMG.FISSURE1,IMG.FISSURE2,IMG.FISSURE3][fi%3]; /* fallback variety */
         var nc=tp.cl[_difficulty]+(mob?1:0);
         var sp=tp.sp[_difficulty];
         var w=window.innerWidth, h=window.innerHeight;
@@ -14225,56 +14465,33 @@ function _showEndScreen(victory, reason){
   ov.style.display='flex';
   var box=_el('chronoEndBox');
   if(box) box.querySelectorAll('.chrono-end-img').forEach(function(e){e.remove();});
-  /* Style defeat vs victory */
-  if(box){
-    if(victory){
-      box.style.borderColor='rgba(96,165,250,.55)';
-      box.style.boxShadow='0 0 60px rgba(96,165,250,.18)';
-      box.style.background='linear-gradient(160deg,#0a1128,#0f1a3a)';
-    } else {
-      box.style.borderColor='rgba(239,68,68,.55)';
-      box.style.boxShadow='0 0 60px rgba(239,68,68,.2)';
-      box.style.background='linear-gradient(160deg,#120610,#1a0718)';
-    }
-  }
   var et=_el('chronoEndTitle'); if(et) et.style.display='none';
   var msg=_el('chronoEndMsg');
-  /* Style the return button */
   var retBtn=_el('chronoEndBtn');
-  if(retBtn){
-    retBtn.style.cssText='padding:12px 32px;border-radius:14px;border:none;'+
-      'background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;font-weight:900;'+
-      'font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(59,130,246,.45);margin-top:12px;';
-  }
-  if(box){
-    var img=document.createElement('img');
-    img.className='chrono-end-img';
-    if(victory){
-      img.src=IMG.BOSS_DEAD;
-      img.style.cssText='width:185px;display:block;margin:0 auto 16px;object-fit:contain;'+
-        'filter:drop-shadow(0 0 28px rgba(96,165,250,.7));animation:chronoVictoryFloat 2.8s ease-in-out infinite;';
-    } else {
-      img.src=IMG.BOSS_IDLE;
-      img.style.cssText='width:140px;display:block;margin:0 auto 16px;object-fit:contain;'+
-        'filter:drop-shadow(0 0 20px rgba(239,68,68,.55)) drop-shadow(0 0 40px rgba(239,68,68,.28));'+
-        'animation:chronoAuraPulse 2.2s ease-in-out infinite;';
-    }
-    box.insertBefore(img, box.firstChild);
-  }
   if(victory){
-    try{_stopMusic();}catch(e){}
-    try{if(typeof playVictoryMusic==='function') playVictoryMusic();}catch(e){}
+    if(box) box.style.cssText='text-align:center;padding:36px 32px;max-width:420px;width:92%;background:linear-gradient(160deg,#0a1128,#0f1a3a);border:2px solid rgba(96,165,250,.55);border-radius:24px;box-shadow:0 0 60px rgba(96,165,250,.18);animation:popIn .4s;';
+    if(box){
+      var img=document.createElement('img'); img.className='chrono-end-img'; img.src=IMG.BOSS_DEAD;
+      img.style.cssText='width:185px;display:block;margin:0 auto 16px;object-fit:contain;filter:drop-shadow(0 0 28px rgba(96,165,250,.7));animation:chronoVictoryFloat 2.8s ease-in-out infinite;';
+      box.insertBefore(img, box.firstChild);
+    }
+    try{_stopMusic();}catch(e){} try{if(typeof playVictoryMusic==='function') playVictoryMusic();}catch(e){}
     if(msg) msg.innerHTML='<strong style="color:#60a5fa">\u26a1\u00a0Victoire\u00a0!</strong> Tu as restaur\u00e9 l\u2019\u00e9quilibre du temps. Chronoscribe est vaincu.';
-    try{
-      if(typeof unlockBadge==='function') unlockBadge('chrono_win');
-      if(_timeLeft<=60 && typeof unlockBadge==='function') unlockBadge('chrono_lastmin');
-      if(_fissurePhaseCount===0 && typeof unlockBadge==='function') unlockBadge('chrono_nofissure');
-    }catch(e){}
-  } else if(reason==='flee'){
-    if(msg) msg.innerHTML='<strong style="color:#f87171">Tu as fui le combat\u2026</strong><br>Le temps ne pardonne pas la l\u00e2chet\u00e9. Reviens quand tu seras pr\u00eat \u00e0 affronter le Chronoscribe.';
+    try{if(typeof unlockBadge==='function'){unlockBadge('chrono_win');if(_timeLeft<=60)unlockBadge('chrono_lastmin');if(_fissurePhaseCount===0)unlockBadge('chrono_nofissure');}}catch(e){}
   } else {
-    if(msg) msg.innerHTML='<strong style="color:#f87171">&#x1F480;\u00a0D\u00e9faite\u00a0!</strong> Chronoscribe a triomph\u00e9. Le temps continue de se d\u00e9sagr\u00e9ger\u2026 Reviens plus fort.';
+    if(box) box.style.cssText='background:transparent;border:none;box-shadow:none;padding:20px;max-width:100%;width:100%;';
+    if(box){
+      var img2=document.createElement('img'); img2.className='chrono-end-img'; img2.src=IMG.BOSS_IDLE;
+      img2.style.cssText='width:min(200px,42vw);display:block;margin:0 auto 20px;object-fit:contain;filter:drop-shadow(0 0 30px rgba(239,68,68,.8)) drop-shadow(0 0 60px rgba(239,68,68,.4));animation:chronoAuraPulse 2s ease-in-out infinite;';
+      box.insertBefore(img2, box.firstChild);
+    }
+    if(msg){
+      msg.style.cssText='font-size:clamp(14px,3vw,18px);color:#f87171;text-align:center;text-shadow:0 0 18px rgba(239,68,68,.6);';
+      if(reason==='flee') msg.innerHTML='<strong>Tu as fui le combat\u2026</strong><br><span style="color:#cbd5e1;font-size:.85em;">Le temps ne pardonne pas la l\u00e2chet\u00e9.<br>Reviens quand tu seras pr\u00eat.</span>';
+      else msg.innerHTML='<strong>D\u00e9faite.</strong><br><span style="color:#cbd5e1;font-size:.85em;">Chronoscribe a triomph\u00e9.<br>Le temps continue de se d\u00e9sagr\u00e9ger\u2026</span>';
+    }
   }
+  if(retBtn) retBtn.style.cssText='margin-top:20px;padding:12px 32px;border-radius:14px;border:none;background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 4px 16px rgba(59,130,246,.45);';
 }
 
 
@@ -14505,7 +14722,17 @@ function openChronoscribe(){
   cBtn.innerHTML='<img src="https://i.postimg.cc/TY8PQLhY/combattre.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt="Combattre"/>';
   cBtn.style.cssText='padding:0;border:none;background:transparent;cursor:pointer;transition:filter .18s;';
   cBtn.onmouseover=function(){this.style.filter='brightness(1.12) drop-shadow(0 2px 8px rgba(239,68,68,.6))';};cBtn.onmouseout=function(){this.style.filter='';};    
-  cBtn.onclick=function(){ _cleanup(); if(isAdmin) ChronoscribeGame.start(); };
+  cBtn.onclick=function(){
+    if(isAdmin){ _cleanup(); ChronoscribeGame.start(); }
+    else {
+      var existMsg=document.getElementById('chrono-access-msg');
+      if(existMsg)return;
+      var msgEl=document.createElement('div'); msgEl.id='chrono-access-msg';
+      msgEl.style.cssText='font-size:13px;color:#fca5a5;text-align:center;margin-top:12px;font-style:italic;animation:fadeIn .4s;line-height:1.6;';
+      msgEl.innerHTML='\u23f3 <strong style="color:#f87171;">Le continuum temporel est encore instable\u2026</strong><br>Le Chronoscribe pr\u00e9pare son offensive. Ce niveau sera bient\u00f4t accessible.';
+      cBtn.parentNode.appendChild(msgEl);
+    }
+  };
   var lBtn=document.createElement('button');
   lBtn.innerHTML='<img src="https://i.postimg.cc/28p5Tb3b/plus-tard.png" style="height:clamp(30px,4.5vh,44px);width:auto;" alt="Plus tard"/>';
   lBtn.style.cssText='padding:0;border:none;background:transparent;cursor:pointer;transition:filter .18s;';
@@ -14532,5 +14759,7 @@ function openChronoscribe(){
 })();
 
 </script>
+
+
 </body>
 </html>
