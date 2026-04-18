@@ -1789,7 +1789,14 @@
     transition:left .3s,right .3s;
   }
   @media(max-width:640px){
-    #chronoBossWrap{width:min(200px,46vw);}
+    #chronoBossWrap{
+      width:min(130px,30vw)!important;
+      bottom:auto!important;top:44px!important;
+      right:6px!important;left:auto!important;
+      transform:none!important;
+      opacity:1!important;
+      z-index:9!important;
+    }
   }
 
   /* Speech bubble au-dessus du boss */
@@ -1926,10 +1933,12 @@
     #chronoBossHpBar{width:70px!important;height:5px!important;}
     #chronoLives{gap:1px!important;}
     .chrono-heart{font-size:10px!important;}
-    /* ② Game area : commence JUSTE sous le HUD */
+    /* ② Game area: top 44px + right 136px pour ne pas couvrir le boss */
     #chronoGameArea{top:44px!important;padding:6px 5px 54px!important;
-      justify-content:flex-start!important;gap:4px!important;overflow-y:auto!important;}
-    /* ③ Items pool : compact */
+      justify-content:flex-start!important;gap:4px!important;overflow-y:auto!important;
+      padding-right:140px!important;}
+    /* ③ Items pool : compact — pleine largeur, boss en overlay */
+    #chronoGameArea{padding-right:6px!important;} /* reset right padding, boss z-index handles */
     #chronoItemsPool{gap:5px!important;padding:5px!important;
       min-height:40px!important;margin-bottom:4px!important;}
     .chrono-item{font-size:10px!important;padding:4px 6px!important;
@@ -13642,9 +13651,11 @@ function _showGameArea(){
   var bw=_el('chronoBossWrap');
   if(bw){
     bw.style.transition='opacity .5s,filter .5s';
-    /* Mobile: keep boss slightly visible so player remembers context */
-    bw.style.opacity=isMob?'.22':'.07';
-    bw.style.filter=isMob?'blur(1px)':'blur(3px)';
+    if(isMob){
+      bw.style.opacity='0.55'; bw.style.filter='blur(0)';
+    } else {
+      bw.style.opacity='0.45'; bw.style.filter='blur(1px) brightness(0.7)';
+    }
   }
 }
 
@@ -14324,9 +14335,10 @@ function _spawnFissures(){
   /* Scriptées: plus douces sur desktop */
   /* Desktop: very gentle — max 5 at phase 5, crescendo to impossible at phase 10 */
   /* Desktop: 1-2 early, up to 6 late. Mobile: 2-4 early, up to 10 late */
+  /* Desktop très doux : 1-2 fissures phases 1-4, max 5 phases 7+ */
   var baseScripted=_desk
-    ?[[1,1,2],[2,2,3],[3,4,6]][phaseMul][_difficulty]||1
-    :[[2,3,4],[3,5,7],[5,7,10]][phaseMul][_difficulty]||2;
+    ?Math.min(5, 1+Math.floor(_fissurePhaseCount/3))
+    :Math.min(10, 2+Math.floor(_fissurePhaseCount/2));
   /* Charge: plus douces sur desktop */
   /* Charge phases: gentler on desktop early, hard late */
   var baseCharge=_desk
@@ -14339,15 +14351,15 @@ function _spawnFissures(){
   var mob=_isMobile;
   /* Types: clics réduits pour rendre jouable */
   var TYPES=[
-    {n:'simple',  cl:[1,2,3],sp:[680,520,360], hue:0,  leurre:false,bonus:false,moves:false,sym:'',char:'dino',frames:IMG.FISSURE1},
-    {n:'epaisse', cl:[2,3,4],sp:[760,570,400],hue:270,leurre:false,bonus:false,moves:false,sym:'',char:'bot', frames:IMG.FISSURE2},
-    {n:'instable',cl:[2,3,4],sp:[590,440,300], hue:285,leurre:false,bonus:false,moves:true, sym:'',char:'bot', frames:IMG.FISSURE2},
+    {n:'simple',  cl:[1,1,2],sp:[620,480,340], hue:0,  leurre:false,bonus:false,moves:false,sym:'',char:'dino',frames:IMG.FISSURE1},
+    {n:'epaisse', cl:[1,1,2],sp:[620,480,340],hue:270,leurre:false,bonus:false,moves:false,sym:'',char:'bot', frames:IMG.FISSURE2},
+    {n:'instable',cl:[1,1,2],sp:[620,480,340], hue:285,leurre:false,bonus:false,moves:true, sym:'',char:'bot', frames:IMG.FISSURE2},
     {n:'leurre',  cl:[0,0,0],sp:[540,400,280], hue:135,leurre:true, bonus:false,moves:false,sym:'',char:'dino',frames:IMG.FISSURE1},
-    {n:'doree',   cl:[1,2,3],sp:[700,530,370],hue:30, leurre:false,bonus:true, moves:false,sym:'',char:'dino',frames:IMG.FISSURE1}
-    ,{n:'fissure3',cl:[2,3,4],sp:[620,460,320],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3,char:'revolt'}
-    ,{n:'fissure4',cl:[2,3,5],sp:[580,430,300],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4,char:'soldat'}
-    ,{n:'fissure5',cl:[2,3,5],sp:[530,390,270],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5,char:'knight'}
-    ,{n:'special', cl:[1,2,2],sp:[460,360,260],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true,char:'knight',frames:IMG.FISSURE5}
+    {n:'doree',   cl:[1,1,2],sp:[620,480,340],hue:30, leurre:false,bonus:true, moves:false,sym:'',char:'dino',frames:IMG.FISSURE1}
+    ,{n:'fissure3',cl:[1,1,2],sp:[620,480,340],hue:10,  leurre:false,bonus:false,moves:true, sym:'F3',frames:IMG.FISSURE3,char:'revolt'}
+    ,{n:'fissure4',cl:[1,1,2],sp:[620,480,340],hue:200, leurre:false,bonus:false,moves:true, sym:'F4',frames:IMG.FISSURE4,char:'soldat'}
+    ,{n:'fissure5',cl:[1,1,2],sp:[620,480,340],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5,char:'knight'}
+    ,{n:'special', cl:[1,1,1],sp:[620,480,340],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true,char:'knight',frames:IMG.FISSURE5}
   ];
   /* All fissure types in ALL difficulty pools for variety from phase 1 */
   var pools=[
@@ -14365,8 +14377,13 @@ function _spawnFissures(){
         if(!_running||!_fissurePhaseActive) return;
         var tp=TYPES[pool[Math.floor(Math.random()*pool.length)]];
         var frames=tp.frames||[IMG.FISSURE1,IMG.FISSURE2,IMG.FISSURE3][fi%3]; /* fallback variety */
-        var nc=tp.cl[_difficulty]+(mob?1:0);
-        var sp=tp.sp[_difficulty];
+        /* Difficulté : basée sur le nb de phases, pas le type */
+        var _phaseNC=Math.min(5,1+Math.floor(_fissurePhaseCount/3));
+        var _nc_base=tp.leurre?0:_phaseNC;
+        var nc=_nc_base+(mob?1:0);
+        /* Vitesse d'animation : accélère avec les phases */
+        var _phaseSpMod=Math.max(200,550-_fissurePhaseCount*18);
+        var sp=_desk?Math.max(220,600-_fissurePhaseCount*20):_phaseSpMod;
         var w=window.innerWidth, h=window.innerHeight;
         var sz=mob?(75+Math.random()*18):(92+Math.random()*28);
         var el=document.createElement('div');
@@ -14724,6 +14741,8 @@ function start(){
   _el('chronoFissureMsg').style.display='none';
   _el('chronoGameArea').style.display='none';
 
+  /* Clear feedback from previous run (bug: '4 erreur(s) — jauge +4' persists) */
+  var _fbClear=_el('chronoFeedback'); if(_fbClear){_fbClear.style.display='none';_fbClear.textContent='';}
   _updateHud();
   _updateTimer();
   /* _playMusic démarré au tutoriel, pas pendant la cinématique */
