@@ -5089,6 +5089,11 @@ const setGramMusicVolume=setAllMusicVolume;
 const setBossSfxVolume=setAllSfxVolume;
 function renderInventaire(){
   renderInventaireFor("invKeys");
+  /* Mythic items — called explicitly here to guarantee rendering */
+  try{
+    const mw=document.getElementById("invMythic");
+    if(mw&&typeof renderMythicItems==="function") renderMythicItems(mw);
+  }catch(e){}
   const t=totalStars();
   const el=document.getElementById("starTotalCount");if(el)el.textContent=t;
   const el2=document.getElementById("bigStarTotalCount");if(el2)el2.textContent=t;
@@ -5342,6 +5347,9 @@ function switchTab(tab){
   const el=document.getElementById("tab-"+tab);if(el)el.classList.add("active");
   if(tab==="classement"){_refreshLb("lbWrap");startLbPolling();}else{stopLbPolling();}if(tab==="classement")loadLB();
   if(tab==="inventaire"){renderInventaireFor("invKeys");renderStarBreakdown();}
+  if(tab==="inventaire"){
+    try{renderInventaire();}catch(e){}
+  }
 }
 
 function goScreen(name){
