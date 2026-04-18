@@ -1258,9 +1258,7 @@
   /* Boss sprite container */
 /* Chronoscribe plus grand + position centrale finale */
   
-  @media(max-width:640px){
-    #chronoBossWrap{width:min(160px,36vw);}
-  }
+  
   #chronoBossSprite {
     width:100%;object-fit:contain;
     image-rendering:pixelated;
@@ -1372,12 +1370,7 @@
     padding:12px 16px 16px;overflow-y:auto;gap:10px;
     transform-origin:center top;
   }
-  @media(max-width:640px){
-    #chronoGameArea{justify-content:flex-start;gap:4px;top:44px;padding:6px 6px 52px;overflow-y:auto;}
-    #chronoTimeline{grid-template-columns:repeat(4,1fr);gap:4px;}
-    #chronoItemsPool{padding:6px;gap:5px;margin-bottom:6px;min-height:40px;}
-    .chrono-item{font-size:10px;padding:4px 7px;min-width:70px;max-width:130px;}
-  }
+  
 
   /* Drag items pool */
   /* Pool d'items : plus grand, centré */
@@ -1448,14 +1441,7 @@
     #chronoTimeline{gap:12px;}
     .chrono-zone{min-height:90px;font-size:12px;}
   }
-  @media(max-width:640px){
-    /* Layout mobile : centré, plus pratique */
-    #chronoDialog{bottom:max(160px,22vw);padding:10px 12px;}
-    #chronoTimeline{grid-template-columns:repeat(3,1fr);}
-    #chronoGameArea{padding:8px;}
-    #chronoItemsPool{padding:8px;gap:6px;}
-    .chrono-item{font-size:11px;padding:6px 10px;}
-  }
+  
   /* Zones de dépôt plus grandes et plus lisibles */
   /* Zones plus grandes + plus lisibles */
   .chrono-zone {
@@ -1521,10 +1507,9 @@
     content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
     border:7px solid transparent;border-top-color:rgba(148,163,184,.4);border-bottom:0;
   }
-  @media(max-width:640px){#chronoSpeech{width:min(180px,55vw);font-size:11px;}}
+  }
 
-  @media(max-width:640px){
-    #chronoSpeech{right:2%;bottom:auto;top:54px;max-width:55vw;font-size:11px;}
+  
     #chronoBossWrap{width:min(130px,30vw);}
   }
 
@@ -1629,11 +1614,11 @@
     transition:filter .18s,transform .18s;
   }
   #chronoFuirBtn:hover{filter:drop-shadow(0 2px 12px rgba(239,68,68,.8));transform:scale(1.06);}
-  @media(max-width:640px){#chronoFuirBtn{top:auto;bottom:52px;left:8px;}}
+  }
   #chronoFuirBtn:hover{filter:brightness(1.2);box-shadow:0 4px 18px rgba(239,68,68,.6);}
-  @media(max-width:640px){#chronoFuirBtn{top:auto;bottom:52px;left:8px;font-size:12px;padding:7px 12px;}}
+  }
   #chronoFuirBtn:hover{background:rgba(239,68,68,.3);}
-  @media(max-width:640px){#chronoFuirBtn{top:auto;bottom:10px;left:10px;font-size:12px;padding:6px 12px;}}
+  }
 
   /* Bouton Skip cinématique */
   #chronoSkipBtn {
@@ -1814,8 +1799,7 @@
     border:8px solid transparent;border-top-color:rgba(148,163,184,.45);
     border-bottom:0;
   }
-  @media(max-width:640px){
-    #chronoSpeech{width:min(200px,56vw);font-size:10px;bottom:60px;}
+  
   }
   @media(max-width:640px){
     #chronoHugo{left:12%;}
@@ -1865,13 +1849,101 @@
 
   .chrono-heart-sm{font-size:9px!important;}
 
-  @media(max-width:640px){#boutiqueBg{background-image:url('https://i.postimg.cc/xdvk8YzX/boutique-responsive-bg.png')!important;}}
+  
 
+  
+
+  /* ── Boutique ── */
+  
+  
+  /* Mobile: fripier centered, text above */
+  
+
+  /* ═══ CHRONOSCRIBE MOBILE LAYOUT — propre et sans chevauchement ═══ */
   @media(max-width:640px){
-    #boutiqueOv>[style*='position:absolute'][style*='top:max']{
+    /* HUD: 1 ligne, compact, jamais plus de 44px */
+    #chronoHud{flex-wrap:nowrap!important;max-height:44px;overflow:hidden;}
+    #chronoLives .chrono-heart{font-size:10px!important;}
+    /* Game area: commence APRÈS le HUD */
+    #chronoGameArea{top:44px!important;padding:6px 6px 50px!important;}
+    /* Speech: au-dessus du pool de propositions, pas sur le HUD */
+    #chronoSpeech{top:auto!important;bottom:72px!important;left:50%!important;transform:translateX(-50%)!important;
+      width:min(200px,80vw)!important;font-size:10px!important;}
+    /* Fuir: coin bas gauche hors de la zone de jeu */
+    #chronoFuirBtn{position:absolute!important;bottom:6px!important;left:8px!important;top:auto!important;}
+    #chronoFuirBtn img{height:32px!important;}
+    /* Fissure message: sous le HUD */
+    #chronoFissureMsg{top:48px!important;transform:translateX(-50%)!important;
+      left:50%!important;padding:10px 16px!important;width:88%!important;}
+    /* Items plus compacts */
+    .chrono-item{font-size:10px!important;padding:4px 7px!important;min-width:65px!important;max-width:120px!important;}
+    #chronoItemsPool{gap:5px!important;padding:6px!important;min-height:44px!important;margin-bottom:6px!important;}
+    /* Timeline 4 cols */
+    #chronoTimeline{grid-template-columns:repeat(4,1fr)!important;gap:4px!important;}
+    .chrono-zone{min-height:110px!important;}
+  }
+
+  /* ── Boutique plumes ── */
+  @keyframes plumeFloat{
+    0%,100%{transform:translateY(0) rotate(var(--pr,0deg)) scale(var(--ps,1));}
+    50%{transform:translateY(-20px) rotate(calc(var(--pr,0deg) + 8deg)) scale(calc(var(--ps,1)*1.05));}
+  }
+  .boutique-plume{
+    position:absolute;pointer-events:none;width:var(--pw,60px);
+    animation:plumeFloat var(--pd,5s) ease-in-out infinite var(--pdelay,0s);
+    filter:drop-shadow(0 0 var(--pglow,8px) rgba(96,165,250,var(--pa,.4))) blur(var(--pb,0px));
+    opacity:var(--pop,.85);
+  }
+  /* Boutique mobile */
+  @media(max-width:640px){
+    #boutiqueBg{background-image:url('https://i.postimg.cc/xdvk8YzX/boutique-responsive-bg.png')!important;}
+    #fripierWrap{width:100%!important;top:auto!important;bottom:0!important;height:55%!important;overflow:hidden;}
+    #fripierImg{top:0!important;left:50%!important;transform:translateX(-50%)!important;
+      height:100%!important;width:auto!important;}
+    #boutiqueMsg{left:0!important;right:0!important;top:0!important;bottom:46%!important;
+      padding:16px!important;align-items:center!important;text-align:center!important;
+      justify-content:flex-end!important;}
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     CHRONOSCRIBE MOBILE — LAYOUT UNIQUE ET DÉFINITIF
+     Hiérarchie: HUD(44px) | Dialog | Items | Timeline | Fuir
+     Tous les !important pour écraser les anciens blocs.
+  ═══════════════════════════════════════════════════════ */
+  @media(max-width:640px){
+    /* ① HUD : 1 ligne fixe, jamais plus de 44px */
+    #chronoHud{flex-wrap:nowrap!important;max-height:44px!important;overflow:hidden!important;
+      padding:3px 8px!important;gap:4px!important;}
+    .chrono-pip{width:6px!important;height:6px!important;}
+    #chronoTimer{font-size:11px!important;min-width:34px!important;}
+    #chronoBossHpBar{width:70px!important;height:5px!important;}
+    #chronoLives{gap:1px!important;}
+    .chrono-heart{font-size:10px!important;}
+    /* ② Game area : commence JUSTE sous le HUD */
+    #chronoGameArea{top:44px!important;padding:6px 5px 54px!important;
+      justify-content:flex-start!important;gap:4px!important;overflow-y:auto!important;}
+    /* ③ Items pool : compact */
+    #chronoItemsPool{gap:5px!important;padding:5px!important;
+      min-height:40px!important;margin-bottom:4px!important;}
+    .chrono-item{font-size:10px!important;padding:4px 6px!important;
+      min-width:62px!important;max-width:118px!important;}
+    /* ④ Timeline : 4 colonnes */
+    #chronoTimeline{grid-template-columns:repeat(4,1fr)!important;gap:3px!important;}
+    .chrono-zone{min-height:100px!important;}
+    /* ⑤ Speech : au-dessus des propositions */
+    #chronoSpeech{position:absolute!important;bottom:58px!important;top:auto!important;
       left:50%!important;transform:translateX(-50%)!important;
-      right:auto!important;width:88vw!important;
-    }
+      width:min(200px,82vw)!important;font-size:10px!important;z-index:13!important;}
+    /* ⑥ Fuir : coin bas-gauche fixe, jamais superposé */
+    #chronoFuirBtn{position:absolute!important;bottom:5px!important;
+      left:6px!important;top:auto!important;right:auto!important;}
+    #chronoFuirBtn img{height:30px!important;}
+    /* ⑦ Fissure message : sous le HUD, pas au centre */
+    #chronoFissureMsg{top:48px!important;left:50%!important;
+      transform:translateX(-50%)!important;width:86%!important;
+      padding:10px 14px!important;}
+    /* ⑧ Dialog cinématique */
+    #chronoDialog{bottom:max(140px,20vw)!important;padding:8px 10px!important;}
   }
 </style>
 </head>
@@ -12423,42 +12495,40 @@ window.TeddynounetBoss = (function() {
 
 
 <!-- Boutique overlay -->
-<div id="boutiqueOv" style="display:none;position:fixed;inset:0;z-index:800;">
-  <!-- Desktop BG -->
+<div id="boutiqueOv" style="display:none;position:fixed;inset:0;z-index:800;overflow:hidden;">
+  <!-- Fond desktop / mobile -->
   <div id="boutiqueBg" style="position:absolute;inset:0;background:url('https://i.postimg.cc/7L3ChD2L/background-locked.png') center/cover no-repeat;"></div>
-  <!-- Mobile BG via CSS class -->
-  <div style="position:absolute;inset:0;background:rgba(5,8,20,.45);"></div>
-  <!-- Plumes flottantes -->
-  <div id="boutiquePlumes"></div>
-  <!-- Contenu centré -->
-  <div style="position:absolute;inset:0;display:flex;flex-direction:row;align-items:flex-end;justify-content:flex-start;padding:0;overflow:hidden;">
-    <!-- Fripier (très grand, cadré buste+) -->
-    <img src="https://i.postimg.cc/mZqY1Lnh/fripier-du-savoir-V2.png" alt="Fripier du Savoir"
-      style="height:110vh;max-height:110vh;width:auto;object-fit:cover;object-position:top center;
-      position:relative;z-index:3;
-      margin-left:-2vw;margin-bottom:-5vh;
-      filter:drop-shadow(0 0 50px rgba(96,165,250,.45)) drop-shadow(0 0 120px rgba(96,165,250,.2));"/>
+  <div style="position:absolute;inset:0;background:rgba(3,6,18,.38);"></div>
+  <!-- Plumes (injectées par JS) -->
+  <div id="boutiquePlumes" style="position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;"></div>
+  <!-- Fripier: grande présence gauche, cadrage buste -->
+  <div id="fripierWrap" style="position:absolute;left:0;top:0;bottom:0;width:58%;overflow:hidden;z-index:3;">
+    <img id="fripierImg" src="https://i.postimg.cc/mZqY1Lnh/fripier-du-savoir-V2.png" alt=""
+      style="position:absolute;top:0;left:7%;width:auto;height:165%;
+      filter:drop-shadow(0 0 60px rgba(96,165,250,.55)) drop-shadow(0 0 150px rgba(96,165,250,.25));"/>
   </div>
-  <!-- Message -->
-  <div style="position:absolute;top:max(12px,4vh);right:max(16px,3vw);
-    width:min(420px,44vw);z-index:5;text-align:center;">
-    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(18px,3.5vw,28px);font-weight:900;
-      color:#e2e8f0;letter-spacing:.5px;text-shadow:0 0 20px rgba(96,165,250,.6);margin-bottom:12px;">
-      La Boutique du Fripier
-    </div>
-    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,2vw,17px);
-      color:#cbd5e1;font-style:italic;line-height:1.65;
-      background:rgba(5,8,20,.72);border:1.5px solid rgba(96,165,250,.25);
-      border-radius:16px;padding:16px 20px;
-      text-shadow:0 1px 4px rgba(0,0,0,.8);">
+  <!-- Texte: panel droit, centré verticalement, proche du fripier -->
+  <div id="boutiqueMsg" style="position:absolute;left:52%;right:2%;top:0;bottom:0;
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+    padding:24px 28px 24px 0;z-index:4;">
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,2.5vw,34px);
+      font-weight:900;color:#e2e8f0;letter-spacing:.5px;
+      text-shadow:0 0 28px rgba(96,165,250,.7);margin-bottom:18px;">La Boutique du Fripier</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.3vw,17px);
+      color:#cbd5e1;font-style:italic;line-height:1.75;
+      background:rgba(5,8,20,.80);border:1.5px solid rgba(96,165,250,.3);
+      border-radius:16px;padding:20px 24px;
+      text-shadow:0 1px 4px rgba(0,0,0,.9);max-width:400px;">
       Le Fripier du Savoir range soigneusement ses trésors…<br>
       <strong style="color:#93c5fd;">La boutique n'est pas encore ouverte.</strong><br>
       Revenez bientôt — il vous prépare quelque chose d'extraordinaire.
     </div>
-    <button onclick="closeBoutique()" style="margin-top:16px;padding:10px 28px;border-radius:12px;
-      border:1.5px solid rgba(96,165,250,.4);background:rgba(15,23,42,.85);color:#93c5fd;
-      font-weight:900;font-size:15px;cursor:pointer;transition:background .15s;"
-      onmouseover="this.style.background='rgba(30,58,138,.85)'" onmouseout="this.style.background='rgba(15,23,42,.85)'">
+    <button onclick="closeBoutique()" style="margin-top:22px;padding:11px 30px;
+      border-radius:12px;border:1.5px solid rgba(96,165,250,.45);
+      background:rgba(15,23,42,.88);color:#93c5fd;font-weight:900;font-size:15px;
+      cursor:pointer;transition:background .15s;letter-spacing:.3px;"
+      onmouseover="this.style.background='rgba(30,58,138,.9)'"
+      onmouseout="this.style.background='rgba(15,23,42,.88)'">
       ← Fermer
     </button>
   </div>
@@ -12495,25 +12565,32 @@ function _spawnBoutiquePlumes(){
   var pp=document.getElementById('boutiquePlumes');
   if(!pp)return;
   pp.innerHTML='';
-  var imgs=['https://i.postimg.cc/7L3ChD2T/plume01.png','https://i.postimg.cc/1zGgXPqf/plume02.png','https://i.postimg.cc/q7stq036/plume03.png'];
-  var count=14;
-  for(var i=0;i<count;i++){
+  var imgs=['https://i.postimg.cc/7L3ChD2T/plume01.png',
+            'https://i.postimg.cc/1zGgXPqf/plume02.png',
+            'https://i.postimg.cc/q7stq036/plume03.png'];
+  /* 14 positions: left%, top%, width_px, blur_px, opacity, duration_s, delay_s */
+  var PL=[
+    [4, 8,58,0,.72,5.2,0   ],[71, 4,42,1.5,.52,6.8,.8],
+    [47,62,72,2.2,.42,7.1,1.5],[87,38,36,0,.82,4.9,.3],
+    [14,52,52,3,.38,8.2,2.1],[59,18,46,1,.68,5.8,.6],
+    [29,78,39,2.5,.48,6.4,1.2],[82,68,62,0,.62,7.6,1.8],
+    [19,12,34,3.5,.32,9.1,3],[54,86,45,.5,.58,5.5,.5],
+    [91,10,30,4,.30,8.8,2.5],[38,40,54,.5,.75,6.1,1],
+    [7, 76,44,2.2,.52,7.4,1.4],[66,53,37,3,.42,8.5,2.8]
+  ];
+  PL.forEach(function(pl,i){
     var p=document.createElement('img');
-    p.src=imgs[i%imgs.length];
-    p.className='plume';
-    var pw=30+Math.random()*60; /* 30-90px */
-    var blur=Math.random()>0.5?(Math.random()*3).toFixed(1)+'px':'0px';
-    var op=(0.4+Math.random()*.5).toFixed(2);
-    var dur=(4+Math.random()*5).toFixed(1)+'s';
-    var delay=(Math.random()*4).toFixed(1)+'s';
-    var left=Math.random()*95; var top=Math.random()*80;
-    var scale=(0.7+Math.random()*.6).toFixed(2);
-    p.style.cssText='left:'+left+'%;top:'+top+'%;'+
-      '--pd:'+dur+';--pdelay:'+delay+'s;--ps:'+scale+';--pa:'+(parseFloat(op)*0.4)+';'+
-      '--pb:'+blur+';--pop:'+op+';--pw:'+pw+'px;';
+    p.src=imgs[i%3]; p.className='boutique-plume';
+    var rot=(-18+Math.random()*36).toFixed(1);
+    var sc=(0.85+Math.random()*.3).toFixed(2);
+    p.style.cssText='left:'+pl[0]+'%;top:'+pl[1]+'%;'+
+      '--pw:'+pl[2]+'px;--pb:'+pl[3]+'px;--pop:'+pl[4]+';--pa:'+(pl[4]*.55).toFixed(2)+';'+
+      '--pd:'+pl[5]+'s;--pdelay:'+pl[6]+'s;--ps:'+sc+';--pr:'+rot+'deg;'+
+      '--pglow:'+Math.round(6+pl[4]*14)+'px;';
     pp.appendChild(p);
-  }
+  });
 }
+
 
 window.ChronoscribeGame = (function(){
 'use strict';
@@ -13855,7 +13932,15 @@ function _validateAnswer(){
     results.push({idx:idx,item:item,placedPeriod:placedPeriod,correctPeriod:cp,ok:placedPeriod===cp});
   });
 
-  var fissureTrigger=false;
+  /* Pre-calculate fissureTrigger based on current charge + wrong results */
+  var wrongInBatch=results.filter(function(r){return !r.ok;}).length;
+  var projectedCharge=Math.min(CHARGE_MAX,_charge+wrongInBatch);
+  var fissureTrigger=(projectedCharge>=CHARGE_MAX);
+  /* Apply charge increment now so HUD reflects it */
+  if(wrongInBatch>0){
+    _charge=projectedCharge;
+    _updateHud();
+  }
 
   results.forEach(function(res,i){
     /* Étape jaune avant verdict */
@@ -13908,12 +13993,9 @@ function _validateAnswer(){
           itemEl.style.animation='chronoShakeZone .35s';
           setTimeout(function(){if(itemEl)itemEl.style.animation='';},400);
         }
-        /* +1 charge */
-        _charge=Math.min(CHARGE_MAX,_charge+1);
-        _updateHud();
+        /* Charge visual feedback (already incremented above) */
         var cw=_el('chronoChargeWrap');
         if(cw){cw.style.transition='transform .12s';cw.style.transform='scale(1.18)';setTimeout(function(){cw.style.transform='';},150);}
-        if(_charge>=CHARGE_MAX) fissureTrigger=true;
       }
     }, i*380);
   });
@@ -13934,7 +14016,20 @@ function _validateAnswer(){
     if(fissureTrigger){
       _charge=0; _updateHud();
       _chargeFissureCount++; /* Track charge-triggered phases separately */
-      _T(function(){if(!_running||_gameEnded)return;_triggerFissurePhase(true);},900);
+      /* Use native setTimeout — cannot be cancelled by _clearTimers() */
+      setTimeout(function(){if(!_running||_gameEnded)return;
+        if(_fissurePhaseActive){
+          /* If HP-phase just started, queue charge phase after it */
+          var _retry=setInterval(function(){
+            if(!_fissurePhaseActive&&!_gameEnded){
+              clearInterval(_retry);
+              if(_running) _triggerFissurePhase(true);
+            }
+          },800);
+        } else {
+          _triggerFissurePhase(true);
+        }
+      },900);
     } else {
       _T(function(){if(!_running||_gameEnded)return;_showNextQuestion();},1100);
     }
