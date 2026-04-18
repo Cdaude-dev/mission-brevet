@@ -1211,7 +1211,7 @@
   /* Scene wrapper — zoomé sans affecter le HUD */
   #chronoScene {
     position:absolute;inset:0;
-    transform-origin:center center;
+    transform-origin:top center; /* Zoom down, not up */
     will-change:transform;
   }
   #chronoBg {
@@ -1802,9 +1802,9 @@
   
   }
   @media(max-width:640px){
-    #chronoHugo{left:4%!important;}
-    #chronoRousseau{right:4%!important;left:auto!important;}
-    .chrono-author{width:min(110px,26vw);}
+    #chronoHugo{left:2%!important;bottom:0!important;}
+    #chronoRousseau{right:2%!important;left:auto!important;bottom:0!important;}
+    .chrono-author{width:min(95px,22vw)!important;}
   }
 
   /* Bouton Skip repositionné sans chevauchement */
@@ -1901,7 +1901,7 @@
     #fripierWrap{width:100%!important;top:auto!important;bottom:-8%!important;
       height:72%!important;overflow:hidden!important;}
     #fripierImg{top:0!important;left:50%!important;
-      transform:translateX(-50%)!important;
+      /* No transform here — breathing anim handles translateX(-50%) */
       height:100%!important;width:auto!important;}
     /* Texte: haut de l'écran, padding réduit */
     #boutiqueMsg{left:0!important;right:0!important;top:0!important;bottom:62%!important;
@@ -1951,6 +1951,27 @@
       padding:10px 14px!important;}
     /* ⑧ Dialog cinématique */
     #chronoDialog{bottom:max(140px,20vw)!important;padding:8px 10px!important;}
+  }
+
+  /* ── Fripier du Savoir animations ── */
+  @keyframes fripierBreathe{
+    0%,100%{transform:scale(1) translateY(0);}
+    40%{transform:scale(1.012) translateY(-6px);}
+    70%{transform:scale(1.008) translateY(-3px);}
+  }
+  @keyframes fripierBreatheMob{
+    0%,100%{transform:translateX(-50%) scale(1) translateY(0);}
+    40%{transform:translateX(-50%) scale(1.015) translateY(-5px);}
+  }
+  #fripierImg{
+    animation:fripierBreathe 4.5s ease-in-out infinite;
+    transform-origin:bottom center;
+  }
+  @media(max-width:640px){
+    #fripierImg{
+      animation:fripierBreatheMob 4.5s ease-in-out infinite!important;
+      transform-origin:bottom center;
+    }
   }
 </style>
 </head>
@@ -12521,12 +12542,13 @@ window.TeddynounetBoss = (function() {
   <!-- Plumes (injectées par JS) -->
   <div id="boutiquePlumes" style="position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;"></div>
   <!-- Fripier: grande présence gauche, cadrage buste -->
-  <div id="fripierWrap" style="position:absolute;left:0;top:0;bottom:0;width:60%;overflow:hidden;z-index:3;">
-    <!-- Clip top/bottom but let image be its natural width at this height -->
+  <div id="fripierWrap" style="position:absolute;left:0;top:0;height:100%;width:auto;overflow:visible;z-index:3;">
     <img id="fripierImg" src="https://i.postimg.cc/mZqY1Lnh/fripier-du-savoir-V2.png" alt=""
-      style="position:absolute;top:0;left:50%;transform:translateX(-38%);
-      width:auto;height:160%;
-      filter:drop-shadow(0 0 60px rgba(96,165,250,.55)) drop-shadow(0 0 150px rgba(96,165,250,.25));"/>
+      style="position:absolute;top:0;left:0;
+      width:auto;height:165%;
+      -webkit-mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);
+      mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);
+      filter:drop-shadow(0 0 40px rgba(96,165,250,.5)) drop-shadow(0 2px 80px rgba(96,165,250,.22));"/>
   </div>
   <!-- Texte: panel droit, centré verticalement, proche du fripier -->
   <div id="boutiqueMsg" style="position:absolute;left:52%;right:2%;top:0;bottom:0;
@@ -13587,16 +13609,27 @@ function _showGameArea(){
   var isMob=window.innerWidth<=640;
   var scene=_el('chronoScene');
   if(scene){
-    var zoomLevel=isMob?1.10:1.28;
-    scene.style.transition='none'; scene.style.transform='scale(1)';
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      scene.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
-      scene.style.transform='scale('+zoomLevel+')';
-    });});
+    if(isMob){
+      /* Mobile: NO scene zoom — items would shift under HUD.
+         Instead: scale only the background, not the game area container */
+      scene.style.transition='none'; scene.style.transform='scale(1)';
+    } else {
+      scene.style.transition='none'; scene.style.transform='scale(1)';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        scene.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
+        scene.style.transform='scale(1.28)';
+      });});
+    }
   }
-  /* Zoom bg décor seulement sur desktop */
+  /* Zoom bg décor: mobile gets subtle scale, desktop full zoom */
   var bg=_el('chronoBg');
-  if(bg&&!isMob){
+  if(bg){
+    var bgZoom=isMob?1.08:1.28;
+    bg.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
+    bg.style.transformOrigin='center center';
+    bg.style.transform='scale('+bgZoom+')';
+  }
+  if(false&&!isMob){
     bg.style.transition='transform .65s cubic-bezier(.08,1.05,.28,1)';
     bg.style.transformOrigin='center center';
     bg.style.transform='scale(1.28)';
@@ -13607,7 +13640,12 @@ function _showGameArea(){
     if(bgOv){ bgOv.style.transition='background .5s'; bgOv.style.background='rgba(5,8,20,.55)'; }
   }
   var bw=_el('chronoBossWrap');
-  if(bw){ bw.style.transition='opacity .5s,filter .5s'; bw.style.opacity='.07'; bw.style.filter='blur(3px)'; }
+  if(bw){
+    bw.style.transition='opacity .5s,filter .5s';
+    /* Mobile: keep boss slightly visible so player remembers context */
+    bw.style.opacity=isMob?'.22':'.07';
+    bw.style.filter=isMob?'blur(1px)':'blur(3px)';
+  }
 }
 
 
