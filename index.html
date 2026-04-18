@@ -1317,8 +1317,8 @@
   /* Hugo/Rousseau : centrés-bas, positionnés symétriquement */
   /* Hugo et Rousseau centrés sans overlap */
   /* Hugo et Rousseau plus proches du centre */
-  #chronoHugo{left:36%;}
-  #chronoRousseau{right:36%;left:auto;}
+  #chronoHugo{left:8%;}
+  #chronoRousseau{right:8%;left:auto;}
   /* Animation regard : flip horizontal alternée */
   @keyframes chronoLookAround{
     0%,40%{transform:scaleX(1);}
@@ -1367,7 +1367,7 @@
   #chronoGameArea {
     position:absolute;top:50px;left:0;right:0;bottom:0;z-index:8;
     display:none;flex-direction:column;align-items:center;justify-content:center;
-    padding:12px 16px 16px;overflow-y:auto;gap:10px;
+    padding:8px 16px 20px;overflow-y:auto;gap:10px;
     transform-origin:center top;
   }
   
@@ -1711,7 +1711,7 @@
 
   /* ── Desktop : zones et items plus grands ──── */
   @media(min-width:901px){
-    #chronoGameArea{padding:16px 20px;}
+    #chronoGameArea{padding:4px 20px 16px;justify-content:center;}
     #chronoItemsPool{min-height:90px;padding:14px;gap:12px;}
     .chrono-item{font-size:15px;padding:10px 18px;letter-spacing:.3px;}
     .chrono-zone{min-height:100px;padding:8px 6px;}
@@ -1790,12 +1790,13 @@
   }
   @media(max-width:640px){
     #chronoBossWrap{
-      width:min(130px,30vw)!important;
-      bottom:auto!important;top:44px!important;
-      right:6px!important;left:auto!important;
-      transform:none!important;
-      opacity:1!important;
-      z-index:9!important;
+      width:min(120px,28vw)!important;
+      bottom:48px!important;top:auto!important;
+      left:50%!important;right:auto!important;
+      transform:translateX(-50%)!important;
+      opacity:0.55!important;
+      z-index:6!important;
+      pointer-events:none!important;
     }
   }
 
@@ -1809,9 +1810,9 @@
   
   }
   @media(max-width:640px){
-    #chronoHugo{left:2%!important;bottom:0!important;}
-    #chronoRousseau{right:2%!important;left:auto!important;bottom:0!important;}
-    .chrono-author{width:min(95px,22vw)!important;}
+    #chronoHugo{left:1%!important;bottom:0!important;}
+    #chronoRousseau{right:1%!important;left:auto!important;bottom:0!important;}
+    .chrono-author{width:min(85px,20vw)!important;}
   }
 
   /* Bouton Skip repositionné sans chevauchement */
@@ -2095,6 +2096,9 @@
         </div>
         <div class="mini-note" style="margin-bottom:10px;">🗝 Clés</div>
         <div id="invKeys" style="display:flex;gap:14px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;"></div>
+        <div class="mini-note" style="margin-bottom:8px;margin-top:4px;">⚗️ Objets mythiques des boss</div>
+        <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:10px;font-style:italic;">Chaque boss recèle un objet mythique unique. Parviendras-tu à tous les réunir pour le Fripier du Savoir ?</div>
+        <div id="invMythic" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;"></div>
         <div class="mini-note" style="margin-bottom:8px;">🔮 Orbes mystérieuses</div>
         <div style="font-size:12px;color:#ead7ae;line-height:1.5;text-align:center;margin-bottom:10px;font-style:italic;">Récupère les trois orbes pour invoquer <strong style="color:#facc15;">Daudémoniaque</strong> et restaurer l'équilibre dans la langue française !</div>
         <div style="display:flex;gap:16px;justify-content:center;">
@@ -5114,6 +5118,18 @@ function renderStarBreakdown(){
   }).join("");
 }
 
+const MYTHIC_ITEMS=[{id:"chrono_item",bossKey:"chronoscribe",name:"Chronosablier",img:"https://i.postimg.cc/Cxfp9VtR/Chronoscribe-item.png",aura:"rgba(96,165,250,.7)",dropChance:0.5,animated:false,desc:"Ce chronosablier appartenait au Chronoscribe. Forg\u00e9 dans le temps lui-m\u00eame, il renferme le pouvoir de plier le continuum espace-temps."},
+{id:"memelite_item",bossKey:"memelite",name:"Porte-Cl\u00e9 Chachou",img:"https://i.postimg.cc/P58n0kcP/memelite-item-frame01.png",aura:"rgba(253,186,116,.7)",dropChance:0.333,animated:true,frames:["https://i.postimg.cc/P58n0kcP/memelite-item-frame01.png","https://i.postimg.cc/SxzbHp5j/memelite-item-frame02.png","https://i.postimg.cc/sgZCbR8G/memelite-item-frame03.png","https://i.postimg.cc/T3WvBXSW/memelite-item-frame04.png","https://i.postimg.cc/52FWDMGC/memelite-item-frame05.png"],desc:"Le fameux Porte-Cl\u00e9 Chachou de M\u00e9m\u00e9lit\u00e9. Ses yeux semblent vivants."},
+{id:"orgo_item",bossKey:"orgografe",name:"Baycherel",img:"https://i.postimg.cc/Dwb3RKDG/Orgografe-item.png",aura:"rgba(167,243,208,.6)",dropChance:0.25,animated:false,desc:"Le plus c\u00e9l\u00e8bre dictionnaire de la langue fran\u00e7aise. La Grande Orgografe ne l'a jamais ouvert."},
+{id:"conjugus_item",bossKey:"conjugus",name:"Montre \u00e0 gousset",img:"https://i.postimg.cc/YSDg0ZM9/Conjugus-item.png",aura:"rgba(253,224,71,.7)",dropChance:0.5,animated:false,desc:"L'iconique montre de Conjugus. Elle ne lui sera plus d'aucune utilit\u00e9."},
+{id:"gram_item",bossKey:"grammaria",name:"Sceptre de Grammaria",img:"https://i.postimg.cc/nhQfNt5s/Grammaria-item.png",aura:"rgba(192,132,252,.7)",dropChance:0.5,animated:false,desc:"Le sceptre de Grammaria permettait de modifier la nature de toutes choses."},
+{id:"teddy_item",bossKey:"teddynounet",name:"Peluche Hamburger",img:"https://i.postimg.cc/Z5yzXhg3/Teddynounet-item.png",aura:"rgba(251,146,60,.6)",dropChance:0.25,animated:false,desc:"Peluche mascotte d'OBT, le fast-food pr\u00e9f\u00e9r\u00e9 de Teddynounet."}
+];
+function rollMythicDrop(bossKey){var item=MYTHIC_ITEMS.find(function(i){return i.bossKey===bossKey;});if(!item)return;if(!S.mythicItems)S.mythicItems={};if(S.mythicItems[item.id])return;if(Math.random()<item.dropChance){S.mythicItems[item.id]=true;saveProgress();setTimeout(function(){showMythicDropPopup(item);},900);}}
+function showMythicDropPopup(item){var ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;background:rgba(5,8,20,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .4s;";var box=document.createElement("div");box.style.cssText="background:linear-gradient(160deg,#0a0f1e,#12071a);border:2px solid rgba(217,164,65,.5);border-radius:22px;padding:28px 24px;max-width:360px;width:100%;text-align:center;animation:popIn .4s;";var img=document.createElement("img");img.src=item.img;img.style.cssText="width:80px;height:80px;object-fit:contain;margin:0 auto 12px;display:block;filter:drop-shadow(0 0 16px "+item.aura+");animation:bossIdle 3s ease-in-out infinite;";var t=document.createElement("div");t.style.cssText="font-size:11px;font-weight:900;color:#fbbf24;letter-spacing:2px;margin-bottom:4px;";t.textContent="\u2728 Objet mythique trouv\u00e9 !";var n=document.createElement("div");n.style.cssText="font-size:19px;font-weight:900;color:#e2e8f0;margin-bottom:8px;";n.textContent=item.name;var d=document.createElement("div");d.style.cssText="font-size:12px;color:#94a3b8;font-style:italic;line-height:1.6;margin-bottom:18px;";d.textContent=item.desc;var btn=document.createElement("button");btn.textContent="Magnifique \u2192";btn.style.cssText="padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(180deg,#d97706,#92400e);color:#fff;font-weight:900;font-size:14px;cursor:pointer;";btn.onclick=function(){document.body.removeChild(ov);try{renderInventaire();}catch(e){}};box.appendChild(img);box.appendChild(t);box.appendChild(n);box.appendChild(d);box.appendChild(btn);ov.appendChild(box);document.body.appendChild(ov);}
+function showMythicItemZoom(item){var ov=document.createElement("div");ov.style.cssText="position:fixed;inset:0;background:rgba(5,8,20,.94);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";ov.onclick=function(){document.body.removeChild(ov);};var box=document.createElement("div");box.style.cssText="background:linear-gradient(160deg,#0a0f1e,#12071a);border:2px solid rgba(217,164,65,.4);border-radius:22px;padding:28px 22px;max-width:340px;width:100%;text-align:center;animation:popIn .3s;";box.onclick=function(e){e.stopPropagation();};var img=document.createElement("img");img.src=item.frames?item.frames[0]:item.img;img.style.cssText="width:110px;height:110px;object-fit:contain;margin:0 auto 14px;display:block;filter:drop-shadow(0 0 22px "+item.aura+");animation:bossIdle 3s ease-in-out infinite;";if(item.animated&&item.frames){var _fi=0;setInterval(function(){_fi=(_fi+1)%item.frames.length;img.src=item.frames[_fi];},160);}var n=document.createElement("div");n.style.cssText="font-size:18px;font-weight:900;color:#e2e8f0;margin-bottom:10px;";n.textContent=item.name;var d=document.createElement("div");d.style.cssText="font-size:13px;color:#94a3b8;font-style:italic;line-height:1.7;margin-bottom:18px;";d.textContent=item.desc;var btn=document.createElement("button");btn.textContent="\u2190 Fermer";btn.style.cssText="padding:9px 22px;border-radius:10px;border:1px solid rgba(217,164,65,.3);background:rgba(0,0,0,.4);color:#d4a757;font-weight:700;font-size:13px;cursor:pointer;";btn.onclick=function(){document.body.removeChild(ov);};box.appendChild(img);box.appendChild(n);box.appendChild(d);box.appendChild(btn);ov.appendChild(box);document.body.appendChild(ov);}
+function renderMythicItems(wrap){if(!wrap)return;wrap.innerHTML="";if(!S.mythicItems)S.mythicItems={};MYTHIC_ITEMS.forEach(function(item){var unlocked=!!S.mythicItems[item.id];var btn=document.createElement("div");btn.style.cssText="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:"+(unlocked?"pointer":"default")+";";var img=document.createElement("img");img.src=item.frames?item.frames[0]:item.img;img.style.cssText="width:58px;height:58px;object-fit:contain;"+(unlocked?"filter:drop-shadow(0 0 10px "+item.aura+");":"filter:grayscale(1) brightness(.25);");if(unlocked&&item.animated&&item.frames){var fi=0;setInterval(function(){fi=(fi+1)%item.frames.length;img.src=item.frames[fi];},160);}var lbl=document.createElement("div");lbl.style.cssText="font-size:9px;text-align:center;color:"+(unlocked?"#e2e8f0":"#475569")+";max-width:64px;line-height:1.3;";lbl.textContent=unlocked?item.name:"???";btn.appendChild(img);btn.appendChild(lbl);if(unlocked)btn.onclick=function(i){return function(){showMythicItemZoom(i);};}(item);wrap.appendChild(btn);});}
+
 function renderInventaireFor(containerId){
   const keys=[
     {id:"conj",name:"Clé du Temps",img:"https://i.postimg.cc/rmCC7Djh/cle-conjugaison.png",
@@ -5161,6 +5177,7 @@ function renderInventaireFor(containerId){
     }
     wrap.appendChild(btn);
   });
+  var mw=document.getElementById("invMythic");if(mw)renderMythicItems(mw);
 }
 function toggleReduceMotion(on){
   document.body.style.setProperty("--anim-dur", on?"0s":"1s");
@@ -5660,6 +5677,7 @@ function saveProgress(){
     badges:[...S.badges],
     unlockedSecrets:[...S.unlockedSecrets],
     bossDefeated:S.bossDefeated,
+    mythicItems:S.mythicItems||{},
     bossUnlockShown:S.bossUnlockShown,
     gramBossDefeated:S.gramBossDefeated||false,
     gramBossUnlockShown:S.gramBossUnlockShown||false,
@@ -5694,6 +5712,7 @@ function loadProgress(name){
       S.badges=new Set(d.badges||[]);
       S.unlockedSecrets=new Set(d.unlockedSecrets||[]);
       S.bossDefeated=d.bossDefeated||false;
+      S.mythicItems=d.mythicItems||{};
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
       S.gramBossUnlockShown=d.gramBossUnlockShown||false;
@@ -7220,6 +7239,14 @@ function doLogin(){
       S.conjKeyShown=true;S.gramKeyShown=true;S.litKeyShown=true;
       S.bossUnlockShown=true;S.gramBossUnlockShown=true;
       BADGES_DEF.forEach(b=>S.badges.add(b.id));
+      /* Admin: unlock all mythic items */
+      if(!S.mythicItems)S.mythicItems={};
+      if(typeof MYTHIC_ITEMS!=='undefined')MYTHIC_ITEMS.forEach(function(item){S.mythicItems[item.id]=true;});
+
+      /* Admin: unlock all mythic items */
+      if(!S.mythicItems)S.mythicItems={};
+      if(typeof MYTHIC_ITEMS!=='undefined')MYTHIC_ITEMS.forEach(function(item){S.mythicItems[item.id]=true;});
+
       S.unlockedSecrets=new Set(["botticelli"]);
       updateHUD();updateSeanceBadges();renderBadgesGrid();
       try{renderInventaire();}catch(e){}try{renderInventaireFor("bigInvKeys");}catch(e){}
@@ -7397,6 +7424,10 @@ function _applyCheatCode(){
   allIds.forEach(id=>{S.done[id]=true;S.perfect[id]=true;S.seancePct[id]="100%";});
   S.score=9990;S.bossDefeated=true;S.gramBossDefeated=true;
   BADGES_DEF.forEach(b=>S.badges.add(b.id));
+      /* Admin: unlock all mythic items */
+      if(!S.mythicItems)S.mythicItems={};
+      if(typeof MYTHIC_ITEMS!=='undefined')MYTHIC_ITEMS.forEach(function(item){S.mythicItems[item.id]=true;});
+
   S.unlockedSecrets=new Set(["botticelli"]);
   updateHUD();updateSeanceBadges();renderBadgesGrid();
   toast("🔓 MODE DÉBLOCAGE TOTAL — Bienvenue, Professeur !");
@@ -8060,6 +8091,7 @@ function bossDefeat(reason){
   ov.style.display="flex";
 }
 function bossVictory(){
+  rollMythicDrop("conjugus");
   awardBossXP("conjugus");
   clearInterval(bossState.timerInt);
   const bm=document.getElementById("bossMusicAudio");if(bm)bm.pause();
@@ -8728,6 +8760,7 @@ function gramBossDefeat(){
 }
 
 function gramBossVictory(){
+  rollMythicDrop("grammaria");
   awardBossXP("grammaria");
   clearInterval(gramBossState.timerInt);
   const gm=document.getElementById("gramMusicAudio");if(gm)gm.pause();
@@ -9926,6 +9959,10 @@ const UPD_SLIDES=[
    aura:"rgba(96,165,250,.6)",
    title:"📊 Refonte de la progression",
    text:"Les paliers d'XP ont été rééquilibrés. Niveau max : <strong style='color:#86efac;'>100</strong>. La progression est plus fluide sur l'ensemble du jeu."},
+,
+  /* v6 */
+  {img:"https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png",aura:"rgba(251,191,36,.7)",title:"\u26a1 Boss Chronoscribe",text:"Un nouveau boss fait son apparition en <strong style='color:#facc15;'>Litt\u00e9rature</strong>. Le Chronoscribe, gardien du temps, d\u00e9fie ceux qui osent s'aventurer dans le continuum litt\u00e9raire. Accessible \u00e0 partir de <strong style='color:#86efac;'>10 \u00e9toiles en Litt\u00e9rature et Conjugaison</strong>."},
+  {img:"https://i.postimg.cc/Cxfp9VtR/Chronoscribe-item.png",aura:"rgba(217,164,65,.7)",title:"\u2697\ufe0f Objets mythiques",text:"Chaque boss peut d\u00e9sormais faire tomber un <strong style='color:#facc15;'>Objet mythique unique</strong> apr\u00e8s sa d\u00e9faite. Ces artefacts rares auront leur utilit\u00e9 aupr\u00e8s du <strong style='color:#93c5fd;'>Fripier du Savoir</strong> dans une future mise \u00e0 jour. Pars \u00e0 leur recherche !"}
 ];
 let _updSlideIdx=0;
 
@@ -9968,6 +10005,28 @@ function showActualites(){
       <button onclick="this.closest('.mb-popup-ov').remove()" style="background:none;border:none;color:#ead7ae;font-size:20px;cursor:pointer;">✕</button>
     </div>
     <!-- Du plus récent (haut) au plus ancien (bas) -->
+    <div style="margin-bottom:20px;border-left:3px solid #facc15;padding-left:14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026 — Mise à jour</div>
+      <div style="font-size:15px;font-weight:900;color:#facc15;margin-bottom:8px;">⚡ Chronoscribe — Boss de Littérature</div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">
+        <img src="https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png" style="width:52px;filter:drop-shadow(0 0 10px rgba(251,191,36,.7));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+          Le gardien du temps fait son entrée dans la partie <strong style="color:#facc15;">Littérature</strong>. Affrontez le Chronoscribe et rétablissez l'ordre chronologique avant que le continuum ne s'effondre.<br>
+          <span style="font-size:11px;opacity:.7;">Requis : 10 ⭐ en Littérature + 10 ⭐ en Conjugaison</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:20px;border-left:3px solid #d4a757;padding-left:14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026 — Mise à jour</div>
+      <div style="font-size:15px;font-weight:900;color:#d4a757;margin-bottom:8px;">⚗️ Objets mythiques des boss</div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <img src="https://i.postimg.cc/Cxfp9VtR/Chronoscribe-item.png" style="width:46px;filter:drop-shadow(0 0 10px rgba(217,164,65,.7));animation:bossIdle 3s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+          Chaque boss peut désormais faire tomber un <strong style="color:#facc15;">Objet mythique unique</strong>. Ces artefacts rares seront indispensables pour le <strong style="color:#93c5fd;">Fripier du Savoir</strong> dans une prochaine mise à jour.<br>
+          <span style="font-size:11px;opacity:.7;">Consultez votre inventaire pour les découvrir.</span>
+        </div>
+      </div>
+    </div>
     <div style="margin-bottom:20px;border-left:3px solid #fb923c;padding-left:14px;">
       <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026</div>
       <div style="font-size:15px;font-weight:900;color:#fb923c;margin-bottom:8px;">🍔 Teddynounet — Nouveau mini-boss</div>
@@ -10303,7 +10362,7 @@ function maybeSIAMUnlock(){
 }
 
 function maybeShowUpdateMsg(){
-  if(localStorage.getItem('mb_update_seen_v5'))return;
+  if(localStorage.getItem('mb_update_seen_v6'))return;
   if(!S.name)return; // not logged in yet
   clearTimeout(window._updateMsgTimer);
   window._updateMsgTimer=setTimeout(()=>{
@@ -13100,8 +13159,8 @@ function _bossEntryAnim(cb){
     wrap.style.transform='rotate(-10deg) scale(.45)';
     wrap.style.opacity='0'; wrap.style.position='absolute';
     var hugo=_el('chronoHugo'), rous=_el('chronoRousseau');
-    if(hugo){ hugo.classList.remove('looking'); hugo.style.transition='transform 1s ease-out'; hugo.style.transform='translateX(-22vw)'; }
-    if(rous){ rous.classList.remove('looking'); rous.style.transition='transform 1s ease-out'; rous.style.transform='translateX(22vw) scaleX(-1)'; }
+    if(hugo){ hugo.classList.remove('looking'); hugo.style.transition='transform 1s ease-out'; hugo.style.transform='translateX(-12vw)'; }
+    if(rous){ rous.classList.remove('looking'); rous.style.transition='transform 1s ease-out'; rous.style.transform='translateX(12vw) scaleX(-1)'; }
     requestAnimationFrame(function(){requestAnimationFrame(function(){ wrap.classList.add('entering'); });});
   }
   _T(function(){ _setBossSprite(IMG.BOSS_FALL); }, 680);
@@ -14604,6 +14663,7 @@ function _gameVictory(){
   _bossSpeech('Impossible\u2026 Le flux\u2026 se stabilise\u2026 Tu as\u2026 restaur\u00e9 l\u2019ordre\u2026',4000);
   /* Badges Chronoscribe */
   /* XP: 1400 points, une seule fois */
+  try{if(typeof rollMythicDrop==="function")rollMythicDrop("chronoscribe");}catch(e){}
   try{
     if(typeof awardBossXP==='function') awardBossXP('chronoscribe');
     else if(typeof S!=='undefined'&&!S.bossXPAwarded?.chronoscribe){
@@ -14865,6 +14925,10 @@ return { start:start, stop:stop, flee:flee, skipCinematic:skipCinematic, exposeV
 function openChronoscribe(){
   var isAdmin=(typeof S!=='undefined')&&
     (S.name===ADMIN_CODE||S.name==='Professeur Daud\u00e9'||S.name==='Daude96');
+  var _litM=['s1','s2','s3','s4','s5','s6','sf','p1','p2','p3','p4','p5','p6','p7','p8','p9'];
+  var _conjM=['c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14'];
+  var _cS=function(m){return m.reduce(function(a,id){try{return a+(typeof computeModStars==='function'?computeModStars(id):0);}catch(e){return a;}},0);};
+  var _canAccess=isAdmin||(_cS(_litM)>=10&&_cS(_conjM)>=10);
   var ov=document.createElement('div');
   ov.id='chronoPreCombat';
   ov.style.cssText='position:fixed;inset:0;background:rgba(5,8,20,.92);z-index:950;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;';
@@ -14905,13 +14969,13 @@ function openChronoscribe(){
   cBtn.style.cssText='padding:0;border:none;background:transparent;cursor:pointer;transition:filter .18s;';
   cBtn.onmouseover=function(){this.style.filter='brightness(1.12) drop-shadow(0 2px 8px rgba(239,68,68,.6))';};cBtn.onmouseout=function(){this.style.filter='';};    
   cBtn.onclick=function(){
-    if(isAdmin){ _cleanup(); ChronoscribeGame.start(); }
+    if(_canAccess){ _cleanup(); ChronoscribeGame.start(); }
     else {
       var existMsg=document.getElementById('chrono-access-msg');
       if(existMsg)return;
       var msgEl=document.createElement('div'); msgEl.id='chrono-access-msg';
       msgEl.style.cssText='font-size:13px;color:#fca5a5;text-align:center;margin-top:12px;font-style:italic;animation:fadeIn .4s;line-height:1.6;';
-      msgEl.innerHTML='\u23f3 <strong style="color:#f87171;">Le continuum temporel est encore instable\u2026</strong><br>Le Chronoscribe pr\u00e9pare son offensive. Ce niveau sera bient\u00f4t accessible.';
+      msgEl.innerHTML='\u23f3 <strong style="color:#f87171;">Le continuum temporel est encore instable\u2026</strong><br>Il te faut <strong>10 \u00e9toiles en Litt\u00e9rature</strong> et <strong>10 \u00e9toiles en Conjugaison</strong>.';
       cBtn.parentNode.appendChild(msgEl);
     }
   };
