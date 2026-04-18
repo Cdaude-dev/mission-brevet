@@ -1802,9 +1802,9 @@
   
   }
   @media(max-width:640px){
-    #chronoHugo{left:12%;}
-    #chronoRousseau{right:12%;}
-    .chrono-author{width:min(100px,24vw);}
+    #chronoHugo{left:4%!important;}
+    #chronoRousseau{right:4%!important;left:auto!important;}
+    .chrono-author{width:min(110px,26vw);}
   }
 
   /* Bouton Skip repositionné sans chevauchement */
@@ -1897,12 +1897,19 @@
   /* Boutique mobile */
   @media(max-width:640px){
     #boutiqueBg{background-image:url('https://i.postimg.cc/xdvk8YzX/boutique-responsive-bg.png')!important;}
-    #fripierWrap{width:100%!important;top:auto!important;bottom:0!important;height:55%!important;overflow:hidden;}
-    #fripierImg{top:0!important;left:50%!important;transform:translateX(-50%)!important;
+    /* Fripier mobile: large, bas de l'écran, cadrage buste (haut visible) */
+    #fripierWrap{width:100%!important;top:auto!important;bottom:-8%!important;
+      height:72%!important;overflow:hidden!important;}
+    #fripierImg{top:0!important;left:50%!important;
+      transform:translateX(-50%)!important;
       height:100%!important;width:auto!important;}
-    #boutiqueMsg{left:0!important;right:0!important;top:0!important;bottom:46%!important;
-      padding:16px!important;align-items:center!important;text-align:center!important;
-      justify-content:flex-end!important;}
+    /* Texte: haut de l'écran, padding réduit */
+    #boutiqueMsg{left:0!important;right:0!important;top:0!important;bottom:62%!important;
+      padding:12px 14px 8px!important;align-items:center!important;
+      text-align:center!important;justify-content:center!important;}
+    #boutiqueMsg>div:first-child{font-size:clamp(17px,5vw,22px)!important;margin-bottom:8px!important;}
+    #boutiqueMsg>div:nth-child(2){font-size:clamp(11px,3.5vw,14px)!important;padding:12px 14px!important;}
+    #boutiqueMsg button{margin-top:10px!important;padding:8px 20px!important;font-size:13px!important;}
   }
 
   /* ═══════════════════════════════════════════════════════
@@ -5576,8 +5583,20 @@ function saveToLB(){
     localLB[S.name]={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||""};
     localStorage.setItem("mb_lb",JSON.stringify(localLB));
   }catch(e){}
-  // Save to Supabase (progression complète)
+  // Save to Supabase — leaderboard + auth metadata for reconnect
   const _adminNames=["Professeur Daudé","Daude96","Daudé96"];
+  /* Sync score/progress via Supabase Auth metadata (persists across devices) */
+  if(typeof window._supa!=="undefined"&&!_adminNames.includes(S.name)){
+    try{
+      var _gd={score:S.score||0,done:S.done||{},perfect:S.perfect||{},
+        seancePct:S.seancePct||{},badges:[...(S.badges||[])],
+        bossDefeated:S.bossDefeated||false,bossXPAwarded:S.bossXPAwarded||{},
+        seancePts:S.seancePts||{},gramBossDefeated:S.gramBossDefeated||false,
+        orgBossDefeated:S.orgBossDefeated||false,memeliteDefeated:S.memeliteDefeated||false,
+        avatar:S.avatar,desc:S.desc,name:S.name};
+      window._supa.auth.updateUser({data:{gameData:_gd,pseudo:S.name,score:S.score||0}}).catch(function(){});
+    }catch(_e){}
+  }
   if(SUPABASE_URL!=="VOTRE_URL_SUPABASE"&&!_adminNames.includes(S.name)){
     try{
       const payload = exportPlayerState();
@@ -12502,9 +12521,11 @@ window.TeddynounetBoss = (function() {
   <!-- Plumes (injectées par JS) -->
   <div id="boutiquePlumes" style="position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;"></div>
   <!-- Fripier: grande présence gauche, cadrage buste -->
-  <div id="fripierWrap" style="position:absolute;left:0;top:0;bottom:0;width:58%;overflow:hidden;z-index:3;">
+  <div id="fripierWrap" style="position:absolute;left:0;top:0;bottom:0;width:60%;overflow:hidden;z-index:3;">
+    <!-- Clip top/bottom but let image be its natural width at this height -->
     <img id="fripierImg" src="https://i.postimg.cc/mZqY1Lnh/fripier-du-savoir-V2.png" alt=""
-      style="position:absolute;top:0;left:7%;width:auto;height:165%;
+      style="position:absolute;top:0;left:50%;transform:translateX(-38%);
+      width:auto;height:160%;
       filter:drop-shadow(0 0 60px rgba(96,165,250,.55)) drop-shadow(0 0 150px rgba(96,165,250,.25));"/>
   </div>
   <!-- Texte: panel droit, centré verticalement, proche du fripier -->
@@ -13140,7 +13161,7 @@ function _startParticles(){
     if(!_running) return;
     var cr=Math.min(1,_charge/CHARGE_MAX);
     if(Math.random()>0.2+cr*0.8) return;
-    var count=1+Math.floor(cr*3);
+    var count=1+Math.floor(cr*2); /* max 3 */
     for(var pi=0;pi<count;pi++){
       var p=document.createElement('div');
       p.className='chrono-particle';
@@ -13157,7 +13178,7 @@ function _startParticles(){
     }
     /* Écran tremble à partir de charge 3/4 */
     if(cr>=0.75&&Math.random()>0.92) _shakeScreen(40+Math.floor(cr*60));
-  },70);
+  },120);
   /* Traînées lumineuses diagonales */
   _lightStreakInterval=setInterval(function(){
     if(!_running) return;
@@ -13176,7 +13197,7 @@ function _startParticles(){
     ov.appendChild(streak);
     setTimeout(function(){ streak.style.opacity='1'; streak.style.top='120%'; },20);
     setTimeout(function(){ if(streak.parentNode) streak.parentNode.removeChild(streak); },1400);
-  },400);
+  },700);
 }
 function _stopParticles(){
   clearInterval(_particleInterval); _particleInterval=null;
@@ -14185,7 +14206,7 @@ function _spawnFissureCharacterAt(typeN, rect){
   var fiv3=setInterval(function(){
     if(!_running){clearInterval(fiv3);if(el2.parentNode)el2.parentNode.removeChild(el2);return;}
     fi3=(fi3+1)%totF3; img2.src=frames[fi3];
-  },110);
+  },150);
   /* Fall to floor */
   var floorY=scR.height-charSz-15;
   setTimeout(function(){
@@ -14256,21 +14277,25 @@ function _spawnFissures(){
   area.style.display='block'; area.innerHTML=''; _fissures=[]; _fissureClicks={};
   /* Courbe agressive: phases scriptées vs charge */
   var _isCharge=!!_chargeFissureCount&&_charge===0; /* reset after charge trigger */
-  var phaseMul=Math.min(2,Math.floor((_fissurePhaseCount-1)/2));
+  /* Desktop: gentler progression. phaseMul reaches 2 at phase 7+ */
+  var phaseMul=_desk
+    ?Math.min(2,Math.floor((_fissurePhaseCount-1)/3))
+    :Math.min(2,Math.floor((_fissurePhaseCount-1)/2));
   var chargeMul=Math.min(3,Math.floor((_chargeFissureCount-1)/2.5|0));
   var _desk=!_isMobile;
   /* Scriptées: plus douces sur desktop */
   /* Desktop: very gentle — max 5 at phase 5, crescendo to impossible at phase 10 */
+  /* Desktop: 1-2 early, up to 6 late. Mobile: 2-4 early, up to 10 late */
   var baseScripted=_desk
-    ?[[1,2,3],[2,3,4],[3,5,7]][phaseMul][_difficulty]||1
-    :[[2,3,5],[3,5,8],[5,8,12]][phaseMul][_difficulty]||2;
+    ?[[1,1,2],[2,2,3],[3,4,6]][phaseMul][_difficulty]||1
+    :[[2,3,4],[3,5,7],[5,7,10]][phaseMul][_difficulty]||2;
   /* Charge: plus douces sur desktop */
   /* Charge phases: gentler on desktop early, hard late */
   var baseCharge=_desk
     ?[[2,3,4],[3,4,6],[5,7,9]][chargeMul][_difficulty]||2
     :[[3,5,7],[5,7,10],[7,10,14]][chargeMul][_difficulty]||3;
   var baseCount=_isCharge?baseCharge:baseScripted;
-  var ramp=_desk?0.6:0.9;
+  var ramp=_desk?0.45:0.75; /* Even gentler desktop ramp */
   var cap=_desk?8:12;
   var count=Math.min(cap,baseCount+Math.floor((_fissurePhaseCount-1)*ramp|0));
   var mob=_isMobile;
@@ -14286,7 +14311,12 @@ function _spawnFissures(){
     ,{n:'fissure5',cl:[2,3,5],sp:[530,390,270],hue:45,  leurre:false,bonus:false,moves:true, sym:'F5',frames:IMG.FISSURE5,char:'knight'}
     ,{n:'special', cl:[1,2,2],sp:[460,360,260],hue:180,leurre:false,bonus:false,moves:true,sym:'✨',special:true,char:'knight',frames:IMG.FISSURE5}
   ];
-  var pools=[[0,0,1,2,3],[0,1,2,3,4,5,6],[0,1,2,3,4,5,6,7,8]]; /* 5=fissure3 6=fissure4 7=fissure5 8=special */ /* NOTE: special type (idx 5) injected when count>5 */
+  /* All fissure types in ALL difficulty pools for variety from phase 1 */
+  var pools=[
+    [0,1,3,5,6,7],          /* diff 0: simple/bot/leurre/fissure3/4/5 — no instable */
+    [0,1,2,3,4,5,6,7],      /* diff 1: all except special */
+    [0,1,2,3,4,5,6,7,8]     /* diff 2: all including special */
+  ]; /* 5=fissure3 6=fissure4 7=fissure5 8=special */ /* NOTE: special type (idx 5) injected when count>5 */
   var pool=pools[_difficulty]||pools[0];
   _closedFissures=0;
   for(var i=0;i<count;i++){
