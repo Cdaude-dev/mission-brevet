@@ -373,7 +373,7 @@
       width:100%;max-width:360px;margin:8px auto 0;
       box-shadow:0 -4px 20px rgba(0,0,0,.5);
     }
-    @media(max-width:640px){#nextBtn{min-height:52px;font-size:16px;font-weight:900;border-radius:16px;}}
+    @media(max-width:640px){#nextBtn{min-height:58px!important;font-size:17px!important;font-weight:900!important;border-radius:18px!important;padding:14px 20px!important;position:sticky!important;bottom:8px!important;z-index:95!important;width:calc(100% - 16px)!important;margin:8px auto!important;display:block!important;}}
     /* Content blocks inside quiz get constrained width */
     .quiz-card .banner-large,.quiz-card .q-label,.quiz-card .quiz-prog-bar,
     .quiz-card .quiz-counter,.quiz-card .hint-banner,.quiz-card .question-box,
@@ -2004,7 +2004,7 @@
   /* Fripier scene */
   #shopScene{
     position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-    width:clamp(240px,40vw,520px);z-index:3;pointer-events:none;
+    width:clamp(300px,48vw,620px);z-index:3;pointer-events:none;
     display:flex;flex-direction:column;align-items:center;
   }
   #shopFripierImg{
@@ -2015,7 +2015,7 @@
   }
   #shopComptoirImg{
     position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-    width:clamp(260px,44vw,560px);z-index:4;pointer-events:none;
+    width:clamp(340px,58vw,720px);z-index:4;pointer-events:none;
   }
   /* Top bar */
   #shopTopBar{
@@ -2058,10 +2058,10 @@
   /* ── Cinématique ── */
   #fripierCinOv{
     display:none;position:fixed;inset:0;z-index:910;
-    background:rgba(5,8,20,.9);
-    flex-direction:column;align-items:center;justify-content:center;padding:20px;
+    background:rgba(5,8,20,.75);
+    flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:40px;
   }
-  #fripierCinImgWrap{
+  ripierCinImgWrap{
     position:relative;width:min(280px,60vw);margin-bottom:20px;
   }
   #fripierCinImg{width:100%;object-fit:contain;filter:drop-shadow(0 0 30px rgba(96,165,250,.4));animation:fripierShopBreath 4.5s ease-in-out infinite;transform-origin:bottom center;}
@@ -2088,14 +2088,18 @@
     #shopBg{background-image:url('https://i.postimg.cc/mrXGQT67/BG-fripier-telephone.png')!important;}
     #shopItemsContainer{
       width:100%!important;top:auto!important;bottom:0;right:0;
-      height:58%!important;border-left:none!important;
-      border-top:1px solid rgba(217,164,65,.2);
+      height:52%!important;max-height:52vh!important;border-left:none!important;
+      border-top:1px solid rgba(217,164,65,.25);border-radius:18px 18px 0 0;
     }
-    #shopScene{width:clamp(160px,55vw,260px)!important;}
-    #shopComptoirImg{width:clamp(180px,65vw,300px)!important;}
-    #shopTopBar{padding:8px 12px!important;}
-    #shopTitle{font-size:13px!important;}
-    .shop-card{width:clamp(76px,26vw,110px)!important;}
+    #shopScene{
+      width:clamp(120px,42vw,200px)!important;
+      bottom:52%!important;
+    }
+    #shopComptoirImg{width:clamp(140px,55vw,240px)!important;}
+    #shopTopBar{padding:6px 10px!important;}
+    #shopTitle{font-size:12px!important;}
+    .shop-card{width:clamp(72px,22vw,100px)!important;}
+    #shopBg,#shopTint{height:100%!important;}
   }
 
   /* ── Aura joueur ── */
@@ -2103,19 +2107,30 @@
     0%{transform:translate(0,0) scale(1);opacity:.8;}
     100%{transform:translate(var(--px,0px),var(--py,-28px)) scale(0);opacity:0;}
   }
+  /* Aura joueur propre */
   .player-aura-wrap{position:relative;display:inline-block;}
+  /* Image avatar: nette, sans flou, uniquement box-shadow autour */
+  .player-aura-wrap>img{
+    border-radius:50%;
+    box-shadow:0 0 0 3px rgba(96,165,250,.6),0 0 0 6px rgba(96,165,250,.25),0 0 20px 8px rgba(96,165,250,.2);
+    /* PAS de filter ni de animation directement sur l'image */
+  }
+  /* Halo animé via ::before — jamais sur l'image elle-même */
   .player-aura-wrap::before{
-    content:'';position:absolute;inset:-10px;border-radius:50%;
-    background:radial-gradient(circle,rgba(96,165,250,0) 30%,rgba(96,165,250,.38) 60%,rgba(96,165,250,0) 80%);
-    animation:auraGlow 1.8s ease-in-out infinite alternate;
-    pointer-events:none;z-index:0;
+    content:'';
+    position:absolute;inset:-8px;border-radius:50%;
+    box-shadow:0 0 18px 6px rgba(96,165,250,.35),0 0 36px 14px rgba(96,165,250,.15);
+    animation:auraGlow 2s ease-in-out infinite alternate;
+    pointer-events:none;z-index:-1;
   }
-  .player-aura-wrap::after{
-    content:'';position:absolute;inset:-14px;border-radius:50%;
-    box-shadow:0 0 20px 7px rgba(96,165,250,.38),0 0 40px 16px rgba(96,165,250,.15);
-    animation:auraGlow 2.5s ease-in-out infinite alternate-reverse;
-    pointer-events:none;z-index:0;
-  }
+  @keyframes auraParticleRise{0%{transform:translate(0,0) scale(1);opacity:.8;}100%{transform:translate(var(--px,0px),var(--py,-28px)) scale(0);opacity:0;}}
+
+
+
+  .lb-player-aura-name{color:#67e8f9!important;text-shadow:0 0 8px rgba(96,165,250,.4);}
+
+  .lb-player-aura-name{color:#67e8f9!important;text-shadow:0 0 6px rgba(96,165,250,.4);}
+  .lb-entry-av-aura>img{box-shadow:0 0 0 2px rgba(96,165,250,.6),0 0 12px 4px rgba(96,165,250,.22);border-radius:50%;}
 </style>
 </head>
 <body>
@@ -2236,13 +2251,8 @@
         <div class="mini-note" style="margin-bottom:6px;margin-top:4px;">🎒 Boutique du Fripier</div>
         <div id="invFripier" style="margin-bottom:12px;"></div>
         <div class="mini-note" style="margin-bottom:8px;">🔮 Orbes mystérieuses</div>
-        <div style="font-size:12px;color:#ead7ae;line-height:1.5;text-align:center;margin-bottom:10px;font-style:italic;">Récupère les trois orbes pour invoquer <strong style="color:#facc15;">Daudémoniaque</strong> et restaurer l'équilibre dans la langue française !</div>
-        <div style="display:flex;gap:16px;justify-content:center;">
-          <div style="width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.15);box-shadow:0 0 12px rgba(0,0,0,.5);"></div>
-          <div style="width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.15);box-shadow:0 0 12px rgba(0,0,0,.5);"></div>
-          <div style="width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.15);box-shadow:0 0 12px rgba(0,0,0,.5);"></div>
-        </div>
-        <div style="font-size:11px;color:rgba(234,215,174,.5);text-align:center;margin-top:8px;font-style:italic;">Prochainement...</div>
+        <div style="font-size:12px;color:#ead7ae;line-height:1.5;text-align:center;margin-bottom:10px;font-style:italic;">Récupère les cinq orbes pour invoquer <strong style="color:#facc15;">Daudémoniaque</strong> et restaurer l'équilibre dans la langue française !</div>
+        <div id="orbsDisplay" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:4px 0;"></div>
       </div>
     </div>
   </div>
@@ -2403,12 +2413,8 @@
             <div class="mini-note" style="margin-bottom:8px;margin-top:4px;">🎒 Boutique du Fripier</div>
             <div id="bigInvFripier" style="margin-bottom:12px;"></div>
             <div class="mini-note" style="margin-bottom:12px;">🔮 Orbes mystérieuses</div>
-            <div style="font-size:14px;color:#ead7ae;line-height:1.6;text-align:center;margin-bottom:16px;font-style:italic;">Récupère les trois orbes pour invoquer <strong style="color:#facc15;">Daudémoniaque</strong> et restaurer l'équilibre dans la langue française !</div>
-            <div style="display:flex;gap:20px;justify-content:center;">
-              <div style="width:68px;height:68px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.12);box-shadow:0 0 16px rgba(0,0,0,.6);"></div>
-              <div style="width:68px;height:68px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.12);box-shadow:0 0 16px rgba(0,0,0,.6);"></div>
-              <div style="width:68px;height:68px;border-radius:50%;background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.12);box-shadow:0 0 16px rgba(0,0,0,.6);"></div>
-            </div>
+            <div style="font-size:14px;color:#ead7ae;line-height:1.6;text-align:center;margin-bottom:16px;font-style:italic;">Récupère les cinq orbes pour invoquer <strong style="color:#facc15;">Daudémoniaque</strong> et restaurer l'équilibre dans la langue française !</div>
+            <div id="bigOrbsDisplay" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:4px 0;"></div>
             <div style="font-size:12px;color:rgba(234,215,174,.4);text-align:center;margin-top:10px;font-style:italic;">Prochainement...</div>
           </div>
         </div>
@@ -2425,8 +2431,8 @@
     <!-- Fripier + comptoir (clickable to open voice) -->
     <div id="shopScene">
       <img id="shopFripierImg"
-        src="https://i.postimg.cc/jjgrzRkP/fripier-du-savoir-V2.png" alt="Fripier du Savoir"
-        onclick="_playShopOpenVoice()" title="Le Fripier du Savoir"/>
+        src="https://i.postimg.cc/L89fFzFv/fripier-du-savoir-V2.png" alt="Fripier du Savoir"
+        onclick="_fripierClick()" title="Le Fripier du Savoir"/>
       <img id="shopComptoirImg"
         src="https://i.postimg.cc/6QjNdB12/fripier-meuble.png" alt=""/>
     </div>
@@ -2437,7 +2443,7 @@
         <span id="shopStarCount">0</span> étoiles disponibles
       </div>
       <div id="shopTitle">Boutique du Fripier</div>
-      <button id="shopCloseBtn" onclick="closeFripierShop()">✕ Fermer</button>
+      <div style="display:flex;gap:8px;"><button id="shopPanelCloseBtn" onclick="document.getElementById('shopItemsContainer').style.display='none';" style="background:none;border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#ead7ae;font-size:13px;cursor:pointer;padding:4px 10px;">✕ Masquer</button><button id="shopCloseBtn" onclick="closeFripierShop()" style="background:none;border:1px solid rgba(239,68,68,.4);border-radius:8px;color:#fca5a5;font-size:13px;cursor:pointer;padding:4px 10px;">↩ Quitter</button></div>
     </div>
     <!-- Items panel (right on desktop, bottom on mobile) -->
     <div id="shopItemsContainer">
@@ -2447,11 +2453,7 @@
 
   <!-- CINÉMATIQUE FRIPIER -->
   <div id="fripierCinOv" style="display:none;position:fixed;inset:0;z-index:910;background:rgba(5,8,20,.9);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
-    <div id="fripierCinImgWrap">
-      <img id="fripierCinImg"
-        src="https://i.postimg.cc/jjgrzRkP/fripier-du-savoir-V2.png" alt="Fripier"
-        style="width:100%;object-fit:contain;filter:drop-shadow(0 0 30px rgba(96,165,250,.4));animation:fripierShopBreath 4.5s ease-in-out infinite;transform-origin:bottom center;"/>
-    </div>
+    <!-- Fripier dans décor -->
     <div id="fripierCinBox">
       <div id="fripierCinText"></div>
       <div id="fripierCinDots"></div>
@@ -3359,6 +3361,14 @@ bossStyle.textContent=`
   .flyAsteroid{position:absolute;pointer-events:none;}
   @keyframes asteroidFly1{0%{top:-80px;right:-100px;transform:rotate(0deg);}100%{top:120vh;right:120vw;transform:rotate(720deg);}}
   @keyframes asteroidFly2{0%{top:-60px;right:-80px;transform:rotate(20deg);}100%{top:110vh;right:120vw;transform:rotate(740deg);}}
+  @keyframes bossHitBlink{0%,100%{filter:none;opacity:1;}30%,70%{filter:brightness(3) sepia(1) hue-rotate(-40deg) saturate(8);opacity:.65;}}
+  @keyframes gramShake{0%,100%{transform:translateX(0);}15%{transform:translateX(-14px);}30%{transform:translateX(12px);}45%{transform:translateX(-10px);}60%{transform:translateX(8px);}75%{transform:translateX(-5px);}90%{transform:translateX(3px);}}
+  .boss-char-hit{animation:bossHitBlink .5s ease-out forwards!important;}
+  .boss-fx-off .boss-char-hit,.boss-fx-off .gram-char-hit,.boss-fx-off .orgo-char-hit{animation:none!important;filter:none!important;opacity:1!important;}
+  .boss-wrap-sliding{animation:bossSlide 1.2s ease-out!important;}
+  .gram-char-hit{animation:bossHitBlink .5s ease-out forwards!important;}
+  .gram-wrap-sliding{animation:gramShake .5s ease-out!important;}
+  .orgo-char-hit{animation:bossHitBlink .5s ease-out forwards!important;}
 `;
 document.head.appendChild(bossStyle);
 /* ══════════ CONSTANTS ══════════ */
@@ -3515,7 +3525,12 @@ const BADGES_DEF=[
   ,{id:'chrono_win',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Desynchronisation-annulee.png',emoji:null,name:'Désynchronisation annulée',desc:'Vaincre le Chronoscribe'}
   ,{id:'chrono_lastmin',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/A-la-minute-pres.png',emoji:null,name:'À la minute près',desc:'Vaincre le Chronoscribe dans la dernière minute'}
   ,{id:'chrono_nofissure',img:'https://cdaudemartinez.fr/wp-content/uploads/2026/04/Gardien-du-continuum.png',emoji:null,name:'Gardien du continuum',desc:'Vaincre Chronoscribe sans qu’il ouvre une fissure'}
-];
+,
+  {id:'shop_first_buy',img:'https://i.postimg.cc/brPLrtHV/Premier-achat.png',emoji:null,name:'Premier achat',desc:'Acheter un premier article chez le Fripier du Savoir.'},
+  {id:'shop_all_items',img:'https://i.postimg.cc/1XSMXqcC/Acheteur-compulsif.png',emoji:null,name:'Acheteur compulsif',desc:'Acheter tous les objets disponibles en boutique.'},
+  {id:'tresor_vivant',img:'https://i.postimg.cc/902107ts/Tresor-vivant.png',emoji:null,name:'Trésor vivant',desc:'Réunir tous les objets mythiques des boss.'},
+  {id:'domination_savante',img:'https://i.postimg.cc/kGCwGbFT/Domination-savante.png',emoji:null,name:'Domination savante',desc:'Vaincre l\'Orgografe, le Chronoscribe et Teddynounet.'},
+  {id:'archisavant',img:'https://i.postimg.cc/mZNJWLBK/L-Archisavant.png',emoji:null,name:"L'Archisavant",desc:'Vaincre Mémélite, Conjugus et Grammaria.'}];
 
 /* ══════════ MODULES DATA ══════════ */
 const MODULES={
@@ -5248,10 +5263,14 @@ function renderInventaire(){
     var fi=document.getElementById('invFripier');if(fi)renderFripierInventory(fi);
     var fib=document.getElementById('bigInvFripier');if(fib)renderFripierInventory(fib);
   }
+  try{if(typeof renderOrbsDisplay==='function'){renderOrbsDisplay('orbsDisplay');renderOrbsDisplay('bigOrbsDisplay');}}catch(e){}
   var t=totalStars();
   var el=document.getElementById('starTotalCount');if(el)el.textContent=t;
   var el2=document.getElementById('bigStarTotalCount');if(el2)el2.textContent=t;
   var sc=document.getElementById('shopStarCount');if(sc)sc.textContent=getShopStars();
+
+  /* Refresh avatar grids to show shop-bought avatars */
+  try{if(typeof buildAvGrid==='function')buildAvGrid();}catch(e){}
 }
 /* Affichage étoiles par catégorie dans inventaire :
    Calcul dynamique — résiste aux futures mises à jour de contenu */
@@ -5470,10 +5489,14 @@ function buildAvGrid(){
   if(S.shopAvatars&&S.shopAvatars.length){
     _addAvLabel(grid,'Avatars Fripier du Savoir');
     S.shopAvatars.forEach(function(src){
-      _addAvItem(grid,src,S.avatar===src,true,'',function(e){e.stopPropagation();S.avatar=src;document.querySelectorAll('#avGrid img,#avatarPreview').forEach(function(el){el.src=src;});try{saveProgress();}catch(err){}try{buildAvGrid();}catch(err){};});
+      _addAvItem(grid,src,S.avatar===src,true,'',function(e){e.stopPropagation();_setAvatar(src);});
     });
   }
 
+
+  /* Also update bigAvGrid (gear modal) */
+  var _bigAv=document.getElementById('bigAvGrid');
+  if(_bigAv&&D.avGrid){_bigAv.innerHTML=D.avGrid.innerHTML;}
 }
 function buildBigAvGrid(){
   const level=lv(S.score,S.name);
@@ -5710,6 +5733,7 @@ function exportPlayerState(){
     player_name: S.name,
     score: S.score||0,
     avatar: S.avatar||"",
+    has_aura: !!(S.hasAura),
     desc: S.desc||"",
     badges: JSON.stringify([...(S.badges||new Set())]),
     // Progression complète (étoiles, modules, perfects)
@@ -5821,9 +5845,9 @@ function saveToLB(){
   if(!S.name)return;
   // Save locally always (rapide, offline)
   try{
-    const entry={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||""};
+    const entry={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||"",hasAura:!!(S.hasAura)};
     const localLB=JSON.parse(localStorage.getItem("mb_lb")||"{}");
-    localLB[S.name]={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||""};
+    localLB[S.name]={name:S.name,score:S.score||0,avatar:S.avatar||"",desc:S.desc||"",hasAura:!!(S.hasAura)};
     localStorage.setItem("mb_lb",JSON.stringify(localLB));
   }catch(e){}
   // Save to Supabase — leaderboard + auth metadata for reconnect
@@ -5879,7 +5903,7 @@ function saveProgress(){
     gramBossUnlockShown:S.gramBossUnlockShown||false,
     conjKeyShown:S.conjKeyShown||false,gramKeyShown:S.gramKeyShown||false,litKeyShown:S.litKeyShown||false,memeliteDefeated:S.memeliteDefeated||false,memeliteFlawless:S.memeliteFlawless||false,desc:S.desc||"",pwd:S.pwd||"",savedMod:S.savedMod||null,savedQIdx:S.savedQIdx||0,savedCorrect:S.savedCorrect||0,orgBossDefeated:S.orgBossDefeated||false,stars:S.stars||{},_bossXpGranted:S._bossXpGranted||{},_seancesCompleted:S._seancesCompleted||0,bossXPAwarded:S.bossXPAwarded||{},firstSeenAt:S.firstSeenAt||null,siam_popup_shown:S.siam_popup_shown||false,_teddyFirstOpened:S._teddyFirstOpened||false,siam_unlocked:!!(S.badges&&(S.badges.has?S.badges.has("siam_beta"):[...S.badges].includes("siam_beta"))),
     shopStarsSpent:S.shopStarsSpent||0,shopPurchased:S.shopPurchased||{},shopInventory:S.shopInventory||{},
-    shopAvatars:S.shopAvatars||[],hasAura:S.hasAura||false,potionApprentiFl:S.potionApprentiFl||false
+    shopAvatars:S.shopAvatars||[],hasAura:S.hasAura||false,bossHitFxEnabled:(S.bossHitFxEnabled===false)?false:true,potionApprentiFl:S.potionApprentiFl||false
   };
   try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}
   /* Sync multi-device : on tente de sauvegarder aussi dans Supabase.
@@ -5916,6 +5940,8 @@ function loadProgress(name){
       S.shopInventory=d.shopInventory||{};
       S.shopAvatars=d.shopAvatars||[];
       S.hasAura=d.hasAura||false;
+      S.bossHitFxEnabled=(d.bossHitFxEnabled===false)?false:true;
+      if(S.bossHitFxEnabled===false)document.body.classList.add('boss-fx-off');else document.body.classList.remove('boss-fx-off');
       S.potionApprentiFl=d.potionApprentiFl||false;
       S.bossUnlockShown=d.bossUnlockShown||false;
       S.gramBossDefeated=d.gramBossDefeated||false;
@@ -6152,10 +6178,11 @@ function _lbRow(entry, rankNum, rankLabel, container){
     : "border:1px solid rgba(255,255,255,.06);";
   div.style.cssText = "border-radius:10px;padding:4px 8px;cursor:"+(isDaude?"pointer":"default")+";"+bg;
   const avBorder = isDaude ? "border:2px solid rgba(217,164,65,.7);" : "";
-  const nameColor = (isDaude||isMe) ? "color:var(--gold);" : "";
+  const nameColor = (isDaude||isMe) ? "color:var(--gold);" : (entry.hasAura ? "color:#67e8f9;" : "");
+  const avAuraStyle = entry.hasAura ? "box-shadow:0 0 0 2px rgba(96,165,250,.7),0 0 12px 4px rgba(96,165,250,.25);border-radius:50%;" : "";
   div.innerHTML = `<div class="lb-rank">${rankLabel}</div>`
-    + `<img class="lb-av" src="${entry.avatar||AVATARS[0]}" alt="" onerror="this.src='${AVATARS[0]}';" style="${avBorder}"/>`
-    + `<div class="lb-name" style="${nameColor}">${entry.name}${isMe?" (toi)":""}</div>`
+    + `<img class="lb-av" src="${entry.avatar||AVATARS[0]}" alt="" onerror="this.src='${AVATARS[0]}';" style="${avBorder}${avAuraStyle}"/>`
+    + `<div class="lb-name" style="${nameColor}">${entry.name}${isMe?" (toi)":""}${entry.hasAura?"  ✨":""}</div>`
     + `<div class="lb-score">${entry.score||0} pts</div>`;
   if(isDaude) div.onclick = ()=>openDaudePopup();
   else div.onclick = ()=>openPlayerPopup(entry);
@@ -7446,10 +7473,16 @@ function doLogin(){
       /* Admin: unlock all mythic items */
       if(!S.mythicItems)S.mythicItems={};
       if(typeof MYTHIC_ITEMS!=='undefined')MYTHIC_ITEMS.forEach(function(item){S.mythicItems[item.id]=true;});
+      S.shopStarsSpent=0;S.shopPurchased={};S.shopInventory={};/* shopAvatars preserved */S.hasAura=false;
+      /* Reset boutique cin so admin can re-watch it */
+      try{localStorage.removeItem('mb_fripier_cin_seen');}catch(e){}
 
       /* Admin: unlock all mythic items */
       if(!S.mythicItems)S.mythicItems={};
       if(typeof MYTHIC_ITEMS!=='undefined')MYTHIC_ITEMS.forEach(function(item){S.mythicItems[item.id]=true;});
+      S.shopStarsSpent=0;S.shopPurchased={};S.shopInventory={};/* shopAvatars preserved */S.hasAura=false;
+      /* Reset boutique cin so admin can re-watch it */
+      try{localStorage.removeItem('mb_fripier_cin_seen');}catch(e){}
 
       S.unlockedSecrets=new Set(["botticelli"]);
       updateHUD();updateSeanceBadges();renderBadgesGrid();
@@ -7631,6 +7664,9 @@ function _applyCheatCode(){
       /* Admin: unlock all mythic items */
       if(!S.mythicItems)S.mythicItems={};
       if(typeof MYTHIC_ITEMS!=='undefined')MYTHIC_ITEMS.forEach(function(item){S.mythicItems[item.id]=true;});
+      S.shopStarsSpent=0;S.shopPurchased={};S.shopInventory={};/* shopAvatars preserved */S.hasAura=false;
+      /* Reset boutique cin so admin can re-watch it */
+      try{localStorage.removeItem('mb_fripier_cin_seen');}catch(e){}
 
   S.unlockedSecrets=new Set(["botticelli"]);
   updateHUD();updateSeanceBadges();renderBadgesGrid();
@@ -8249,8 +8285,8 @@ function bossHit(){
   // Hit animation — blink + slide
   const char=document.getElementById("bossChar");
   const wrap=document.getElementById("bossCharWrap");
-  if(char){char.classList.add("hit");setTimeout(()=>{char.classList.remove("hit");char.style.filter="";char.style.opacity="1";},520);}
-  if(wrap){wrap.classList.add("sliding");setTimeout(()=>wrap.classList.remove("sliding"),1200);}
+  if(char){char.classList.add("boss-char-hit");char.style.opacity=".65";setTimeout(()=>{char.classList.remove("boss-char-hit");char.style.filter="";char.style.opacity="1";},520);}
+  if(wrap){wrap.classList.add("boss-wrap-sliding");setTimeout(()=>wrap.classList.remove("boss-wrap-sliding"),1200);}
   // Play hit sound at configured volume
   const snd=["bossHit1","bossHit2","bossHit3"][bossState.hitSounds%3];
   bossState.hitSounds++;
@@ -8277,7 +8313,27 @@ function bossLoseLife(reason){
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
   document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
-  if(bossState.lives<=0){setTimeout(()=>bossDefeat(reason),600);}
+  if(bossState.lives<=0){
+    /* Seconde Chance — works for HP-loss only, not Teddynounet */
+    var _bossKey=(typeof bossState!=='undefined'&&bossState.key)||'';
+    var _isTeddy=_bossKey==='teddynounet';
+    var _isFuite=reason==='fuite';
+    var _isChrono=reason==='chrono';
+    if(!_isTeddy&&!_isFuite&&!_isChrono&&typeof trySecondChance==='function'&&S.shopInventory&&S.shopInventory.potion_seconde_chance){
+      trySecondChance(
+        function(){
+          bossState.lives=bossState.maxLives||3;
+          bossState._losingLife=false;
+          var hearts=(document.getElementById('bossOv')||document).querySelectorAll('.boss-life-heart');
+          hearts.forEach(function(h){h.style.filter='';});
+          setTimeout(function(){renderBossQ();},300);
+        },
+        function(){setTimeout(()=>bossDefeat(reason),300);}
+      );
+    } else {
+      setTimeout(()=>bossDefeat(reason),600);
+    }
+  }
   else{setTimeout(()=>{bossState._losingLife=false;renderBossQ();},1000);}
 }
 
@@ -8716,8 +8772,8 @@ function gramBossHit(){
   const char=document.getElementById("gramBossChar");
   const flash=document.getElementById("gramBossHitFlash");
   const wrap2=document.getElementById("gramBossCharWrap");
-  if(char){char.classList.add("hit");setTimeout(()=>{char.classList.remove("hit");char.style.filter=gramBossState.darkPhase?"drop-shadow(0 0 30px rgba(180,50,255,.8))":"";char.style.opacity="1";},520);}
-  if(wrap2){wrap2.classList.add("sliding");setTimeout(()=>wrap2.classList.remove("sliding"),1200);}
+  if(char){char.classList.add("gram-char-hit");char.style.opacity=".6";setTimeout(()=>{char.classList.remove("gram-char-hit");char.style.filter=gramBossState.darkPhase?"drop-shadow(0 0 30px rgba(180,50,255,.8))":"";char.style.opacity="1";},520);}
+  if(wrap2){wrap2.classList.add("gram-wrap-sliding");setTimeout(()=>wrap2.classList.remove("gram-wrap-sliding"),1200);}
   // Dark phase at half HP
   if(gramBossState.hp<=20&&!gramBossState.darkPhase){gramBossState.darkPhase=true;triggerDarkPhase();}
   // Play hurt sound
@@ -8943,7 +8999,22 @@ function gramBossLoseLife(){
   const fl=document.createElement("div");
   fl.style.cssText="position:fixed;inset:0;background:rgba(239,68,68,.3);z-index:999;pointer-events:none;animation:bossHitBlink .5s forwards;";
   document.body.appendChild(fl);setTimeout(()=>fl.remove(),520);
-  if(gramBossState.lives<=0){setTimeout(gramBossDefeat,600);}
+  if(gramBossState.lives<=0){
+    if(typeof trySecondChance==='function'&&S.shopInventory&&S.shopInventory.potion_seconde_chance){
+      trySecondChance(
+        function(){
+          gramBossState.lives=gramBossState.maxLives||3;
+          gramBossState._losingLife=false;
+          var hearts=(document.getElementById('gramBossOv')||document).querySelectorAll('.gram-life-heart');
+          hearts.forEach(function(h){h.style.filter='';});
+          setTimeout(function(){renderGramBossQ();},300);
+        },
+        function(){setTimeout(gramBossDefeat,300);}
+      );
+    } else {
+      setTimeout(gramBossDefeat,600);
+    }
+  }
   else{setTimeout(()=>{gramBossState._losingLife=false;renderGramBossQ();},1200);}
 }
 
@@ -10470,6 +10541,7 @@ function awardBossXP(boss){
   S.score+=pts;
   updateHUD();saveProgress();saveToLB();
   // Notification style badge
+  try{_checkShopBadges();}catch(e){}
   toast("⭐ +"+pts+" XP — "+boss.charAt(0).toUpperCase()+boss.slice(1)+" vaincu !");
 }
 
@@ -10994,6 +11066,10 @@ function launchMeteors(count){
 function melHit(){
   // Boss HP per phase: each phase has 20 cats to repel
   const hpFill=document.getElementById("melHpFill");
+  /* Red blink on hit */
+  var _melChar=document.querySelector(".memelite-char")||document.getElementById("melBossImg");
+  if(_melChar){_melChar.style.animation="bossHitBlink .5s ease-out forwards";setTimeout(function(){_melChar.style.animation="";},520);}
+
   const p1start=0, p2start=20, p3start=40;
   let phaseStart=melState.phase===1?p1start:melState.phase===2?p2start:p3start;
   let repelledInPhase=Math.max(0,melState.catsRepelled-phaseStart);
@@ -11185,7 +11261,7 @@ const SHOP_ITEMS=[
    img:'https://i.postimg.cc/K88L0N81/avatar-cupidon.png',aura:'rgba(255,255,255,.55)',once:true,
    desc:'D\u00e9verrouille l\'avatar Cupidon.'},
   {id:'parchemin_300',type:'parchemin',rarity:'common',name:'Petit Parchemin d\'Exp\u00e9rience',price:3,
-   img:'https://i.postimg.cc/1336vH30/parchemin-300XP.png',aura:'rgba(255,255,255,.55)',once:false,restock:true,xp:300,
+   img:'https://i.postimg.cc/1336vH30/parchemin-300XP.png',aura:'rgba(255,255,255,.55)',once:true,xp:300,
    desc:'Gagne 300\u00a0XP imm\u00e9diatement \u00e0 l\'utilisation. Une fois utilis\u00e9, le parchemin dispara\u00eet.'},
   // ── PEU COMMUN
   {id:'av_cleopatre',type:'avatar',rarity:'uncommon',name:'Avatar Cl\u00e9op\u00e2tre',price:8,
@@ -11195,7 +11271,7 @@ const SHOP_ITEMS=[
    img:'https://i.postimg.cc/vZZ90zZn/avatar-napoleon.png',aura:'rgba(74,222,128,.6)',once:true,
    desc:'D\u00e9verrouille l\'avatar Napol\u00e9on Bonaparte.'},
   {id:'parchemin_500',type:'parchemin',rarity:'uncommon',name:'Parchemin d\'Exp\u00e9rience',price:8,
-   img:'https://i.postimg.cc/t44PB543/Parchemin-500XP.png',aura:'rgba(74,222,128,.6)',once:false,restock:true,xp:500,
+   img:'https://i.postimg.cc/t44PB543/Parchemin-500XP.png',aura:'rgba(74,222,128,.6)',once:true,xp:500,
    desc:'Gagne 500\u00a0XP \u00e0 l\'utilisation. Consommable.'},
   // ── RARE
   {id:'av_shakespeare',type:'avatar',rarity:'rare',name:'Avatar Shakespeare',price:10,
@@ -11205,7 +11281,7 @@ const SHOP_ITEMS=[
    img:'https://i.postimg.cc/0yymVfyK/avatar-Louis-XIV.png',aura:'rgba(192,132,252,.7)',once:true,
    desc:'D\u00e9verrouille l\'avatar Louis\u00a0XIV.'},
   {id:'parchemin_800',type:'parchemin',rarity:'rare',name:'Grand Parchemin d\'Exp\u00e9rience',price:10,
-   img:'https://i.postimg.cc/9QQTLpQY/Parchemin-800XP.png',aura:'rgba(192,132,252,.7)',once:false,restock:true,xp:800,
+   img:'https://i.postimg.cc/9QQTLpQY/Parchemin-800XP.png',aura:'rgba(192,132,252,.7)',once:true,xp:800,
    desc:'Gagne 800\u00a0XP \u00e0 l\'utilisation. Consommable.'},
   {id:'potion_apprenti',type:'potion',rarity:'rare',name:'Potion d\'Apprenti',price:12,
    img:'https://i.postimg.cc/XYYFs8Ys/Potion-d-Apprenti.png',aura:'rgba(192,132,252,.7)',once:true,
@@ -11234,12 +11310,12 @@ const SHOP_ITEMS=[
    img:'https://i.postimg.cc/sggSTcgK/Potion-Secondechance.png',aura:'rgba(251,146,60,.85)',once:false,restock:true,
    desc:'Si tu perds contre un boss par perte de PV (hors chrono \u00e0 0 et hors fuite), cette potion permet de reprendre le combat l\u00e0 o\u00f9 tu l\'as laiss\u00e9. R\u00e9achetable si elle a \u00e9t\u00e9 utilis\u00e9e.'},
   {id:'parchemin_1000',type:'parchemin',rarity:'legendary',name:'Parchemin L\u00e9gendaire',price:20,
-   img:'https://i.postimg.cc/JzzJpqzQ/Parchemin-1000XP.png',aura:'rgba(251,146,60,.85)',once:false,restock:true,xp:1000,
+   img:'https://i.postimg.cc/JzzJpqzQ/Parchemin-1000XP.png',aura:'rgba(251,146,60,.85)',once:true,xp:1000,
    desc:'Gagne 1000\u00a0XP \u00e0 l\'utilisation. Consommable.'},
   {id:'peluche_bob',type:'peluche',rarity:'legendary',name:'"Moi c\'est Bob le meilleur"',price:50,
    img:'https://i.postimg.cc/Qdd5fbdm/Peluche-Moi-c-est-Bob-le-meilleur.png',aura:'rgba(251,146,60,.85)',once:true,
    desc:'La peluche pr\u00e9f\u00e9r\u00e9e d\'Aya.'},
-  {id:'orbe_fripier',type:'orbe',rarity:'legendary',name:'Orbe du Fripier',price:25,
+  {id:'orbe_fripier',type:'orbe',rarity:'legendary',name:'Orbe du Fripier',price:100,
    img:'https://i.postimg.cc/MG8YdBgW/Orbe-Fripier.png',aura:'rgba(217,164,65,.9)',once:true,reqAllMythic:true,
    desc:'Cette orbe appartient au Fripier du Savoir. Elle ne vous sera c\u00e9d\u00e9e que si vous r\u00e9unissez l\'int\u00e9gralit\u00e9 des objets mythiques des boss.'}
 ];
@@ -11312,6 +11388,10 @@ function _showFripierCin(){
   _cinSlideIdx=0;
   /* Flash bleu mystique */
   ov.style.display='none';
+  /* Show shop BG behind cin */
+  var shopOv=document.getElementById('fripierShopOv');
+  if(shopOv){shopOv.style.display='flex';}
+  _spawnShopPlumes();
   var _fl=document.createElement('div');
   _fl.style.cssText='position:fixed;inset:0;background:rgba(96,165,250,.85);z-index:920;pointer-events:none;opacity:0;transition:opacity .08s;';
   document.body.appendChild(_fl);
@@ -11321,8 +11401,6 @@ function _showFripierCin(){
       _fl.style.transition='opacity .6s'; _fl.style.opacity='0';
       setTimeout(function(){
         _fl.remove(); ov.style.display='flex';
-        var _img=document.getElementById('fripierCinImg');
-        if(_img){_img.style.filter='drop-shadow(0 0 60px rgba(96,165,250,1)) brightness(3)';_img.style.transition='filter 1.2s ease-out';setTimeout(function(){_img.style.filter='drop-shadow(0 0 30px rgba(96,165,250,.4))';},80);}
         _renderCinSlide();
         _startShopMusic();
       },680);
@@ -11361,7 +11439,6 @@ function _advanceCin(){
 
 /* ── Ouverture boutique ───────────────────────────────────────── */
 function openFripierShop(){
-  if(!isFripierAdmin()) return;
   try{if(typeof _stopBgMusicNow==='function')_stopBgMusicNow();}catch(e){}
   try{var _bg=document.getElementById('bgMusic');if(_bg){_bg.pause();_bg.currentTime=0;}}catch(e){}
   var cinSeen=(function(){try{return localStorage.getItem('mb_fripier_cin_seen');}catch(e){return null;}}());
@@ -11500,6 +11577,7 @@ function _executeBuy(item){
     if(!S.shopAvatars.includes(item.img))S.shopAvatars.push(item.img);
     try{if(typeof buildAvGrid==='function')buildAvGrid();}catch(e){}
     _checkFripierAvatarBadge();
+    _checkShopBadges();
   } else if(item.type==='parchemin_aura'){
     S.hasAura=true;
     _applyAuraEverywhere();
@@ -11550,6 +11628,7 @@ function useShopItem(itemId){
   var item=SHOP_ITEMS.find(function(i){return i.id===itemId;});
   if(!item){return;}
   if(!S.shopInventory||!S.shopInventory[itemId]){toast('Objet non disponible.');return;}
+  if(item.type==='parchemin_aura'){S.hasAura=!S.hasAura;saveProgress();_applyAuraEverywhere();toast(S.hasAura?'\u2728 Aura activ\u00e9e !':'\ud83d\udeab Aura d\u00e9sactiv\u00e9e.');try{renderInventaire();}catch(e){} return;}
   if(item.type==='parchemin'&&item.xp) _showUseParchemin(item);
   else if(itemId==='potion_apprenti') _usePotionApprentii();
   else if(itemId==='potion_zappi') _usePotionZappi();
@@ -11631,32 +11710,29 @@ function _usePotionZappi(){
 
 /* ── Aura ──────────────────────────────────────────────────────── */
 function _applyAuraEverywhere(){
-  if(!S.hasAura)return;
-  clearInterval(window._auraParticleInt);
-  /* Wrap all known avatar containers */
-  var sels=['#chipAv','#profilAvImg','.av-img','#avGrid img','.lb-player-avatar'];
-  sels.forEach(function(sel){
-    try{
-      document.querySelectorAll(sel).forEach(function(el){
-        var w=el.closest('div')||el.parentElement;
-        if(w&&!w.classList.contains('player-aura-wrap')){w.classList.add('player-aura-wrap');w.style.position='relative';w.style.display='inline-block';}
-      });
-    }catch(e){}
+  document.querySelectorAll('.player-aura-wrap').forEach(function(w){
+    var ch=Array.from(w.childNodes),p=w.parentNode;
+    ch.forEach(function(c){p.insertBefore(c,w);});p.removeChild(w);
   });
-  /* Particle emitter */
+  clearInterval(window._auraParticleInt);
+  if(!S.hasAura)return;
+  ['#chipAv','#profilAvImg','#bigAvImg','.av-main-img'].forEach(function(sel){
+    try{document.querySelectorAll(sel).forEach(function(img){
+      if(img.closest&&img.closest('.player-aura-wrap'))return;
+      var w=document.createElement('span');w.className='player-aura-wrap';
+      img.parentNode.insertBefore(w,img);w.appendChild(img);
+    });}catch(e){}
+  });
   window._auraParticleInt=setInterval(function(){
-    if(!S.hasAura){clearInterval(window._auraParticleInt);return;}
+    if(!S.hasAura){clearInterval(window._auraParticleInt);_applyAuraEverywhere();return;}
     document.querySelectorAll('.player-aura-wrap').forEach(function(wrap){
       try{
         var p=document.createElement('div');
-        var px=((-20+Math.random()*40))+'px';
-        var py=(-15-Math.random()*25)+'px';
-        p.style.cssText='position:absolute;bottom:'+Math.round(Math.random()*60)+'%;left:'+Math.round(10+Math.random()*80)+'%;width:'+(2+Math.random()*3).toFixed(1)+'px;height:'+(2+Math.random()*3).toFixed(1)+'px;border-radius:50%;background:rgba(96,165,250,'+(0.5+Math.random()*.5).toFixed(2)+');pointer-events:none;z-index:999;--px:'+px+';--py:'+py+';animation:auraParticleRise .7s ease-out forwards;';
-        wrap.appendChild(p);
-        setTimeout(function(){try{p.remove();}catch(e){}},750);
+        p.style.cssText='position:absolute;bottom:'+Math.round(5+Math.random()*70)+'%;left:'+Math.round(10+Math.random()*80)+'%;'+'width:'+(2+Math.random()*2.5).toFixed(1)+'px;height:'+(2+Math.random()*2.5).toFixed(1)+'px;border-radius:50%;'+'background:rgba(96,165,250,'+(0.5+Math.random()*.5).toFixed(2)+');pointer-events:none;z-index:10;'+'--px:'+((-15+Math.random()*30)).toFixed(0)+'px;--py:'+(-(10+Math.random()*20)).toFixed(0)+'px;animation:auraParticleRise .7s ease-out forwards;';
+        wrap.appendChild(p);setTimeout(function(){try{p.remove();}catch(e){}},750);
       }catch(e){}
     });
-  },300);
+  },350);
 }
 
 /* ── Seconde Chance ────────────────────────────────────────────── */
@@ -11735,7 +11811,13 @@ function _grantBadge(id){
     else S.badges=[...S.badges,id];
     try{saveProgress();}catch(e){}
     try{renderBadgesGrid();}catch(e){}
-    try{toast('\ud83c\udfc5 Nouveau badge : '+id);}catch(e){}
+    /* Show proper badge popup if definition found */
+    var badgeDef=(typeof BADGES_DEF!=='undefined'?BADGES_DEF:[]).find(function(b){return b.id===id;});
+    if(badgeDef&&typeof showBadgePopup==='function'){
+      setTimeout(function(){showBadgePopup(badgeDef);},400);
+    } else {
+      try{toast('\ud83c\udfc5 Badge d\u00e9bloqu\u00e9\u00a0: '+(badgeDef?badgeDef.name:id));}catch(e){}
+    }
   }
 }
 
@@ -11758,7 +11840,7 @@ function renderFripierInventory(wrap){
   var secs=[
     {label:'\u2728 Parchemins',flt:function(i){return i.type==='parchemin'||i.type==='parchemin_aura';}},
     {label:'\u2697\ufe0f Potions',flt:function(i){return i.type==='potion';}},
-    {label:'\ud83e\uddf8 Peluches & Accessoires',flt:function(i){return i.type==='peluche'||i.type==='orbe';}}
+    {label:'\ud83e\uddf8 Peluches & Accessoires',flt:function(i){return i.type==='peluche';}}
   ];
   var any=false;
   secs.forEach(function(sec){
@@ -11782,12 +11864,19 @@ function renderFripierInventory(wrap){
       else{lbl.textContent=it.name;}
       if(qty>1){var b=document.createElement('div');b.style.cssText='position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:8px;font-weight:900;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;';b.textContent=qty;el.appendChild(b);}
       el.appendChild(img);el.appendChild(lbl);
-      if(qty>0&&it.type!=='parchemin_aura'&&it.type!=='peluche'&&it.type!=='orbe')el.addEventListener('click',function(item){return function(){useShopItem(item.id);};}(it));
+      el.addEventListener('click',function(item){return function(){if(typeof _showItemDetail==='function')_showItemDetail(item.id);else useShopItem(item.id);};}(it));
       row.appendChild(el);
     });
     wrap.appendChild(row);
   });
   if(!any){var m=document.createElement('div');m.style.cssText='font-size:10px;color:#475569;text-align:center;padding:8px;font-style:italic;';m.textContent='Aucun objet du Fripier pour l\u2019instant.';wrap.appendChild(m);}
+
+  var _fxOn=(S.bossHitFxEnabled!==false);
+  var _r=document.createElement('div');_r.style.cssText='margin-top:12px;display:flex;align-items:center;gap:8px;';
+  var _l=document.createElement('div');_l.style.cssText='font-size:10px;color:#94a3b8;';_l.textContent='FX combat :';
+  var _b=document.createElement('button');_b.style.cssText='padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-size:10px;font-weight:700;background:'+(_fxOn?'rgba(74,222,128,.2)':'rgba(239,68,68,.15)')+';color:'+(_fxOn?'#4ade80':'#f87171')+';';
+  _b.textContent=_fxOn?'✓ Activé':'✕ Désactivé';_b.onclick=function(){if(typeof toggleBossFx==='function')toggleBossFx();};
+  _r.appendChild(_l);_r.appendChild(_b);wrap.appendChild(_r);
 }
 function _checkFripierAvatarBadge(){
   if(!S.shopAvatars)return;
@@ -11819,40 +11908,111 @@ function shopAwardXPWithBonus(base){
   }
   updateHUD();saveProgress();try{saveToLB();}catch(e){}
 }
+
+
+function renderOrbsDisplay(wrapId){
+  var wrap=document.getElementById(wrapId);if(!wrap)return;
+  wrap.innerHTML='';
+  var mi=S.mythicItems||{},sp=S.shopPurchased||{};
+  var defs=[
+    {u:!!mi.chrono_item,  img:'https://i.postimg.cc/Z5LqZgxv/Orbe-chronoscribe.png',a:'rgba(217,164,65,.85)',label:'Chronoscribe'},
+    {u:!!mi.conjugus_item,img:'https://i.postimg.cc/GmjprNxy/orbe-Conjugus.png',   a:'rgba(192,132,252,.8)',label:'Conjugus'},
+    {u:!!mi.gram_item,    img:'https://i.postimg.cc/W174jKwF/Orbe-Grammaria.png',   a:'rgba(96,165,250,.8)', label:'Grammaria'},
+    {u:!!mi.memelite_item,img:'https://i.postimg.cc/K85YFVDK/Orbe-Memelite.png',    a:'rgba(239,68,68,.8)',  label:'Mémélité'},
+    {u:!!sp.orbe_fripier, img:'https://i.postimg.cc/MG8YdBgW/Orbe-Fripier.png',     a:'rgba(20,200,200,.8)', label:'Fripier'}
+  ];
+  var sz=wrapId==='orbsDisplay'?48:62;
+  defs.forEach(function(o){
+    var div=document.createElement('div');div.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;';
+    var c=document.createElement('div');
+    c.style.cssText='width:'+sz+'px;height:'+sz+'px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;'
+      +(o.u
+        ?'background:radial-gradient(circle,rgba(30,20,5,.9),rgba(10,7,3,.95));border:2px solid '+o.a.replace(')',',0.7)')+';box-shadow:0 0 12px '+o.a+';'
+        :'background:radial-gradient(circle,#1a1a1a,#000);border:2px solid rgba(255,255,255,.1);');
+    if(o.u){
+      var img=document.createElement('img');
+      img.src=o.img;
+      img.style.cssText='width:'+(sz-8)+'px;height:'+(sz-8)+'px;object-fit:contain;filter:drop-shadow(0 0 5px '+o.a+');';
+      /* No animation — static display */
+      c.appendChild(img);
+    }
+    div.appendChild(c);
+    wrap.appendChild(div);
+  });
+
+}
+
+
+function _fripierClick(){
+  var panel=document.getElementById('shopItemsContainer');
+  if(!panel) return;
+  if(panel.style.display==='none'||panel.style.display===''){
+    panel.style.display='block';
+    _renderShop();
+    _playShopOpenVoice();
+  } else {
+    panel.style.display='none';
+    _playShopOpenVoice();
+  }
+}
+
+function _setAvatar(src){
+  S.avatar=src;
+  ['#chipAv','#avGrid img','#avatarPreview','#profilAvImg','#bigAvImg','.av-main-img'].forEach(function(sel){
+    try{document.querySelectorAll(sel).forEach(function(el){el.src=src;});}catch(e){}
+  });
+  try{saveProgress();}catch(e){}
+  try{if(typeof _applyAuraEverywhere==='function')_applyAuraEverywhere();}catch(e){}
+  try{buildAvGrid();}catch(e){}
+}
+
+function _showItemDetail(itemId){
+  var item=(typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS:[]).find(function(i){return i.id===itemId;});
+  if(!item)return;
+  var rc={'common':'#cbd5e1','uncommon':'#4ade80','rare':'#c084fc','epic':'#fbbf24','legendary':'#f97316'};
+  var rl={'common':'Commun','uncommon':'Peu commun','rare':'Rare','epic':'Épique','legendary':'Légendaire'};
+  var col=rc[item.rarity]||'#e2e8f0';var rlab=rl[item.rarity]||item.rarity;
+  var inInv=!!(S.shopInventory&&S.shopInventory[item.id]>0);
+  var pur=!!(S.shopPurchased&&S.shopPurchased[item.id]);
+  var stTxt=inInv?'Dans l\'inventaire':pur?'Déjà possédé':'Non acquis';
+  var stCol=inInv?'#4ade80':pur?'#94a3b8':'#ef4444';
+  var ov=document.createElement('div');ov.className='item-detail-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(5,8,20,.93);z-index:10010;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .25s;';
+  var box=document.createElement('div');
+  box.style.cssText='background:linear-gradient(160deg,#0a0f1e,#12071a);border:2px solid '+col+';border-radius:22px;padding:28px 22px;max-width:360px;width:100%;text-align:center;animation:popIn .3s;';
+  var canUse=(inInv&&item.type!=='peluche'&&item.type!=='parchemin_aura'&&item.type!=='orbe');
+  var auraBtn='';
+  if(item.type==='parchemin_aura'&&pur){
+    var _aOn=S.hasAura;
+    auraBtn='<button onclick="S.hasAura=!S.hasAura;saveProgress();_applyAuraEverywhere();document.querySelector(\'.item-detail-ov\').remove();renderInventaire();" style="padding:9px 18px;border-radius:12px;border:none;background:linear-gradient(180deg,'+(_aOn?'#ef4444,#7f1d1d':'#2563eb,#1e3a8a')+"',#000);color:#fff;font-weight:900;font-size:12px;cursor:pointer;margin-right:8px;">+(_aOn?'D\u00e9sactiver l\'aura':'Activer l\'aura')+'</button>';
+  }
+  var _t='<div style="font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:'+col+';margin-bottom:12px;">'+rlab+'</div>';
+  _t+='<img src="'+item.img+'" style="width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 14px;filter:drop-shadow(0 0 16px '+item.aura+');" />';
+  _t+='<div style="font-size:17px;font-weight:900;color:#e2e8f0;margin-bottom:8px;">'+item.name+'</div>';
+  _t+='<div style="font-size:12px;color:#94a3b8;font-style:italic;line-height:1.7;margin-bottom:14px;">'+item.desc+'</div>';
+  _t+='<div style="font-size:11px;font-weight:700;color:'+stCol+';margin-bottom:16px;">'+stTxt+'</div>';
+  _t+='<div>'+auraBtn+(canUse?'<button onclick="useShopItem(\''+itemId+'\');document.querySelector(\'.item-detail-ov\').remove();" style="padding:9px 18px;border-radius:12px;border:none;background:linear-gradient(180deg,#d97706,#92400e);color:#fff;font-weight:900;font-size:12px;cursor:pointer;margin-right:8px;">Utiliser</button>':'')
+    +'<button onclick="document.querySelector(\'.item-detail-ov\').remove();" style="padding:9px 18px;border-radius:12px;border:1px solid rgba(148,163,184,.3);background:transparent;color:#94a3b8;font-weight:700;font-size:12px;cursor:pointer;">Fermer</button></div>';
+  box.innerHTML=_t;
+  ov.appendChild(box);ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+
+function toggleBossFx(){
+  S.bossHitFxEnabled=(S.bossHitFxEnabled===false)?true:false;
+  if(S.bossHitFxEnabled===false)document.body.classList.add('boss-fx-off');
+  else document.body.classList.remove('boss-fx-off');
+  try{saveProgress();}catch(e){}
+  toast(S.bossHitFxEnabled===false?'FX boss : désactivés':'FX boss : activés');
+  try{renderInventaire();}catch(e){}
+}
 </script>
 
-  <!-- ADMIN PANEL OVERLAY -->
-  <div id="adminOv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2000;
-       flex-direction:column;align-items:center;padding:20px;overflow-y:auto;">
-    <div style="max-width:600px;width:100%;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div style="font-size:20px;font-weight:900;color:#ef4444;">⚙️ Administration</div>
-        <button onclick="closeAdmin()" style="background:none;border:none;color:#ead7ae;font-size:22px;cursor:pointer;">✕</button>
-      </div>
-      <div class="mini-note" style="margin-bottom:12px;color:#fca5a5;">Accessible uniquement avec le code admin</div>
-      <div id="adminPlayerList" style="display:flex;flex-direction:column;gap:8px;"></div>
-      <div id="adminMsg" style="font-size:13px;color:#86efac;text-align:center;margin-top:12px;min-height:20px;"></div>
-    </div>
-  </div>
-
-
-  <!-- CHAT BUTTON & PANEL -->
-  <!-- CHAT TOGGLE BUTTON -->
-  <button id="chatToggleBtn" onclick="toggleChat()" title="Discussion en ligne"
-    style="display:none;position:fixed;bottom:20px;right:20px;z-index:300;
-           width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
-           background:rgba(26,10,2,.75);backdrop-filter:blur(6px);
-           color:var(--gold);font-size:20px;
-           box-shadow:0 4px 16px rgba(0,0,0,.45),0 0 0 1.5px rgba(217,164,65,.35);
-           display:none;align-items:center;justify-content:center;line-height:1;">
+  <button id="chatToggleBtn" onclick="toggleChat()" style="position:fixed;bottom:20px;right:20px;z-index:300;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;background:rgba(26,10,2,.75);backdrop-filter:blur(6px);color:var(--gold);font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.45),0 0 0 1.5px rgba(217,164,65,.35);display:none;align-items:center;justify-content:center;line-height:1;">
     💬
-    <span id="chatUnread" style="display:none;position:absolute;top:-3px;right:-3px;
-      background:#ef4444;color:#fff;font-size:9px;font-weight:900;
-      border-radius:999px;padding:1px 5px;min-width:16px;text-align:center;
-      border:1.5px solid rgba(26,10,2,.8);"></span>
+    <span id="chatUnread" style="display:none;position:absolute;top:-3px;right:-3px;background:#ef4444;color:#fff;font-size:9px;font-weight:900;border-radius:999px;padding:1px 5px;min-width:16px;text-align:center;border:1.5px solid rgba(26,10,2,.8);"></span>
   </button>
-
-  <!-- CHAT PANEL -->
+<!-- CHAT PANEL -->
   <div id="chatPanel" style="display:none;position:fixed;bottom:68px;right:16px;z-index:299;
        width:min(360px,96vw);height:480px;
        background:linear-gradient(175deg,#1e0d04,#120800);
@@ -13505,11 +13665,7 @@ window.TeddynounetBoss = (function() {
 ══════════════════════════════════════════════════════════════ */
 
 function openBoutique(){
-  // Admin: full shop. Others: coming-soon screen.
-  if(typeof isFripierAdmin==='function'&&isFripierAdmin()){
-    if(typeof openFripierShop==='function') openFripierShop();
-    return;
-  }
+  if(typeof openFripierShop==='function'){openFripierShop();return;}
   var ov=document.getElementById('boutiqueOv');
   if(!ov)return;
   ov.style.display='block';
