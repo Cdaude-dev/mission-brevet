@@ -373,7 +373,15 @@
       width:100%;max-width:360px;margin:8px auto 0;
       box-shadow:0 -4px 20px rgba(0,0,0,.5);
     }
-    @media(max-width:640px){#nextBtn{min-height:58px!important;font-size:17px!important;font-weight:900!important;border-radius:18px!important;padding:14px 20px!important;position:sticky!important;bottom:8px!important;z-index:95!important;width:calc(100% - 16px)!important;margin:8px auto!important;display:block!important;}}
+    @media(max-width:640px){
+    #nextBtn{
+      min-height:62px!important;font-size:18px!important;font-weight:900!important;
+      border-radius:18px!important;padding:16px 20px!important;
+      position:static!important;bottom:auto!important;z-index:auto!important;
+      width:100%!important;max-width:none!important;margin:10px 0 0!important;
+      display:block!important;box-shadow:0 4px 20px rgba(0,0,0,.5)!important;
+    }
+  }
     /* Content blocks inside quiz get constrained width */
     .quiz-card .banner-large,.quiz-card .q-label,.quiz-card .quiz-prog-bar,
     .quiz-card .quiz-counter,.quiz-card .hint-banner,.quiz-card .question-box,
@@ -2087,13 +2095,17 @@
   @media(max-width:640px){
     #shopBg{background-image:url('https://i.postimg.cc/mrXGQT67/BG-fripier-telephone.png')!important;}
     #shopItemsContainer{
-      width:100%!important;top:auto!important;bottom:0;right:0;
-      height:52%!important;max-height:52vh!important;border-left:none!important;
-      border-top:1px solid rgba(217,164,65,.25);border-radius:18px 18px 0 0;
+      width:100%!important;top:48px!important;bottom:auto!important;right:0;
+      height:46%!important;max-height:46vh!important;border-left:none!important;
+      border-bottom:1px solid rgba(217,164,65,.25);border-radius:0 0 16px 16px;
+      overflow-y:auto!important;
     }
     #shopScene{
-      width:clamp(120px,42vw,200px)!important;
-      bottom:52%!important;
+      width:clamp(140px,52vw,240px)!important;
+      bottom:0!important;top:auto!important;
+      position:absolute!important;
+      left:50%!important;
+      transform:translateX(-50%)!important;
     }
     #shopComptoirImg{width:clamp(140px,55vw,240px)!important;}
     #shopTopBar{padding:6px 10px!important;}
@@ -2131,6 +2143,22 @@
 
   .lb-player-aura-name{color:#67e8f9!important;text-shadow:0 0 6px rgba(96,165,250,.4);}
   .lb-entry-av-aura>img{box-shadow:0 0 0 2px rgba(96,165,250,.6),0 0 12px 4px rgba(96,165,250,.22);border-radius:50%;}
+
+  @media(max-width:640px){
+    #nextBtn img{
+      height:clamp(58px,9vh,78px)!important;
+      width:auto!important;
+      display:block!important;
+      margin:0 auto!important;
+    }
+    #nextBtn{
+      width:100%!important;
+      max-width:none!important;
+      text-align:center!important;
+      padding:8px 0!important;
+      margin:10px 0 4px!important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -2807,9 +2835,9 @@
     </div>
     <div id="questionBox" class="question-box"></div>
     <div id="answersWrap" class="answers"></div>
-    <!-- Question suivante AVANT feedback pour stabilité mobile -->
-    <button id="nextBtn" class="img-btn primary-btn" style="display:none;margin-bottom:8px;max-width:360px;"></button>
     <div id="feedbackBox" class="feedback-box"></div>
+    <!-- Question suivante APRÈS feedback -->
+    <button id="nextBtn" class="img-btn primary-btn" style="display:none;margin-top:10px;width:100%;max-width:100%;"></button>
     <div id="burst" class="burst">
       <span class="burst-star" style="top:8px;left:36px;">★</span>
       <span class="burst-star" style="top:20px;right:44px;">★</span>
@@ -5007,7 +5035,7 @@ const MODULES={
 
 /* ══════════ STATE ══════════ */
 const S={
-  name:"",avatar:AVATARS[0],score:0,
+  name:"",avatar:AVATARS[0],score:0,shopAvatars:[],shopPurchased:{},shopInventory:{},hasAura:false,
   panelOpen:false,currentScreen:"welcome",sessionScoreStart:0,scoredQIds:new Set(),
   mod:null,qIdx:0,correct:0,wrongCount:0,
   subIdx:0,subOk:0,locked:false,
@@ -5485,18 +5513,25 @@ function buildAvGrid(){
     _addAvItem(D.avGrid,item.src,S.avatar===item.src,ok,item.label+" — "+item.desc,
       e=>{e.stopPropagation();if(ok){S.avatar=item.src;updateHUD();saveToLB();buildAvGrid();}else toast(item.label+" — "+item.desc+" 🔒");},false);
   });
-  // Shop avatars
-  if(S.shopAvatars&&S.shopAvatars.length){
-    _addAvLabel(grid,'Avatars Fripier du Savoir');
-    S.shopAvatars.forEach(function(src){
-      _addAvItem(grid,src,S.avatar===src,true,'',function(e){e.stopPropagation();_setAvatar(src);});
+  // Avatars de la Friperie — rebuilt from shopPurchased at every render
+  var _shopAvs=[];
+  if(S.shopPurchased&&typeof SHOP_ITEMS!=='undefined'){
+    SHOP_ITEMS.filter(function(i){return i.type==='avatar'&&S.shopPurchased[i.id];}).forEach(function(i){_shopAvs.push(i);});
+  }
+  if(_shopAvs.length){
+    _addAvLabel(D.avGrid,'Avatars de la Friperie');
+    _shopAvs.forEach(function(item){
+      var src=item.img;
+      _addAvItem(D.avGrid,src,S.avatar===src,true,item.name,
+        function(e){e.stopPropagation();_setAvatar(src);},false);
     });
+    /* Keep shopAvatars in sync */
+    S.shopAvatars=_shopAvs.map(function(i){return i.img;});
   }
 
 
   /* Also update bigAvGrid (gear modal) */
-  var _bigAv=document.getElementById('bigAvGrid');
-  if(_bigAv&&D.avGrid){_bigAv.innerHTML=D.avGrid.innerHTML;}
+  try{buildBigAvGrid();}catch(e){}
 }
 function buildBigAvGrid(){
   const level=lv(S.score,S.name);
@@ -5735,6 +5770,7 @@ function exportPlayerState(){
     avatar: S.avatar||"",
     has_aura: !!(S.hasAura),
     desc: S.desc||"",
+    shop_avatars: JSON.stringify(S.shopAvatars||[]),
     badges: JSON.stringify([...(S.badges||new Set())]),
     // Progression complète (étoiles, modules, perfects)
     progression: JSON.stringify({
@@ -5782,6 +5818,19 @@ function mergeRemoteState(remote){
     }
     // Avatar : garder le local si défini, sinon prendre le remote
     if(!S.avatar && remote.avatar) S.avatar = remote.avatar;
+    // shopAvatars : merge (union des avatars boutique)
+    if(remote.shop_avatars){
+      try{var _ra=typeof remote.shop_avatars==="string"?JSON.parse(remote.shop_avatars):remote.shop_avatars;
+        if(Array.isArray(_ra)){S.shopAvatars=S.shopAvatars||[];_ra.forEach(function(av){if(!S.shopAvatars.includes(av))S.shopAvatars.push(av);});}
+      }catch(e){}}
+
+    // shopAvatars : merge (union)
+    if(remote.shop_avatars){
+      try{
+        var _ra=typeof remote.shop_avatars==="string"?JSON.parse(remote.shop_avatars):remote.shop_avatars;
+        if(Array.isArray(_ra)){S.shopAvatars=S.shopAvatars||[];_ra.forEach(function(av){if(!S.shopAvatars.includes(av))S.shopAvatars.push(av);});}
+      }catch(e){}
+    }
     // seancePct : max par module
     if(rp.seancePct){
       S.seancePct = S.seancePct||{};
@@ -5990,7 +6039,7 @@ function loadProgress(name){
     loadFromCloud(name).then(function(remote){
       if(!remote)return;
       mergeRemoteState(remote);
-      try{saveProgress();updateHUD();}catch(e){}
+      try{saveProgress();updateHUD();try{buildAvGrid();}catch(e){}}catch(e){}
     }).catch(function(){});
   }catch(e){}
 }
@@ -6208,7 +6257,7 @@ function renderLbEntries(entries, container){
   let all=[..._rdedup.values()].filter(e=>e.name!==DAUDE.name&&!ADMIN_NAMES.includes(e.name));
   const isAdmin=S.name&&(S.name===ADMIN_CODE||ADMIN_NAMES.includes(S.name));
   if(S.name && !isAdmin && !all.find(e=>e.name===S.name))
-    all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||"",badges:[...(S.badges||new Set())]});
+    all.push({name:S.name,score:S.score||0,avatar:S.avatar,desc:S.desc||"",badges:[...(S.badges||new Set())],hasAura:!!(S.hasAura)});
   all.push({name:DAUDE.name,score:DAUDE.score,avatar:DAUDE.avatar});
   all.sort((a,b)=>b.score-a.score);
   all.slice(0,10).forEach((e,i)=>{
@@ -6452,7 +6501,7 @@ function renderQ(){
   if(!q){showResults();return;}
   // Reset UI
   if(D.feedback){D.feedback.style.display="none";D.feedback.className="feedback-box";}
-  if(D.nextBtn)D.nextBtn.style.display="none";
+  if(D.nextBtn){D.nextBtn.style.display="none";D.nextBtn.style.pointerEvents="none";D.nextBtn.onclick=null;}
   if(D.aWrap)D.aWrap.innerHTML="";
   if(D.qBox)D.qBox.textContent="";
   /* Bug illus auteurs : nettoyer prop DOM entre séances */
@@ -7053,7 +7102,7 @@ function showFeedback(ok,explanation){
   // Bouton suivant
   const nb=document.getElementById("nextBtn");
   if(nb){
-    nb.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;";
+    nb.style.cssText="display:block;background:none;border:none;padding:0;cursor:pointer;margin:8px auto 0;pointer-events:auto;";
     nb.style.display="block";nb.style.textAlign="center";nb.style.margin="10px auto 0";
     nb.innerHTML=isLast
       ?'<img src="https://i.postimg.cc/m2xrVzhg/continuer.png" style="height:clamp(52px,7.5vh,70px);width:auto;display:block;margin:0 auto;" alt=""/>'
@@ -11573,9 +11622,12 @@ function _executeBuy(item){
   S.shopPurchased[item.id]=true;
   // Apply effects
   if(item.type==='avatar'){
+    /* shopAvatars derived from shopPurchased — buildAvGrid will reconstruct */
     if(!S.shopAvatars)S.shopAvatars=[];
     if(!S.shopAvatars.includes(item.img))S.shopAvatars.push(item.img);
+    try{saveProgress();}catch(e){}
     try{if(typeof buildAvGrid==='function')buildAvGrid();}catch(e){}
+    try{buildBigAvGrid();}catch(e){}
     _checkFripierAvatarBadge();
     _checkShopBadges();
   } else if(item.type==='parchemin_aura'){
@@ -11958,13 +12010,17 @@ function _fripierClick(){
 
 function _setAvatar(src){
   S.avatar=src;
-  ['#chipAv','#avGrid img','#avatarPreview','#profilAvImg','#bigAvImg','.av-main-img'].forEach(function(sel){
+  /* Update every avatar display */
+  ['#chipAv','#avatarPreview','#profilAvImg','#bigAvImg','.av-main-img'].forEach(function(sel){
     try{document.querySelectorAll(sel).forEach(function(el){el.src=src;});}catch(e){}
   });
   try{saveProgress();}catch(e){}
+  try{saveToLB();}catch(e){}
+  try{sessionStorage.setItem('mb_session',JSON.stringify({name:S.name,avatar:src}));}catch(e){}
   try{if(typeof _applyAuraEverywhere==='function')_applyAuraEverywhere();}catch(e){}
   try{buildAvGrid();}catch(e){}
 }
+
 
 function _showItemDetail(itemId){
   var item=(typeof SHOP_ITEMS!=='undefined'?SHOP_ITEMS:[]).find(function(i){return i.id===itemId;});
@@ -11983,9 +12039,17 @@ function _showItemDetail(itemId){
   var canUse=(inInv&&item.type!=='peluche'&&item.type!=='parchemin_aura'&&item.type!=='orbe');
   var auraBtn='';
   if(item.type==='parchemin_aura'&&pur){
-    var _aOn=S.hasAura;
-    auraBtn='<button onclick="S.hasAura=!S.hasAura;saveProgress();_applyAuraEverywhere();document.querySelector(\'.item-detail-ov\').remove();renderInventaire();" style="padding:9px 18px;border-radius:12px;border:none;background:linear-gradient(180deg,'+(_aOn?'#ef4444,#7f1d1d':'#2563eb,#1e3a8a')+"',#000);color:#fff;font-weight:900;font-size:12px;cursor:pointer;margin-right:8px;">+(_aOn?'D\u00e9sactiver l\'aura':'Activer l\'aura')+'</button>';
+    var _aOn=!!(S.hasAura);
+    var _btnBg=_aOn?'rgba(239,68,68,.25)':'rgba(37,99,235,.3)';
+    var _btnCol=_aOn?'#fca5a5':'#93c5fd';
+    var _btnTxt=_aOn?'D\u00e9sactiver l\'aura':'Activer l\'aura';
+    auraBtn='<button onclick="S.hasAura=!S.hasAura;saveProgress();'
+      +'_applyAuraEverywhere();document.querySelector(\'.item-detail-ov\').remove();'
+      +'renderInventaire();"'
+      +' style="padding:9px 18px;border-radius:12px;border:none;background:'+_btnBg+';color:'+_btnCol+';font-weight:900;font-size:12px;cursor:pointer;margin-right:8px;">'
+      +_btnTxt+'</button>';
   }
+
   var _t='<div style="font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:'+col+';margin-bottom:12px;">'+rlab+'</div>';
   _t+='<img src="'+item.img+'" style="width:80px;height:80px;object-fit:contain;display:block;margin:0 auto 14px;filter:drop-shadow(0 0 16px '+item.aura+');" />';
   _t+='<div style="font-size:17px;font-weight:900;color:#e2e8f0;margin-bottom:8px;">'+item.name+'</div>';
