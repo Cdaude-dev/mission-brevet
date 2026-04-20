@@ -1993,77 +1993,223 @@
   }
 
   /* ═══════════════════════════════════════════════════════════
-     BOUTIQUE DU FRIPIER DU SAVOIR — CSS
+     BOUTIQUE DU FRIPIER DU SAVOIR — CSS REDESIGN
   ═══════════════════════════════════════════════════════════ */
-  @keyframes shopCardHover{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
-  @keyframes fripierShopBreath{0%,100%{transform:translateX(-50%) scale(1) translateY(0);}40%{transform:translateX(-50%) scale(1.012) translateY(-5px);}}
-  @keyframes shopPlumeFloat{0%,100%{transform:translateY(0) rotate(var(--pr,0deg)) scale(var(--ps,1));}50%{transform:translateY(-18px) rotate(calc(var(--pr,0deg)+7deg)) scale(calc(var(--ps,1)*1.04));}}
-  @keyframes shopParticle{0%{transform:translate(0,0) scale(1);opacity:.7;}100%{transform:translate(var(--px,0),var(--py,-30px)) scale(0);opacity:0;}}
-  @keyframes auraGlow{0%{opacity:.5;filter:blur(3px);}100%{opacity:.9;filter:blur(6px);}}
 
-  /* ── Overlay full boutique ── */
+  /* ── Keyframes ── */
+  @keyframes shopFadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes shopSlideRight{from{transform:translateX(32px);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes shopBreath{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.015) translateY(-6px)}}
+  @keyframes shopPlumeFloat{0%,100%{transform:translateY(0) rotate(var(--pr,0deg)) scale(var(--ps,1));opacity:.7}50%{transform:translateY(-22px) rotate(calc(var(--pr,0deg)+9deg)) scale(calc(var(--ps,1)*1.06));opacity:.4}}
+  @keyframes shopParticle{0%{transform:translate(0,0) scale(1);opacity:.6}100%{transform:translate(var(--px,0),var(--py,-40px)) scale(0);opacity:0}}
+  @keyframes shopGlow{0%,100%{box-shadow:0 0 20px rgba(217,164,65,.25)}50%{box-shadow:0 0 40px rgba(217,164,65,.45)}}
+  @keyframes shopCardPop{0%{transform:translateY(3px);opacity:.8}100%{transform:translateY(0);opacity:1}}
+  @keyframes auraGlow{0%{opacity:.5;filter:blur(3px)}100%{opacity:.9;filter:blur(6px)}}
+
+  /* ── Overlay ── */
   #fripierShopOv{
-    display:none;position:fixed;inset:0;z-index:900;
-    flex-direction:column;align-items:stretch;overflow:hidden;
+    display:none;position:fixed;inset:0;z-index:900;overflow:hidden;
+    animation:shopFadeIn .35s ease-out;
   }
-  #shopBg{position:absolute;inset:0;background:url('https://i.postimg.cc/xdxSK9Fm/BG-fripier-desktop.png') center/cover no-repeat;}
-  #shopTint{position:absolute;inset:0;background:rgba(5,8,20,.55);}
+
+  /* ── Backgrounds ── */
+  #shopBg{
+    position:absolute;inset:0;z-index:0;
+    background:url('https://i.postimg.cc/xdxSK9Fm/BG-fripier-desktop.png') center/cover no-repeat;
+  }
+  #shopTint{
+    position:absolute;inset:0;z-index:1;
+    background:linear-gradient(100deg,rgba(5,8,20,.35) 0%,rgba(5,8,20,.2) 60%,rgba(5,8,20,.72) 100%);
+  }
   #shopPlumes{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;}
-  /* Fripier scene */
-  #shopScene{
-    position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-    width:clamp(300px,48vw,620px);z-index:3;pointer-events:none;
-    display:flex;flex-direction:column;align-items:center;
-  }
-  #shopFripierImg{
-    width:100%;height:auto;object-fit:contain;
-    filter:drop-shadow(0 0 40px rgba(96,165,250,.4));
-    animation:fripierShopBreath 4.5s ease-in-out infinite;
-    transform-origin:bottom center;cursor:pointer;pointer-events:all;
-  }
-  #shopComptoirImg{
-    position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-    width:clamp(340px,58vw,720px);z-index:4;pointer-events:none;
-  }
-  /* Top bar */
+
+  /* ── Top bar (fixed, glassmorphism) ── */
   #shopTopBar{
-    position:absolute;top:0;left:0;right:0;z-index:10;
+    position:absolute;top:0;left:0;right:0;z-index:20;
+    height:52px;
     display:flex;align-items:center;justify-content:space-between;
-    padding:12px 20px;background:rgba(5,8,20,.78);
-    border-bottom:1px solid rgba(217,164,65,.2);
-    backdrop-filter:blur(8px);
+    padding:0 22px;
+    background:rgba(5,8,20,.72);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(217,164,65,.22);
   }
   #shopStarDisplay{
-    display:flex;align-items:center;gap:6px;font-size:14px;font-weight:900;color:#fbbf24;
+    display:flex;align-items:center;gap:7px;
+    font-size:14px;font-weight:900;color:#fbbf24;
+    min-width:140px;
   }
-  #shopTitle{font-size:16px;font-weight:900;color:#d4a757;letter-spacing:.5px;}
+  #shopTitle{
+    position:absolute;left:50%;transform:translateX(-50%);
+    font-size:17px;font-weight:900;color:#d4a757;
+    letter-spacing:.6px;text-shadow:0 0 20px rgba(217,164,65,.4);
+    white-space:nowrap;
+  }
   #shopCloseBtn{
-    background:none;border:1px solid rgba(255,255,255,.2);border-radius:8px;
-    color:#ead7ae;font-size:16px;cursor:pointer;padding:4px 10px;
-    transition:background .15s;
+    background:rgba(239,68,68,.12);
+    border:1px solid rgba(239,68,68,.35);
+    border-radius:10px;color:#fca5a5;
+    font-size:13px;font-weight:700;cursor:pointer;
+    padding:5px 14px;transition:all .15s;
   }
-  #shopCloseBtn:hover{background:rgba(255,255,255,.08);}
-  /* Items container */
+  #shopCloseBtn:hover{background:rgba(239,68,68,.25);}
+  #shopPanelCloseBtn{display:none!important;} /* replaced by ✕ inside items panel */
+
+  /* ── Scene — left zone (desktop) ── */
+  #shopScene{
+    position:absolute;
+    bottom:0;left:0;
+    width:65%;height:100%;
+    z-index:3;pointer-events:none;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  #shopFripierImg{
+    position:relative;z-index:4;
+    width:clamp(340px,42vw,580px);
+    height:auto;object-fit:contain;
+    filter:drop-shadow(0 0 50px rgba(96,165,250,.35)) drop-shadow(0 8px 24px rgba(0,0,0,.7));
+    animation:shopBreath 5s ease-in-out infinite;
+    transform-origin:bottom center;
+    cursor:pointer;pointer-events:all;
+    margin-bottom:-2%;
+  }
+  #shopComptoirImg{
+    position:absolute;bottom:0;left:50%;
+    transform:translateX(-50%);
+    width:clamp(400px,52vw,700px);
+    z-index:5;pointer-events:none;
+  }
+
+  /* ── Items panel — right zone (desktop) ── */
   #shopItemsContainer{
-    position:absolute;top:52px;bottom:0;right:0;
-    width:min(420px,50vw);z-index:8;
-    background:rgba(5,8,20,.82);backdrop-filter:blur(10px);
-    border-left:1px solid rgba(217,164,65,.15);
-    overflow-y:auto;padding:16px 14px;
+    position:absolute;top:52px;right:0;bottom:0;
+    width:clamp(320px,34vw,480px);
+    z-index:15;
+    background:rgba(5,8,18,.88);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-left:1px solid rgba(217,164,65,.18);
+    overflow-y:auto;overflow-x:hidden;
+    padding:16px 14px 24px;
     -webkit-overflow-scrolling:touch;
+    animation:shopSlideRight .4s ease-out;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(217,164,65,.3) transparent;
   }
-  #shopItemsGrid{display:block;}
-  .shop-card{transition:transform .15s,box-shadow .15s;}
-  .shop-card:hover{animation:shopCardHover .4s;}
-  /* Aura player */
+  #shopItemsContainer::-webkit-scrollbar{width:4px;}
+  #shopItemsContainer::-webkit-scrollbar-thumb{background:rgba(217,164,65,.3);border-radius:4px;}
+  #shopItemsContainer::-webkit-scrollbar-track{background:transparent;}
+  /* Close icon inside panel */
+  #shopItemsContainer::before{
+    content:'';
+  }
+
+  /* ── Shop cards (2-col grid) ── */
+  #shopItemsGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .shop-rarity-header{
+    grid-column:1/-1;
+    font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+    color:#94a3b8;margin:8px 0 2px;padding-left:2px;
+  }
+  .shop-card{
+    background:rgba(15,20,35,.75);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;padding:10px 8px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    transition:transform .18s,box-shadow .18s,border-color .18s;
+    cursor:default;position:relative;overflow:hidden;
+    animation:shopCardPop .25s ease-out;
+  }
+  .shop-card:hover{
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:0 6px 24px rgba(0,0,0,.5);
+    border-color:rgba(217,164,65,.25);
+  }
+  .shop-card.rarity-uncommon{border-color:rgba(74,222,128,.18);}
+  .shop-card.rarity-uncommon:hover{border-color:rgba(74,222,128,.4);box-shadow:0 6px 20px rgba(74,222,128,.15);}
+  .shop-card.rarity-rare{border-color:rgba(192,132,252,.22);}
+  .shop-card.rarity-rare:hover{border-color:rgba(192,132,252,.5);box-shadow:0 6px 20px rgba(192,132,252,.2);}
+  .shop-card.rarity-epic{border-color:rgba(251,191,36,.25);}
+  .shop-card.rarity-epic:hover{border-color:rgba(251,191,36,.55);box-shadow:0 6px 24px rgba(251,191,36,.2);}
+  .shop-card.rarity-legendary{border-color:rgba(249,115,22,.28);}
+  .shop-card.rarity-legendary:hover{border-color:rgba(249,115,22,.6);box-shadow:0 6px 28px rgba(249,115,22,.25);}
+  .shop-card.owned{opacity:.55;}
+  .shop-card-img{width:52px;height:52px;object-fit:contain;}
+  .shop-card-name{font-size:10px;font-weight:800;color:#e2e8f0;text-align:center;line-height:1.3;}
+  .shop-card-price{font-size:11px;font-weight:900;color:#fbbf24;display:flex;align-items:center;gap:3px;}
+  .shop-card-buy{
+    width:100%;padding:5px 0;border-radius:9px;border:none;
+    background:linear-gradient(180deg,#d97706,#92400e);
+    color:#fff;font-weight:900;font-size:11px;cursor:pointer;
+    transition:opacity .15s,transform .1s;
+  }
+  .shop-card-buy:hover{opacity:.88;transform:scale(1.03);}
+  .shop-card-buy:active{transform:scale(.97);}
+  .shop-card-buy.disabled{background:rgba(100,116,139,.4);color:#64748b;cursor:not-allowed;}
+
+  /* ── Aura player ── */
   .has-player-aura{position:relative;}
   .has-player-aura::after{
     content:'';position:absolute;inset:-5px;border-radius:50%;
     background:radial-gradient(circle,transparent 40%,rgba(96,165,250,.45) 70%);
-    animation:auraGlow 2s ease-in-out infinite alternate;pointer-events:none;
-    z-index:1;
+    animation:auraGlow 2s ease-in-out infinite alternate;
+    pointer-events:none;z-index:1;
   }
-  /* ── Cinématique ── */
+
+  /* ════════════════ MOBILE (max 640px) ════════════════ */
+  edia(max-width:640px){
+    #shopBg{background-image:url('https://i.postimg.cc/mrXGQT67/BG-fripier-telephone.png')!important;background-size:cover!important;}
+    #shopTint{background:linear-gradient(180deg,rgba(5,8,20,.6) 0%,rgba(5,8,20,.3) 55%,rgba(5,8,20,.1) 100%)!important;}
+
+    /* Top bar */
+    #shopTopBar{
+      height:46px!important;padding:0 14px!important;
+    }
+    #shopTitle{font-size:13px!important;}
+    #shopStarDisplay{font-size:12px!important;min-width:auto!important;}
+
+    /* Items panel: top 46px → 58% screen height */
+    #shopItemsContainer{
+      position:absolute!important;
+      top:46px!important;left:0!important;right:0!important;bottom:auto!important;
+      width:100%!important;
+      height:56vh!important;max-height:56vh!important;
+      border-left:none!important;
+      border-radius:0!important;
+      padding:10px 10px 16px!important;
+      animation:none!important;
+    }
+    #shopItemsGrid{
+      grid-template-columns:1fr 1fr!important;
+      gap:8px!important;
+    }
+    .shop-card{padding:8px 6px!important;}
+    .shop-card-img{width:42px!important;height:42px!important;}
+    .shop-card-name{font-size:9px!important;}
+    .shop-card-price{font-size:10px!important;}
+    .shop-card-buy{font-size:10px!important;padding:4px 0!important;}
+
+    /* Scene: bottom 44% - Fripier visible */
+    #shopScene{
+      position:absolute!important;
+      top:auto!important;bottom:0!important;
+      left:0!important;right:0!important;
+      width:100%!important;height:44vh!important;
+      z-index:3!important;
+      display:flex!important;align-items:flex-end!important;justify-content:center!important;
+    }
+    #shopFripierImg{
+      width:clamp(160px,55vw,260px)!important;
+      margin-bottom:-1%!important;
+      filter:drop-shadow(0 0 30px rgba(96,165,250,.4)) drop-shadow(0 4px 12px rgba(0,0,0,.8))!important;
+    }
+    #shopComptoirImg{
+      width:clamp(200px,75vw,360px)!important;
+    }
+  }
+/* ── Cinématique ── */
   #fripierCinOv{
     display:none;position:fixed;inset:0;z-index:910;
     background:rgba(5,8,20,.75);
@@ -2471,10 +2617,12 @@
         <span id="shopStarCount">0</span> étoiles disponibles
       </div>
       <div id="shopTitle">Boutique du Fripier</div>
-      <div style="display:flex;gap:8px;"><button id="shopPanelCloseBtn" onclick="document.getElementById('shopItemsContainer').style.display='none';" style="background:none;border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#ead7ae;font-size:13px;cursor:pointer;padding:4px 10px;">✕ Masquer</button><button id="shopCloseBtn" onclick="closeFripierShop()" style="background:none;border:1px solid rgba(239,68,68,.4);border-radius:8px;color:#fca5a5;font-size:13px;cursor:pointer;padding:4px 10px;">↩ Quitter</button></div>
+<button id="shopCloseBtn" onclick="closeFripierShop()" title="Quitter la boutique">↩ Quitter</button>
     </div>
     <!-- Items panel (right on desktop, bottom on mobile) -->
     <div id="shopItemsContainer">
+      <button onclick="document.getElementById('shopItemsContainer').style.display='none';" style="position:sticky;top:0;float:right;z-index:5;background:rgba(15,20,35,.8);border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:2px 7px;border-radius:6px;margin-bottom:6px;display:block;">&#10005;</button>
+      <button onclick="document.getElementById('shopItemsContainer').style.display='none';" style="position:sticky;top:0;float:right;z-index:5;background:rgba(15,20,35,.8);border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:2px 6px;border-radius:6px;margin-bottom:8px;display:block;line-height:1;">✕</button>
       <div id="shopItemsGrid"></div>
     </div>
   </div>
@@ -9579,13 +9727,14 @@ document.addEventListener("visibilitychange",()=>{
   audioIds.forEach(id=>{
     const el=document.getElementById(id);
     if(!el)return;
-    if(hidden){
-      el._wasPlaying=!el.paused;
-      el.pause();
-    } else {
-      if(el._wasPlaying)el.play().catch(()=>{});
-    }
+    if(hidden){el._wasPlaying=!el.paused;el.pause();}
+    else{if(el._wasPlaying)el.play().catch(()=>{});}
   });
+  /* Shop music (variable audio) */
+  if(typeof _shopMusicAudio!=="undefined"&&_shopMusicAudio){
+    if(hidden){_shopMusicAudio._wasPlaying=!_shopMusicAudio.paused;_shopMusicAudio.pause();}
+    else{if(_shopMusicAudio._wasPlaying)_shopMusicAudio.play().catch(()=>{});}
+  }
 });
 
 // Enter key → advance to next question (when nextBtn is visible and not locked)
@@ -10737,6 +10886,8 @@ function maybeShowUpdateMsg(){
       }
     }
   },1500);
+
+  try{setTimeout(showUpdatePopupIfNeeded,2000);}catch(e){}
 }
 
 // Chat button visibility updated from goScreen (integrated below)
