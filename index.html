@@ -5535,24 +5535,36 @@ function buildAvGrid(){
 }
 function buildBigAvGrid(){
   const level=lv(S.score,S.name);
-  const grid=document.getElementById("bigAvGrid"); grid.innerHTML="";
+  const grid=document.getElementById("bigAvGrid"); if(!grid)return; grid.innerHTML="";
   _addAvLabel(grid,"Avatars standards");
   AVATARS.forEach(src=>{
     _addAvItem(grid,src,S.avatar===src,true,"",
-      ()=>{S.avatar=src;updateHUD();updateBigModal();},true);
+      ()=>{_setAvatar(src);updateBigModal();},true);
   });
   _addAvLabel(grid,"Avatars à débloquer (niveau)");
   LOCKED_AV.forEach(item=>{
     const ok=level>=item.level;
     _addAvItem(grid,item.src,S.avatar===item.src,ok,"Niveau "+item.level+" requis",
-      ()=>{if(ok){S.avatar=item.src;updateHUD();updateBigModal();}else toast("Niveau "+item.level+" requis ! 🔒");},true);
+      ()=>{if(ok){_setAvatar(item.src);updateBigModal();}else toast("Niveau "+item.level+" requis ! 🔒");},true);
   });
   _addAvLabel(grid,"Avatars exclusifs (100% catégorie)");
   EXCLUSIVE_AV.forEach(item=>{
     const ok=item.check();
     _addAvItem(grid,item.src,S.avatar===item.src,ok,item.label,
-      ()=>{if(ok){S.avatar=item.src;updateHUD();updateBigModal();}else toast(item.label+" — "+item.desc+" 🔒");},true);
+      ()=>{if(ok){_setAvatar(item.src);updateBigModal();}else toast(item.label+" — "+item.desc+" 🔒");},true);
   });
+  /* Avatars de la Friperie */
+  if(S.shopPurchased&&typeof SHOP_ITEMS!=='undefined'){
+    var _sav=SHOP_ITEMS.filter(function(i){return i.type==='avatar'&&S.shopPurchased[i.id];});
+    if(_sav.length){
+      _addAvLabel(grid,'Avatars de la Friperie');
+      _sav.forEach(function(item){
+        var src=item.img;
+        _addAvItem(grid,src,S.avatar===src,true,item.name,
+          function(){_setAvatar(src);updateBigModal();},true);
+      });
+    }
+  }
 }
 
 function updateSeanceBadges(){
@@ -10329,6 +10341,31 @@ function showActualites(){
       <button onclick="this.closest('.mb-popup-ov').remove()" style="background:none;border:none;color:#ead7ae;font-size:20px;cursor:pointer;">✕</button>
     </div>
     <!-- Du plus récent (haut) au plus ancien (bas) -->
+    <div style="margin-bottom:20px;border-left:3px solid #f97316;padding-left:14px;background:rgba(217,164,65,.04);border-radius:0 10px 10px 0;padding:12px 14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026 — Mise à jour majeure</div>
+      <div style="font-size:15px;font-weight:900;color:#f97316;margin-bottom:8px;">🛍️ Boutique du Fripier du Savoir — Ouverture</div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">
+        <img src="https://i.postimg.cc/L89fFzFv/fripier-du-savoir-V2.png" style="width:56px;filter:drop-shadow(0 0 12px rgba(251,146,60,.6));animation:bossIdle 4s ease-in-out infinite;flex-shrink:0;"/>
+        <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+          Le Fripier du Savoir ouvre enfin les portes de sa mystérieuse boutique ! <strong style="color:#fbbf24;">Avatars exclusifs, parchemins d'XP, potions, peluches et bien plus encore</strong> vous attendent en échange de vos étoiles collectionnées.<br>
+          <span style="font-size:11px;opacity:.7;">Accédez à la boutique depuis le menu principal.</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:20px;border-left:3px solid #67e8f9;padding-left:14px;background:rgba(96,165,250,.04);border-radius:0 10px 10px 0;padding:12px 14px;">
+      <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026 — Mise à jour</div>
+      <div style="font-size:15px;font-weight:900;color:#67e8f9;margin-bottom:8px;">🔮 Orbes des boss — Collecte automatique</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+        <img src="https://i.postimg.cc/Z5LqZgxv/Orbe-chronoscribe.png" style="width:36px;filter:drop-shadow(0 0 8px rgba(217,164,65,.7));"/>
+        <img src="https://i.postimg.cc/GmjprNxy/orbe-Conjugus.png" style="width:36px;filter:drop-shadow(0 0 8px rgba(192,132,252,.7));"/>
+        <img src="https://i.postimg.cc/W174jKwF/Orbe-Grammaria.png" style="width:36px;filter:drop-shadow(0 0 8px rgba(96,165,250,.7));"/>
+        <img src="https://i.postimg.cc/K85YFVDK/Orbe-Memelite.png" style="width:36px;filter:drop-shadow(0 0 8px rgba(239,68,68,.7));"/>
+      </div>
+      <div style="font-size:13px;color:#ead7ae;line-height:1.6;">
+        Dès qu'un boss est vaincu, son <strong style="color:#67e8f9;">Orbe</strong> est automatiquement collectée. Réunissez les cinq orbes pour invoquer le boss final, <strong style="color:#c4b5fd;">Daudémoniaque</strong>, actuellement en cours de création.<br>
+        <span style="font-size:11px;opacity:.7;">Consultez votre inventaire pour suivre votre collection.</span>
+      </div>
+    </div>
     <div style="margin-bottom:20px;border-left:3px solid #facc15;padding-left:14px;">
       <div style="font-size:12px;color:#ead7ae;opacity:.6;margin-bottom:4px;">Avril 2026 — Mise à jour</div>
       <div style="font-size:15px;font-weight:900;color:#facc15;margin-bottom:8px;">⚡ Chronoscribe — Boss de Littérature</div>
@@ -12069,6 +12106,32 @@ function toggleBossFx(){
   try{saveProgress();}catch(e){}
   toast(S.bossHitFxEnabled===false?'FX boss : désactivés':'FX boss : activés');
   try{renderInventaire();}catch(e){}
+}
+
+function showUpdatePopupIfNeeded(){
+  var VERSION='v2025-fripier';
+  try{if(localStorage.getItem('mb_update_seen_'+VERSION))return;}catch(e){}
+  var ov=document.createElement('div');
+  ov.className='mb-popup-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:950;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .4s;';
+  ov.innerHTML=`
+    <div style="background:linear-gradient(160deg,#0a0f1e,#12071a);border:2px solid rgba(217,164,65,.5);border-radius:22px;padding:28px 22px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto;animation:popIn .4s;">
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="font-size:26px;margin-bottom:8px;">⚡</div>
+        <div style="font-size:18px;font-weight:900;color:#fbbf24;margin-bottom:4px;">Nouvelle mise à jour !</div>
+        <div style="font-size:12px;color:#94a3b8;">Avril 2026</div>
+      </div>
+      <div style="margin-bottom:16px;border-left:3px solid #f97316;padding-left:12px;">
+        <div style="font-size:14px;font-weight:900;color:#f97316;margin-bottom:6px;">🛍️ Boutique du Fripier du Savoir</div>
+        <div style="font-size:12px;color:#ead7ae;line-height:1.7;">Un mystérieux marchand installe sa boutique dans l'enceinte du jeu. <strong style="color:#fbbf24;">Avatars exclusifs, parchemins d'expérience, potions magiques et bien d'autres trésors</strong> vous attendent en échange de vos étoiles. Explorez sa boutique depuis le menu principal.</div>
+      </div>
+      <div style="margin-bottom:20px;border-left:3px solid #67e8f9;padding-left:12px;">
+        <div style="font-size:14px;font-weight:900;color:#67e8f9;margin-bottom:6px;">🔮 Orbes des boss — Collecte automatique</div>
+        <div style="font-size:12px;color:#ead7ae;line-height:1.7;">Désormais, chaque victoire contre un boss vous rapporte son <strong style="color:#67e8f9;">Orbe unique</strong>. Réunissez les cinq orbes de Conjugus, Grammaria, Mémélité, Chronoscribe et du Fripier pour invoquer le boss final, <strong style="color:#c4b5fd;">Daudémoniaque</strong>, actuellement en cours de création…</div>
+      </div>
+      <button onclick="try{localStorage.setItem('mb_update_seen_v2025-fripier','1');}catch(e){}this.closest('.mb-popup-ov').remove();" style="width:100%;padding:13px;border-radius:14px;border:none;background:linear-gradient(180deg,#d97706,#92400e);color:#fff;font-weight:900;font-size:15px;cursor:pointer;">Découvrir les nouveautés ✨</button>
+    </div>`;
+  document.body.appendChild(ov);
 }
 </script>
 
@@ -14924,55 +14987,60 @@ function _renderItemsPool(){
 
 /* Pointer-based drag for mobile */
 function _setupPointerDrag(el, itemIdx){
-  var startX,startY,offX,offY,ghost,active=false;
+  var startX,startY,offX,offY,ghost=null,active=false;
+  var _ctrl=null;
+  function _cleanup(){
+    active=false;
+    if(ghost){try{ghost.remove();}catch(e){}ghost=null;}
+    el.classList.remove('placed');
+    document.querySelectorAll('.chrono-zone').forEach(function(z){z.classList.remove('drag-over');});
+    if(_ctrl){_ctrl.abort();_ctrl=null;}
+  }
   el.addEventListener('pointerdown',function(e){
     if(e.button && e.button!==0) return;
     e.preventDefault();
+    /* Clean any previous drag state */
+    _cleanup();
     active=true;
     startX=e.clientX; startY=e.clientY;
     var r=el.getBoundingClientRect();
     offX=e.clientX-r.left; offY=e.clientY-r.top;
-    /* Capture exact size before clone */
-    var _er=el.getBoundingClientRect();
     ghost=el.cloneNode(true);
     ghost.className='chrono-item-ghost';
     ghost.innerHTML=el.innerHTML;
-    ghost.style.position='fixed';
-    ghost.style.left=(e.clientX-offX)+'px';
-    ghost.style.top=(e.clientY-offY)+'px';
-    ghost.style.width=_er.width+'px';
-    ghost.style.height=_er.height+'px';
-    ghost.style.transform='scale(1.04)';
-    ghost.style.transition='none';
+    ghost.style.cssText='position:fixed;z-index:9999;pointer-events:none;transform:scale(1.06);transition:none;width:'+r.width+'px;height:'+r.height+'px;left:'+(e.clientX-offX)+'px;top:'+(e.clientY-offY)+'px;';
     document.body.appendChild(ghost);
-    el.classList.add('placed');
-  },{ passive:false });
-  document.addEventListener('pointermove',function(e){
-    if(!active||!ghost) return;
-    ghost.style.left=(e.clientX-offX)+'px';
-    ghost.style.top=(e.clientY-offY)+'px';
-    /* Highlight zone under cursor */
-    ghost.style.display='none';
-    var target=document.elementFromPoint(e.clientX,e.clientY);
-    ghost.style.display='';
-    var zone=target?target.closest('.chrono-zone'):null;
-    document.querySelectorAll('.chrono-zone').forEach(function(z){ z.classList.remove('drag-over'); });
-    if(zone) zone.classList.add('drag-over');
-  });
-  document.addEventListener('pointerup',function(e){
-    if(!active) return;
-    active=false;
-    if(ghost){ ghost.remove(); ghost=null; }
-    el.classList.remove('placed');
-    document.querySelectorAll('.chrono-zone').forEach(function(z){ z.classList.remove('drag-over'); });
-    /* Find drop target */
-    ghost=null; // already removed
-    var realTarget=document.elementFromPoint(e.clientX,e.clientY);
-    var zone=realTarget?realTarget.closest('.chrono-zone'):null;
-    if(zone && zone.dataset.period){
-      _placeItem('ci-'+itemIdx, zone.dataset.period);
-    }
-  });
+    el.style.opacity='0.4';
+    /* Use AbortController to prevent listener accumulation */
+    _ctrl=new AbortController();
+    var sig={signal:_ctrl.signal};
+    document.addEventListener('pointermove',function(e){
+      if(!active||!ghost) return;
+      ghost.style.left=(e.clientX-offX)+'px';
+      ghost.style.top=(e.clientY-offY)+'px';
+      ghost.style.display='none';
+      var target=document.elementFromPoint(e.clientX,e.clientY);
+      ghost.style.display='';
+      var zone=target?target.closest('.chrono-zone'):null;
+      document.querySelectorAll('.chrono-zone').forEach(function(z){z.classList.remove('drag-over');});
+      if(zone) zone.classList.add('drag-over');
+    },sig);
+    document.addEventListener('pointerup',function(e){
+      if(!active) return;
+      var cx=e.clientX, cy=e.clientY;
+      _cleanup();
+      el.style.opacity='';
+      /* Find drop target AFTER removing ghost */
+      var realTarget=document.elementFromPoint(cx,cy);
+      var zone=realTarget?realTarget.closest('.chrono-zone'):null;
+      if(zone&&zone.dataset.period){
+        _placeItem('ci-'+itemIdx, zone.dataset.period);
+      }
+    },sig);
+    document.addEventListener('pointercancel',function(){
+      _cleanup();el.style.opacity='';
+    },sig);
+  },{passive:false});
 }
 
 /* _placeItem : supporte plusieurs éléments par zone
