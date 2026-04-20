@@ -2156,7 +2156,7 @@
   .shop-card[class*="rarity-legendary"]:hover{border-color:rgba(249,115,22,.68)!important;box-shadow:0 8px 32px rgba(249,115,22,.28)!important;}
   /* Card image */
   .shop-card img:first-child{
-    width:62px!important;height:62px!important;
+    width:70px!important;height:70px!important;
     object-fit:contain!important;
     flex-shrink:0!important;
   }
@@ -2210,7 +2210,7 @@
     #shopItemsGrid > div > div:last-child{
       grid-template-columns:1fr 1fr!important;gap:7px!important;
     }
-    .shop-card img:first-child{width:46px!important;height:46px!important;}
+    .shop-card img:first-child{width:52px!important;height:52px!important;}
     /* card content smaller on mobile */
     .shop-card{padding:9px 7px 8px!important;gap:5px!important;}
 
@@ -5956,11 +5956,8 @@ function exportPlayerState(){
     player_name: S.name,
     score: S.score||0,
     avatar: S.avatar||"",
-    has_aura: !!(S.hasAura),
-    desc: S.desc||"",
-    shop_avatars: JSON.stringify(S.shopAvatars||[]),
+    description: S.desc||"",
     badges: JSON.stringify([...(S.badges||new Set())]),
-    // Progression complète (étoiles, modules, perfects)
     progression: JSON.stringify({
       done: S.done||{},
       perfect: S.perfect||{},
@@ -5968,22 +5965,27 @@ function exportPlayerState(){
       seancePts: S.seancePts||{},
       stars: S.stars||{},
       bossDefeated: S.bossDefeated||false,
-      bossUnlockShown: S.bossUnlockShown||false,
       gramBossDefeated: S.gramBossDefeated||false,
-      gramBossUnlockShown: S.gramBossUnlockShown||false,
       conjKeyShown: S.conjKeyShown||false,
       gramKeyShown: S.gramKeyShown||false,
       litKeyShown: S.litKeyShown||false,
       memeliteDefeated: S.memeliteDefeated||false,
-      memeliteFlawless: S.memeliteFlawless||false,
       orgBossDefeated: S.orgBossDefeated||false,
       bossXPAwarded: S.bossXPAwarded||{},
-      _bossXpGranted: S._bossXpGranted||{},
       _seancesCompleted: S._seancesCompleted||0,
-      _teddyFirstOpened: S._teddyFirstOpened||false,
-      firstSeenAt: S.firstSeenAt||null,
-      siam_popup_shown: S.siam_popup_shown||false
+      firstSeenAt: S.firstSeenAt||null
     }),
+    /* shop_data column — all boutique state for cross-device save */
+    shop_data: JSON.stringify({
+      shopPurchased: S.shopPurchased||{},
+      shopInventory: S.shopInventory||{},
+      shopAvatars: S.shopAvatars||[],
+      shopStarsSpent: S.shopStarsSpent||0,
+      hasAura: !!(S.hasAura),
+      bossHitFxEnabled: S.bossHitFxEnabled!==false
+    }),
+    /* mythic_items column — orbes collection */
+    mythic_items: JSON.stringify(S.mythicItems||{}),
     updated_at: new Date().toISOString()
   };
 }
@@ -6006,17 +6008,39 @@ function mergeRemoteState(remote){
     }
     // Avatar : garder le local si défini, sinon prendre le remote
     if(!S.avatar && remote.avatar) S.avatar = remote.avatar;
-    // shopAvatars : merge (union des avatars boutique)
-    if(remote.shop_avatars){
-      try{var _ra=typeof remote.shop_avatars==="string"?JSON.parse(remote.shop_avatars):remote.shop_avatars;
-        if(Array.isArray(_ra)){S.shopAvatars=S.shopAvatars||[];_ra.forEach(function(av){if(!S.shopAvatars.includes(av))S.shopAvatars.push(av);});}
-      }catch(e){}}
-
-    // shopAvatars : merge (union)
-    if(remote.shop_avatars){
+    /* ── shop_data restore (boutique cross-device) ── */
+    if(remote.shop_data){
       try{
-        var _ra=typeof remote.shop_avatars==="string"?JSON.parse(remote.shop_avatars):remote.shop_avatars;
-        if(Array.isArray(_ra)){S.shopAvatars=S.shopAvatars||[];_ra.forEach(function(av){if(!S.shopAvatars.includes(av))S.shopAvatars.push(av);});}
+        var _sd=typeof remote.shop_data==="string"?JSON.parse(remote.shop_data):remote.shop_data;
+        /* shopPurchased : union (true wins) */
+        if(_sd.shopPurchased){
+          S.shopPurchased=S.shopPurchased||{};
+          Object.keys(_sd.shopPurchased).forEach(function(k){if(_sd.shopPurchased[k])S.shopPurchased[k]=_sd.shopPurchased[k];});
+        }
+        /* shopInventory : max quantity */
+        if(_sd.shopInventory){
+          S.shopInventory=S.shopInventory||{};
+          Object.keys(_sd.shopInventory).forEach(function(k){S.shopInventory[k]=Math.max(S.shopInventory[k]||0,_sd.shopInventory[k]||0);});
+        }
+        /* shopAvatars : union */
+        if(_sd.shopAvatars&&Array.isArray(_sd.shopAvatars)){
+          S.shopAvatars=S.shopAvatars||[];
+          _sd.shopAvatars.forEach(function(av){if(!S.shopAvatars.includes(av))S.shopAvatars.push(av);});
+        }
+        /* shopStarsSpent : max */
+        if(_sd.shopStarsSpent)S.shopStarsSpent=Math.max(S.shopStarsSpent||0,_sd.shopStarsSpent);
+        /* hasAura : true wins */
+        if(_sd.hasAura)S.hasAura=true;
+        /* bossHitFxEnabled : local preference takes priority */
+        if(typeof S.bossHitFxEnabled==='undefined')S.bossHitFxEnabled=_sd.bossHitFxEnabled!==false;
+      }catch(e){}
+    }
+    /* ── mythic_items restore (orbes) ── */
+    if(remote.mythic_items){
+      try{
+        var _mi=typeof remote.mythic_items==="string"?JSON.parse(remote.mythic_items):remote.mythic_items;
+        S.mythicItems=S.mythicItems||{};
+        Object.keys(_mi).forEach(function(k){if(_mi[k])S.mythicItems[k]=true;});
       }catch(e){}
     }
     // seancePct : max par module
@@ -11766,13 +11790,13 @@ function _buildShopCard(item){
   if(avail&&!locked) card.style.cursor='pointer';
   var img=document.createElement('img');
   img.src=item.img; img.alt=item.name;
-  img.style.cssText='width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 0 10px '+item.aura+')'+((!avail||locked)?';opacity:.35;filter:grayscale(.6) brightness(.4);':'')+';';
+  img.style.cssText='width:70px;height:70px;object-fit:contain;filter:drop-shadow(0 0 10px '+item.aura+')'+((!avail||locked)?';opacity:.35;filter:grayscale(.6) brightness(.4);':'')+';';
   var name=document.createElement('div');
   name.style.cssText='font-size:10px;font-weight:700;color:#e2e8f0;text-align:center;line-height:1.35;margin-top:1px;';
   name.textContent=item.name;
   var priceRow=document.createElement('div');
-  priceRow.style.cssText='display:flex;align-items:center;gap:3px;font-size:9px;font-weight:600;color:rgba(251,191,36,.75);';
-  priceRow.innerHTML='<img src="https://i.postimg.cc/yY0GDKvR/etoile.png" style="width:9px;height:9px;object-fit:contain;opacity:.8;"/> '+item.price;
+  priceRow.style.cssText='display:flex;align-items:center;justify-content:center;gap:2px;font-size:8.5px;font-weight:500;color:rgba(251,191,36,.6);';
+  priceRow.innerHTML='<span style="font-size:8px;opacity:.55;color:#fbbf24;font-weight:500;">⭐ '+item.price+'</span>';
   var statusEl=document.createElement('div');
   statusEl.style.cssText='font-size:8px;text-align:center;padding:2px 7px;border-radius:7px;font-weight:600;width:100%;box-sizing:border-box;';
   if(locked){
@@ -12289,35 +12313,58 @@ function toggleBossFx(){
 function showUpdatePopupIfNeeded(){
   var _KEY='seen_fripier_popup';
   try{if(localStorage.getItem(_KEY))return;}catch(e){return;}
-  if(!S.name)return; /* not logged in yet */
+  if(!S.name)return;
   var ov=document.createElement('div');
   ov.className='mb-popup-ov shop-announce-ov';
   ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.84);z-index:960;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .5s ease-out;';
   ov.innerHTML=`
     <div style="background:linear-gradient(155deg,#09101f,#110c1e);border:1.5px solid rgba(217,164,65,.45);border-radius:24px;
-      padding:32px 24px 26px;max-width:420px;width:100%;text-align:center;animation:popIn .45s cubic-bezier(.34,1.56,.64,1);">
-      <div style="font-size:32px;margin-bottom:14px;">&#10024;</div>
-      <div style="font-size:20px;font-weight:900;color:#fbbf24;letter-spacing:.3px;margin-bottom:18px;">Une nouvelle d\u00e9couverte\u2026</div>
-      <p style="font-size:13px;color:#ead7ae;line-height:1.75;margin-bottom:12px;font-style:italic;">
-        Le <strong style='color:#f97316;font-style:normal;'>Fripier du Savoir</strong> a ouvert les portes de sa myst\u00e9rieuse boutique.
-        Des artefacts rares, des parchemins oubli\u00e9s\u2026 et peut-\u00eatre bien plus encore vous y attendent.
-      </p>
-      <p style="font-size:13px;color:#ead7ae;line-height:1.75;margin-bottom:26px;font-style:italic;">
-        Cinq <strong style='color:#67e8f9;font-style:normal;'>Orbes anciennes</strong> ont \u00e9galement refait surface.
-        On raconte qu\'en les r\u00e9unissant toutes\u2026 quelque chose d\'inimaginable pourrait se produire.
-      </p>
-      <button onclick="try{localStorage.setItem('seen_fripier_popup','true');}catch(e){}this.closest('.shop-announce-ov').remove();"
-        style="width:100%;padding:13px;border-radius:14px;border:none;
-          background:linear-gradient(135deg,#b45309,#78350f);
-          color:#fff;font-weight:900;font-size:15px;cursor:pointer;
-          letter-spacing:.3px;box-shadow:0 4px 20px rgba(180,83,9,.35);
-          transition:opacity .15s;"
-        onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-        \u2192 D\u00e9couvrir
-      </button>
+      max-width:420px;width:100%;overflow:hidden;animation:popIn .45s cubic-bezier(.34,1.56,.64,1);">
+
+      <!-- Image header -->
+      <div style="position:relative;height:140px;background:linear-gradient(160deg,#0d1a2e,#1a0d2e);overflow:hidden;">
+        <!-- Orb right, with aura -->
+        <img src='https://i.postimg.cc/MG8YdBgW/Orbe-Fripier.png'
+          style="position:absolute;right:18px;top:50%;transform:translateY(-50%);
+            width:60px;height:60px;object-fit:contain;
+            filter:drop-shadow(0 0 14px rgba(20,200,200,.8)) drop-shadow(0 0 28px rgba(20,200,200,.4));
+            animation:shopBreath 4s ease-in-out infinite;"/>
+        <!-- Fripier left, large -->
+        <img src='https://i.postimg.cc/L89fFzFv/fripier-du-savoir-V2.png'
+          style="position:absolute;bottom:0;left:20px;
+            height:130px;width:auto;object-fit:contain;object-position:bottom;
+            filter:drop-shadow(0 0 20px rgba(96,165,250,.4));
+            animation:shopBreath 5s ease-in-out infinite;"/>
+        <!-- Subtle gradient overlay at bottom -->
+        <div style="position:absolute;bottom:0;left:0;right:0;height:40px;
+          background:linear-gradient(transparent,#09101f);"></div>
+      </div>
+
+      <!-- Text content -->
+      <div style="padding:22px 22px 24px;">
+        <div style="font-size:19px;font-weight:900;color:#fbbf24;letter-spacing:.3px;margin-bottom:14px;text-align:center;">Une nouvelle d\u00e9couverte\u2026</div>
+        <p style="font-size:13px;color:#ead7ae;line-height:1.75;margin-bottom:10px;font-style:italic;">
+          Le <strong style='color:#f97316;font-style:normal;'>Fripier du Savoir</strong> a ouvert les portes de sa myst\u00e9rieuse boutique.
+          Des artefacts rares, des parchemins oubli\u00e9s\u2026 et peut-\u00eatre bien plus encore vous y attendent.
+        </p>
+        <p style="font-size:13px;color:#ead7ae;line-height:1.75;margin-bottom:22px;font-style:italic;">
+          Cinq <strong style='color:#67e8f9;font-style:normal;'>Orbes anciennes</strong> ont \u00e9galement refait surface.
+          On raconte qu\'en les r\u00e9unissant toutes\u2026 quelque chose d\'inimaginable pourrait se produire.
+        </p>
+        <button onclick="try{localStorage.setItem('seen_fripier_popup','true');}catch(e){}this.closest('.shop-announce-ov').remove();"
+          style="width:100%;padding:13px;border-radius:14px;border:none;
+            background:linear-gradient(135deg,#b45309,#78350f);
+            color:#fff;font-weight:900;font-size:15px;cursor:pointer;
+            letter-spacing:.3px;box-shadow:0 4px 20px rgba(180,83,9,.35);
+            transition:opacity .15s;"
+          onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          \u2192 D\u00e9couvrir
+        </button>
+      </div>
     </div>`;
   document.body.appendChild(ov);
 }
+
 
 </script>
 
