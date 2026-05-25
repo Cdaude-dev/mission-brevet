@@ -7255,7 +7255,7 @@ function goScreen(name){
     HOME_LAYOUT=null;
     requestAnimationFrame(function(){requestAnimationFrame(function(){
       try{_getHomeLayout();_applyHomeLayout();}catch(e){}
-      var _hw=window._adminForceHomeMobile?'home_mobile':'home_desktop';
+      var _hw=(window._adminForceHomeMobile||(window.innerWidth<=768&&!(typeof isAdminDaude==='function'&&isAdminDaude())))?'home_mobile':'home_desktop';
       setTimeout(function(){try{_sl_apply(_hw);}catch(e){}},200);
     });});
     /* Bouton admin sur la carte d'accueil */
@@ -7383,8 +7383,10 @@ function goScreen(name){
 }
 function goTransition(t){
   /* Bloquer la navigation si l'admin est en mode édition */
-  if(window._mapEditMode||window._homeEditActive||window._uae_active||window._adminForceHomeMobile||window._sl_editMode){
-    console.log('[EDIT MODE] goTransition bloqué:',t);
+  var _ea=window._mapEditMode||window._homeEditActive||window._sl_editMode
+    ||(window._uae_active&&typeof isAdminDaude==='function'&&isAdminDaude());
+  if(_ea){
+    console.log('[SL] goTransition bloqué:',t);
     return;
   }
   D.transition.classList.add("show");
@@ -19680,6 +19682,7 @@ function _sl_collect(world){
 
 function _sl_initAdmin(world){
   if(!isAdminDaude())return;
+  if(world==='coquillard'){_sl_initAdminCoq();return;}
   _sl_editWorld=world;
   ['_sl_btn','_sl_panel','_sl_mob_btn'].forEach(function(id){var e=document.getElementById(id);if(e)e.remove();});
   var btn=document.createElement('button');btn.id='_sl_btn';
@@ -19859,6 +19862,7 @@ function _sl_autoSave(){
 function _sl_saveAll(){
   if(!isAdminDaude())return;
   var world=_sl_editWorld||'cite';
+  if(world.indexOf('coquillard')>=0){_sl_saveCoqLayout();return;}
   var layout=_sl_collect(world);
   if(!Object.keys(layout).length){alert('Aucun \u00E9l\u00E9ment. \u00CAtes-vous dans le bon monde ?');return;}
   _sl_save(world,layout).then(function(){
@@ -20353,62 +20357,19 @@ function _uae_toggleMobile(){
 }
 
 function _savePositionsForAll(){
-  if(!isAdminDaude()){alert('R\u00e9serv\u00e9 \u00e0 Professeur Daud\u00e9');return;}
-  function _gLS(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
-  /* Fusionner les LAYOUT en mémoire avec localStorage admin */
-  function _mergeSL(){
-    var ls=_gLS('map_layout_sylve')||{};
-    var base=typeof SYLVE_LAYOUT!=='undefined'?Object.keys(SYLVE_LAYOUT).reduce(function(acc,k){
-      var d=SYLVE_LAYOUT[k];acc['sv-'+k]={left:d.xP+'%',top:d.yP+'%',h:d.h+'px',w:(d.w&&d.w>0?d.w+'px':'auto')};
-      if(d.bossOX!==undefined)acc['sv-'+k+'-boss']={bossOX:d.bossOX,bossOY:d.bossOY,bossH:d.bossH};return acc;
-    },{}):{};return Object.assign({},base,ls);
-  }
-  function _mergePL(){
-    var ls=_gLS('map_layout_plumes')||{};
-    var base=typeof PLUMES_LAYOUT!=='undefined'?Object.keys(PLUMES_LAYOUT).reduce(function(acc,k){
-      var d=PLUMES_LAYOUT[k];acc['pbg-'+k]={left:d.xP+'%',top:d.yP+'%',h:d.h+'px'};
-      if(d.bossOX!==undefined)acc['pbg-'+k+'-boss']={bossOX:d.bossOX,bossOY:d.bossOY,bossH:d.bossH};return acc;
-    },{}):{};return Object.assign({},base,ls);
-  }
-  var gml={
-    cite:   _gLS('map_layout_cite')  ||GLOBAL_MAP_LAYOUTS.cite  ||{},
-    sylve:  _mergeSL(),
-    plumes: _mergePL(),
-    coquillard_desktop:_gLS('coquillard_shop_layout_desktop')||GLOBAL_MAP_LAYOUTS.coquillard_desktop||{},
-    coquillard_mobile: _gLS('coquillard_shop_layout_mobile') ||GLOBAL_MAP_LAYOUTS.coquillard_mobile ||{}
-  };
-  var hD=_gLS('home_layout_desktop')||GLOBAL_HOME_LAYOUTS.desktop||{};
-  var hM=_gLS('home_layout_mobile') ||GLOBAL_HOME_LAYOUTS.mobile ||{};
+  if(!isAdminDaude()){alert('Réservé à Professeur Daudé');return;}
   var src=document.documentElement.outerHTML;
-  if(!src||src.length<50000){alert('Impossible de lire le HTML de la page.');return;}
-  /* Incrémenter version pour invalider les caches joueurs */
-  var cv=typeof GLOBAL_LAYOUT_VERSION!=='undefined'?GLOBAL_LAYOUT_VERSION:'2.0';
-  var vp=cv.split('.');
-  var nv=vp[0]+'.'+(parseInt(vp[1]||'0')+1);
-  /* Remplacer les 3 constantes dans le HTML source */
-  var out=src;
-  out=out.replace(
-    /var GLOBAL_MAP_LAYOUTS=\{[\s\S]*?\};(?=\s*function getLayoutForWorld)/,
-    'var GLOBAL_MAP_LAYOUTS='+JSON.stringify(gml)+';'
-  );
-  out=out.replace(
-    /var GLOBAL_HOME_LAYOUTS=\{[\s\S]*?\};(?=\s*\/\*|\s*var HOME_LAYOUT)/,
-    'var GLOBAL_HOME_LAYOUTS={"desktop":'+JSON.stringify(hD)+',"mobile":'+JSON.stringify(hM)+'};'
-  );
-  out=out.replace("GLOBAL_LAYOUT_VERSION='"+cv+"'","GLOBAL_LAYOUT_VERSION='"+nv+"'");
-  /* Télécharger */
-  var blob=new Blob([out],{type:'text/html;charset=utf-8'});
+  if(!src||src.length<50000){alert('Impossible de lire le HTML.');return;}
+  var blob=new Blob([src],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download='mission-brevet.html';
   a.style.display='none';document.body.appendChild(a);a.click();
   setTimeout(function(){URL.revokeObjectURL(url);a.remove();},2000);
-  /* Toast */
   var t=document.createElement('div');
   t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:99999;'
     +'background:rgba(16,185,129,.95);color:#fff;padding:14px 28px;border-radius:12px;'
-    +'font-weight:800;font-size:15px;box-shadow:0 4px 20px rgba(0,0,0,.5);text-align:center;';
-  t.innerHTML='\u2705 Fichier t\u00e9l\u00e9charg\u00e9\u00a0!<br>'
-    +'<span style="font-size:12px;font-weight:400;opacity:.9;">Remplacez l\u2019ancien fichier par celui-ci.</span>';
+    +'font-weight:700;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,.4);text-align:center;';
+  t.innerHTML='✅ Fichier téléchargé !<br><span style="font-size:12px;opacity:.85;">Positions dans Supabase — aucun écrasement.</span>';
   document.body.appendChild(t);setTimeout(function(){t.remove();},5000);
 }
 
@@ -21398,6 +21359,34 @@ function resetVerbalopolisProgressForAdmin(){
   try{showConjMenu();}catch(e){}
 }
 
+function _applyCoqLayoutFromSupabase(layout){
+  var isMob=typeof isCoqMobileLayout==='function'?isCoqMobileLayout():(window.innerWidth<=700);
+  var k=isMob?'coquillard_mobile':'coquillard_desktop';
+  if(typeof GLOBAL_MAP_LAYOUTS!=='undefined')GLOBAL_MAP_LAYOUTS[k]=layout;
+  try{_renderCoquScene();}catch(e){}
+}
+function _sl_dragCoqEl(el,eDown){
+  var scene=document.getElementById('_coqScene');if(!scene)return;
+  var sr=scene.getBoundingClientRect();
+  var sL=parseFloat(el.style.left)||0,sT=parseFloat(el.style.top)||0;
+  var sX=eDown.clientX,sY=eDown.clientY;
+  function onMove(e){
+    var nL=Math.max(-20,Math.min(120,sL+(e.clientX-sX)/sr.width*100));
+    var nT=Math.max(-20,Math.min(120,sT+(e.clientY-sY)/sr.height*100));
+    el.style.left=nL.toFixed(2)+'%';el.style.top=nT.toFixed(2)+'%';
+    var sx=document.getElementById('_sl_x');if(sx)sx.textContent=nL.toFixed(1)+'%';
+    var sy=document.getElementById('_sl_y');if(sy)sy.textContent=nT.toFixed(1)+'%';
+    try{if(typeof _coqEditSavePos==='function')_coqEditSavePos(el);}catch(ex){}
+  }
+  function onUp(){
+    el.removeEventListener('pointermove',onMove);el.removeEventListener('pointerup',onUp);
+    try{el.releasePointerCapture(eDown.pointerId);}catch(ex){}
+    _sl_saveCoqLayout();
+  }
+  try{el.setPointerCapture(eDown.pointerId);}catch(ex){}
+  el.addEventListener('pointermove',onMove);el.addEventListener('pointerup',onUp);
+}
+
 function openCoquillardShop(){
   if(document.getElementById('_coquillardShop'))return;
   var isMob=(window._forceCoqMode||'')!==''?(window._forceCoqMode==='mobile'):isCoqMobileLayout();
@@ -21429,6 +21418,10 @@ function openCoquillardShop(){
 
   document.body.appendChild(ov);
   _renderCoquScene();
+  /* Charger layout Supabase */
+  var _cqk2=(typeof isCoqMobileLayout==='function'&&isCoqMobileLayout())?'coquillard_mobile':'coquillard_desktop';
+  _sl_fetch(_cqk2).then(function(l){if(l&&Object.keys(l).length)try{_applyCoqLayoutFromSupabase(l);}catch(e){}});
+  if(typeof isAdminDaude==='function'&&isAdminDaude())setTimeout(function(){try{_sl_initAdmin('coquillard');}catch(e){}},400);
 }
 
 function _renderCoquScene(){
@@ -26120,5 +26113,4 @@ function openChronoscribe(){
       </div>
     </div>
       </div><!-- /chronoScene -->
-  </div>
-  <div id="adminDebugPanel" style="display:none;position: fixed; right: 16px; bottom: 16px; z-index: 999999; display: flex; flex-direction: column; gap: 6px;"><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🔍 Boss</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🧹 Reset quêtes</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🔁 Reset Verbalopolis</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🪧 Test conso</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🎵 Test audio</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🎮 Mode test</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🗺 Export layouts</button><button style="padding: 4px 10px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; color: rgb(248, 113, 113); cursor: pointer; font-size: 10px; font-family: inherit;">⊗ Admin</button></div><button id="_uae_btn" style="display:none;position: fixed; top: 12px; right: 12px; z-index: 99999; padding: 8px 16px; background: rgba(15, 23, 42, 0.95); border: 2px solid rgba(74, 222, 128, 0.8); border-radius: 10px; color: rgb(74, 222, 128); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: rgba(0, 0, 0, 0.6) 0px 2px 20px;">✅ Fin édition</button><div id="_uae_panel" style="display:none;position: fixed; top: 12px; right: 130px; z-index: 99998; background: rgba(10, 18, 35, 0.97); border: 1.5px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 12px; width: 220px; max-height: calc(-80px + 100vh); overflow-y: auto; font-family: inherit; box-shadow: rgba(0, 0, 0, 0.7) 0px 4px 30px;"><div style="font-size:12px;font-weight:900;color:#38bdf8;margin-bottom:8px;letter-spacing:.5px;">✏️ ÉDITION — CITE</div><div id="_uae_info" style="font-size:10px;color:#64748b;margin-bottom:8px;font-style:italic;">Cliquez un élément sur la carte</div><div id="_uae_props"></div><hr style="border-color:rgba(56,189,248,.2);margin:10px 0"><button onclick="_savePositionsForAll()" style="width:100%;padding:8px;background:rgba(16,185,129,.2);border:1.5px solid rgba(74,222,128,.6);border-radius:8px;color:#4ade80;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;">💾 Sauvegarder pour tous</button></div></body></html>
+  </div><div id="adminDebugPanel" style="display:none;position: fixed; right: 16px; bottom: 16px; z-index: 999999; display: flex; flex-direction: column; gap: 6px;"><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🔍 Boss</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🧹 Reset quêtes</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🔁 Reset Verbalopolis</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🪧 Test conso</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🎵 Test audio</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🎮 Mode test</button><button style="padding: 6px 12px; background: rgba(20, 10, 5, 0.95); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 8px; color: rgb(249, 211, 104); cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; white-space: nowrap;">🗺 Export layouts</button><button style="padding: 4px 10px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; color: rgb(248, 113, 113); cursor: pointer; font-size: 10px; font-family: inherit;">⊗ Admin</button></div><button id="_uae_btn" style="display:none;position: fixed; top: 12px; right: 12px; z-index: 99999; padding: 8px 16px; background: rgba(15, 23, 42, 0.95); border: 2px solid rgba(74, 222, 128, 0.8); border-radius: 10px; color: rgb(74, 222, 128); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: rgba(0, 0, 0, 0.6) 0px 2px 20px;">✅ Fin édition</button><div id="_uae_panel" style="display:none;position: fixed; top: 12px; right: 130px; z-index: 99998; background: rgba(10, 18, 35, 0.97); border: 1.5px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 12px; width: 220px; max-height: calc(-80px + 100vh); overflow-y: auto; font-family: inherit; box-shadow: rgba(0, 0, 0, 0.7) 0px 4px 30px;"><div style="font-size:12px;font-weight:900;color:#38bdf8;margin-bottom:8px;letter-spacing:.5px;">✏️ ÉDITION — CITE</div><div id="_uae_info" style="font-size:10px;color:#64748b;margin-bottom:8px;font-style:italic;">Cliquez un élément sur la carte</div><div id="_uae_props"></div><hr style="border-color:rgba(56,189,248,.2);margin:10px 0"><button onclick="_savePositionsForAll()" style="width:100%;padding:8px;background:rgba(16,185,129,.2);border:1.5px solid rgba(74,222,128,.6);border-radius:8px;color:#4ade80;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;">💾 Sauvegarder pour tous</button></div></body></html>
