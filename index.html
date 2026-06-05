@@ -7226,8 +7226,20 @@ function _hoistBossOverlays(){
   });
 }
 function goScreen(name){
+  /* Stopper toutes les musiques en cours */
+  try{
+    ['bgMusic','menuMusic','citeMusic','sylveMusic','plumesMusic',
+     'bossMusicAudio','gramMusicAudio','gramMusicAngry',
+     'victoryMusic','gameOverMusic','teddySnd','melMusicP1'].forEach(function(id){
+      var a=document.getElementById(id);
+      if(a&&!a.paused){a.pause();a.currentTime=0;}
+    });
+  }catch(_me){}
   /* Cacher l'UI admin pour les non-admins */
   try{_updateAdminUIVisibility();}catch(e){}
+  /* Nettoyer le mode édition si on change de monde */
+  try{if(window._sl_editMode)_sl_stopEdit();}catch(e){}
+  try{if(window._uae_active)_uae_stop();}catch(e){}
   try{_cleanupConjugusPhase2Effects();}catch(e){}
   try{cleanupConjugusItemsUI();}catch(e){}
   try{cleanupConsumablesCombatUI();}catch(e){}
@@ -7339,7 +7351,6 @@ function goScreen(name){
   }
   if(D.conjScr) D.conjScr.classList.toggle("active",name==="conjugaison");
   if(name==="conjugaison"){
-    if(typeof isAdminDaude==='function'&&isAdminDaude())setTimeout(function(){try{_showAdminDebugPanel();}catch(e){};},200);
     /* Re-hoist boss overlays */
     setTimeout(function(){try{_hoistBossOverlays();}catch(e){}},300);
     setTimeout(function(){
@@ -21413,7 +21424,7 @@ function openCoquillardShop(){
 
   /* ── Scene container ── */
   var scene=document.createElement('div');scene.id='_coqScene';
-  scene.style.cssText='position:absolute;inset:0;pointer-events:none;';
+  scene.style.cssText='position:absolute;inset:0;pointer-events:auto;';
   ov.appendChild(scene);
 
   document.body.appendChild(ov);
@@ -25981,7 +25992,7 @@ function openChronoscribe(){
     <img id="teddyChar" src="" alt="Teddynounet">
     <img id="bourgourChar" src="" alt="Bourgour">
     <div id="teddyFuirBtn">
-      <button onclick="TeddynounetBoss.abandon()" class="fuir-btn" onmouseover="this.style.filter='brightness(1.2)'" onmouseout="this.style.filter=''">
+      <button onclick="TeddynounetBoss.abandon()" class="fuir-btn" style="pointer-events:auto!important;z-index:9700!important;position:relative;" onmouseover="this.style.filter='brightness(1.2)'" onmouseout="this.style.filter=''">
         <img src="https://i.postimg.cc/ZKkqjB00/Fuir.png" alt="Fuir">
       </button>
     </div>
