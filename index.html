@@ -1527,7 +1527,7 @@
   /* Fissure: pas de fond ni border rectangle */
   .chrono-fissure {
     position:absolute;cursor:pointer;pointer-events:all;
-    z-index:16;user-select:none;touch-action:none;
+    z-index:16;user-select:none;
     transition:transform .08s;
     background:none !important; border:none !important; box-shadow:none !important;
   }
@@ -2118,9 +2118,8 @@
 
   /* ════════ MOBILE ≤ 640px ════════ */
   @media(max-width:640px){
-    #rpgMapBg{
-      background-image:url('https://i.postimg.cc/DzXr93Sd/responsive-map-menu.png')!important;
-    }
+    /* rpgMapBg: même fond desktop sur mobile (pan-zoom géré par JS) */
+    #rpgMapBg{ /* no override */ }
     .rpg-sprite img{width:clamp(100px,28vw,148px)!important;}
     .rpg-label{font-size:9px!important;padding:2px 6px!important;}
     #rpgFeather{width:clamp(120px,30vw,180px)!important;}
@@ -3158,6 +3157,19 @@
 #_coqEditBtn,
 .admin-only { display: none !important; }
 /* Visibles seulement via JS _updateAdminUIVisibility() */
+
+/* ── Home screen responsive — tailles mobiles ─────────── */
+@media(max-width:768px){
+  /* Laisser les sprites rpgMap responsive sans inline override */
+  #rpgChar,#rpgFeather{
+    /* Taille responsive si pas d'inline override */
+  }
+  /* Empêcher les <img> dans rpg-sprite de déborder */
+  .rpg-sprite img{max-width:100%;height:auto;}
+  /* rpgChar et rpgFeather: tailles par défaut si pas de Supabase */
+  #rpgChar:not([style*='width']){width:clamp(60px,15vw,100px)!important;}
+  #rpgFeather:not([style*='width']){width:clamp(120px,38vw,200px)!important;}
+}
 </style>
 <script>
 </script>
@@ -3632,8 +3644,8 @@
       <div id="rpgCenter">
         <div id="rpgCenterGlow"></div>
       </div>
-      <img id="rpgFeather" src="https://i.postimg.cc/90DJfgyW/Logo.png" alt="Mission Brevet" style="pointer-events: auto; position: absolute; width: 338px; height: auto; top: 37.63%; left: 41.3%;">
-      <img id="rpgChar" src="https://i.postimg.cc/ZRDYg7p8/personnage-CD.png" alt="" style="pointer-events: auto; position: absolute; width: 101px; height: auto; top: 42.54%; left: 37.94%;">
+      <img id="rpgFeather" src="https://i.postimg.cc/90DJfgyW/Logo.png" alt="Mission Brevet" draggable="false" style="pointer-events: auto; position: absolute; width: 338px; height: auto; top: 37.63%; left: 41.3%;">
+      <img id="rpgChar" src="https://i.postimg.cc/ZRDYg7p8/personnage-CD.png" alt="" draggable="false" style="pointer-events: auto; position: absolute; width: 101px; height: auto; top: 42.54%; left: 37.94%;">
 
       <!-- ── SPRITES ── -->
       <!-- Royaume des Plumes — Littérature -->
@@ -3713,51 +3725,51 @@
       <div id="plumesWorld" style="transform: translate(0px, -57.38px) scale(0.4453);">
         <div id="plumesBg"><img class="world-bg-img" src="https://i.postimg.cc/P5SJX5H8/BG-desktop.png" alt="" draggable="false"></div>
 
-        <div class="plumes-building-group" id="pbg-chrono" style="left: 44.78%; top: 25.66%; transform: translate(-50%, -100%); height: 1139px; width: 951px; touch-action: none;">
-          <img id="ps-chrono-boss" class="plumes-boss-sprite" src="https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png" alt="boss" style="position: absolute; height: 180px; width: auto; right: calc(100% - 90px); bottom: 40px; touch-action: none;">
+        <div class="plumes-building-group" id="pbg-chrono" style="left: 44.78%; top: 25.66%; transform: translate(-50%, -100%); height: 1139px; width: 951px;">
+          <img id="ps-chrono-boss" class="plumes-boss-sprite" src="https://i.postimg.cc/0N38j5Dh/Chronoscribe-idle.png" alt="boss" style="position: absolute; height: 180px; width: auto; right: calc(100% - 90px); bottom: 40px;">
           <button class="plumes-sprite plumes-boss" id="ps-chrono" onclick="_plumesOpenBoss('chronoscribe')">
             <img src="https://i.postimg.cc/fT6gq9fV/Tour-de-l-Horloge.png" alt="Tour de l'Horloge" style="height: 1139px; width: 951px; display: block;">
             <span class="plumes-label">Tour de l'Horloge</span>
             <span class="plumes-boss-badge">⚡ BOSS</span>
           </button>
         </div>
-        <div class="plumes-building-group" id="pbg-theatre" style="left: 76.33%; top: 27.01%; transform: translate(-50%, -100%); height: 714px; width: 605px; touch-action: none;">
+        <div class="plumes-building-group" id="pbg-theatre" style="left: 76.33%; top: 27.01%; transform: translate(-50%, -100%); height: 714px; width: 605px;">
           <button class="plumes-sprite plumes-locked" id="ps-theatre" onclick="_plumesLocked('theatre')">
             <img src="https://i.postimg.cc/BQdw7KBX/theatre-des-arts.png" alt="Théâtre des Arts" style="height: 714px; width: 605px; display: block;">
             <span class="plumes-label">Théâtre des Arts</span>
             <span class="plumes-lock-icon">🔒</span>
           </button>
         </div>
-        <div class="plumes-building-group" id="pbg-parlement" style="left: 50.74%; top: 42.7%; transform: translate(-50%, -100%); height: 728px; width: 745px; touch-action: none;">
+        <div class="plumes-building-group" id="pbg-parlement" style="left: 50.74%; top: 42.7%; transform: translate(-50%, -100%); height: 728px; width: 745px;">
           <button class="plumes-sprite plumes-locked" id="ps-parlement" onclick="_plumesLocked('parlement')">
             <img src="https://i.postimg.cc/zX9P2gFB/Parlement-des-Idees.png" alt="Parlement des Idées" style="height: 760px; width: 777px; display: block;">
             <span class="plumes-label">Parlement des Idées</span>
             <span class="plumes-lock-icon">🔒</span>
           </button>
         </div>
-        <div class="plumes-building-group" id="pbg-poesie" style="left: 80.43%; top: 42.27%; transform: translate(-50%, -100%); height: 671px; width: 784px; touch-action: none;">
+        <div class="plumes-building-group" id="pbg-poesie" style="left: 80.43%; top: 42.27%; transform: translate(-50%, -100%); height: 671px; width: 784px;">
           <button class="plumes-sprite" id="ps-poesie" onclick="_plumesOpenModule('poesie')">
             <img src="https://i.postimg.cc/gkfBtZHY/Fontaine-de-la-Poesie.png" alt="Fontaine de la Poésie" style="height: 671px; width: 784px; display: block;">
             <span class="plumes-label">Fontaine de la Poésie</span>
             
           </button>
         </div>
-        <div class="plumes-building-group" id="pbg-memelite" style="left: 27.6%; top: 49.59%; transform: translate(-50%, -100%); height: 703px; width: 761px; touch-action: none;">
-          <img id="ps-memelite-boss" class="plumes-boss-sprite" src="https://i.postimg.cc/bwfcRt83/Memelite.png" alt="boss" style="position: absolute; height: 190px; width: auto; left: calc(100% - 90px); bottom: 35px; touch-action: none;">
+        <div class="plumes-building-group" id="pbg-memelite" style="left: 27.6%; top: 49.59%; transform: translate(-50%, -100%); height: 703px; width: 761px;">
+          <img id="ps-memelite-boss" class="plumes-boss-sprite" src="https://i.postimg.cc/bwfcRt83/Memelite.png" alt="boss" style="position: absolute; height: 190px; width: auto; left: calc(100% - 90px); bottom: 35px;">
           <button class="plumes-sprite plumes-boss" id="ps-memelite" onclick="_plumesOpenBoss('memelite')">
             <img src="https://i.postimg.cc/HsfPvy9k/librairie-de-Memelite.png" alt="Librairie de Mémélité" style="height: 673px; width: 729px; display: block;">
             <span class="plumes-label">Librairie de Mémélité</span>
             <span class="plumes-boss-badge">⚔️ BOSS</span>
           </button>
         </div>
-        <div class="plumes-building-group" id="pbg-musee" style="left: 57.62%; top: 62.06%; transform: translate(-50%, -100%); height: 690px; width: 807px; touch-action: none;">
+        <div class="plumes-building-group" id="pbg-musee" style="left: 57.62%; top: 62.06%; transform: translate(-50%, -100%); height: 690px; width: 807px;">
           <button class="plumes-sprite" id="ps-musee" onclick="_plumesOpenModule('musee')">
             <img src="https://i.postimg.cc/Fs2nCLVs/Musee-de-l-autobiographie.png" alt="Musée de l'Autobiographie" style="height: 690px; width: 807px; display: block;">
             <span class="plumes-label">Musée de l'Autobiographie</span>
             
           </button>
         </div>
-      <div id="_pnj_brahim_wrap" class="plumes-building-group" style="position: absolute; left: 31.33%; top: 58.76%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 130px; width: 130px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_brahim_img" src="https://i.postimg.cc/htSzbfSm/Enfant-royal-V1.png" style="height: 130px; width: 130px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s; left: 49.99%; top: 50%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Brahim</div></div></div><div id="_pnj_nono_wrap" class="plumes-building-group" style="position: absolute; left: 49.36%; top: 85.26%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 130px; width: 130px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_nono_img" src="https://i.postimg.cc/wj6yc76Y/Automate-enfant-casse.png" style="height: 130px; width: 130px; pointer-events: none; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Nono l'automate</div></div></div><div id="_pnj_esmeralda_wrap" class="plumes-building-group" style="position: absolute; left: 80.73%; top: 55.65%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 160px; width: 128px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_esmeralda_img" src="https://i.postimg.cc/jSZW8t5W/Habitante-royale-V1.png" style="height: 160px; width: 128px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Esmeralda</div></div></div><div id="_pnj_bally_wrap" class="plumes-building-group" style="position: absolute; left: 45.51%; top: 48.89%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 82px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_bally_img" src="https://i.postimg.cc/y8VgXkV9/Garde-Royal-sans-casque.png" style="height: 170px; width: 82px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Bally</div></div></div><div id="_pnj_automate_roi_wrap" class="plumes-building-group" style="position: absolute; left: 61.43%; top: 14.42%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 130px; width: 104px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_automate_roi_img" src="https://i.postimg.cc/mgbzNtbZ/Automate-Royal-V1.png" style="height: 130px; width: 104px; pointer-events: none; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s; left: 45.42%; top: 49.98%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Automate du Roi</div></div></div><div id="_pnj_garde_npc_wrap" class="plumes-building-group" style="position: absolute; left: 72.81%; top: 44.8%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 136px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_garde_npc_img" src="https://i.postimg.cc/T3Cykfwp/Garde-Royal-V1.png" style="height: 170px; width: 136px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Garde Royal</div></div></div><div id="_pnj_karim_wrap" class="plumes-building-group" style="position: absolute; left: 16.93%; top: 38.43%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 136px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_karim_img" src="https://i.postimg.cc/Jz1DcG13/habitant-royal-V1.png" style="height: 170px; width: 136px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Karim</div></div></div><div id="_pnj_drone_casper_wrap" class="plumes-building-group" style="position: absolute; left: 31.4%; top: 30.29%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 170px; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_drone_casper_img" src="https://i.postimg.cc/LXxjVTLN/Drone-Casper.png" style="height: 170px; width: 170px; pointer-events: none; animation: 3s ease-in-out infinite bob; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s; left: 46.74%; top: 51.89%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Drone Casper</div></div></div></div><!-- end plumesWorld -->
+      <div id="_pnj_brahim_wrap" class="plumes-building-group" style="position: absolute; left: 31.33%; top: 58.76%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 130px; width: 130px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_brahim_img" src="https://i.postimg.cc/htSzbfSm/Enfant-royal-V1.png" style="height: 130px; width: 130px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s; left: 49.99%; top: 50%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Brahim</div></div></div><div id="_pnj_nono_wrap" class="plumes-building-group" style="position: absolute; left: 49.36%; top: 85.26%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 130px; width: 130px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_nono_img" src="https://i.postimg.cc/wj6yc76Y/Automate-enfant-casse.png" style="height: 130px; width: 130px; pointer-events: none; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Nono l'automate</div></div></div><div id="_pnj_esmeralda_wrap" class="plumes-building-group" style="position: absolute; left: 80.73%; top: 55.65%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 160px; width: 128px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_esmeralda_img" src="https://i.postimg.cc/jSZW8t5W/Habitante-royale-V1.png" style="height: 160px; width: 128px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Esmeralda</div></div></div><div id="_pnj_bally_wrap" class="plumes-building-group" style="position: absolute; left: 45.51%; top: 48.89%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 82px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_bally_img" src="https://i.postimg.cc/y8VgXkV9/Garde-Royal-sans-casque.png" style="height: 170px; width: 82px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Bally</div></div></div><div id="_pnj_automate_roi_wrap" class="plumes-building-group" style="position: absolute; left: 61.43%; top: 14.42%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 130px; width: 104px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_automate_roi_img" src="https://i.postimg.cc/mgbzNtbZ/Automate-Royal-V1.png" style="height: 130px; width: 104px; pointer-events: none; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s; left: 45.42%; top: 49.98%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Automate du Roi</div></div></div><div id="_pnj_garde_npc_wrap" class="plumes-building-group" style="position: absolute; left: 72.81%; top: 44.8%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 136px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_garde_npc_img" src="https://i.postimg.cc/T3Cykfwp/Garde-Royal-V1.png" style="height: 170px; width: 136px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Garde Royal</div></div></div><div id="_pnj_karim_wrap" class="plumes-building-group" style="position: absolute; left: 16.93%; top: 38.43%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 136px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_karim_img" src="https://i.postimg.cc/Jz1DcG13/habitant-royal-V1.png" style="height: 170px; width: 136px; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Karim</div></div></div><div id="_pnj_drone_casper_wrap" class="plumes-building-group" style="position: absolute; left: 31.4%; top: 30.29%; transform: translate(-50%, -100%); z-index: 20; pointer-events: auto; height: 170px; width: 170px;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px; pointer-events: auto;"><img id="_pnj_drone_casper_img" src="https://i.postimg.cc/LXxjVTLN/Drone-Casper.png" style="height: 170px; width: 170px; pointer-events: none; animation: 3s ease-in-out infinite bob; filter: drop-shadow(rgba(0, 0, 0, 0.6) 0px 4px 16px); transition: transform 0.2s; left: 46.74%; top: 51.89%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(254, 243, 199); background: rgba(5, 8, 20, 0.85); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(217, 164, 65, 0.3);">Drone Casper</div></div></div></div><!-- end plumesWorld -->
     </div><!-- end plumesViewport -->
 
     <!-- Zone Overlay -->
@@ -4040,37 +4052,37 @@
       <canvas id="sylveParticles" style="position:absolute;inset:0;z-index:2;pointer-events:none;width:100%;height:100%;"></canvas>
       <div id="sylveWorld" style="transform: translate(0px) scale(0.4071);">
         <div id="sylveBg"></div>
-        <div class="sv-building-group" id="sbg-orgografe" style="left: 26.07%; top: 22.7%; transform: translate(-50%, -100%); touch-action: none; height: 456px; width: 549px;">
-          <img id="sv-orgo-boss" class="sv-boss-sprite" src="https://i.postimg.cc/X7TR290K/Grande-Orgografe1.png" alt="boss" style="position: absolute; height: 180px; width: auto; left: calc(100% - 70px); bottom: 30px; touch-action: none;">
+        <div class="sv-building-group" id="sbg-orgografe" style="left: 26.07%; top: 22.7%; transform: translate(-50%, -100%); height: 456px; width: 549px;">
+          <img id="sv-orgo-boss" class="sv-boss-sprite" src="https://i.postimg.cc/X7TR290K/Grande-Orgografe1.png" alt="boss" style="position: absolute; height: 180px; width: auto; left: calc(100% - 70px); bottom: 30px;">
           <button class="sv-sprite sv-boss" id="sv-orgografe" onclick="_sylveOpenBoss('orgografe')" style="height: 408px; width: 492px;">
             <img src="https://i.postimg.cc/bwQhTGvf/Campement-de-la-grande-Orgografe.png" alt="Campement des Orgografes" style="height: 456px; width: 549px; display: block;">
             <span class="sv-label">Campement des Orgografes</span>
             <span class="sv-boss-badge">🔥 BOSS</span>
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-chateau" style="left: 47.27%; top: 15.42%; transform: translate(-50%, -100%); touch-action: none; height: 464px; width: 576px;">
+        <div class="sv-building-group" id="sbg-chateau" style="left: 47.27%; top: 15.42%; transform: translate(-50%, -100%); height: 464px; width: 576px;">
           <button class="sv-sprite sv-locked" id="sv-chateau" onclick="_sylveLocked('chateau')" style="left: 35.76%; top: 49.5%; height: 384px; width: 477px;">
             <img src="https://i.postimg.cc/L8zpTqsm/chateau-expansionniste.png" alt="Château expansionniste" style="height: 464px; width: 576px; display: block;">
             <span class="sv-label">Château expansionniste</span>
             <span class="sv-lock-icon">🔒</span>
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-puits" style="left: 66.62%; top: 21.51%; transform: translate(-50%, -100%); touch-action: none; height: 586px; width: 612px;">
+        <div class="sv-building-group" id="sbg-puits" style="left: 66.62%; top: 21.51%; transform: translate(-50%, -100%); height: 586px; width: 612px;">
           <button class="sv-sprite" id="sv-puits" onclick="_sylveOpenModule('puits')" style="left: 50.3%; top: 50%; height: 410px; width: 428px;">
             <img src="https://i.postimg.cc/SxWhrXKy/Puits-des-subordonnees.png" alt="Puits des subordonnées" style="height: 586px; width: 612px; display: block;">
             <span class="sv-label">Puits des subordonnées</span>
             
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-tente" style="left: 26.24%; top: 51.82%; transform: translate(-50%, -100%); touch-action: none; height: 669px; width: 722px;">
+        <div class="sv-building-group" id="sbg-tente" style="left: 26.24%; top: 51.82%; transform: translate(-50%, -100%); height: 669px; width: 722px;">
           <button class="sv-sprite" id="sv-tente" onclick="_sylveOpenModule('tente')" style="left: 57.31%; top: 51%; height: 669px; width: 722px;">
             <img src="https://i.postimg.cc/HkQg2JLL/Tente-des-adjectifs.png" alt="Tente des adjectifs" style="height: 669px; width: 722px; display: block;">
             <span class="sv-label">Tente des adjectifs</span>
             
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-portail" style="left: 47.46%; top: 36.1%; transform: translate(-50%, -100%); touch-action: none; height: 802px; width: 725px;">
-          <img id="sv-gram-boss" class="sv-boss-sprite" src="https://i.postimg.cc/nzJVN6bT/Grammaria-Idle.png" alt="Grammaria" style="position: absolute; height: 165px; width: auto; left: calc(100% - 60px); bottom: 25px; touch-action: none;">
+        <div class="sv-building-group" id="sbg-portail" style="left: 47.46%; top: 36.1%; transform: translate(-50%, -100%); height: 802px; width: 725px;">
+          <img id="sv-gram-boss" class="sv-boss-sprite" src="https://i.postimg.cc/nzJVN6bT/Grammaria-Idle.png" alt="Grammaria" style="position: absolute; height: 165px; width: auto; left: calc(100% - 60px); bottom: 25px;">
           <button class="sv-sprite sv-boss" id="sv-portail" onclick="_sylveOpenBoss('grammaria')" style="height: 611px; width: 552px;">
             <img src="https://i.postimg.cc/2S4Dwq5k/Portail-vers-Grammaria.png" alt="Portail grammatical" style="height: auto; width: 687px; display: block;">
             <span class="sv-label">Portail grammatical</span>
@@ -4078,21 +4090,21 @@
             
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-camp" style="left: 63.49%; top: 50.68%; transform: translate(-50%, -100%); touch-action: none; height: 692px; width: 747px;">
+        <div class="sv-building-group" id="sbg-camp" style="left: 63.49%; top: 50.68%; transform: translate(-50%, -100%); height: 692px; width: 747px;">
           <button class="sv-sprite" id="sv-camp" onclick="_sylveOpenModule('camp')" style="left: 49.98%; top: 50.01%; height: 660px; width: 712px;">
             <img src="https://i.postimg.cc/6pdX07QN/Camp-des-natures-et-fonctions.png" alt="Camp des Naturalistes" style="height: 692px; width: 747px; display: block;">
             <span class="sv-label">Camp des Naturalistes</span>
             
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-scriptorium" style="left: 21.76%; top: 80.21%; transform: translate(-50%, -100%); touch-action: none; height: 569px; width: 592px;">
+        <div class="sv-building-group" id="sbg-scriptorium" style="left: 21.76%; top: 80.21%; transform: translate(-50%, -100%); height: 569px; width: 592px;">
           <button class="sv-sprite sv-locked" id="sv-scriptorium" onclick="_sylveLocked('scriptorium')" style="height: 569px; width: 592px;">
             <img src="https://i.postimg.cc/Nj1c4y0t/Ancien-Scriptorium.png" alt="Ancien Scriptorium" style="height: auto; width: 608px; display: block;">
             <span class="sv-label">Ancien Scriptorium</span>
             <span class="sv-lock-icon">🔒</span>
           </button>
         </div>
-        <div class="sv-building-group" id="sbg-arbre" style="left: 48.77%; top: 82.05%; transform: translate(-50%, -100%); touch-action: none; height: 831px; width: 721px;">
+        <div class="sv-building-group" id="sbg-arbre" style="left: 48.77%; top: 82.05%; transform: translate(-50%, -100%); height: 831px; width: 721px;">
           <button class="sv-sprite" id="sv-arbre" onclick="_sylveOpenModule('arbre')" style="left: 52.43%; top: 42.86%; height: 831px; width: 721px;">
             <img src="https://i.postimg.cc/x1K2Rkd2/Arbre-aux-racine-des-mots.png" alt="Arbre aux racines des Mots" style="height: 831px; width: 721px; display: block;">
             <span class="sv-label">Arbre aux racines des Mots</span>
@@ -4249,63 +4261,63 @@
       <canvas id="citeParticles" style="position:absolute;inset:0;z-index:2;pointer-events:none;width:100%;height:100%;"></canvas>
       <div id="citeWorld" style="transform: translate(0px) scale(0.4453);">
         <div id="citeBg"><img class="world-bg-img" src="https://i.postimg.cc/fb2rmsHv/bg-desktop-cite-verbale.png" alt="" draggable="false"></div>
-        <div class="cv-building-group" id="cbg-observatoire" style="left: 41.1%; top: 14.73%; transform: translate(-50%, -100%); display: block; opacity: 1; visibility: visible; touch-action: none;">
-          <img id="cv-conjugus-boss" class="cv-boss-sprite" src="https://i.postimg.cc/jS7n6S35/Conjugus.png" alt="boss" style="position: absolute; height: 140px; width: auto; right: calc(100% - 60px); bottom: 30px; touch-action: none;">
+        <div class="cv-building-group" id="cbg-observatoire" style="left: 41.1%; top: 14.73%; transform: translate(-50%, -100%); display: block; opacity: 1; visibility: visible;">
+          <img id="cv-conjugus-boss" class="cv-boss-sprite" src="https://i.postimg.cc/jS7n6S35/Conjugus.png" alt="boss" style="position: absolute; height: 140px; width: auto; right: calc(100% - 60px); bottom: 30px;">
           <button class="cv-sprite cv-boss" id="cv-observatoire" onclick="_citeOpenBoss('conjugus')">
             <img src="https://i.postimg.cc/J0kRbsX7/Observatoire-d-Astronomie.png" alt="Observatoire d'Astronomie" style="height: 610px; width: 824px; display: block; opacity: 1;">
             <span class="cv-label">Observatoire d'Astronomie</span>
             <span class="cv-boss-badge">⚡ BOSS</span>
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-maison_imparfait" style="left: 55.84%; top: 24.38%; transform: translate(-50%, -100%); touch-action: none;">
+        <div class="cv-building-group" id="cbg-maison_imparfait" style="left: 55.84%; top: 24.38%; transform: translate(-50%, -100%);">
           <button class="cv-sprite" id="cv-maison_imparfait" onclick="_citeOpenModule('maison_imparfait')" startmodfrom('c3','conjugaison')"="">
             <img src="https://i.postimg.cc/FsD5D4r9/maison-imparfaite.png" alt="Maison imparfaite" style="height: 470px; width: 578px; display: block;">
             <span class="cv-label">Maison imparfaite</span>
             
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-maison_present" style="left: 29.31%; top: 45.76%; transform: translate(-50%, -100%); touch-action: none;">
+        <div class="cv-building-group" id="cbg-maison_present" style="left: 29.31%; top: 45.76%; transform: translate(-50%, -100%);">
           <button class="cv-sprite" id="cv-maison_present" onclick="_citeOpenModule('maison_present')" startmodfrom('c1','conjugaison')"="">
             <img src="https://i.postimg.cc/sDwdwrjr/maison-du-present.png" alt="Maison du présent" style="height: 410px; width: 640px; display: block;">
             <span class="cv-label">Maison du présent</span>
             
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-caserne_cond" style="left: 76.76%; top: 45.29%; transform: translate(-50%, -100%); touch-action: none;">
+        <div class="cv-building-group" id="cbg-caserne_cond" style="left: 76.76%; top: 45.29%; transform: translate(-50%, -100%);">
           <button class="cv-sprite" id="cv-caserne_cond" onclick="_tryOpenCaserne()">
             <img src="https://i.postimg.cc/dtqc21YQ/Caserne-de-l-Imparfait.png" alt="Caserne de la Conditionnelle" style="height: 490px; width: 714px; display: block;">
             <span class="cv-label">Caserne de la Conditionnelle</span>
             
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-ecole" style="left: 48.11%; top: 61.08%; transform: translate(-50%, -100%); touch-action: none;">
-          <img id="cv-teddy-boss" class="cv-boss-sprite" src="https://i.postimg.cc/7hyCB6w5/Teddynounet-Idle.png" alt="boss" style="position: absolute; height: 165px; width: auto; left: calc(100% - 70px); bottom: 25px; pointer-events: auto; touch-action: none;" onclick="(function(){var a=document.getElementById('teddySnd');if(a){a.src='https://cdaudemartinez.fr/wp-content/uploads/2026/04/teddynounet_moussieur.mp3';a.currentTime=0;a.play().catch(function(){});}})()">
+        <div class="cv-building-group" id="cbg-ecole" style="left: 48.11%; top: 61.08%; transform: translate(-50%, -100%);">
+          <img id="cv-teddy-boss" class="cv-boss-sprite" src="https://i.postimg.cc/7hyCB6w5/Teddynounet-Idle.png" alt="boss" style="position: absolute; height: 165px; width: auto; left: calc(100% - 70px); bottom: 25px; pointer-events: auto;" onclick="(function(){var a=document.getElementById('teddySnd');if(a){a.src='https://cdaudemartinez.fr/wp-content/uploads/2026/04/teddynounet_moussieur.mp3';a.currentTime=0;a.play().catch(function(){});}})()">
           <button class="cv-sprite cv-boss" id="cv-ecole" onclick="_playTeddySound();_citeOpenBoss('teddynounet')">
             <img src="https://i.postimg.cc/5NxWB0V4/Ecole-de-la-Cite.png" alt="École de la Cité" style="height: 550px; width: 738px; display: block;">
             <span class="cv-label">École de la Cité</span>
             <span class="cv-boss-badge">🔥 BOSS</span>
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-maison_passe" style="left: 22.47%; top: 82.09%; transform: translate(-50%, -100%); touch-action: none;">
+        <div class="cv-building-group" id="cbg-maison_passe" style="left: 22.47%; top: 82.09%; transform: translate(-50%, -100%);">
           <button class="cv-sprite" id="cv-maison_passe" onclick="_citeOpenModule('maison_passe')" startmodfrom('c7','conjugaison')"="">
             <img src="https://i.postimg.cc/rF821mk8/maison-du-passe.png" alt="Maison du passé" style="height: 590px; width: auto; display: block;">
             <span class="cv-label">Maison du passé</span>
             
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-maison_futur" style="left: 50.4%; top: 75.04%; transform: translate(-50%, -100%); touch-action: none;">
+        <div class="cv-building-group" id="cbg-maison_futur" style="left: 50.4%; top: 75.04%; transform: translate(-50%, -100%);">
           <button class="cv-sprite" id="cv-maison_futur" onclick="_citeOpenModule('maison_futur')" startmodfrom('c11','conjugaison')"="">
             <img src="https://i.postimg.cc/4NBkBgfs/Maison-futuriste.png" alt="Maison futuriste" style="height: 488px; width: auto; display: block;">
             <span class="cv-label">Maison futuriste</span>
             
           </button>
         </div>
-        <div class="cv-building-group" id="cbg-coquillard" style="left: 85.15%; top: 77.78%; transform: translate(-50%, -100%); position: absolute; touch-action: none;">
+        <div class="cv-building-group" id="cbg-coquillard" style="left: 85.15%; top: 77.78%; transform: translate(-50%, -100%); position: absolute;">
           <button class="cv-sprite" id="cv-coquillard" onclick="openCoquillardShop()">
             <img src="https://i.postimg.cc/JnQghKxy/boutiquier-zone.png" alt="Capitaine Coquillard" style="height:300px;width:auto;display:block;">
             <span class="cv-label">Capitaine Coquillard</span>
           </button>
-        </div><div id="_cnj_brigadier_wrap" style="position: absolute; left: 50.13%; top: 81.58%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_brigadier_img" src="https://i.postimg.cc/dVn5Gnh5/PNJ-Brigadier.png" style="height: 188px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px);"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Brigadier Marinus Gravetemps</div></div></div><div id="_cnj_globoule_wrap" style="position: absolute; left: 15.9%; top: 25.46%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_globoule_img" src="https://i.postimg.cc/8zwZLw7X/PNJ-Globoule.png" style="height: 158px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px);"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Globoule le Pirate</div></div></div><div id="_cnj_hallebardier_wrap" style="position: absolute; left: 72.38%; top: 42.13%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_hallebardier_img" src="https://i.postimg.cc/dVn5GnhW/PNJ-hallebardier.png" style="height: 186px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px);"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Capitaine Virevolte</div></div></div><div id="_cnj_lizalyah_wrap" style="position: absolute; left: 8.33%; top: 60.12%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1; touch-action: none;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_lizalyah_img" src="https://i.postimg.cc/jSvMyvDg/PNJ-Lizalyah.png" style="height: 168px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px); left: 24.41%; top: 38.92%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Liz'Alyah l'Astronome</div></div></div></div>
+        </div><div id="_cnj_brigadier_wrap" style="position: absolute; left: 50.13%; top: 81.58%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_brigadier_img" src="https://i.postimg.cc/dVn5Gnh5/PNJ-Brigadier.png" style="height: 188px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px);"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Brigadier Marinus Gravetemps</div></div></div><div id="_cnj_globoule_wrap" style="position: absolute; left: 15.9%; top: 25.46%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_globoule_img" src="https://i.postimg.cc/8zwZLw7X/PNJ-Globoule.png" style="height: 158px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px);"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Globoule le Pirate</div></div></div><div id="_cnj_hallebardier_wrap" style="position: absolute; left: 72.38%; top: 42.13%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_hallebardier_img" src="https://i.postimg.cc/dVn5GnhW/PNJ-hallebardier.png" style="height: 186px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px);"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Capitaine Virevolte</div></div></div><div id="_cnj_lizalyah_wrap" style="position: absolute; left: 8.33%; top: 60.12%; transform: translate(-50%, -100%); z-index: 50; pointer-events: auto; display: block; opacity: 1;"><div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px;"><img id="_cnj_lizalyah_img" src="https://i.postimg.cc/jSvMyvDg/PNJ-Lizalyah.png" style="height: 168px; width: auto; pointer-events: none; animation: 2.8s ease-in-out infinite npcBreath; filter: drop-shadow(rgba(0, 0, 0, 0.7) 0px 4px 16px); left: 24.41%; top: 38.92%;"><div class="pnj-label" style="font-size: 10px; font-weight: 700; color: rgb(224, 242, 254); background: rgba(15, 23, 42, 0.9); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; border: 1px solid rgba(56, 189, 248, 0.4);">Liz'Alyah l'Astronome</div></div></div></div>
         
     </div>
 
@@ -7264,11 +7276,18 @@ function goScreen(name){
   D.homeScr.classList.toggle("active",name==="home");
   if(name==="home"){
     /* Reload home layout for correct device */
+    /* Sur mobile non-admin: même carte desktop + pan-zoom */
+    var _isMH=(window.innerWidth<=768&&!(typeof isAdminDaude==='function'&&isAdminDaude()));
+    if(_isMH){
+      var _rm=document.getElementById('rpgMap');
+      if(_rm){_rm.style.position='absolute';_rm.style.inset='auto';_rm.style.left='0';_rm.style.top='0';_rm.style.width='1920px';_rm.style.height='1080px';_rm.style.transformOrigin='0 0';}
+    }
     HOME_LAYOUT=null;
     requestAnimationFrame(function(){requestAnimationFrame(function(){
       try{_getHomeLayout();_applyHomeLayout();}catch(e){}
-      var _hw=(window._adminForceHomeMobile||(window.innerWidth<=768&&!(typeof isAdminDaude==='function'&&isAdminDaude())))?'home_mobile':'home_desktop';
+      var _hw=window._adminForceHomeMobile?'home_mobile':'home_desktop';
       setTimeout(function(){try{_sl_apply(_hw);}catch(e){}},200);
+      if(_isMH)setTimeout(function(){try{_initMapEngine('homeScreen','rpgMap',1920,1080);}catch(e){}},350);
     });});
     /* Bouton admin sur la carte d'accueil */
     if(typeof isAdminDaude==='function'&&isAdminDaude())setTimeout(function(){try{_sl_initAdmin('home');}catch(e){}},450);
@@ -15789,8 +15808,16 @@ function _applyHomeLayout(){
     if(d.left)el.style.left=d.left;
     if(d.right)el.style.right=d.right;
     var target=(el.tagName==="IMG")?el:(el.querySelector("img")||el);
-    if(d.w&&d.w!==""){target.style.width=d.w;target.style.height="auto";if(target!==el)el.style.width=d.w;}
-    if(d.h&&d.h!==""){target.style.height=d.h;if(!d.w)target.style.width="auto";if(target!==el)el.style.height=d.h;}
+    var _isMH=window._adminForceHomeMobile||(window.innerWidth<=768&&!(typeof isAdminDaude==='function'&&isAdminDaude()));
+    /* Mobile: laisser CSS gérer les tailles, ne pas forcer les px inline */
+    if(!_isMH){
+      if(d.w&&d.w!==""&&d.w!=="auto"){target.style.width=d.w;target.style.height="auto";if(target!==el)el.style.width=d.w;}
+      else{target.style.width='';if(target!==el)el.style.width='';}
+      if(d.h&&d.h!==""&&d.h!=="auto"){target.style.height=d.h;if(!d.w)target.style.width="auto";if(target!==el)el.style.height=d.h;}
+      else{target.style.height='';if(target!==el)el.style.height='';}
+    } else {
+      target.style.width='';target.style.height='';if(target!==el){el.style.width='';el.style.height='';}
+    }
   });
 }
 
@@ -19642,8 +19669,13 @@ function _sl_applyLayout(world,layout){
     if(d.y!==undefined){el.style.top=d.y+'%';el.style.bottom='';}
     var img=_sl_getImg(el);
     if(img){
-      if(d.h&&d.h>0){img.style.height=d.h+'px';if(!d.w||d.w<=0)img.style.width='auto';}
-      if(d.w&&d.w>0){img.style.width=d.w+'px';if(!d.h||d.h<=0)img.style.height='auto';}
+      var _isMobW=world.indexOf('mobile')>=0;
+      if(!_isMobW){
+        if(d.h&&d.h>0){img.style.height=d.h+'px';if(!d.w||d.w<=0)img.style.width='auto';}
+        if(d.w&&d.w>0){img.style.width=d.w+'px';if(!d.h||d.h<=0)img.style.height='auto';}
+      } else {
+        img.style.width='';img.style.height='';
+      }
     }
     if(id.indexOf('sbg-')===0&&typeof SYLVE_LAYOUT!=='undefined'){
       var sk=id.replace('sbg-','');
@@ -19733,6 +19765,19 @@ function _sl_startEdit(){
   _sl_editMode=true;window._sl_editMode=true;
   var btn=document.getElementById('_sl_btn');
   if(btn){btn.textContent='\u2705 Fin \u00E9dition';btn.style.borderColor='rgba(74,222,128,.7)';btn.style.color='#4ade80';}
+  /* Home: figer la position visuelle (annule CSS transform) pour drag précis */
+  if(_sl_editWorld==='home'||_sl_editWorld==='home_desktop'||_sl_editWorld==='home_mobile'){
+    ['rpgFeather','rpgChar'].forEach(function(id){
+      var el=document.getElementById(id);if(!el)return;
+      var wr=document.getElementById('rpgMap');if(!wr)return;
+      var pr=wr.getBoundingClientRect(),er=el.getBoundingClientRect();
+      el.style.left=((er.left-pr.left)/pr.width*100).toFixed(2)+'%';
+      el.style.top=((er.top-pr.top)/pr.height*100).toFixed(2)+'%';
+      el.style.bottom='';el.style.right='';
+      el.style.transform='none';
+      el.setAttribute('data-sl-ht','1');
+    });
+  }
   _sl_showPanel();
   _sl_attachDrag();
 }
@@ -19740,10 +19785,15 @@ function _sl_startEdit(){
 function _sl_stopEdit(){
   _sl_editMode=false;window._sl_editMode=false;
   document.querySelectorAll('[data-sl-drag]').forEach(function(el){
-    el.style.outline='';el.style.cursor='';el.onpointerdown=null;el.removeAttribute('data-sl-drag');
+    el.style.outline='';el.style.cursor='';el.style.touchAction='';el.onpointerdown=null;el.removeAttribute('data-sl-drag');
   });
   _sl_selected=null;
   var p=document.getElementById('_sl_panel');if(p)p.remove();
+  /* Restaurer les transforms CSS */
+  ['rpgFeather','rpgChar'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&el.getAttribute('data-sl-ht')){el.style.transform='';el.removeAttribute('data-sl-ht');}
+  });
   var btn=document.getElementById('_sl_btn');
   if(btn){btn.textContent='\u270F\uFE0F \u00C9diter';btn.style.borderColor='rgba(217,164,65,.7)';btn.style.color='#fbbf24';}
 }
@@ -19860,8 +19910,16 @@ function _sl_dragEl(el,eDown){
     try{el.releasePointerCapture(eDown.pointerId);}catch(ex){}
     _sl_autoSave();
   }
-  try{el.setPointerCapture(eDown.pointerId);}catch(ex){}
-  el.addEventListener('pointermove',onMove);el.addEventListener('pointerup',onUp);el.addEventListener('pointercancel',onUp);
+  var _capOk=false;
+  try{el.setPointerCapture(eDown.pointerId);_capOk=true;}catch(ex){}
+  if(_capOk){
+    el.addEventListener('pointermove',onMove);el.addEventListener('pointerup',onUp);el.addEventListener('pointercancel',onUp);
+  } else {
+    /* iOS Safari: pointer capture failed → use document */
+    document.addEventListener('pointermove',onMove,{passive:false});
+    function _docUp2(e2){document.removeEventListener('pointermove',onMove);document.removeEventListener('pointerup',_docUp2);onUp(e2);}
+    document.addEventListener('pointerup',_docUp2);
+  }
 }
 
 function _sl_autoSave(){
@@ -22496,7 +22554,18 @@ window.TeddynounetBoss = (function() {
     _setBg(); _computeCrushY(); _initAudio(); _updateHPDisplay(); _updateComboDisplay();
 
     var tc = _el('teddyChar'), bc = _el('bourgourChar');
-    tc.src = IMG.TEDDY_IDLE; tc.style.left = '-300px'; tc.style.transition = 'none'; tc.style.animation = ''; tc.style.filter = '';
+    tc.src = IMG.TEDDY_IDLE; tc.style.left = '-300px';
+    /* Son 'Oh Moussiou' : uniquement au clic, cooldown 5s */
+    if(!tc._teddyClickBound){
+      tc._teddyClickBound=true;
+      tc.addEventListener('click',function(){
+        var now=Date.now();
+        if(tc._lastSnd&&now-tc._lastSnd<5000)return;
+        tc._lastSnd=now;
+        if(typeof playTeddySound==='function')playTeddySound();
+        else if(typeof _playTeddySound==='function')_playTeddySound();
+      });
+    } tc.style.transition = 'none'; tc.style.animation = ''; tc.style.filter = '';
     bc.src = IMG.BOURG_NORMAL; bc.style.right = '-800px'; bc.style.transition = 'none'; bc.style.animation = ''; bc.style.filter = '';
 
     _el('teddyFuirBtn').style.display = 'block';
