@@ -2120,7 +2120,7 @@
   @media(max-width:640px){
     /* rpgMapBg: même fond desktop sur mobile (pan-zoom géré par JS) */
     #rpgMapBg{ /* no override */ }
-    .rpg-sprite img{width:clamp(100px,28vw,148px)!important;}
+    .rpg-sprite img{/* desktop size, no override */}
     .rpg-label{font-size:9px!important;padding:2px 6px!important;}
     #rpgFeather{width:clamp(120px,30vw,180px)!important;}
     #rpgCenterGlow{width:140px!important;height:140px!important;}
@@ -3122,7 +3122,7 @@
 /* ══ HOME SCREEN MOBILE ══════════════════════════════════════════ */
 @media(max-width:600px){
   #homeScreen{overflow:hidden;}
-  .rpg-sprite img{width:clamp(62px,18vw,90px)!important;height:auto!important;}
+  .rpg-sprite img{/* desktop size, no override */}
   .rpg-label{font-size:9px!important;padding:2px 5px!important;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #rpgHud{bottom:8px!important;gap:8px!important;left:50%!important;transform:translateX(-50%)!important;}
   .rpg-hud-btn img{width:36px!important;height:36px!important;}
@@ -3165,11 +3165,20 @@
     /* Taille responsive si pas d'inline override */
   }
   /* Empêcher les <img> dans rpg-sprite de déborder */
-  .rpg-sprite img{max-width:100%;height:auto;}
+  .rpg-sprite img{/* no override */}
   /* rpgChar et rpgFeather: tailles par défaut si pas de Supabase */
   #rpgChar:not([style*='width']){width:clamp(60px,15vw,100px)!important;}
   #rpgFeather:not([style*='width']){width:clamp(120px,38vw,200px)!important;}
 }
+
+/* ── HOME MOBILE: scroll natif ─────────────────────────── */
+@media(max-width:768px){
+  #homeScreen{overflow:auto!important;-webkit-overflow-scrolling:touch!important;}
+  #homeScreen #rpgMap{position:relative!important;width:1920px!important;height:1080px!important;min-width:1920px!important;inset:auto!important;overflow:visible!important;}
+  #homeScreen #rpgMapBg{background-image:url('https://i.postimg.cc/PqwWgnCm/Map-Menu.png')!important;background-size:100% 100%!important;}
+  #homeScreen #rpgHud{position:fixed!important;bottom:16px!important;left:50%!important;transform:translateX(-50%)!important;z-index:200!important;}
+}
+/* MENU PRINCIPAL MOBILE */
 </style>
 <script>
 </script>
@@ -7287,7 +7296,6 @@ function goScreen(name){
       try{_getHomeLayout();_applyHomeLayout();}catch(e){}
       var _hw=window._adminForceHomeMobile?'home_mobile':'home_desktop';
       setTimeout(function(){try{_sl_apply(_hw);}catch(e){}},200);
-      if(_isMH)setTimeout(function(){try{_initMapEngine('homeScreen','rpgMap',1920,1080);}catch(e){}},350);
     });});
     /* Bouton admin sur la carte d'accueil */
     if(typeof isAdminDaude==='function'&&isAdminDaude())setTimeout(function(){try{_sl_initAdmin('home');}catch(e){}},450);
